@@ -23,34 +23,34 @@ project:
 # This section is for the datasheet/website. Use descriptive names (e.g., RX, TX, MOSI, SCL, SEG_A, etc.).
 pinout:
   # Inputs
-  ui[0]: ""
-  ui[1]: ""
-  ui[2]: ""
-  ui[3]: ""
-  ui[4]: ""
-  ui[5]: ""
-  ui[6]: ""
-  ui[7]: ""
+  ui[0]: "A11"
+  ui[1]: "A12"
+  ui[2]: "A13"
+  ui[3]: "A14"
+  ui[4]: "A15"
+  ui[5]: "MAP_L"
+  ui[6]: "RD4"
+  ui[7]: "RD5"
 
   # Outputs
-  uo[0]: ""
-  uo[1]: ""
-  uo[2]: ""
-  uo[3]: ""
-  uo[4]: ""
-  uo[5]: ""
+  uo[0]: "REN"
+  uo[1]: "REF_L"
+  uo[2]: "MPD_L"
+  uo[3]: "BE_L"
+  uo[4]: "FLG_L"
+  uo[5]: "LOOP_IN"
   uo[6]: ""
   uo[7]: ""
 
   # Bidirectional pins
-  uio[0]: ""
-  uio[1]: ""
-  uio[2]: ""
-  uio[3]: ""
-  uio[4]: ""
-  uio[5]: ""
-  uio[6]: ""
-  uio[7]: ""
+  uio[0]: "S5_L"
+  uio[1]: "BASIC_L"
+  uio[2]: "OS_L"
+  uio[3]: "CI_L"
+  uio[4]: "IO_L"
+  uio[5]: "S4_L"
+  uio[6]: "LOOP_OUT"
+  uio[7]: "TRIGGER_OUT_L"
 
 # Do not change!
 yaml_version: 6
