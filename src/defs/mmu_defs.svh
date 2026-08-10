@@ -7,10 +7,15 @@
 // PHYSICAL PMOD 1 INPUT STANDARD INTERFACE (ui_in)
 // =========================================================================
 typedef struct packed {
-    logic       rd5;      // Tracks ui_in[7] -> Cartridge Sense A000
-    logic       rd4;      // Tracks ui_in[6] -> Cartridge Sense 8000
-    logic       map_n;    // Tracks ui_in[5] -> /MAP Selftest
-    logic [4:0] addr;     // Tracks ui_in[4:0] -> Address bus slice (A15, A14, A13, A12, A11)
+    logic [0:0]  rd5;      // Tracks ui_in[7] -> Cartridge Sense A000
+    logic [0:0]  rd4;      // Tracks ui_in[6] -> Cartridge Sense 8000
+    logic [0:0]  map_n;    // Tracks ui_in[5] -> /MAP Selftest
+    logic [4:0]  addr;     // LINT BUG: Tracks ui_in[4:0] -> Address bus slice (A15, A14, A13, A12, A11)
+    //logic       a15;      // Bit 4
+    //logic       a14;      // Bit 3
+    //logic       a13;      // Bit 2
+    //logic       a12;      // Bit 1
+    //logic       a11;      // Bit 0
 } pmod1_inputs_t;
 
 // =========================================================================
