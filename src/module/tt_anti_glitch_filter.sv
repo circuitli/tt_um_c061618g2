@@ -1,5 +1,6 @@
 default_nettype none
 
+// Module
 module tt_anti_glitch_filter (
     input  logic raw_signal_in,
     output logic clean_signal_out

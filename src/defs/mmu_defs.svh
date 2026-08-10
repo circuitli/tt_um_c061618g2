@@ -1,6 +1,8 @@
 `ifndef MMU_DEFS_SVH
 `define MMU_DEFS_SVH
 
+// Tiny Tapeout dev kit main ports
+
 // =========================================================================
 // PHYSICAL PMOD 1 INPUT STANDARD INTERFACE (ui_in)
 // =========================================================================
