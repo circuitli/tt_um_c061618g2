@@ -8,33 +8,29 @@ from cocotb.triggers import ClockCycles
 
 @cocotb.test()
 async def test_project(dut):
-    dut._log.info("Start")
+    dut._log.info("Starting Asynchronous MMU Simulation...")
 
-    # Set the clock period to 10 us (100 KHz)
-    clock = Clock(dut.clk, 10, unit="us")
-    cocotb.start_soon(clock.start())
-
-    # Reset
+    #1. Standard template initializations
     dut._log.info("Reset")
     dut.ena.value = 1
-    dut.ui_in.value = 0
+    dut.st_n.value = 1  # Keep the global frame reset high/in
+    dut.ui_in.value = 0 # Safe default layout sweep
     dut.uio_in.value = 0
-    dut.rst_n.value = 0
-    await ClockCycles(dut.clk, 10)
-    dut.rst_n.value = 1
 
+    # 2. Wait exactly 1 nanosecond for the gates to stabilize
+    await Timer(1, units="ns")
+
+    # 3. Overwrite immediately with a valid address test loop
+    # Test an OS ROM read cycle ($F800 -> All address bits high)
+    dut.ui_in.value = pack_ui_in(addr=0x1F, map_n=1, rd4=0, rd5=0)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=0)
+
+    await Timer(1, units="ns") # Allow pure gates to transition
+
+    # Assertions to verify the outputs match your active-low truth table
     dut._log.info("Test project behavior")
+    dut._log.info("Test Case 1: Checking OS ROM Banking...")
+    assert dut.uo_out.value.integer & (1 << 1) == 0, "Error: /OS failed to drop low!"
 
-    # Set the input values you want to test
-    dut.ui_in.value = 20
-    dut.uio_in.value = 30
 
-    # Wait for one clock cycle to see the output values
-    await ClockCycles(dut.clk, 1)
-
-    # The following assersion is just an example of how to check the output values.
-    # Change it to match the actual expected output of your module:
-    assert dut.uo_out.value == 50
-
-    # Keep testing the module by changing the input values, waiting for
-    # one or more clock cycles, and asserting the expected output values.
+   

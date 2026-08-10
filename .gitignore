@@ -11,3 +11,20 @@ test/sim_build
 test/__pycache__/
 test/results.xml
 test/gate_level_netlist.v
+
+# ==========================================
+# Microsoft Visual Studio Editor Ignore Rules
+# ==========================================
+.vs/
+*.user
+*.suo
+*.sln
+Debug/
+Release/
+x64/
+out/
+
+# ==========================================
+# Python & Cocotb Temporary Ignore Rules
+# ==========================================
+__pycache__/
