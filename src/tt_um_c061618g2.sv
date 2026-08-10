@@ -2,17 +2,17 @@
 // SECTION: TOP-LEVEL HARDWARE WRAPPER CONSTRAINTS
 // ==============================================================================
 `default_nettype none
-`"defs/atari_mmu_defs.svh"
+`"defs/mmu_defs.svh"
 
 module tt_um_c061618g2 (
-    input  logic [7:0] ui_in,    // Dedicated hardware inputs
-    output logic [7:0] uo_out,   // Dedicated hardware outputs
-    input  logic [7:0] uio_in,   // Bidirectional bus input network
-    output logic [7:0] uio_out,  // Bidirectional bus output network
-    output logic [7:0] uio_oe,   // Bidirectional three-state direction gates
-    input  logic       ena,      // Leave this here! The compiler requires it.
-    input  logic       clk,      // Part of the strict wrapper standard!
-    input  logic       rst_n     // Part of the strict wrapper standard!
+    input  [7:0] ui_in,    // Dedicated hardware inputs
+    output [7:0] uo_out,   // Dedicated hardware outputs
+    input  [7:0] uio_in,   // Bidirectional bus input network
+    output [7:0] uio_out,  // Bidirectional bus output network
+    output [7:0] uio_oe,   // Bidirectional three-state direction gates
+    input  ena,      // Leave this here! The compiler requires it.
+    input  clk,      // Part of the strict wrapper standard!
+    input  rst_n     // Part of the strict wrapper standard!
 );
 
     // =========================================================================

@@ -16,7 +16,7 @@ typedef struct packed {
 // =========================================================================
 // Traces inputs in numerical pin progression directly from Pin 1 to Pin 6:
 typedef struct packed {
-    logic       unused_p8; // Bit 7 -> Pmod 2, Pin 8
+    logic       unused_p2_b7; // Bit 7 -> Pmod 2, Pin 8
     logic       LOOP_IN;  // Bit 6 -> uio_in -> PMOD 2 Pin 7 (Active-High System Disable Loop)
     logic       uio5_pad;  // Bit 5 -> Pmod 2, Pin 6 (Exempted; Output Lane)
     logic       FLG_n;    // Bit 4 -> uio_in -> PMOD 2 Pin 5 (Active-Low System Disable Flag)
@@ -40,7 +40,7 @@ typedef struct packed {
 
 // SystemVerilog packs left-to-right (MSB to LSB).
 typedef struct packed {
-    logic       unused_p8;// Bit 7 -> Pmod 3, Pin 8 (Static 0 Ground Tie-off)
+    logic       unused_p3_b7;// Bit 7 -> Pmod 3, Pin 8 (Static 0 Ground Tie-off)
     logic       loop_out; // Bit 6 -> Pmod 3, Pin 7 (ACTIVE-HIGH SYSTEM LOOP STATUS)
     logic       s4_n;     // Bit 5 -> /S4 Right Cartridge Select
     logic       io_n;     // Bit 4 -> /IO Peripheral Select ($D000)

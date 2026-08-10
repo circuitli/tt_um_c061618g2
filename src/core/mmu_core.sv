@@ -1,5 +1,5 @@
 default_nettype none
-include "../defs/mmu_defs.svh"
+include "defs/mmu_defs.svh"
 
 module mmu_core (
     input  pmod1_inputs_t  core_in, 
