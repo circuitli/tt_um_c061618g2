@@ -9,7 +9,7 @@ module tt_um_c061618g2 (
     output logic [7:0] uo_out,   // Dedicated hardware outputs
     input  logic [7:0] uio_in,   // Bidirectional bus input network
     output logic [7:0] uio_out,  // Bidirectional bus output network
-    output logic [7:0] uio_oe    // Bidirectional three-state direction gates
+    output logic [7:0] uio_oe,   // Bidirectional three-state direction gates
     input  logic       ena,      // Leave this here! The compiler requires it.
     input  logic       clk,      // Part of the strict wrapper standard!
     input  logic       rst_n     // Part of the strict wrapper standard!
