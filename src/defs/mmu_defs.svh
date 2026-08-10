@@ -52,4 +52,4 @@ typedef struct packed {
     logic       s5_n;     // Bit 0 -> /S5 Left Cartridge Select
 } pmod3_outputs_t;
 
-`endif
+endif // Ensure this line is present at the very end to close the guard!
