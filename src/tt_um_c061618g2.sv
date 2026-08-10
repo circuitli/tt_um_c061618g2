@@ -2,7 +2,7 @@
 // SECTION: TOP-LEVEL HARDWARE WRAPPER CONSTRAINTS
 // ==============================================================================
 default_nettype none
-include "defs/mmu_defs.svh"
+include "defs/mmu_defs.sv"
 
 // Wrapper
 module tt_um_c061618g2 (
@@ -15,6 +15,9 @@ module tt_um_c061618g2 (
     input  [0:0] clk,      // Part of the strict wrapper standard!
     input  [0:0] rst_n     // Part of the strict wrapper standard!
 );
+
+    // 1. Import everything from the package namespace
+    import mmu_defs::*;
 
     // =========================================================================
     // SEPARATED INTERFACE STRUCTURE BINDING
@@ -39,7 +42,7 @@ module tt_um_c061618g2 (
     // CORE SELECTIONS & DECODING PASS
     // =========================================================================
     mmu_outputs_t core_signals;
-    logic         stabilized_ci_n;
+    bit         stabilized_ci_n;
 
     // 1. Process Core Decoding Matrix
     mmu_core core_inst (
@@ -58,7 +61,7 @@ module tt_um_c061618g2 (
     );
 
     // Evaluate master system override control flags
-    logic system_disabled;
+    bit system_disabled;
     assign system_disabled = (pmod2_in_bus.flg_n == 1'b0) || (pmod2_in_bus.loop_in == 1'b0);
 
     // =========================================================================
