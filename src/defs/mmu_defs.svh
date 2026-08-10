@@ -10,9 +10,10 @@ define MMU_DEFS_SVH
 // PHYSICAL PMOD 1 INPUT STANDARD INTERFACE (ui_in)
 // =========================================================================
 typedef struct packed {
-    logic [0:0] rd5;      // Tracks ui_in[7] -> Cartridge Sense A000
-    logic [0:0] rd4;      // Tracks ui_in[6] -> Cartridge Sense 8000
-    logic [0:0] map_n;    // Tracks ui_in[5] -> /MAP Selftest
+    logic [2:0] control_bits; // Combines rd5, rd4, and map_n into a 3-bit vector
+    //logic [0:0] rd5;      // Tracks ui_in[7] -> Cartridge Sense A000
+    //logic [0:0] rd4;      // Tracks ui_in[6] -> Cartridge Sense 8000
+    //logic [0:0] map_n;    // Tracks ui_in[5] -> /MAP Selftest
     logic [4:0] addr; // Tracks ui_in[4:0] -> Address bus slice (A15, A14, A13, A12, A11)
     //addr_t addr;     // Tracks ui_in[4:0] -> Address bus slice (A15, A14, A13, A12, A11)
     //logic       a15;      // Bit 4

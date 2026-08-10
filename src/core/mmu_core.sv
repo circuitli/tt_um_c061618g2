@@ -4,40 +4,52 @@ include "defs/mmu_defs.svh"
 // Core
 module mmu_core (
     input  pmod1_inputs_t  core_in, 
-    input  logic           ren,
-    input  logic           ref_n,
-    input  logic           mpd_n,
-    input  logic           be_n,
+    input             ren,
+    input             ref_n,
+    input             mpd_n,
+    input             be_n,
     output pmod3_outputs_t core_out  // Directly maps to the 8-bit output profile!
 );
+    
+
+    // Unpack the control bits internally from the incoming structured bus
+    logic rd5;
+    logic rd4;
+    logic map_n;
+    logic [4:0] a;
+
+    assign rd5   = core_in.control_bits[2];
+    assign rd4   = core_in.control_bits[1];
+    assign map_n = core_in.control_bits[0];
+    assign a     = core_in.addr;
+
+    // =========================================================================
+    // ATARI MMU COMBINATORIAL DECODING EQUATIONS
+    // =========================================================================
     always_comb begin
-        // Secure unmapped high-side lanes safely to default states
-        core_out.unused_p8 = 1'b0;
-        core_out.loop_out  = 1'b1; // Default to 1 to assert fail-safe loop health!
+        // Clear the entire output structure to a safe default state
+        core_out = '0;
 
-        // Asynchronous structural decoder space flags matching the internal 5-bit bus vector
-        logic space_8000_9fff = (core_in.addr == 5'b10000); 
-        logic space_a000_bfff = (core_in.addr == 5'b10101);  
-        logic space_c000_cfff = (core_in.addr == 5'b11000);
-        logic space_d000_d7ff = (core_in.addr == 5'b11010); 
-        logic space_d800_dfff = (core_in.addr == 5'b11011); 
-        logic space_e000_ffff = (core_in.addr == 5'b11111 || core_in.addr == 5'b11110 || core_in.addr == 5'b11101 || core_in.addr == 5'b11100);
+        // --- ROM / RAM Chip Select Logic Equations ---
+        // BASIC ROM Selection: Maps to $A000-$BFFF if BASIC is enabled
+        core_out.basic_n = !(!map_n && (a >= 5'b10100) && (a <= 5'b10111) && ren);
 
-        // Core address space mappings
-        core_out.s5_n    = !(space_a000_bfff && core_in.rd5);
-        core_out.basic_n = !(space_a000_bfff && !be_n && !core_in.rd5);
-        core_out.io_n    = !space_d000_d7ff;
+        // OS ROM Selection: Maps to $D800-$FFFF (excluding hardware registers)
+        core_out.os_n    = !((a >= 5'b11011) && ren);
 
-        // OS ROM mapping: blocks math pack range if external PBI MPD_N drops low
-        logic os_low_match  = (space_c000_cfff && !core_in.map_n);
-        logic os_math_match = (space_d800_dfff && mpd_n); 
-        logic os_high_match = (space_e000_ffff && ren);
-        core_out.os_n    = !(os_low_match || os_math_match || os_high_match);
+        // HARDWARE CS (I/O) Selection: Maps to $D000-$D7FF area
+        core_out.io_n    = !((a == 5'b11010) && ren);
 
-        core_out.s4_n    = !(space_8000_9fff && core_in.rd4);
+        // --- RAM Bank Selection Lines ---
+        core_out.s4_n    = !((a == 5'b01000) && mpd_n); 
+        core_out.s5_n    = !((a == 5'b10100) && be_n);  
 
-        // Core master CAS Inhibit computation (Bypassed instantly if ANTIC asserts refresh)
-        logic raw_ci_assert = !core_out.s4_n || !core_out.s5_n || !core_out.basic_n || !core_out.io_n || !core_out.os_n;
-        core_out.ci_n    = !(raw_ci_assert && ref_n);
+        // --- Dynamic Clock Inhibit / Wait State Request ---
+        // Assert CI low if accessing the slow peripheral mapping matrices
+        if ((a == 5'b11010) && !ref_n) begin
+            core_out.ci_n = 1'b0; 
+        end else begin
+            core_out.ci_n = 1'b1; 
+        end
     end
 endmodule
