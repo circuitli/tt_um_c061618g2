@@ -1,5 +1,5 @@
-`ifndef MMU_DEFS_SVH
-`define MMU_DEFS_SVH
+ifndef MMU_DEFS_SVH
+define MMU_DEFS_SVH
 
 // Tiny Tapeout dev kit main ports
 
