@@ -3,6 +3,9 @@ define MMU_DEFS_SVH
 
 // Tiny Tapeout dev kit main ports
 
+// 1. Explicitly define a custom 5-bit vector type to bypass the struct bracket bug
+typedef logic [4:0] addr_t;
+
 // =========================================================================
 // PHYSICAL PMOD 1 INPUT STANDARD INTERFACE (ui_in)
 // =========================================================================
@@ -10,7 +13,7 @@ typedef struct packed {
     logic rd5;      // Tracks ui_in[7] -> Cartridge Sense A000
     logic rd4;      // Tracks ui_in[6] -> Cartridge Sense 8000
     logic map_n;    // Tracks ui_in[5] -> /MAP Selftest
-    logic addr[4:0];     // Tracks ui_in[4:0] -> Address bus slice (A15, A14, A13, A12, A11)
+    logic addr_t addr;     // Tracks ui_in[4:0] -> Address bus slice (A15, A14, A13, A12, A11)
     //logic       a15;      // Bit 4
     //logic       a14;      // Bit 3
     //logic       a13;      // Bit 2
