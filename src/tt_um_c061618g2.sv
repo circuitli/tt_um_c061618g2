@@ -72,12 +72,16 @@ module tt_um_c061618g2 (
     wire a11 = pmod1_bus.addr[0]; 
 
     // To bypass Yosys limitations with procedural assignments to individual 
-    // packed struct members, intermediate flat bit signals are declared.   
-    bit pmod3_s4_n = pmod3_bus.s4_n;
-    bit pmod3_io_n = pmod3_bus.io_n;
-    bit pmod3_os_n = pmod3_bus.os_n;
-    bit pmod3_basic_n = pmod3_bus.basic_n;
-    bit pmod3_s5_n    = pmod3_bus.s5_n;
+    // packed struct members, intermediate flat bit signals are declared.  
+    /* verilator lint_off UNUSED */
+    wire unused_p3_b7 = core_signals.unused_p3_b7;
+    wire LOOP_OUT     = core_signals.LOOP_OUT;
+    /* verilator lint_om UNUSED */
+    bit pmod3_s4_n = core_signals.s4_n;
+    bit pmod3_io_n = core_signals.io_n;
+    bit pmod3_os_n = core_signals.os_n;
+    bit pmod3_basic_n = core_signals.basic_n;
+    bit pmod3_s5_n    = core_signals.s5_n;
 
     // =========================================================================
     // COMBINATORIAL ROUTING MATRIX
