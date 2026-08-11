@@ -29,9 +29,9 @@ typedef struct packed {
 // =========================================================================
 // Traces inputs in numerical pin progression directly from Pin 1 to Pin 6:
 typedef struct packed {
-    /* verilator lint_off UNUSEDPARAM */
+    /* verilator lint_off UNUSEDSIGNAL */
     bit       unused_p2_b7; // Bit 7 -> Pmod 2, Pin 8
-    /* verilator lint_on UNUSEDPARAM */
+    /* verilator lint_on UNUSEDSIGNAL */
     bit       LOOP_IN;  // Bit 6 -> uio_in -> PMOD 2 Pin 7 (Active-High System Disable Loop)
     bit       uio5_pad;  // Bit 5 -> Pmod 2, Pin 6 (Exempted; Output Lane)
     bit       FLG_n;    // Bit 4 -> uio_in -> PMOD 2 Pin 5 (Active-Low System Disable Flag)
@@ -43,18 +43,18 @@ typedef struct packed {
 
 // Output Tracking Bundle:
 typedef struct packed {
-    /* verilator lint_off UNUSEDPARAM */
+    /* verilator lint_off UNUSEDSIGNAL */
     bit       uio7_out; // Bit 7 -> Tied Low 
     bit       uio6_out; // Bit 6 -> Tied Low
     bit       uio5_out; // Bit 5 -> Tied Low (Dedicated Input Pin Lane)
-    /* verilator lint_on UNUSEDPARAM */
+    /* verilator lint_on UNUSEDSIGNAL */
     bit       TRIGGER_OUT; // Bit 4 -> uio_out -> PMOD 2 Pin 5 ACTIVE TRIGGER DIG-TAP
-    /* verilator lint_off UNUSEDPARAM */
+    /* verilator lint_off UNUSEDSIGNAL */
     bit       uio3_out; // Bit 3 -> Tied Low (Dedicated Input Pin Lane)
     bit       uio2_out; // Bit 2 -> Tied Low (Dedicated Input Pin Lane)
     bit       uio1_out; // Bit 1 -> Tied Low (Dedicated Input Pin Lane)
     bit       uio0_out; // Bit 0 -> Tied Low (Dedicated Input Pin Lane)
-    /* verilator lint_on UNUSEDPARAM */
+    /* verilator lint_on UNUSEDSIGNAL */
 } pmod2_outputs_t;
 
 // SystemVerilog packs left-to-right (MSB to LSB).
