@@ -37,6 +37,11 @@ module tt_um_c061618g2 (
     // ---- SUB-SECTION: BUS DIRECTION HARDCODING ----
     assign uio_oe = 8'b00100000; 
 
+    /* verilator lint_off UNUSED */
+    wire unused_p2_b7 = pmod2_in_bus[7]; // Bit 7 -> Pmod 2, Pin 8
+    wire uio5_pad     = pmod2_in_bus[5];  // Bit 5 -> Pmod 2, Pin 6 (Exempted; Output Lane)
+    /* verilator lint_on UNUSED */
+
     // =========================================================================
     // CORE SELECTIONS & DECODING PASS
     // =========================================================================

@@ -33,7 +33,9 @@ typedef struct packed {
     bit       unused_p2_b7; // Bit 7 -> Pmod 2, Pin 8
     /* verilator lint_on UNUSEDSIGNAL */
     bit       LOOP_IN;  // Bit 6 -> uio_in -> PMOD 2 Pin 7 (Active-High System Disable Loop)
+    /* verilator lint_off UNUSEDSIGNAL */
     bit       uio5_pad;  // Bit 5 -> Pmod 2, Pin 6 (Exempted; Output Lane)
+    /* verilator lint_on UNUSEDSIGNAL */
     bit       FLG_n;    // Bit 4 -> uio_in -> PMOD 2 Pin 5 (Active-Low System Disable Flag)
     bit       be_n;     // Bit 3 -> uio_in -> PMOD 2 Pin 4 (/BE BASIC software enable)
     bit       mpd_n;    // Bit 2 -> uio_in -> PMOD 2 Pin 3 (/MPD Math Pack Disable)

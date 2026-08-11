@@ -28,7 +28,7 @@ module mmu_core (
     assign a     = core_in.addr;
 
     // =========================================================================
-    // ATARI MMU COMBINATORIAL DECODING EQUATIONS
+    // MMU COMBINATORIAL DECODING EQUATIONS
     // =========================================================================
     always_comb begin
         // Clear the entire output structure to a safe default state
@@ -44,9 +44,9 @@ module mmu_core (
         // HARDWARE CS (I/O) Selection: Maps to $D000-$D7FF area
         core_out.io_n    = !((a == 5'b11010) && ren);
 
-        // --- RAM Bank Selection Lines ---
-        core_out.s4_n    = !((a == 5'b01000) && mpd_n); 
-        core_out.s5_n    = !((a == 5'b10100) && be_n);  
+        // --- RAM Bank Selection Lines (Functionally qualified by active bits rd4 and rd5) ---
+        core_out.s4_n    = !((a == 5'b01000) && mpd_n && rd4); 
+        core_out.s5_n    = !((a == 5'b10100) && be_n && rd5);  
 
         // --- Dynamic Clock Inhibit / Wait State Request ---
         // Assert CI low if accessing the slow peripheral mapping matrices
