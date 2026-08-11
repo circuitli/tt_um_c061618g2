@@ -30,6 +30,12 @@ VERILOG_SOURCES += $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2
 # this gets copied in by the GDS action workflow
 VERILOG_SOURCES += $(PWD)/gate_level_netlist.v
 
+    # 1. Run the local copy and patch script first
+    $(shell sed '/ifnone/d' /home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v > sg13g2_stdcell_functional.v)
+
+    # 2. Intercept and replace the read-only PDK path inside COMPILE_ARGS with our patched local file
+    COMPILE_ARGS := $(subst /home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v,sg13g2_stdcell_functional.v,$(COMPILE_ARGS))
+
 endif
 
 # Allow sharing configuration between design and testbench via `include`:
