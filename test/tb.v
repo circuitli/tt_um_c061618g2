@@ -23,11 +23,13 @@ module tb ();
   wire [7:0] uio_out;
   wire [7:0] uio_oe;
 
+  /*
 `ifdef GL_TEST
   // Supply rails required strictly for gate-level netlist simulations
   supply1 VPWR;
   supply0 VGND;
 `endif
+ */
 
   // Instantiate the actual user module under test (UUT)
   tt_um_c061618g2 user_project (
