@@ -1,8 +1,8 @@
 `default_nettype none
-//include "defs/mmu_defs.sv"
+`include "defs/mmu_defs.sv"
 
 // 1. Import everything from the package namespace
-import mmu_defs::*;
+//import mmu_defs::*;
 
 module mmu_core (
     input  pmod1_inputs_t  core_in, 

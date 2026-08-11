@@ -1,8 +1,8 @@
-//ifndef MMU_DEFS_SVH
-//define MMU_DEFS_SVH
+`ifndef MMU_DEFS_SVH
+`define MMU_DEFS_SVH
 
-/// Tiny Tapeout dev kit main ports
-package mmu_defs;
+// Tiny Tapeout dev kit main ports
+//package mmu_defs;
 
 // 1. Explicitly define a custom 5-bit vector type to bypass the struct bracket bug
 //typedef bit [4:0] addr_t;
@@ -63,6 +63,6 @@ typedef struct packed {
     bit       s5_n;     // Bit 0 -> /S5 Left Cartridge Select
 } pmod3_outputs_t;
 
-endpackage
+//endpackage
 
-//endif // Ensure this line is present at the very end to close the guard!
+`endif // Ensure this line is present at the very end to close the guard!
