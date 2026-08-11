@@ -5,7 +5,7 @@
 //include "defs/mmu_defs.sv"
 
 // 1. Import everything from the package namespace
-import mmu_defs::*;
+//import mmu_defs::*;
 
 module tt_um_c061618g2 (
     input  [7:0] ui_in,    // Dedicated hardware inputs
@@ -21,10 +21,10 @@ module tt_um_c061618g2 (
     // =========================================================================
     // SEPARATED INTERFACE STRUCTURE BINDING
     // =========================================================================
-    pmod1_inputs_t  pmod1_bus;
-    pmod2_inputs_t  pmod2_in_bus;
-    pmod2_outputs_t pmod2_out_bus;
-    pmod3_outputs_t pmod3_bus;
+    mmu_defs::pmod1_inputs_t  pmod1_bus;
+    mmu_defs::pmod2_inputs_t  pmod2_in_bus;
+    mmu_defs::pmod2_outputs_t pmod2_out_bus;
+    mmu_defs::pmod3_outputs_t pmod3_bus;
 
     // Map input vectors cleanly index-for-index
     assign pmod1_bus    = ui_in;
@@ -36,7 +36,7 @@ module tt_um_c061618g2 (
     // =========================================================================
     // CORE SELECTIONS & DECODING PASS
     // =========================================================================
-    pmod3_outputs_t core_signals;
+    mmu_defs::pmod3_outputs_t core_signals;
     bit         stabilized_ci_n;
 
     // 1. Process Core Decoding Matrix
