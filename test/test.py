@@ -62,7 +62,7 @@ async def test_project(dut):
     # 3. Overwrite immediately with a valid address test loop
     # Test an OS ROM read cycle ($F800 -> All address bits high)
     dut.ui_in.value = pack_ui_in(addr=0x1F, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=0)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
 
     await Timer(1, unit="ns") # Allow pure gates to transition
 
