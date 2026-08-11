@@ -2,9 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import cocotb
-from cocotb.clock import Clock
-from cocotb.triggers import ClockCycles
-
+#from cocotb.clock import Clock
+#from cocotb.triggers import ClockCycles
+from cocotb.triggers import Timer, RisingEdge, FallingEdge
 
 @cocotb.test()
 async def test_project(dut):

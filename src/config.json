@@ -13,9 +13,7 @@
 
   "DESIGN_NAME": "tt_um_c061618g2",
   "VERILOG_INCLUDE_DIRS": [
-    "dir::defs",
-    "dir::core",
-    "dir::module"
+    "dir::"
   ],
 
   "//": "PL_TARGET_DENSITY_PCT - You can increase this if Global Placement fails with error GPL-0302.",
