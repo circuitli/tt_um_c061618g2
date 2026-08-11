@@ -23,13 +23,17 @@ jobs:
         shell: bash
         run: pip install -r test/requirements.txt
 
-        # Patch the IHP standard cell library file on the runner filesystem
-        # to strip the specify blocks containing unsupported edge-sensitive paths
       - name: Patch IHP PDK cell library for Icarus Verilog parser
         shell: bash
         run: |
-          if [ -f /home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v ]; then
-            sed -i '/specify/,/endspecify/d' /home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
+          PDK_FILE="/home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v"
+          if [ -f "$PDK_FILE" ]; then
+            echo "PDK file found. Applying parser fix..."
+            sudo chmod +w "$PDK_FILE"
+            sudo sed -i '/ifnone/d' "$PDK_FILE"
+            sudo sed -i '/specify/,/endspecify/d' "$PDK_FILE"
+          else
+            echo "Warning: PDK file not found at $PDK_FILE."
           fi
 
       - name: Run tests
