@@ -2,9 +2,9 @@
 // SECTION: TOP-LEVEL HARDWARE WRAPPER CONSTRAINTS
 // ==============================================================================
 `default_nettype none
-`include "defs/mmu_defs.sv"
-`include "core/mmu_core.sv"
-`include "module/tt_anti_glitch_filter.sv"
+`include "src/defs/mmu_defs.sv"
+`include "src/core/mmu_core.sv"
+`include "src/module/tt_anti_glitch_filter.sv"
 
 // 1. Import everything from the package namespace
 //import mmu_defs::*;

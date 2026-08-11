@@ -2,7 +2,7 @@
 `define MMU_CORE_SVH
 
 `default_nettype none
-`include "defs/mmu_defs.sv"
+`include "src/defs/mmu_defs.sv"
 
 // 1. Import everything from the package namespace
 //import mmu_defs::*;

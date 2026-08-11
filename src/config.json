@@ -11,9 +11,9 @@
 
   "//": "Here are some of the variables you may want to change:",
 
-  "DESIGN_NAME": "tt_um_c061618g2",
+  "DESIGN_NAME": "tt_um_c061618g2"/*,
   "VERILOG_INCLUDE_DIRS": [
-    "dir::"
+    "dir::"*/
   ],
 
   "//": "PL_TARGET_DENSITY_PCT - You can increase this if Global Placement fails with error GPL-0302.",
