@@ -23,20 +23,22 @@ module tb ();
   wire [7:0] uio_out;
   wire [7:0] uio_oe;
 
-  /*
+ /*
 `ifdef GL_TEST
   // Supply rails required strictly for gate-level netlist simulations
   supply1 VPWR;
   supply0 VGND;
 `endif
+ */
 
   // Instantiate the actual user module under test (UUT)
   tt_um_c061618g2 user_project (
+ /*
 `ifdef GL_TEST
       .VPWR(VPWR),
       .VGND(VGND),
 `endif
-  */
+ */
       .ui_in  (ui_in),    // Dedicated inputs
       .uo_out (uo_out),   // Dedicated outputs
       .uio_in (uio_in),   // Bidirectional IOs: Input path
