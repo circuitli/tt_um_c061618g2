@@ -1,4 +1,4 @@
-default_nettype none
+`default_nettype none
 
 module tt_anti_glitch_filter (
     input  bit raw_signal_in,

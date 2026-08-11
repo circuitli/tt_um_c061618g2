@@ -1,7 +1,7 @@
 // ==============================================================================
 // SECTION: TOP-LEVEL HARDWARE WRAPPER CONSTRAINTS
 // ==============================================================================
-default_nettype none
+`default_nettype none
 //include "defs/mmu_defs.sv"
 
 module tt_um_c061618g2 (

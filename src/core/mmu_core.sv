@@ -1,4 +1,4 @@
-default_nettype none
+`default_nettype none
 //include "defs/mmu_defs.sv"
 
 module mmu_core (
