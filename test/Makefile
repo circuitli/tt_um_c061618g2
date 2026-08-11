@@ -8,7 +8,6 @@ TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
 PROJECT_SOURCES = tt_um_c061618g2.sv
 
-it
 ifneq ($(GATES),yes)
 
 # RTL simulation:
