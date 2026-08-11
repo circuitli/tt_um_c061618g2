@@ -1,3 +1,5 @@
+`ifndef ANTI_GLITCH_FILTER_SVH
+`define ANTI_GLITCH_FILTER_SVH
 `default_nettype none
 
 module tt_anti_glitch_filter (
@@ -19,3 +21,4 @@ module tt_anti_glitch_filter (
     assign clean_signal_out = (raw_signal_in && d2) || (raw_signal_in && d3) || (d2 && d3);
 
 endmodule
+`endif

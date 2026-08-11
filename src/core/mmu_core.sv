@@ -1,3 +1,6 @@
+`ifndef MMU_CORE_SVH
+`define MMU_CORE_SVH
+
 `default_nettype none
 `include "defs/mmu_defs.sv"
 
@@ -54,3 +57,4 @@ module mmu_core (
         end
     end
 endmodule
+`endif
