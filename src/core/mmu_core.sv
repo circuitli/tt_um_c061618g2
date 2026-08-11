@@ -1,7 +1,6 @@
 default_nettype none
 //include "defs/mmu_defs.sv"
 
-// Core
 module mmu_core (
     input  pmod1_inputs_t  core_in, 
     input             ren,

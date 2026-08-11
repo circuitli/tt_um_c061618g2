@@ -1,7 +1,7 @@
 //ifndef MMU_DEFS_SVH
 //define MMU_DEFS_SVH
 
-// Tiny Tapeout dev kit main ports
+/// Tiny Tapeout dev kit main ports
 package mmu_defs;
 
 // 1. Explicitly define a custom 5-bit vector type to bypass the struct bracket bug

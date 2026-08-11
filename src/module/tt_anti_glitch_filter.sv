@@ -1,6 +1,5 @@
 default_nettype none
 
-// Module
 module tt_anti_glitch_filter (
     input  bit raw_signal_in,
     output bit clean_signal_out
