@@ -76,7 +76,7 @@ module tt_um_c061618g2 (
     /* verilator lint_off UNUSED */
     wire unused_p3_b7 = core_signals.unused_p3_b7;
     wire LOOP_OUT     = core_signals.LOOP_OUT;
-    /* verilator lint_om UNUSED */
+    /* verilator lint_on UNUSED */
     bit pmod3_s4_n = core_signals.s4_n;
     bit pmod3_io_n = core_signals.io_n;
     bit pmod3_os_n = core_signals.os_n;
