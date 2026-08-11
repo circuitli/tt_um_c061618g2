@@ -19,6 +19,7 @@ else
 # Gate level simulation:
 SIM_BUILD				= sim_build/gl
 COMPILE_ARGS    += -DGL_TEST
+COMPILE_ARGS    += -gno-specify
 COMPILE_ARGS    += -DFUNCTIONAL
 COMPILE_ARGS    += -DSIM
 COMPILE_ARGS    += -g2023
