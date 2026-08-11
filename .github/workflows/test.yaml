@@ -23,25 +23,29 @@ jobs:
         shell: bash
         run: pip install -r test/requirements.txt
 
-      - name: Patch IHP PDK cell library for Icarus Verilog parser
-        shell: bash
-        run: |
-          PDK_FILE="/home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v"
-          if [ -f "$PDK_FILE" ]; then
-            echo "PDK file found. Applying parser fix..."
-            sudo chmod +w "$PDK_FILE"
-            sudo sed -i '/ifnone/d' "$PDK_FILE"
-            sudo sed -i '/specify/,/endspecify/d' "$PDK_FILE"
-          else
-            echo "Warning: PDK file not found at $PDK_FILE."
-          fi
-
-      - name: Run tests
+      - name: Run tests with robust PDK patch
         run: |
           cd test
+          # =========================================================================
+          # TWO-PASS SIMULATION AND ROBUST SYMLINK-AWARE PDK PATCH
+          # =========================================================================
+          # Pass 1: Run make to force the toolchain to fetch/populate the PDK workspace directories
+          make || true
+          
+          # Pass 2: Dynamically trace every instance of the PDK cell library, unlock permissions, and strip 'ifnone' lines
+          # Added '--follow-symlinks' to ensure the real files are modified even if they are symlinked by a cache mount.
+          if [ -d /home/runner/pdk ]; then
+            sudo chmod -R +w /home/runner/pdk
+            find /home/runner/pdk -name "sg13g2_stdcell.v" -exec sudo sed -i --follow-symlinks '/ifnone/d' {} +
+          fi
+          # =========================================================================
+          
+          # Pass 3: Clean previous partial outputs and execute the true validation suite run
           make clean
           make
           # make will return success even if the test fails, so check for failure in the results.xml
+          grep -q failure results.xml && exit 1 || exit 0
+
 
       - name: Test Summary
         uses: test-summary/action@v2.4
