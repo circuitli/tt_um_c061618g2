@@ -23,29 +23,34 @@ jobs:
         shell: bash
         run: pip install -r test/requirements.txt
 
-      - name: Run tests with robust PDK patch
+      - name: Run tests with dynamic PDK patching
         run: |
           cd test
-          # =========================================================================
-          # TWO-PASS SIMULATION AND ROBUST SYMLINK-AWARE PDK PATCH
-          # =========================================================================
-          # Pass 1: Run make to force the toolchain to fetch/populate the PDK workspace directories
+          make clean
+          
+          # Pass 1: Run make once to force the toolchain or environment setup scripts
+          # to dynamically download/extract the PDK into the runner workspace.
           make || true
           
-          # Pass 2: Dynamically trace every instance of the PDK cell library, unlock permissions, and strip 'ifnone' lines
-          # Added '--follow-symlinks' to ensure the real files are modified even if they are symlinked by a cache mount.
-          if [ -d /home/runner/pdk ]; then
-            sudo chmod -R +w /home/runner/pdk
-            find /home/runner/pdk -name "sg13g2_stdcell.v" -exec sudo sed -i --follow-symlinks '/ifnone/d' {} +
-          fi
-          # =========================================================================
+          # Target the absolute path where Icarus Verilog reported the compilation failure
+          TARGET_PDK="/home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v"
           
-          # Pass 3: Clean previous partial outputs and execute the true validation suite run
+          if [ -f "$TARGET_PDK" ]; then
+            echo "PDK file detected. Unlocking and removing unsupported ifnone tokens..."
+            sudo chmod 777 "$TARGET_PDK" || true
+            # Delete any lines containing the unsupported 'ifnone' syntax to prevent parser crashes
+            sudo sed -i '/ifnone/d' "$TARGET_PDK" || true
+          else
+            echo "PDK file not found at the primary path, executing global directory sweep..."
+            sudo find /home/runner/ -name "sg13g2_stdcell.v" -exec sed -i '/ifnone/d' {} + || true
+          fi
+          
+          # Pass 2: Clear old partial compilation states and run the simulation for real
           make clean
           make
-          # make will return success even if the test fails, so check for failure in the results.xml
+          
+          # Safe return code validation without shell history expansion side-effects
           grep -q failure results.xml && exit 1 || exit 0
-
 
       - name: Test Summary
         uses: test-summary/action@v2.4
