@@ -6,6 +6,45 @@ import cocotb
 #from cocotb.triggers import ClockCycles
 from cocotb.triggers import Timer, RisingEdge, FallingEdge
 
+def pack_ui_in(addr=0, map_n=0, rd4=0, rd5=0):
+    """
+    Packs independent hardware parameters into the 8-bit ui_in bus.
+    
+    Bit allocation template:
+      [7]   : rd5
+      [6]   : rd4
+      [5]   : map_n
+      [4:0] : addr (5-bit value)
+    """
+    return (
+        ((rd5 & 0x01) << 7) |
+        ((rd4 & 0x01) << 6) |
+        ((map_n & 0x01) << 5) |
+        (addr & 0x1F)
+    )
+
+def pack_uio_in(ren=0, ref_n=0, mpd_n=0, be_n=0, flg_n=0, loop_in=0):
+    """
+    Packs bidirectional interface control parameters into the 8-bit uio_in bus.
+    
+    Bit allocation template:
+      [7:6] : Unused (defaulting to 0)
+      [5]   : loop_in
+      [4]   : flg_n
+      [3]   : be_n
+      [2]   : mpd_n
+      [1]   : ref_n
+      [0]   : ren
+    """
+    return (
+        ((loop_in & 0x01) << 5) |
+        ((flg_n & 0x01) << 4) |
+        ((be_n & 0x01) << 3) |
+        ((mpd_n & 0x01) << 2) |
+        ((ref_n & 0x01) << 1) |
+        (ren & 0x01)
+    )
+
 @cocotb.test()
 async def test_project(dut):
     dut._log.info("Starting Asynchronous MMU Simulation...")
@@ -18,14 +57,14 @@ async def test_project(dut):
     dut.uio_in.value = 0
 
     # 2. Wait exactly 1 nanosecond for the gates to stabilize
-    await Timer(1, units="ns")
+    await Timer(1, unit="ns")
 
     # 3. Overwrite immediately with a valid address test loop
     # Test an OS ROM read cycle ($F800 -> All address bits high)
     dut.ui_in.value = pack_ui_in(addr=0x1F, map_n=1, rd4=0, rd5=0)
     dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=0)
 
-    await Timer(1, units="ns") # Allow pure gates to transition
+    await Timer(1, unit="ns") # Allow pure gates to transition
 
     # Assertions to verify the outputs match your active-low truth table
     dut._log.info("Test project behavior")
