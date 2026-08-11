@@ -4,6 +4,9 @@
 `default_nettype none
 //include "defs/mmu_defs.sv"
 
+// 1. Import everything from the package namespace
+import mmu_defs::*;
+
 module tt_um_c061618g2 (
     input  [7:0] ui_in,    // Dedicated hardware inputs
     output [7:0] uo_out,   // Dedicated hardware outputs
@@ -14,9 +17,6 @@ module tt_um_c061618g2 (
     input  [0:0] clk,      // Part of the strict wrapper standard!
     input  [0:0] rst_n     // Part of the strict wrapper standard!
 );
-
-    // 1. Import everything from the package namespace
-    import mmu_defs::*;
 
     // =========================================================================
     // SEPARATED INTERFACE STRUCTURE BINDING
