@@ -23,7 +23,7 @@ COMPILE_ARGS    += -DGL_TEST
 #COMPILE_ARGS    += -gno-specify
 COMPILE_ARGS    += -DFUNCTIONAL
 COMPILE_ARGS    += -DSIM
-COMPILE_ARGS    += -g005
+COMPILE_ARGS    += -g2005
 VERILOG_SOURCES += $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_io/verilog/sg13g2_io.v
 VERILOG_SOURCES += $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
 
