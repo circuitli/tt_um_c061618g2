@@ -45,7 +45,6 @@ jobs:
           grep -q failure results.xml && exit 1 || exit 0
 
       - name: Test Summary
-        if: ${{ success() || failure() }}
         uses: test-summary/action@v2.4
         with:
           paths: "test/results.xml"
