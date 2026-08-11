@@ -11,17 +11,17 @@ package mmu_defs;
 // PHYSICAL PMOD 1 INPUT STANDARD INTERFACE (ui_in)
 // =========================================================================
 typedef struct packed {
-    //bit [2:0] control_bits; // Combines rd5, rd4, and map_n into a 3-bit vector
-    bit rd5;      // Tracks ui_in[7] -> Cartridge Sense A000
-    bit rd4;      // Tracks ui_in[6] -> Cartridge Sense 8000
-    bit map_n;    // Tracks ui_in[5] -> /MAP Selftest
-    //bit [4:0] addr; // Tracks ui_in[4:0] -> Address bus slice (A15, A14, A13, A12, A11)
+    bit [2:0] control_bits; // Combines rd5, rd4, and map_n into a 3-bit vector
+    //bit rd5;      // Tracks ui_in[7] -> Cartridge Sense A000
+    //bit rd4;      // Tracks ui_in[6] -> Cartridge Sense 8000
+    //bit map_n;    // Tracks ui_in[5] -> /MAP Selftest
+    bit [4:0] addr; // Tracks ui_in[4:0] -> Address bus slice (A15, A14, A13, A12, A11)
     //addr_t addr;     // Tracks ui_in[4:0] -> Address bus slice (A15, A14, A13, A12, A11)
-    bit       a15;      // Bit 4
-    bit       a14;      // Bit 3
-    bit       a13;      // Bit 2
-    bit       a12;      // Bit 1
-    bit       a11;      // Bit 0
+    //bit       a15;      // Bit 4
+    //bit       a14;      // Bit 3
+    //bit       a13;      // Bit 2
+    //bit       a12;      // Bit 1
+    //bit       a11;      // Bit 0
 } pmod1_inputs_t;
 
 // =========================================================================
@@ -44,7 +44,7 @@ typedef struct packed {
     bit       uio7_out; // Bit 7 -> Tied Low 
     bit       uio6_out; // Bit 6 -> Tied Low
     bit       uio5_out; // Bit 5 -> Tied Low (Dedicated Input Pin Lane)
-    bit       trigger_out; // Bit 4 -> uio_out -> PMOD 2 Pin 5 ACTIVE TRIGGER DIG-TAP
+    bit       TRIGGER_OUT; // Bit 4 -> uio_out -> PMOD 2 Pin 5 ACTIVE TRIGGER DIG-TAP
     bit       uio3_out; // Bit 3 -> Tied Low (Dedicated Input Pin Lane)
     bit       uio2_out; // Bit 2 -> Tied Low (Dedicated Input Pin Lane)
     bit       uio1_out; // Bit 1 -> Tied Low (Dedicated Input Pin Lane)
@@ -54,7 +54,7 @@ typedef struct packed {
 // SystemVerilog packs left-to-right (MSB to LSB).
 typedef struct packed {
     bit       unused_p3_b7;// Bit 7 -> Pmod 3, Pin 8 (Static 0 Ground Tie-off)
-    bit       loop_out; // Bit 6 -> Pmod 3, Pin 7 (ACTIVE-HIGH SYSTEM LOOP STATUS)
+    bit       LOOP_OUT; // Bit 6 -> Pmod 3, Pin 7 (ACTIVE-HIGH SYSTEM LOOP STATUS)
     bit       s4_n;     // Bit 5 -> /S4 Right Cartridge Select
     bit       io_n;     // Bit 4 -> /IO Peripheral Select ($D000)
     bit       ci_n;     // Bit 3 -> /CI CAS Inhibit (RAM bypass flag)

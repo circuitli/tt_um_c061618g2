@@ -1,6 +1,9 @@
 `default_nettype none
 //include "defs/mmu_defs.sv"
 
+// 1. Import everything from the package namespace
+import mmu_defs::*;
+
 module mmu_core (
     input  pmod1_inputs_t  core_in, 
     input             ren,
@@ -9,9 +12,6 @@ module mmu_core (
     input             be_n,
     output pmod3_outputs_t core_out  // Directly maps to the 8-bit output profile!
 );
-    
-    // 1. Import everything from the package namespace
-    import mmu_defs::*;
 
     // Unpack the control bits internally from the incoming structured bus
     bit rd5;
