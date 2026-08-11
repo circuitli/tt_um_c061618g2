@@ -13,7 +13,7 @@ ifneq ($(GATES),yes)
 # RTL simulation:
 SIM_BUILD				= sim_build/rtl
 VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
-COMPILE_ARGS    += -g2023
+#COMPILE_ARGS    += -g2023
 
 else
 
@@ -23,7 +23,7 @@ COMPILE_ARGS    += -DGL_TEST
 #COMPILE_ARGS    += -gno-specify
 COMPILE_ARGS    += -DFUNCTIONAL
 COMPILE_ARGS    += -DSIM
-COMPILE_ARGS    += -g2005
+#COMPILE_ARGS    += -g2005
 VERILOG_SOURCES += $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_io/verilog/sg13g2_io.v
 VERILOG_SOURCES += $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
 
