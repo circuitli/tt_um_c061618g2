@@ -13,7 +13,7 @@ async def test_project(dut):
     #1. Standard template initializations
     dut._log.info("Reset")
     dut.ena.value = 1
-    dut.st_n.value = 1  # Keep the global frame reset high/in
+    dut.rst_n.value = 1  # Keep the global frame reset high/in
     dut.ui_in.value = 0 # Safe default layout sweep
     dut.uio_in.value = 0
 
