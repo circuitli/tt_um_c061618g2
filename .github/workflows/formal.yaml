@@ -1,4 +1,5 @@
 name: Formal Hardware Verification
+working-directory: formal
 
 on:
   push:
@@ -20,4 +21,4 @@ jobs:
 
       - name: Execute SymbiYosys Formal Bounds
         run: |
-          sby -f formal/mmu.sby
+          sby -f mmu.sby
