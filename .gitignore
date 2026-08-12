@@ -17,6 +17,7 @@ sim_out
 # Microsoft Visual Studio Editor Ignore Rules
 # ==========================================
 .vs/
+.vscode/
 *.user
 *.suo
 *.sln
@@ -29,3 +30,6 @@ out/
 # Python & Cocotb Temporary Ignore Rules
 # ==========================================
 __pycache__/
+
+# SymbiYosys Proof Output Directory
+formal/mmu/
