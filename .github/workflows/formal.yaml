@@ -1,5 +1,4 @@
 name: Formal Hardware Verification
-working-directory: formal
 
 on:
   push:
@@ -7,18 +6,19 @@ on:
   pull_request:
     branches: [ main, master ]
 
-jobs:
-  formal-proof:
+obs:
+  formal-verification:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v5
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Initialize YosysHQ OSS CAD Suite
+      - name: Install OSS CAD Suite
         uses: YosysHQ/setup-oss-cad-suite@v4
         with:
-          github-token: \$\{\{ secrets.GITHUB_TOKEN \}\}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Execute SymbiYosys Formal Bounds
+      - name: Run SymbiYosys Checks
+        working-directory: formal
         run: |
           sby -f mmu.sby
