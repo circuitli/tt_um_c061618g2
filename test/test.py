@@ -69,7 +69,7 @@ async def test_project(dut):
     # Assertions to verify the outputs match your active-low truth table
     dut._log.info("Test project behavior")
     dut._log.info("Test Case 1: Checking OS ROM Banking...")
-    assert dut.uo_out.value.integer & (1 << 1) == 0, "Error: /OS failed to drop low!"
+    assert dut.uo_out.value.integer & (1 << 2) == 0, "Error: /OS failed to drop low!"
 
 
    
