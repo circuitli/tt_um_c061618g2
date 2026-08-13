@@ -48,21 +48,28 @@ module mmu_core (
     // =========================================================================
     always_comb begin
         // Clear the entire output structure to a safe default state
-        core_out = '0;
+        core_out = '1;
 
-        // --- ROM / RAM Chip Select Logic Equations ---
-        // BASIC ROM Selection: Maps to $A000-$BFFF if BASIC is enabled
-        core_out.basic_n = !(!map_n && (a >= 5'b10100) && (a <= 5'b10111) && ren);
+       // =========================================================================
+        // MMU COMBINATORIAL DECODING EQUATIONS
+        // =========================================================================
+        // Address Conversions for Bits [15:11]:
+        // $0800 -> 5'h01 (1)  |  $A000 -> 5'h14 (20) |  $D000 -> 5'h1A (26)
+        // $BFFF -> 5'h17 (23) |  $D800 -> 5'h1B (27) |  $FFFF -> 5'h1F (31)
+        // =========================================================================
+        
+        // BASIC ROM Selection: Maps to $A000-$BFFF (5'h14 to 5'h17)
+        core_out.basic_n = !(map_n && (a >= 5'h14) && (a <= 5'h17) && ren);
 
-        // OS ROM Selection: Maps to $D800-$FFFF (excluding hardware registers)
-        core_out.os_n    = !((a >= 5'b11011) && ren);
+        // OS ROM Selection: Maps to $D800-$FFFF (5'h1B and up)
+        core_out.os_n    = !(map_n && (a >= 5'h1B) && ren);
 
-        // HARDWARE CS (I/O) Selection: Maps to $D000-$D7FF area
-        core_out.io_n    = !((a == 5'b11010) && ren);
+        // HARDWARE CS (I/O) Selection: Maps strictly to $D000-$D7FF (5'h1A)
+        core_out.io_n    = !(map_n && (a == 5'h1A) && ren);
 
-        // --- RAM Bank Selection Lines (Functionally qualified by active bits rd4 and rd5) ---
-        core_out.s4_n    = !((a == 5'b01000) && mpd_n && rd4); 
-        core_out.s5_n    = !((a == 5'b10100) && be_n && rd5);  
+        // --- RAM Bank Selection Lines ---
+        core_out.s4_n    = !((a == 5'h08) && mpd_n && rd4); // $4000-$47FF area
+        core_out.s5_n    = !((a == 5'h14) && be_n && rd5);  // $A000-$A7FF area override 
 
         // --- Dynamic Clock Inhibit / Wait State Request ---
         // Assert CI low if accessing the slow peripheral mapping matrices
