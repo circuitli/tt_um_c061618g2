@@ -45,7 +45,7 @@ def pack_uio_in(ren=0, ref_n=0, mpd_n=0, be_n=0, flg_n=0, loop_in=0):
     )
 
 # =============================================================================
-# INITIALIZATION RUNNER: Baseline Global Reset Check
+# TEST CASE 1: INITIALIZATION RUNNER: Baseline Global Reset Check
 # =============================================================================
 @cocotb.test()
 async def test_project_init(dut):
@@ -55,31 +55,14 @@ async def test_project_init(dut):
     dut._log.info("[*] Checking cold power-on state...")
     dut.ena.value = 1
     dut.rst_n.value = 1  
-    dut.ui_in.value = 0 
-    dut.uio_in.value = 0
+    
+    # FIX: Do NOT force hard 0 onto the buses here. 
+    # Let cocotb yield directly to your testbench initial pull-up models instead.
 
     # 2. Wait exactly 1 nanosecond for the logic arrays to stabilize
     await Timer(1, units="ns")
     dut._log.info("[+] Power-on initialization completed successfully.")
 
-# =============================================================================
-# TEST CASE 1: Standard Operational Mode (Manually Driving All Pins)
-# =============================================================================
-@cocotb.test()
-async def test_standard_os_read(dut):
-    dut._log.info("--- Running Test Case 1: Standard OS Read ---")
-    dut.ena.value = 1
-    dut.rst_n.value = 1  
-    
-    # Drive all lines explicitly
-    dut.ui_in.value = pack_ui_in(addr=0x1F, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
-
-    await Timer(10, units="ns") 
-    pins = dut.uo_out.value.to_unsigned()
-    
-    assert (pins & (1 << 2)) == 0, f"Error: /OS failed to drop low in standard mode! Got: {bin(pins)}"
-    dut._log.info("[+] Test Case 1 Passed: /OS drops low under normal conditions.")
 
 # =============================================================================
 # TEST CASE 2: Disconnected PMOD Simulation (Testing Default Pull-ups)
@@ -98,3 +81,52 @@ async def test_disconnected_pmod_behavior(dut):
     
     assert (pins & (1 << 2)) == 0, f"Error: /OS failed to drop low with floating inputs! Got: {bin(pins)}"
     dut._log.info("[+] Test Case 2 Passed: /OS drops low using internal testbench pull-ups.")
+
+# ==========3==================================================================
+# TEST CASE 3: Standard Operational Mode (Targeting OS Kernel Area $F800)
+# =============================================================================
+@cocotb.test()
+async def test_standard_os_read(dut):
+    dut._log.info("--- Running Test Case 1: Standard OS Read ($F800) ---")
+    dut.ena.value = 1
+    dut.rst_n.value = 1  
+    
+    # 0x1F is inside the strict OS range (5'h1C - 5'h1F)
+    dut.ui_in.value = pack_ui_in(addr=0x1F, map_n=1, rd4=0, rd5=0)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
+
+    await Timer(10, units="ns") 
+    pins = dut.uo_out.value.to_unsigned()
+    
+    os_pin    = (pins & (1 << 2)) >> 2  # Bit 2
+    basic_pin = (pins & (1 << 1)) >> 1  # Bit 1
+    
+    # ASSERTIONS: OS must be enabled (0), BASIC must be disabled (1)
+    assert os_pin == 0, f"[!] Failure: /OS stayed high (1) in OS territory!"
+    assert basic_pin == 1, f"[!] Failure: /BASIC bled over into OS territory (was 0)!"
+    dut._log.info("[+] Pass: OS territory safely isolated from BASIC.")
+
+# =============================================================================
+# TEST CASE 4: Targeting BASIC Interpreter Area ($A000)
+# =============================================================================
+@cocotb.test()
+async def test_standard_basic_read(dut):
+    dut._log.info("--- Running Test Case 2: Standard BASIC Read ($A000) ---")
+    dut.ena.value = 1
+    dut.rst_n.value = 1  
+
+    # 0x14 is inside the strict BASIC range (5'h14 - 5'h17)
+    dut.ui_in.value = pack_ui_in(addr=0x14, map_n=1, rd4=0, rd5=0)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
+
+    await Timer(10, units="ns") 
+    pins = dut.uo_out.value.to_unsigned()
+    
+    os_pin    = (pins & (1 << 2)) >> 2  # Bit 2
+    basic_pin = (pins & (1 << 1)) >> 1  # Bit 1
+    
+    # ASSERTIONS: BASIC must be enabled (0), OS must be disabled (1)
+    assert basic_pin == 0, f"[!] Failure: /BASIC stayed high (1) in BASIC territory!"
+    assert os_pin == 1, f"[!] Failure: /OS bled down into BASIC territory (was 0)!"
+    dut._log.info("[+] Pass: BASIC territory safely isolated from OS.")
+

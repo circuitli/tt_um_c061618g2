@@ -10,7 +10,11 @@ module tb ();
   initial begin
     $dumpfile("tb.fst");
     $dumpvars(0, tb);
-    #1;
+
+    // Do NOT place a fixed delay line here! 
+    // Leaving it open lets the logging engine track your pins 
+    // for the full duration of your test.py execution loops.
+    //#1;
   end
 
   // Testbench signals matching the standard Tiny Tapeout interface layout

@@ -49,6 +49,8 @@ module mmu_core (
     always_comb begin
         // Clear the entire output structure to a safe default state
         core_out = '1;
+        core_out.unused_p3_b7 = 1'b0;
+        core_out.LOOP_OUT     = 1'b0;
 
        // =========================================================================
         // MMU COMBINATORIAL DECODING EQUATIONS
@@ -58,11 +60,17 @@ module mmu_core (
         // $BFFF -> 5'h17 (23) |  $D800 -> 5'h1B (27) |  $FFFF -> 5'h1F (31)
         // =========================================================================
         
-        // BASIC ROM Selection: Maps to $A000-$BFFF (5'h14 to 5'h17)
-        core_out.basic_n = !(map_n && (a >= 5'h14) && (a <= 5'h17) && ren);
+        // 2. STRICT OS DECODER ($E000 - $FFFF area)
+        if (map_n && ren && (a >= 5'h1C) && (a <= 5'h1F)) begin
+            core_out.os_n = 1'b0;      // Pull low ONLY in OS territory
+            core_out.basic_n = 1'b1;   // Force BASIC high (disabled) explicitly
+        end
 
-        // OS ROM Selection: Maps to $D800-$FFFF (5'h1B and up)
-        core_out.os_n    = !(map_n && (a >= 5'h1B) && ren);
+        // 3. STRICT BASIC DECODER ($A000 - $BFFF area)
+        else if (map_n && be_n && (a >= 5'h14) && (a <= 5'h17)) begin
+            core_out.basic_n = 1'b0;   // Pull low ONLY in BASIC territory
+            core_out.os_n = 1'b1;      // Force OS high (disabled) explicitly
+        end
 
         // HARDWARE CS (I/O) Selection: Maps strictly to $D000-$D7FF (5'h1A)
         core_out.io_n    = !(map_n && (a == 5'h1A) && ren);
