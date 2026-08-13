@@ -38,60 +38,71 @@ module mmu_core_formal (
     // FORMAL ASSUMPTIONS & ASSERTIONS (Procedural Immediate Block for Yosys)
     // -------------------------------------------------------------------------
     always @(*) begin
-        // Constrain inputs to realistic known states (bypassing missing rst_n reference)
+        // Constrain inputs to realistic known states
         assume_ren_known:   assume ($isunknown(ren) == 0);
         assume_ref_n_known: assume ($isunknown(ref_n) == 0);
         assume_mpd_n_known: assume ($isunknown(mpd_n) == 0);
         assume_be_n_known:  assume ($isunknown(be_n) == 0);
         assume_addr_known:  assume ($isunknown(a) == 0);
 
-        // 1. BASIC ROM Selection Rule: Maps to $A000-$BFFF if map_n is low and rd4 is active
-        if (ren && !map_n && rd4 && (a >= 5'b10100) && (a <= 5'b10111)) begin
+        // 1. BASIC ROM Selection Rule: Maps strictly to $A000-$BFFF (5'h14 - 5'h17)
+        if (map_n && be_n && (a >= 5'h14) && (a <= 5'h17)) begin
             assert_basic_rom: assert (core_out.basic_n == 0);
         end
         
-        if (!ren || map_n || !rd4 || (a < 5'b10100) || (a > 5'b10111)) begin
+        if (!map_n || !be_n || (a < 5'h14) || (a > 5'h17)) begin
             assert_basic_rom_disabled: assert (core_out.basic_n == 1);
         end
 
-        // 2. OS ROM Selection Rule: Maps to $D800-$FFFF if ren is active
-        if (ren && (a >= 5'b11011)) begin
+        // 2. OS ROM Selection Rule: Maps strictly to $E000-$FFFF (5'h1C - 5'h1F)
+        if (map_n && ren && (a >= 5'h1C) && (a <= 5'h1F)) begin
             assert_os_rom: assert (core_out.os_n == 0);
         end
         
-        if (!ren || (a < 5'b11011)) begin
+        if (!map_n || !ren || (a < 5'h1C) || (a > 5'h1F)) begin
             assert_os_rom_disabled: assert (core_out.os_n == 1);
         end
 
-        // 3. HARDWARE I/O Selection Rule: Maps to exactly $D000 area
-        if (ren && (a == 5'b11010)) begin
+        // 3. HARDWARE I/O Selection Rule: Maps to exactly $D000 area (5'h1A)
+        if (map_n && ren && (a == 5'h1A)) begin
             assert_io_select: assert (core_out.io_n == 0);
         end
         
-        if (!ren || (a != 5'b11010)) begin
+        if (!map_n || !ren || (a != 5'h1A)) begin
             assert_io_select_disabled: assert (core_out.io_n == 1);
         end
 
         // 4. RAM Bank Selection Rules (Checking safe deployment of rd4 and rd5 inputs)
-        if (mpd_n && rd4 && (a == 5'b01000)) begin
+        if (map_n && mpd_n && rd4 && (a == 5'h08)) begin
             assert_s4_bank: assert (core_out.s4_n == 0);
         end
         
-        if (be_n && rd5 && (a == 5'b10100)) begin
+        if (!map_n || !mpd_n || !rd4 || (a != 5'h08)) begin
+            assert_s4_bank_disabled: assert (core_out.s4_n == 1);
+        end
+        
+        if (map_n && be_n && rd5 && (a == 5'h14)) begin
             assert_s5_bank: assert (core_out.s5_n == 0);
         end
 
+        if (!map_n || !be_n || !rd5 || (a != 5'h14)) begin
+            assert_s5_bank_disabled: assert (core_out.s5_n == 1);
+        end
+
         // 5. Clock Inhibit / Wait State Generation
-        if ((a == 5'b11010) && !ref_n) begin
+        if (map_n && (a == 5'h1A) && !ref_n) begin
             assert_ci_active: assert (core_out.ci_n == 0);
         end
         
-        if ((a != 5'b11010) || ref_n) begin
+        if (!map_n || (a != 5'h1A) || ref_n) begin
             assert_ci_inactive: assert (core_out.ci_n == 1);
         end
 
-        // 6. SANITY SAFETY CHECK: Assert that mutually exclusive chip selects can NEVER pull low simultaneously
-        assert_mutual_exclusion: assert (!(core_out.basic_n == 0 && core_out.os_n == 0));
+        // 6. SANITY SAFETY CHECK: Global Mutual Exclusion Verification matrix
+        assert_os_basic_exclusion: assert (!(core_out.os_n == 0 && core_out.basic_n == 0));
+        assert_os_io_exclusion:    assert (!(core_out.os_n == 0 && core_out.io_n == 0));
+        assert_basic_io_exclusion: assert (!(core_out.basic_n == 0 && core_out.io_n == 0));
+        assert_s4_s5_exclusion:    assert (!(core_out.s4_n == 0 && core_out.s5_n == 0));
     end
 
 endmodule

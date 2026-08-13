@@ -33,13 +33,12 @@ module tt_um_c061618g2_formal (
     // ----------------------------------------------------------------
     // 1. Internal Signal Declarations & Clock/Reset Logic
     // ----------------------------------------------------------------
-    // Invert the active-low reset to make formal logic loops simpler to read
     wire rst = !rst_n;
 
     // ----------------------------------------------------------------
     // 2. Hardware Design Under Test (DUT) Instantiation
     // ----------------------------------------------------------------
-    // Links directly to your core module implementation layout
+    // Standard top-level instantiation for standalone formal analysis
     tt_um_c061618g2 dut (
         .ui_in   (ui_in),
         .uo_out  (uo_out),
@@ -62,47 +61,70 @@ module tt_um_c061618g2_formal (
         f_past_valid <= 1'b1;
     end
 
+    // Local wire aliases matching the physical structural pinning matrices
+    wire [4:0] addr            = ui_in[4:0];
+    wire       map_n           = ui_in[5];
+    wire       rd4             = ui_in[6];
+    wire       rd5             = ui_in[7];
+
+    wire       ren             = uio_in[0];
+    wire       ref_n           = uio_in[1];
+    wire       mpd_n           = uio_in[2];
+    wire       be_n            = uio_in[3];
+    wire       flg_n           = uio_in[4];
+    wire       loop_in         = uio_in[6];
+
+    // Master safety cutoff definition matching production RTL
+    wire system_disabled = (flg_n == 1'b0) || (loop_in == 1'b0);
+
     // ----------------------------------------------------------------
-    // Global Subsystem Assumptions
+    // Global Subsystem Assumptions & Invariants
     // ----------------------------------------------------------------
     always @(*) begin
-        // Assume the clock enable line remains tied high during formal sequence analysis
+        // Assume clock enable stays active during formal sequences
         assume(ena == 1'b1);
+        
+        // Pin Invariant Check: Direction control gates are hardcoded for Pmod 2 configurations
+        assert_uio_direction: assert(uio_oe == 8'b00100000);
     end
 
     // ----------------------------------------------------------------
     // Procedural Immediate Assertions & Assumptions
-    // (Replaces the broken 'assert property' syntax block smoothly)
     // ----------------------------------------------------------------
     always @(posedge clk) begin
         
         // Target Reset Behavior Checking
         if (rst) begin
-            assert(uo_out == 8'b00000000);
-            assert(uio_out == 8'b00000000);
+            assert_uo_reset:  assert(uo_out == 8'b00000000);
+            assert_uio_reset: assert(uio_out == 8'b00000000);
         end
         
-        // Post-Reset Functional Cycle Safety Checking
-        if (f_past_valid && !$past(rst)) begin
+        // Functional Clocked Safety Verification
+        if (f_past_valid && !rst) begin
             
-            /* 
-             * EXAMPLES: How to translate concurrent SVA properties into immediate assertions:
-             *
-             * Old Broken SVA Format: 
-             *   assert property (@(posedge clk) disable iff(rst) ui_in[0] |=> uo_out[0]);
-             *
-             * Corrected Yosys/SBY Format:
-             */
-            if ($past(ui_in[0])) begin
-                assert(uo_out[0] == 1'b1);
+            // --- A. Master System Override Verification ---
+            if (system_disabled) begin
+                // When system is disabled, all active-low selects must be driven high (1)
+                assert_override_inactive: assert(uo_out[6:0] == 7'b1111111);
+            end 
+            else begin
+                // --- B. Strict Memory Decoding Pass Windows ---
+                
+                // 1. Strict OS Kernel ROM Decoding Bounds ($E000 - $FFFF)
+                if (map_n && ren && (addr >= 5'h1C) && (addr <= 5'h1F)) begin
+                    assert_os_enabled:   assert(uo_out[2] == 1'b0); // os_n pulls low
+                    assert_basic_masked: assert(uo_out[1] == 1'b1); // basic_n stays high
+                end
+                
+                // 2. Strict BASIC Interpreter ROM Decoding Bounds ($A000 - $BFFF)
+                if (map_n && be_n && (addr >= 5'h14) && (addr <= 5'h17)) begin
+                    assert_basic_enabled: assert(uo_out[1] == 1'b0); // basic_n pulls low
+                    assert_os_masked:    assert(uo_out[2] == 1'b1); // os_n stays high
+                end
+                
+                // 3. Mutual Exclusion Sanity Verification at Pin Layer
+                assert_pin_exclusivity: assert(!(uo_out[2] == 1'b0 && uo_out[1] == 1'b0));
             end
-
-            // Example 2: Memory Access Guard Condition
-            // If write enable and read enable are mutually exclusive in your MMU core
-            if ($past(ui_in[7]) && $past(ui_in[6])) begin
-                assert(uo_out[7] == 1'b1); // Enforce error bit assertion flag
-            end
-            
         end
     end
 
@@ -110,31 +132,17 @@ module tt_um_c061618g2_formal (
     // Coverage Validation Points
     // ----------------------------------------------------------------
     always @(posedge clk) begin
-        if (f_past_valid && !rst) begin
-            // Verify that a valid configuration write execution path is reachable
-            cover(ui_in[7] == 1'b1 && uo_out[7] == 1'b0);
+        if (f_past_valid && !rst && !system_disabled) begin
+            // Verify reachability of a clean OS selection state
+            cover_os_active:    cover(uo_out[2] == 1'b0 && uo_out[1] == 1'b1);
             
-            // Verify the design escapes the initialization reset cycle cleanly
-            cover($past(rst) && !rst);
+            // Verify reachability of a clean BASIC selection state
+            cover_basic_active: cover(uo_out[1] == 1'b0 && uo_out[2] == 1'b1);
         end
     end
 
     `endif
 
 endmodule
-
-
-
-// Bind statement mapping outer physical tile pin networks straight to verification monitors
-bind tt_um_c061618g2 tt_um_c061618g2_formal i_tt_um_c061618g2_formal (
-    .ui_in   (ui_in),
-    .uo_out  (uo_out),
-    .uio_in  (uio_in),
-    .uio_out (uio_out),
-    .uio_oe  (uio_oe),
-    .ena     (ena),
-    .clk     (clk),
-    .rst_n   (rst_n)
-);
 
 `endif
