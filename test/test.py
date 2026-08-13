@@ -66,6 +66,18 @@ async def test_project(dut):
 
     await Timer(1, unit="ns") # Allow pure gates to transition
 
+    # Convert the output to an integer for easy bit-checking
+    pins = dut.uo_out.value.integer
+
+    print(f"--- MMU OUTPUT PINS ---")
+    print(f"/S5 Left Cartridge:  {pins & (1 << 0)}")
+    print(f"/BASIC ROM Select:   {(pins & (1 << 1)) >> 1}")
+    print(f"/OS ROM Select:      {(pins & (1 << 2)) >> 2}")
+    print(f"/CI CAS Inhibit:     {(pins & (1 << 3)) >> 3}")
+    print(f"/IO Peripheral:      {(pins & (1 << 4)) >> 4}")
+    print(f"/S4 Right Cartridge: {(pins & (1 << 5)) >> 5}")
+    print(f"LOOP_OUT Status:     {(pins & (1 << 6)) >> 6}")
+
     # Assertions to verify the outputs match your active-low truth table
     dut._log.info("Test project behavior")
     dut._log.info("Test Case 1: Checking OS ROM Banking...")
