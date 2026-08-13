@@ -23,6 +23,15 @@ module tb ();
   wire [7:0] uio_out;
   wire [7:0] uio_oe;
 
+  // =========================================================================
+  // INITIAL BASELINE DRIVERS
+  // =========================================================================
+  initial begin
+      // Set up the safe baseline environment states
+      uio_in = 8'hFF;   // All bidirectionals high to drop system_disabled to 0
+      ui_in  = 8'h00;   // Baseline address lines grounded to $0000
+  end
+
  /*
 `ifdef GL_TEST
   // Supply rails required strictly for gate-level netlist simulations

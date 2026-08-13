@@ -28,8 +28,8 @@ def pack_uio_in(ren=0, ref_n=0, mpd_n=0, be_n=0, flg_n=0, loop_in=0):
     Packs bidirectional interface control parameters into the 8-bit uio_in bus.
     
     Bit allocation template:
-      [7:6] : Unused (defaulting to 0)
-      [5]   : loop_in
+      [7:7] : Unused (defaulting to 0)
+      [6]   : loop_in
       [4]   : flg_n
       [3]   : be_n
       [2]   : mpd_n
@@ -37,7 +37,7 @@ def pack_uio_in(ren=0, ref_n=0, mpd_n=0, be_n=0, flg_n=0, loop_in=0):
       [0]   : ren
     """
     return (
-        ((loop_in & 0x01) << 5) |
+        ((loop_in & 0x01) << 6) |
         ((flg_n & 0x01) << 4) |
         ((be_n & 0x01) << 3) |
         ((mpd_n & 0x01) << 2) |
@@ -67,7 +67,7 @@ async def test_project(dut):
     await Timer(1, unit="ns") # Allow pure gates to transition
 
     # Convert the output to an integer for easy bit-checking
-    pins = dut.uo_out.value.integer
+    pins = dut.uo_out.value.to_unsigned()
 
     print(f"--- MMU OUTPUT PINS ---")
     print(f"/S5 Left Cartridge:  {pins & (1 << 0)}")
@@ -81,7 +81,7 @@ async def test_project(dut):
     # Assertions to verify the outputs match your active-low truth table
     dut._log.info("Test project behavior")
     dut._log.info("Test Case 1: Checking OS ROM Banking...")
-    assert dut.uo_out.value.integer & (1 << 2) == 0, "Error: /OS failed to drop low!"
+    assert (pins & (1 << 2)) == 0, "Error: /OS failed to drop low!"
 
 
    
