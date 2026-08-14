@@ -15,24 +15,12 @@ RAW_PDK_CELLS = $(wildcard $(PDK_ROOT)/volare/ihp-sg13g2/versions/*/ihp-sg13g2/l
 
 ifeq ($(SIM),verilator)
     # --------------------------------------------------------------------------
-    #  Verilator 5+ Path: High-Speed Timing GLS with UNTOUCHED PDK Libraries
+    #  Verilator 5+ Path: 100% Automated Timing GLS
     # --------------------------------------------------------------------------
-    # Load the factory-original gate netlist from the build directory
-    #VERILOG_SOURCES += $(PWD)/../runs/wokwi/results/final/verilog/gl/tt_um_c061618g2.v
-    # --------------------------------------------------------------------------
-    #  Use GNU Make wildcard function to find the PNL netlist dynamically
-    # --------------------------------------------------------------------------
-    #VERILOG_SOURCES += $(wildcard $(PWD)/../runs/*/results/final/verilog/gl/*.v)    VERILOG_SOURCES += $(RAW_PDK_CELLS)
-    # --------------------------------------------------------------------------
-    #  Point to a reliable, static local gate netlist filename
-    # --------------------------------------------------------------------------
-    VERILOG_SOURCES += $(PWD)/gate_level_netlist.v
+    # Auto-resolves your testbench wrapper and the generated physical netlist
+    VERILOG_SOURCES += $(PWD)/tb.v
+    VERILOG_SOURCES += $(wildcard $(PWD)/../runs/*/results/final/verilog/gl/*.v)
     VERILOG_SOURCES += $(RAW_PDK_CELLS)
-    # --------------------------------------------------------------------------
-    #  Remove relative jumps and load tb.v straight from the execution path
-    # --------------------------------------------------------------------------
-    # Change this from $(PWD)/../src/tb.v or similar to just:
-    VERILOG_SOURCES += tb.v
 
     # Force the event engine and suppress unoptimized loop panics
     COMPILE_ARGS += --timing
