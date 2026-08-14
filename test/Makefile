@@ -46,6 +46,8 @@ ifneq ($(GATES),yes)
 # RTL simulation:
 SIM_BUILD				= sim_build/rtl
 VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
+VERILOG_SOURCES += $(PWD)/tb.v
+
 #COMPILE_ARGS    += -g2023
 
     # 2. Instruct Icarus to append the .v suffix to search tokens 
