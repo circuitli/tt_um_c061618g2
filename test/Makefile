@@ -23,10 +23,10 @@ ifeq ($(SIM),verilator)
     VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*/*.v)
     VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*.v)
 
-    # 2. Instruct Verilator's file engine to search ALL subdirectories 
-    # inside the official openlane pdk variant root to map decaps, taps, and cells automatically.
+     # 2. Hardcode the absolute paths to the hidden OpenLane runner cache
     COMPILE_ARGS += -y $(PWD) -y $(PWD)/../src
-    COMPILE_ARGS += -y /home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
+    COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
+    COMPILE_ARGS += -y /opt/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
     COMPILE_ARGS += -y /opt/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
 
     # 3. CRITICAL FLAGS: Add -y to let Verilator discover your module dependencies,
