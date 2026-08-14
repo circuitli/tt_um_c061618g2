@@ -7,7 +7,22 @@ FST ?= -fst # Use more efficient FST format
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
 PROJECT_SOURCES = tt_um_c061618g2.sv
+RAW_PDK_CELLS = $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
 
+ifeq ($(SIM),verilator)
+    # --------------------------------------------------------------------------
+    #  Verilator 5+ Path: High-Speed Timing GLS with UNTOUCHED PDK Libraries
+    # --------------------------------------------------------------------------
+    # Load the factory-original gate netlist from the build directory
+    VERILOG_SOURCES += $(PWD)/../runs/wokwi/results/final/verilog/gl/tt_um_c061618g2.v
+    VERILOG_SOURCES += $(RAW_LOCAL_CELLS)
+
+
+    # Force the event engine and suppress unoptimized loop panics
+    COMPILE_ARGS += --timing
+    COMPILE_ARGS += -Wno-fatal -Wno-UNOPTFLAT -Wno-BLKANDNBLK
+
+else ifeq ($(SIM),icarus)
 ifneq ($(GATES),yes)
 
 # RTL simulation:
@@ -30,7 +45,6 @@ VERILOG_SOURCES += $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_io/verilog/sg13g2_io.v
 VERILOG_SOURCES += $(PWD)/gate_level_netlist.v
 
    # Define filenames
-    RAW_PDK_CELLS = $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
     CLEAN_LOCAL_CELLS = $(CURDIR)/sg13g2_stdcell_functional.v
 
     # 1. Create a local functional copy with the problematic lines deleted
@@ -42,6 +56,7 @@ VERILOG_SOURCES += $(PWD)/gate_level_netlist.v
     # 3. Strip the raw PDK path from the sources and append our clean local version instead
     #VERILOG_SOURCES := $(filter-out $(RAW_PDK_CELLS) %sg13g2_stdcell.v, $(VERILOG_SOURCES))
     VERILOG_SOURCES += $(CLEAN_LOCAL_CELLS)
+endif
 
 endif
 
