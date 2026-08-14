@@ -23,8 +23,8 @@ ifeq ($(SIM),verilator)
     VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*/*.v)
     VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*.v)
 
-    # 2. Feed the single monolithic cell model file directly into Verilator
-    VERILOG_SOURCES += /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
+    # Updated library folder name and file name string precisely
+    VERILOG_SOURCES += /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2/verilog/sg13g2.v
 
     COMPILE_ARGS += -y /opt/pdk/ihp-sg13g2
 
