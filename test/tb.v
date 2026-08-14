@@ -1,15 +1,6 @@
 `default_nettype none
 `timescale 1ns / 1ps
 
-// ==============================================================================
-//  Cloud PDK Library Resolution (Bypasses hardcoded Tiny Tapeout script limits)
-// ==============================================================================
-`ifdef GL_TEST
-    // Step out of the test folder, look inside your isolated drop folder, 
-    // and grab the pristine monolithic IHP cell library directly!
- //   `include "../gds_drop/ihp-sg13g2/libs.ref/sg13g2/verilog/sg13g2.v"
-`endif
-
 /* This testbench just instantiates the module and makes some convenient wires
    that can be driven / tested by the cocotb test.py.
 */
