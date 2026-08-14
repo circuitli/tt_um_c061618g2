@@ -11,7 +11,7 @@ PROJECT_SOURCES = tt_um_c061618g2.sv
 # Define the fallback path for the IHP PDK inside the GitHub Action environment
 PDK_ROOT ?= /home/runner/.volare
 # Use wildcard to search down through the hash snapshots and target the true file
-RAW_PDK_CELLS = $(wildcard $(PDK_ROOT)/volare/ihp-sg13g2/versions/*/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v)
+RAW_PDK_CELLS = $(wildcard $(PDK_ROOT)/volare/ihp-sg13g2/versions/*/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/*.v)
 
 ifeq ($(SIM),verilator)
     VERILOG_SOURCES += $(PWD)/tb.v
