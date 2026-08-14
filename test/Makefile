@@ -15,7 +15,7 @@ ifeq ($(SIM),verilator)
     # --------------------------------------------------------------------------
     # Load the factory-original gate netlist from the build directory
     VERILOG_SOURCES += $(PWD)/../runs/wokwi/results/final/verilog/gl/tt_um_c061618g2.v
-    VERILOG_SOURCES += $(RAW_LOCAL_CELLS)
+    VERILOG_SOURCES += $(RAW_PDK_CELLS)
 
 
     # Force the event engine and suppress unoptimized loop panics
