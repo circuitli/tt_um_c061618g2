@@ -58,9 +58,9 @@ jobs:
       - name: Download GDS Netlist Artifacts
         uses: actions/download-artifact@v4
         with:
-         # Extract the files right here so it matches the Makefile variable path!
-          path: runs/wokwi/
-          merge-multiple: true
+          # Extract everything directly into the root workspace folder. 
+          # The zip itself already contains the 'runs/wokwi/final/pnl/' path trees!
+          path: ./
 
       - name: Install Verilator 5+
         uses: veryl-lang/setup-verilator@v1
