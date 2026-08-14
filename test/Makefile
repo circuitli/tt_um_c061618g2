@@ -53,7 +53,7 @@ VERILOG_SOURCES += $(PWD)/tb.v
     # 2. Instruct Icarus to append the .v suffix to search tokens 
     # when hunting down missing modules like sg13g2_decap_8.
     COMPILE_ARGS += -y $(PWD) -y $(PWD)/../src
-    COMPILE_ARGS += -v /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
+    #COMPILE_ARGS += -v /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
     COMPILE_ARGS += -v /home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
 
 else
