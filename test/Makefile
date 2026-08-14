@@ -10,8 +10,8 @@ PROJECT_SOURCES = tt_um_c061618g2.sv
 #RAW_PDK_CELLS = $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
 # Define the fallback path for the IHP PDK inside the GitHub Action environment
 PDK_ROOT ?= /home/runner/.volare
-RAW_PDK_CELLS = $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
-
+#RAW_PDK_CELLS = $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
+RAW_PDK_CELLS = $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2/verilog/sg13g2.v
 
 ifeq ($(SIM),verilator)
     # --------------------------------------------------------------------------
