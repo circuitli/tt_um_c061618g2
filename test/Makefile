@@ -7,11 +7,11 @@ FST ?= -fst # Use more efficient FST format
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
 PROJECT_SOURCES = tt_um_c061618g2.sv
-#RAW_PDK_CELLS = $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
+RAW_PDK_CELLS = $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
 # Define the fallback path for the IHP PDK inside the GitHub Action environment
-PDK_ROOT ?= /home/runner/.volare
+P#DK_ROOT ?= /home/runner/.volare
 # Use wildcard to search down through the hash snapshots and target the true file
-RAW_PDK_CELLS = $(wildcard $(PDK_ROOT)/volare/ihp-sg13g2/versions/*/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/*.v)
+#RAW_PDK_CELLS = $(wildcard $(PDK_ROOT)/volare/ihp-sg13g2/versions/*/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/*.v)
 
 ifeq ($(SIM),verilator)
     VERILOG_SOURCES += $(PWD)/tb.v
@@ -36,8 +36,8 @@ else ifeq ($(SIM),icarus)
 
     # FIXED: Tell Icarus to search the official, complete PDK directories 
     # to automatically resolve decaps, fills, diodes, and standard cells.
-    COMPILE_ARGS += -y /home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
-    COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
+    #COMPILE_ARGS += -y /home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
+    #COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
     
     # Enforce modern SystemVerilog/Verilog IEEE parsing constraints
     COMPILE_ARGS += -g2012
@@ -71,17 +71,17 @@ COMPILE_ARGS    += -DSIM
 VERILOG_SOURCES += $(PWD)/gate_level_netlist.v
 
    # Define filenames
-    #CLEAN_LOCAL_CELLS = $(CURDIR)/sg13g2_stdcell_functional.v
+    CLEAN_LOCAL_CELLS = $(CURDIR)/sg13g2_stdcell_functional.v
 
     # 1. Create a local functional copy with the problematic lines deleted
-    #$(shell sed '/ifnone/d' $(RAW_PDK_CELLS) > $(CLEAN_LOCAL_CELLS))
+    $(shell sed '/ifnone/d' $(RAW_PDK_CELLS) > $(CLEAN_LOCAL_CELLS))
 
     # 2. Append compilation macros
     COMPILE_ARGS += -DFUNCTIONAL -gno-specify
 
     # 3. Strip the raw PDK path from the sources and append our clean local version instead
-    #VERILOG_SOURCES := $(filter-out $(RAW_PDK_CELLS) %sg13g2_stdcell.v, $(VERILOG_SOURCES))
-    #VERILOG_SOURCES += $(CLEAN_LOCAL_CELLS)
+    VERILOG_SOURCES := $(filter-out $(RAW_PDK_CELLS) %sg13g2_stdcell.v, $(VERILOG_SOURCES))
+    VERILOG_SOURCES += $(CLEAN_LOCAL_CELLS)
 endif
 
 endif
