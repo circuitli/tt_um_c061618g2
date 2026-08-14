@@ -24,9 +24,9 @@ jobs:
         run: pip install -r test/requirements.txt
 
       - name: Install Verilator 5+
-        uses: veryl-lang/setup-verilat
+        uses: veryl-lang/setup-verilator@v1
         with:
-          verilator-version: '5.036' # Sets the necessary event-timing engine version
+          version: '5.036'
 
       - name: Run tests
         run: |
