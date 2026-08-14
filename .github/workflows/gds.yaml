@@ -58,7 +58,9 @@ jobs:
       - name: Download GDS Netlist Artifacts
         uses: actions/download-artifact@v4
         with:
-          path: runs/wokwi/
+          # Forces the flattened zip file contents right into your target folder structure!
+          path: runs/wokwi/results/final/verilog/gl/
+          merge-multiple: true
 
       - name: Install Verilator 5+
         uses: veryl-lang/setup-verilator@v1
