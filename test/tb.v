@@ -6,7 +6,7 @@
 // ==============================================================================
 `ifdef GL_TEST
     // Point to the actual verified monolithic file name and path layout
-    `include "/home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2/verilog/sg13g2.v"
+    `include "sg13g2.v"
 `endif
 
 /* This testbench just instantiates the module and makes some convenient wires
