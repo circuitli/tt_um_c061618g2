@@ -16,18 +16,17 @@ RAW_PDK_CELLS = $(wildcard $(PDK_ROOT)/volare/ihp-sg13g2/versions/*/ihp-sg13g2/l
 ifeq ($(SIM),verilator)
     VERILOG_SOURCES += $(PWD)/tb.v
     # --------------------------------------------------------------------------
-    #  Verilator 5+ Path: Clean Isolation Timing GLS
+    #  Verilator 5+ Path: Hardcoded Cloud PDK Resolution
     # --------------------------------------------------------------------------
-    # 1. Load the physical netlist files out of your safe drop folder
+    # Append the physical layout gates out of the isolated gds_drop folder
     VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*/*/*.v)
     VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*/*.v)
     VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*.v)
 
-    # 2. Use GNU Make $(wildcard) to expand the asterisk folder name 
-    # before handing the resolved directory array to Verilator's -y system.
+    # 2. Hardcode the absolute paths to the official OpenLane runner PDK locations
     COMPILE_ARGS += -y $(PWD) -y $(PWD)/../src
-    COMPILE_ARGS += $(addprefix -y ,$(wildcard $(PDK_ROOT)/volare/ihp-sg13g2/versions/*/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog))
-    COMPILE_ARGS += -y $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
+    COMPILE_ARGS += -y /home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
+    COMPILE_ARGS += -y /opt/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
 
     # 3. CRITICAL FLAGS: Add -y to let Verilator discover your module dependencies,
     # and turn off MODDUP to ignore duplicate standard cell models if they overlap.
