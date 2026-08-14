@@ -23,10 +23,10 @@ ifeq ($(SIM),verilator)
     VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*/*.v)
     VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*.v)
 
-    # 2. Tell Verilator's internal file scanner (-y) to search ALL subdirectories 
-    # inside the Volare PDK cache to automatically find decaps, fillers, and gates.
+    # 2. Use GNU Make $(wildcard) to expand the asterisk folder name 
+    # before handing the resolved directory array to Verilator's -y system.
     COMPILE_ARGS += -y $(PWD) -y $(PWD)/../src
-    COMPILE_ARGS += -y $(PDK_ROOT)/volare/ihp-sg13g2/versions/*/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
+    COMPILE_ARGS += $(addprefix -y ,$(wildcard $(PDK_ROOT)/volare/ihp-sg13g2/versions/*/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog))
     COMPILE_ARGS += -y $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
 
     # 3. CRITICAL FLAGS: Add -y to let Verilator discover your module dependencies,
