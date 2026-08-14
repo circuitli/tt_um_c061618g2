@@ -57,7 +57,7 @@ jobs:
       - name: Download GDS Netlist Artifacts
         uses: actions/download-artifact@v4
         with:
-          path: ./
+          path: gds_drop/
 
       - name: Install Verilator 5+
         uses: veryl-lang/setup-verilator@v1

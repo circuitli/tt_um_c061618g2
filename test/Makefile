@@ -14,18 +14,20 @@ PDK_ROOT ?= /home/runner/.volare
 RAW_PDK_CELLS = $(wildcard $(PDK_ROOT)/volare/ihp-sg13g2/versions/*/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v)
 
 ifeq ($(SIM),verilator)
-    # --------------------------------------------------------------------------
-    #  Verilator 5+ Path: 100% Automated Timing GLS
-    # --------------------------------------------------------------------------
-    # Auto-resolves your testbench wrapper and the generated physical netlist
     VERILOG_SOURCES += $(PWD)/tb.v
-    VERILOG_SOURCES += $(wildcard $(PWD)/../runs/*/results/final/verilog/gl/*.v)
+     # --------------------------------------------------------------------------
+    #  Verilator 5+ Path: Clean Isolation Timing GLS
+    # --------------------------------------------------------------------------
+    # 2. Append the physical design gates using the sandbox wildcard loop
+    VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*/*/*.v)
+    VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*/*.v)
+    VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*.v)
     VERILOG_SOURCES += $(RAW_PDK_CELLS)
 
-    # Force the event engine and suppress unoptimized loop panics
-    COMPILE_ARGS += --timing
-    COMPILE_ARGS += -Wno-fatal -Wno-UNOPTFLAT -Wno-BLKANDNBLK
-
+    # 3. CRITICAL FLAGS: Add -y to let Verilator discover your module dependencies,
+    # and turn off MODDUP to ignore duplicate standard cell models if they overlap.
+    COMPILE_ARGS += --timing -y $(PWD) -y $(PWD)/../src
+    COMPILE_ARGS += -Wno-fatal -Wno-UNOPTFLAT -Wno-BLKANDNBLK -Wno-MODDUP
 else ifeq ($(SIM),icarus)
 ifneq ($(GATES),yes)
 
