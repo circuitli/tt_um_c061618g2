@@ -15,14 +15,19 @@ RAW_PDK_CELLS = $(wildcard $(PDK_ROOT)/volare/ihp-sg13g2/versions/*/ihp-sg13g2/l
 
 ifeq ($(SIM),verilator)
     VERILOG_SOURCES += $(PWD)/tb.v
-     # --------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     #  Verilator 5+ Path: Clean Isolation Timing GLS
     # --------------------------------------------------------------------------
-    # 2. Append the physical design gates using the sandbox wildcard loop
+    # 1. Load the physical netlist files out of your safe drop folder
     VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*/*/*.v)
     VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*/*.v)
     VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*.v)
-    VERILOG_SOURCES += $(RAW_PDK_CELLS)
+
+    # 2. Tell Verilator's internal file scanner (-y) to search ALL subdirectories 
+    # inside the Volare PDK cache to automatically find decaps, fillers, and gates.
+    COMPILE_ARGS += -y $(PWD) -y $(PWD)/../src
+    COMPILE_ARGS += -y $(PDK_ROOT)/volare/ihp-sg13g2/versions/*/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
+    COMPILE_ARGS += -y $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
 
     # 3. CRITICAL FLAGS: Add -y to let Verilator discover your module dependencies,
     # and turn off MODDUP to ignore duplicate standard cell models if they overlap.
