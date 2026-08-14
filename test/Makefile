@@ -14,7 +14,8 @@ ifeq ($(SIM),verilator)
     #  Verilator 5+ Path: High-Speed Timing GLS with UNTOUCHED PDK Libraries
     # --------------------------------------------------------------------------
     # Load the factory-original gate netlist from the build directory
-    VERILOG_SOURCES += $(PWD)/../runs/wokwi/results/final/verilog/gl/tt_um_c061618g2.v
+    #VERILOG_SOURCES += $(PWD)/../runs/wokwi/results/final/verilog/gl/tt_um_c061618g2.v
+    VERILOG_SOURCES += $(PWD)/../runs/wokwi/tt_um_c061618g2.v
     VERILOG_SOURCES += $(RAW_PDK_CELLS)
 
 
