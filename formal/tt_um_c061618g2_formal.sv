@@ -24,6 +24,7 @@ module tt_um_c061618g2_formal (
     output wire [7:0] uo_out,   // Dedicated outputs
     input  wire [7:0] uio_in,   // IOs: Input path
     output wire [7:0] uio_out,  // IOs: Output path
+    output wire [7:0] uio_oe,   // <-- MUST BE DECLARED AS AN OUTPUT PORT WIRE HERE! [2]
     input  wire       ena,      // Core clock enable string
     input  wire       clk,      // System clock
     input  wire       rst_n     // Active-low asynchronous reset
@@ -43,6 +44,7 @@ module tt_um_c061618g2_formal (
         .uo_out  (uo_out),
         .uio_in  (uio_in),
         .uio_out (uio_out),
+        .uio_oe  (uio_oe),
         .ena     (ena),
         .clk     (clk),
         .rst_n   (rst_n)
