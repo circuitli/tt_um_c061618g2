@@ -32,60 +32,81 @@ module mmu_core (
     output pmod3_outputs_t core_out  // Directly maps to the 8-bit output profile!
 );
 
-    // Unpack the control bits internally from the incoming structured bus
-    bit rd5;
-    bit rd4;
-    bit map_n;
-    bit [4:0] a;
+    // =========================================================================
+    // LOCAL LOGIC HOOKS & VECTOR EXTRACTION
+    // =========================================================================
+    logic        a11;
+    logic        a12;
+    logic        a13;
+    logic        a14;
+    logic        a15;
+    logic        map_n;
+    logic        rd4;
+    logic        rd5;
 
+    // Direct slice mapping matching your MSB->LSB layout definitions
+    assign a11   = core_in.addr[0];
+    assign a12   = core_in.addr[1];
+    assign a13   = core_in.addr[2];
+    assign a14   = core_in.addr[3];
+    assign a15   = core_in.addr[4];
+    
     assign rd5   = core_in.control_bits[2];
     assign rd4   = core_in.control_bits[1];
     assign map_n = core_in.control_bits[0];
-    assign a     = core_in.addr;
 
     // =========================================================================
-    // MMU COMBINATORIAL DECODING EQUATIONS
+    // COMBINATORIAL DECODING ENGINE (1984 Atari Specification Matrix)
     // =========================================================================
     always_comb begin
-        // Clear the entire output structure to a safe default state
-        core_out = '1;
-        core_out.unused_p3_b7 = 1'b0;
-        core_out.LOOP_OUT     = 1'b0;
+        // 1. Establish Hard Core Pull-Up Defaults (Active-Low Inactive Baseline)
+        core_out.unused_p3_b7 = 1'b0; // Static Ground Tie-off
+        core_out.LOOP_OUT     = 1'b0; // Default operational loop status
+        core_out.s4_n         = 1'b1;
+        core_out.s5_n         = 1'b1;
+        core_out.basic_n      = 1'b1;
+        core_out.io_n         = 1'b1;
+        core_out.os_n         = 1'b1;
+        core_out.ci_n         = 1'b1;
 
-       // =========================================================================
-        // MMU COMBINATORIAL DECODING EQUATIONS
-        // =========================================================================
-        // Address Conversions for Bits [15:11]:
-        // $0800 -> 5'h01 (1)  |  $A000 -> 5'h14 (20) |  $D000 -> 5'h1A (26)
-        // $BFFF -> 5'h17 (23) |  $D800 -> 5'h1B (27) |  $FFFF -> 5'h1F (31)
-        // =========================================================================
-        
-        // 2. STRICT OS DECODER ($E000 - $FFFF area)
-        if (map_n && ren && (a >= 5'h1C) && (a <= 5'h1F)) begin
-            core_out.os_n = 1'b0;      // Pull low ONLY in OS territory
-            core_out.basic_n = 1'b1;   // Force BASIC high (disabled) explicitly
+        // 2. Evaluate /S4 Expansion Right Cartridge Select
+        if (!a13 && !a14 && a15 && rd4 && !ref_n) begin
+            core_out.s4_n = 1'b0;
         end
 
-        // 3. STRICT BASIC DECODER ($A000 - $BFFF area)
-        else if (map_n && be_n && (a >= 5'h14) && (a <= 5'h17)) begin
-            core_out.basic_n = 1'b0;   // Pull low ONLY in BASIC territory
-            core_out.os_n = 1'b1;      // Force OS high (disabled) explicitly
+        // 3. Evaluate /S5 Expansion Left Cartridge Select
+        if (!a13 && !a14 && a15 && rd5 && !ref_n) begin
+            core_out.s5_n = 1'b0;
         end
 
-        // HARDWARE CS (I/O) Selection: Maps strictly to $D000-$D7FF (5'h1A)
-        core_out.io_n    = !(map_n && (a == 5'h1A) && ren);
+        // 4. Evaluate /BASIC CS Memory Space Decode
+        if (!a13 && a14 && a15 && rd5 && !be_n && !ref_n) begin
+            core_out.basic_n = 1'b0;
+        end
 
-        // --- RAM Bank Selection Lines ---
-        core_out.s4_n    = !((a == 5'h08) && mpd_n && rd4); // $4000-$47FF area
-        core_out.s5_n    = !((a == 5'h14) && be_n && rd5);  // $A000-$A7FF area override 
+        // 5. Evaluate /IO Peripheral Space Decode ($D000)
+        if (a11 && a12 && !a13 && a14 && a15 && !ref_n) begin
+            core_out.io_n = 1'b0;
+        end
 
-        // --- Dynamic Clock Inhibit / Wait State Request ---
-        // Assert CI low if accessing the slow peripheral mapping matrices
-        if ((a == 5'b11010) && !ref_n) begin
-            core_out.ci_n = 1'b0; 
-        end else begin
-            core_out.ci_n = 1'b1; 
+        // 6. Evaluate /OS Operating System ROM Decode
+        if ( (!a13 && a14 && a15 && !ren && !ref_n) ||
+             (a12 && !a14 && a15 && !ren && !ref_n) ||
+             (a11 && a12 && a13 && a14 && a15 && !ren && !mpd_n && !ref_n) ||
+             (a11 && a12 && a13 && a14 && a15 && !ren && map_n && !ref_n) ) begin
+            core_out.os_n = 1'b0;
+        end
+
+        // 7. Evaluate /CI Clock Inhibit Generation
+        if ( (!a13 && a14 && a15 && rd4 && !ref_n) ||
+             (!a13 && a14 && a15 && rd5 && !ref_n) ||
+             (!a13 && a14 && a15 && rd5 && !be_n && !ref_n) ||
+             (core_out.os_n == 1'b0) ||
+             (a11 && a12 && !a13 && a14 && a15 && !ref_n) ||
+             (ref_n) ) begin
+            core_out.ci_n = 1'b0;
         end
     end
+
 endmodule
 `endif

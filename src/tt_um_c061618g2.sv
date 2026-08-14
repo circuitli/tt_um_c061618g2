@@ -63,16 +63,18 @@ module tt_um_c061618g2 (
 
     // 1. Process Core Decoding Matrix
     mmu_core core_inst (
-        .core_in  (pmod1_bus),
-        .ren      (pmod2_in_bus.ren),
-        .ref_n    (pmod2_in_bus.ref_n),
-        .mpd_n    (pmod2_in_bus.mpd_n),
-        .be_n     (pmod2_in_bus.be_n), 
+        .core_in  (ui_in),     // Direct flat 8-bit bus copy
+        .ren      (uio_in[0]), // Bypass structure parsing via direct raw bit indexing
+        .ref_n    (uio_in[1]),
+        .mpd_n    (uio_in[2]),
+        .be_n     (uio_in[3]), 
         .core_out (core_signals)
     );
 
     // 2. Clear RAM toggles via the delay filter circuit
     tt_anti_glitch_filter filter_inst (
+        .clk              (clk),   // Connect the system clock line
+        .rst_n            (rst_n), // Connect the global reset line
         .raw_signal_in    (core_signals.ci_n),
         .clean_signal_out (stabilized_ci_n)
     );

@@ -19,22 +19,30 @@
 `default_nettype none
 
 module tt_anti_glitch_filter (
-    input  bit raw_signal_in,
-    output bit clean_signal_out
+     input  logic clk,              // System clock input for discrete time sampling
+    input  logic rst_n,            // Asynchronous active-low global hardware reset
+    input  logic raw_signal_in,    // Raw input wire carrying combinational hazards
+    output logic clean_signal_out  // Glitch-isolated, stabilized output signal
 );
-    // Create an intentional gate-delay path using a chain of buffers/inverters.
-    // To prevent the compiler from optimizing these away, we force an attribute flag.
-    (* keep = "true" *) bit d1, d2, d3;
 
-    assign d1 = !raw_signal_in;
-    assign d2 = !d1;
-    assign d3 = !d2;
+    logic [1:0] shift_reg;
 
-    // A combinatorial Majority Voter (2-out-of-3 bit).
-    // The output will ONLY flip states if the input signal remains stable 
-    // long enough to propagate completely through the delay line. 
-    // Any transient glitch narrower than the gate delays is completely suppressed.
-    assign clean_signal_out = (raw_signal_in && d2) || (raw_signal_in && d3) || (d2 && d3);
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            shift_reg        <= 2'b11; // Active-low idle high default
+            clean_signal_out <= 1'b1;  // Synchronous initialization
+        end else begin
+            shift_reg <= {shift_reg[0], raw_signal_in};
+            
+            // Pure sequential voting logic (No combinational loops)
+            if (shift_reg == 2'b00) begin
+                clean_signal_out <= 1'b0;
+            end else if (shift_reg == 2'b11) begin
+                clean_signal_out <= 1'b1;
+            end
+            // Implicitly retains its previous register value if shift_reg is 2'b01 or 2'b10
+        end
+    end
 
 endmodule
 `endif
