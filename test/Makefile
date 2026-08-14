@@ -23,11 +23,13 @@ ifeq ($(SIM),verilator)
     VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*/*.v)
     VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*.v)
 
-     # 2. Hardcode the absolute paths to the hidden OpenLane runner cache
+    # 2. Instruct Verilator to look at the primary parent folder layouts
+    # This forces it to recursively find standard cells, decaps, fillers, and ios.
     COMPILE_ARGS += -y $(PWD) -y $(PWD)/../src
     COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
-    COMPILE_ARGS += -y /opt/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
-    COMPILE_ARGS += -y /opt/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
+    COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref
+    COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2
+    COMPILE_ARGS += -y /opt/pdk/ihp-sg13g2
 
     # 3. CRITICAL FLAGS: Add -y to let Verilator discover your module dependencies,
     # and turn off MODDUP to ignore duplicate standard cell models if they overlap.
