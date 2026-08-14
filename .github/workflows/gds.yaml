@@ -58,7 +58,6 @@ jobs:
       - name: Download GDS Netlist Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: openlane-artifacts
           path: runs/wokwi/
 
       - name: Install Verilator 5+
