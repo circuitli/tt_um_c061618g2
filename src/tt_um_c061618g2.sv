@@ -28,19 +28,19 @@ module tt_um_c061618g2 (
     input  [7:0] uio_in,   // Bidirectional bus input network
     output [7:0] uio_out,  // Bidirectional bus output network
     output wire [7:0] uio_oe,   // <-- MUST BE DECLARED AS AN OUTPUT PORT WIRE HERE! [2]
-    /* verilator lint_off UNUSEDSIGNAL */
     input  [0:0] ena,      // Leave this here! The compiler requires it.
     input  [0:0] clk,      // Part of the strict wrapper standard!
     input  [0:0] rst_n     // Part of the strict wrapper standard!
-    /* verilator lint_on UNUSEDSIGNAL */
 );
 
     // =========================================================================
     // SEPARATED INTERFACE STRUCTURE BINDING
     // =========================================================================
+     /* verilator lint_off UNUSED */
     pmod1_inputs_t  pmod1_bus;
     pmod2_inputs_t  pmod2_in_bus;
     pmod2_outputs_t pmod2_out_bus;
+    /* verilator lint_on UNUSED */
 
     // Map input vectors cleanly index-for-index
     assign pmod1_bus    = ui_in;
@@ -50,8 +50,8 @@ module tt_um_c061618g2 (
     assign uio_oe = 8'b00100000; 
 
     /* verilator lint_off UNUSED */
-    wire unused_p2_b7 = pmod2_in_bus[7]; // Bit 7 -> Pmod 2, Pin 8
-    wire uio5_pad     = pmod2_in_bus[5];  // Bit 5 -> Pmod 2, Pin 6 (Exempted; Output Lane)
+    //wire unused_p2_b7 = pmod2_in_bus[7]; // Bit 7 -> Pmod 2, Pin 8
+    //wire uio5_pad     = pmod2_in_bus[5];  // Bit 5 -> Pmod 2, Pin 6 (Exempted; Output Lane)
     /* verilator lint_on UNUSED */
 
     // =========================================================================
