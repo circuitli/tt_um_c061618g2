@@ -58,9 +58,9 @@ jobs:
       - name: Download GDS Netlist Artifacts
         uses: actions/download-artifact@v4
         with:
-          # Extract everything directly into the root workspace folder. 
-          # The zip itself already contains the 'runs/wokwi/final/pnl/' path trees!
-          path: ./
+         # Extract all files completely flat into the test folder workspace
+          path: test/
+          merge-multiple: true
 
       - name: Install Verilator 5+
         uses: veryl-lang/setup-verilator@v1
@@ -78,4 +78,9 @@ jobs:
       - name: Execute Full Verilator Gate-Level Simulation
         run: |
           cd test
+          
+          # Force rename the extracted powered netlist (.pnl.v) to your static filename
+          mv *.pnl.v gate_level_netlist.v || mv *.v gate_level_netlist.v
+          
+          # Run the simulation safely
           make SIM=verilator

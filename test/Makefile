@@ -7,7 +7,11 @@ FST ?= -fst # Use more efficient FST format
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
 PROJECT_SOURCES = tt_um_c061618g2.sv
+#RAW_PDK_CELLS = $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
+# Define the fallback path for the IHP PDK inside the GitHub Action environment
+PDK_ROOT ?= /home/runner/.volare
 RAW_PDK_CELLS = $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
+
 
 ifeq ($(SIM),verilator)
     # --------------------------------------------------------------------------
@@ -18,8 +22,12 @@ ifeq ($(SIM),verilator)
     # --------------------------------------------------------------------------
     #  Use GNU Make wildcard function to find the PNL netlist dynamically
     # --------------------------------------------------------------------------
-    VERILOG_SOURCES += $(wildcard $(PWD)/../runs/*/results/final/verilog/gl/*.v)    VERILOG_SOURCES += $(RAW_PDK_CELLS)
-
+    #VERILOG_SOURCES += $(wildcard $(PWD)/../runs/*/results/final/verilog/gl/*.v)    VERILOG_SOURCES += $(RAW_PDK_CELLS)
+    # --------------------------------------------------------------------------
+    #  Point to a reliable, static local gate netlist filename
+    # --------------------------------------------------------------------------
+    VERILOG_SOURCES += $(PWD)/gate_level_netlist.v
+    VERILOG_SOURCES += $(RAW_PDK_CELLS)
 
     # Force the event engine and suppress unoptimized loop panics
     COMPILE_ARGS += --timing
