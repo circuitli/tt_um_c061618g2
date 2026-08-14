@@ -28,6 +28,19 @@ ifeq ($(SIM),verilator)
     COMPILE_ARGS += --timing -y $(PWD) -y $(PWD)/../src
     COMPILE_ARGS += -Wno-fatal -Wno-UNOPTFLAT -Wno-BLKANDNBLK -Wno-MODDUP
 else ifeq ($(SIM),icarus)
+    # --------------------------------------------------------------------------
+    #  Icarus Verilog Path: Automated PDK Library Search
+    # --------------------------------------------------------------------------
+    # Always point to your testbench wrapper and the gate level netlist
+    VERILOG_SOURCES += $(PWD)/tb.v
+
+    # FIXED: Tell Icarus to search the official, complete PDK directories 
+    # to automatically resolve decaps, fills, diodes, and standard cells.
+    COMPILE_ARGS += -y /home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
+    COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
+    
+    # Enforce modern SystemVerilog/Verilog IEEE parsing constraints
+    COMPILE_ARGS += -g2012
 ifneq ($(GATES),yes)
 
 # RTL simulation:
@@ -44,23 +57,23 @@ COMPILE_ARGS    += -DGL_TEST
 COMPILE_ARGS    += -DFUNCTIONAL
 COMPILE_ARGS    += -DSIM
 #COMPILE_ARGS    += -g2005
-VERILOG_SOURCES += $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_io/verilog/sg13g2_io.v
+#VERILOG_SOURCES += $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_io/verilog/sg13g2_io.v
 
 # this gets copied in by the GDS action workflow
 VERILOG_SOURCES += $(PWD)/gate_level_netlist.v
 
    # Define filenames
-    CLEAN_LOCAL_CELLS = $(CURDIR)/sg13g2_stdcell_functional.v
+    #CLEAN_LOCAL_CELLS = $(CURDIR)/sg13g2_stdcell_functional.v
 
     # 1. Create a local functional copy with the problematic lines deleted
-    $(shell sed '/ifnone/d' $(RAW_PDK_CELLS) > $(CLEAN_LOCAL_CELLS))
+    #$(shell sed '/ifnone/d' $(RAW_PDK_CELLS) > $(CLEAN_LOCAL_CELLS))
 
     # 2. Append compilation macros
     COMPILE_ARGS += -DFUNCTIONAL -gno-specify
 
     # 3. Strip the raw PDK path from the sources and append our clean local version instead
     #VERILOG_SOURCES := $(filter-out $(RAW_PDK_CELLS) %sg13g2_stdcell.v, $(VERILOG_SOURCES))
-    VERILOG_SOURCES += $(CLEAN_LOCAL_CELLS)
+    #VERILOG_SOURCES += $(CLEAN_LOCAL_CELLS)
 endif
 
 endif
