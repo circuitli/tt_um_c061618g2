@@ -28,6 +28,11 @@ ifeq ($(SIM),verilator)
     # --------------------------------------------------------------------------
     VERILOG_SOURCES += $(PWD)/gate_level_netlist.v
     VERILOG_SOURCES += $(RAW_PDK_CELLS)
+    # --------------------------------------------------------------------------
+    #  Remove relative jumps and load tb.v straight from the execution path
+    # --------------------------------------------------------------------------
+    # Change this from $(PWD)/../src/tb.v or similar to just:
+    VERILOG_SOURCES += tb.v
 
     # Force the event engine and suppress unoptimized loop panics
     COMPILE_ARGS += --timing
