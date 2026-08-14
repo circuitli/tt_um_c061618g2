@@ -7,7 +7,7 @@
 `ifdef GL_TEST
     // Step out of the test folder, look inside your isolated drop folder, 
     // and grab the pristine monolithic IHP cell library directly!
-    `include "../gds_drop/ihp-sg13g2/libs.ref/sg13g2/verilog/sg13g2.v"
+ //   `include "../gds_drop/ihp-sg13g2/libs.ref/sg13g2/verilog/sg13g2.v"
 `endif
 
 /* This testbench just instantiates the module and makes some convenient wires
