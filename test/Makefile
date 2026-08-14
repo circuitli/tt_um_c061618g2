@@ -15,8 +15,10 @@ ifeq ($(SIM),verilator)
     # --------------------------------------------------------------------------
     # Load the factory-original gate netlist from the build directory
     #VERILOG_SOURCES += $(PWD)/../runs/wokwi/results/final/verilog/gl/tt_um_c061618g2.v
-    VERILOG_SOURCES += $(PWD)/../runs/wokwi/final/pnl/tt_um_c061618g2.pnl.v
-    VERILOG_SOURCES += $(RAW_PDK_CELLS)
+    # --------------------------------------------------------------------------
+    #  Use GNU Make wildcard function to find the PNL netlist dynamically
+    # --------------------------------------------------------------------------
+    VERILOG_SOURCES += $(wildcard $(PWD)/../runs/*/results/final/verilog/gl/*.v)    VERILOG_SOURCES += $(RAW_PDK_CELLS)
 
 
     # Force the event engine and suppress unoptimized loop panics
