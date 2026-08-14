@@ -28,7 +28,6 @@ module tt_um_c061618g2 (
     input  [7:0] uio_in,   // Bidirectional bus input network
     output [7:0] uio_out,  // Bidirectional bus output network
     output [7:0] uo_oe,    // Output enable network for dedicated outputs (not used here)
-    output [7:0] uio_oe,   // Bidirectional three-state direction gates
     /* verilator lint_off UNUSEDSIGNAL */
     input  [0:0] ena,      // Leave this here! The compiler requires it.
     input  [0:0] clk,      // Part of the strict wrapper standard!
