@@ -5,8 +5,9 @@
 //  Cloud PDK Library Resolution (Bypasses hardcoded Tiny Tapeout script limits)
 // ==============================================================================
 `ifdef GL_TEST
-    // Point to the actual verified monolithic file name and path layout
-    `include "sg13g2.v"
+    // Step out of the test folder, look inside your isolated drop folder, 
+    // and grab the pristine monolithic IHP cell library directly!
+    `include "../gds_drop/ihp-sg13g2/libs.ref/sg13g2/verilog/sg13g2.v""
 `endif
 
 /* This testbench just instantiates the module and makes some convenient wires
