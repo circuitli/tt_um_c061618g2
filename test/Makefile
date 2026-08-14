@@ -15,18 +15,13 @@ RAW_PDK_CELLS = $(wildcard $(PDK_ROOT)/volare/ihp-sg13g2/versions/*/ihp-sg13g2/l
 
 ifeq ($(SIM),verilator)
     VERILOG_SOURCES += $(PWD)/tb.v
-    # --------------------------------------------------------------------------
-    #  Verilator 5+ Path: Global PDK Workspace Discovery
-    # --------------------------------------------------------------------------
-    # Append the physical layout gates out of the isolated gds_drop folder
-    VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*/*/*.v)
-    VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*/*.v)
-    VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*.v)
-
-    # Updated library folder name and file name string precisely
-    VERILOG_SOURCES += /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2/verilog/sg13g2.v
-
-    COMPILE_ARGS += -y /opt/pdk/ihp-sg13g2
+    # 2. Feed the search search paths directly into Verilator's native -y system.
+    # This instructs Verilator to look across the entire OpenLane PDK directory tree 
+    # to automatically locate sg13g2.v and resolve the decoupling cells on its own.
+    COMPILE_ARGS += -y $(PWD) -y $(PWD)/../src
+    COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2/verilog
+    COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
+    COMPILE_ARGS += -y /opt/pdk/ihp-sg13g2/libs.ref/sg13g2/verilog
 
     # 3. CRITICAL FLAGS: Add -y to let Verilator discover your module dependencies,
     # and turn off MODDUP to ignore duplicate standard cell models if they overlap.
