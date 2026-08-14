@@ -1,6 +1,14 @@
 `default_nettype none
 `timescale 1ns / 1ps
 
+// ==============================================================================
+//  Cloud PDK Library Resolution (Bypasses hardcoded Tiny Tapeout script limits)
+// ==============================================================================
+`ifdef GL_TEST
+    // Direct pointer to the official monolithic PDK cell definitions on the runner
+    `include "/home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v"
+`endif
+
 /* This testbench just instantiates the module and makes some convenient wires
    that can be driven / tested by the cocotb test.py.
 */
