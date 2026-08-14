@@ -23,12 +23,9 @@ ifeq ($(SIM),verilator)
     VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*/*.v)
     VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*.v)
 
-    # 2. Instruct Verilator to look at the primary parent folder layouts
-    # This forces it to recursively find standard cells, decaps, fillers, and ios.
-    COMPILE_ARGS += -y $(PWD) -y $(PWD)/../src
-    COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
-    COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref
-    COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2
+    # 2. Feed the single monolithic cell model file directly into Verilator
+    VERILOG_SOURCES += /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
+
     COMPILE_ARGS += -y /opt/pdk/ihp-sg13g2
 
     # 3. CRITICAL FLAGS: Add -y to let Verilator discover your module dependencies,
