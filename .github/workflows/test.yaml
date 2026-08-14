@@ -3,7 +3,6 @@ on: [push, workflow_dispatch]
 jobs:
   test:
     runs-on: ubuntu-24.04
-    needs: [harden] 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v6
@@ -23,11 +22,6 @@ jobs:
       - name: Install Python packages
         shell: bash
         run: pip install -r test/requirements.txt
-
-      - name: Install Verilator 5+
-        uses: veryl-lang/setup-verilator@v1
-        with:
-          version: '5.036'
 
       - name: Run tests
         run: |
