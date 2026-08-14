@@ -32,7 +32,7 @@ else ifeq ($(SIM),icarus)
     #  Icarus Verilog Path: Automated PDK Library Search
     # --------------------------------------------------------------------------
     # Always point to your testbench wrapper and the gate level netlist
-    VERILOG_SOURCES += $(PWD)/tb.v
+    #VERILOG_SOURCES += $(PWD)/tb.v
 
     # FIXED: Tell Icarus to search the official, complete PDK directories 
     # to automatically resolve decaps, fills, diodes, and standard cells.
