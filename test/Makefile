@@ -16,14 +16,15 @@ RAW_PDK_CELLS = $(wildcard $(PDK_ROOT)/volare/ihp-sg13g2/versions/*/ihp-sg13g2/l
 ifeq ($(SIM),verilator)
     VERILOG_SOURCES += $(PWD)/tb.v
     # --------------------------------------------------------------------------
-    #  Verilator 5+ Path: Hardcoded Cloud PDK Resolution
+    #  Verilator 5+ Path: Global PDK Workspace Discovery
     # --------------------------------------------------------------------------
     # Append the physical layout gates out of the isolated gds_drop folder
     VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*/*/*.v)
     VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*/*.v)
     VERILOG_SOURCES += $(wildcard $(PWD)/../gds_drop/*/*.v)
 
-    # 2. Hardcode the absolute paths to the official OpenLane runner PDK locations
+    # 2. Instruct Verilator's file engine to search ALL subdirectories 
+    # inside the official openlane pdk variant root to map decaps, taps, and cells automatically.
     COMPILE_ARGS += -y $(PWD) -y $(PWD)/../src
     COMPILE_ARGS += -y /home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
     COMPILE_ARGS += -y /opt/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
