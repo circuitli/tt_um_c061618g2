@@ -1,23 +1,86 @@
 ![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/test/badge.svg) ![](../../workflows/fpga/badge.svg)
 
-# MMU - Tiny Tapeout Implementation
+## 1. Overview
+This project implements a high-density Memory Management Unit (MMU) designed to expand the physical memory addressing capabilities of traditional 8-bit computer architectures up to a maximum of 16 MB of banked RAM. Fabricated on the open-source 130nm Silicon-Germanium (SiGe) BiCMOS process node (IHP SG13G2), this chip translates logical processor addresses into dynamic memory page-select signals, optimizing power consumption and integration density.
 
-This project is a Memory Management Unit (MMU). It handles memory mapping, peripheral address decoding, and operating system banking across the computer's memory space.
+## 2. How It Works
+The hardware sits directly on the system's 16-bit address bus, intercepting the high-order address rows to decode sub-space windows. 
 
-Unlike sequential system designs, this chip is **purely combinatorial, unclocked, and stateless**. It operates asynchronously, ignoring the infrastructure clock (`clk`) and reset (`rst_n`) lines.
+* **Address Transposition:** When an access cycle lands within a designated bank-switching window, the internal combinatorial matrix maps the current state of your system register configurations to translate the address space into high-density physical memory array locations.
+* **Synchronous Glitch Rejection:** To prevent transient address hazards or routing path skew from corrupting downstream devices, the critical clock inhibit output line is passed through a multi-stage sequential shift register. This filter samples the internal state over active edges and uses a voting network to filter out sub-nanosecond noise spikes.
 
-## How it Works
+## 3. Hardware Framework Specification
+The physical layout aligns with the Tiny Tapeout hardware tile format using the 130nm SiGe BiCMOS foundry platform (IHP SG13G2). The design operates safely up to a maximum nominal clock speed of 50 MHz.
 
-The circuit reads the high-order address bits from the CPU and system control signals to activate various subsystem chip select outputs. It handles dynamic banking for the OS ROM, the BASIC ROM, and the Self-Test ROM space, freeing or exposing underlying DRAM.
-  
-## How to Run Simulations
+## 4. Complete Pinout Mapping Matrix
 
-This design is validated using asynchronous software simulations via **Cocotb**. 
+### Primary Input Vector  (`ui_in`)
+| Pin | Name | Type | Description |
+|---|---|---|---|
+| `ui_in[0]` | `a11` | Input | Address line 11 slice |
+| `ui_in[1]` | `a12` | Input | Address line 12 slice |
+| `ui_in[2]` | `a13` | Input | Address line 13 slice |
+| `ui_in[3]` | `a14` | Input | Address line 14 slice |
+| `ui_in[4]` | `a15` | Input | Address line 15 slice |
+| `ui_in[5]` | `map_n` | Input | Active-low mapping control flag |
+| `ui_in[6]` | `rd4` | Input | Cartridge expansion control line 4 |
+| `ui_in[7]` | `rd5` | Input | Cartridge expansion control line 5 |
 
-To run the local testing environment manually:
+### Bidirectional Ports (`uio`)
+| Pin | Name | Type | Description |
+|---|---|---|---|
+| `uio_in[0]` | `ren` | Input | Active-low ROM/RAM enable flag |
+| `uio_in[1]` | `ref_n` | Input | Active-low dynamic refresh cycle signal |
+| `uio_in[2]` | `mpd_n` | Input | Memory protect select flag |
+| `uio_in[3]` | `be_n` | Input | Active-low baseline memory space enable |
+| `uio_in[4]` | `flg_n` | Input | System execution tracking status flag |
+| `uio_out[5]` | `TRIGGER_OUT` | Output | Dedicated Hardware Validation Output Trigger |
+| `uio_in[6]` | `LOOP_IN` | Input | Operational status feedback line |
+| `uio_in[7]` | `unused` | Reserved | Tied off internally |
+
+### System Output Vector (`uo_out`)
+| Pin | Name | Type | Description |
+|---|---|---|---|
+| `uo_out[0]` | `s5_n` | Output | Active-low expansion chip select 5 |
+| `uo_out[1]` | `basic_n`| Output | Active-low internal interpreter chip select |
+| `uo_out[2]` | `os_n` | Output | Active-low operating system ROM select |
+| `uo_out[3]` | `ci_n` | Output | Filtered clock inhibit wait-state line |
+| `uo_out[4]` | `io_n` | Output | Active-low peripheral I/O space select |
+| `uo_out[5]` | `s4_n` | Output | Active-low expansion chip select 4 |
+| `uo_out[6]` | `LOOP_OUT`| Output | Operational loop diagnostic status |
+| `uo_out[7]` | `bit7` | Output | Static ground isolation line |
+
+## 5. How to Run Simulation
+
+### Software Pre-requisites
+To execute the simulation matrix locally on your machine, the following environment dependencies must be satisfied:
+* **Python 3.12+** is strictly required by the underlying cocotb test suite runners.
+* **Icarus Verilog** (v12.0 or newer recommended for standard cell primitive parsing).
+* **SymbiYosys** (required for compiling and evaluating formal bounded proofs).
+
+### Remote Execution
+If local toolchains are unavailable, the entire verification infrastructure is fully compatible with cloud containers and can be simulated automatically within **GitHub Actions** continuous integration pipelines upon every remote branch push sequence.
+
+## 5. Verification and Testing Modes
+The architecture includes a comprehensive test framework divided into **three separate verification modes** to ensure absolute design stability across both ideal and post-synthesis environments.
+
+### Mode 1: RTL Functional Simulation
+Validates the mathematical precision of the combinatorial address decoding matrix under ideal simulation conditions without cell propagation delays.
 ```bash
-cd test
-make clean
-make
+# Execute baseline RTL functional verification
+make SIM=icarus
 ```
-Ensure your simulation signals look for immediate output changes following input state jumps, completely bypassing clock-edge checks.
+
+### Mode 2: Gate-Level Simulation (GLS)
+Verifies the compiled structural netlist against real physical standard cell gate primitives. Gate-level simulation requires an **additional parameter** (`GATES=yes`) passed to the compilation flag matrix. This tells the wrapper toolchain to bypass behavioral descriptions, pull in the synthesized gate netlist, and properly evaluate the synchronous initialization sequences required to prevent uninitialized `X`-propagation:
+```bash
+# Execute gate-level simulation with the mandatory gates parameter
+make SIM=icarus GATES=yes
+```
+
+### Mode 3: Formal Verification
+Mathematically proves all state-space properties, mutual exclusion bounds, and glitch-rejection characteristics of the synchronous shift registers across all possible input conditions. Formal routines bypass testbench stimulus scripts and are executed directly through SymbiYosys:
+```bash
+# Run formal bounded proofs using SymbiYosys
+sby -f src/formal/mmu.sby
+```
