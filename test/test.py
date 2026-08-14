@@ -62,7 +62,7 @@ async def initialize_dut(dut):
     Spawns the simulation clock tree and issues a clean synchronous reset pulse.
     """
     # Start a stable 50 MHz clock loop (20ns period) to clear IHP platform limits
-    mystic_clock = Clock(dut.clk, 20, units="ns")
+    mystic_clock = Clock(dut.clk, 20, unit="ns")
     cocotb.start_soon(mystic_clock.start())
     
     # Assert active-low master reset structure
@@ -205,14 +205,78 @@ async def test_cas_inhibit_activation(dut):
     dut._log.info("--- Running Test Case 8: Refresh Wait-State CAS Inhibit ---")
     await initialize_dut(dut)
     
-    # Driving ref_n high to 1 forces /CI low according to standard equations
     dut.ui_in.value = pack_ui_in(addr=0x1B, map_n=1, rd4=0, rd5=0)
     dut.uio_in.value = pack_uio_in(ren=0, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
     
-    # Allow 3 complete edges for the sequential anti-glitch filter register to step
     for _ in range(3):
         await RisingEdge(dut.clk)
     await ReadOnly()
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
     
-    assert pins["ci_n"] == 0, f"Error: /CI failed to transition low during refresh state! Got: {pins['ci_n']}"
+    assert pins["ci_n"] == 0, f"Error: /CI failed to transition low! Got: {pins['ci_n']}"
+
+@cocotb.test()
+async def test_trigger_out_passthrough(dut):
+    dut._log.info("--- Running Test Case 9: TRIGGER_OUT A11 Passthrough ---")
+    await initialize_dut(dut)
+    
+    dut.ui_in.value = pack_ui_in(addr=0x00, map_n=1, rd4=0, rd5=0)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=0, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
+    
+    await RisingEdge(dut.clk)
+    await ReadOnly()
+    trigger_out = (dut.uio_out.value.to_unsigned() >> 4) & 1
+    assert trigger_out == 0, f"Error: TRIGGER_OUT failed to track A11 low! Got: {trigger_out}"
+    
+    await RisingEdge(dut.clk)
+    dut.ui_in.value = pack_ui_in(addr=0x01, map_n=1, rd4=0, rd5=0)
+    
+    await RisingEdge(dut.clk)
+    await ReadOnly()
+    trigger_out = (dut.uio_out.value.to_unsigned() >> 4) & 1
+    assert trigger_out == 1, f"Error: TRIGGER_OUT failed to track A11 high! Got: {trigger_out}"
+
+@cocotb.test()
+async def test_external_board_loopback(dut):
+    dut._log.info("--- Running Test Case 10: PCB External Wire Loopback ---")
+    await initialize_dut(dut)
+    
+    dut.ui_in.value = pack_ui_in(addr=0x10, map_n=1, rd4=0, rd5=0)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=0, mpd_n=1, be_n=1, flg_n=1, loop_in=0)
+    
+    await RisingEdge(dut.clk)
+    await ReadOnly()
+    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
+    
+    assert pins["LOOP_OUT"] == 1, f"Error: LOOP_OUT failed under loopback override! Got: {pins['LOOP_OUT']}"
+
+@cocotb.test()
+async def test_flg_n_input_handling(dut):
+    dut._log.info("--- Running Test Case 11: Flag Input Line System Disabling ---")
+    await initialize_dut(dut)
+    
+    dut.ui_in.value = pack_ui_in(addr=0x1F, map_n=1, rd4=0, rd5=0)
+    dut.uio_in.value = pack_uio_in(ren=0, ref_n=0, mpd_n=1, be_n=1, flg_n=0, loop_in=1)
+    
+    await RisingEdge(dut.clk)
+    await ReadOnly()
+    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
+    
+    assert pins["os_n"] == 1, "Error: /OS not disabled when FLG_n is low"
+
+@cocotb.test()
+async def test_global_enable_behavior(dut):
+    dut._log.info("--- Running Test Case 12: Global Enable Pin Gating ---")
+    mystic_clock = Clock(dut.clk, 20, unit="ns")
+    cocotb.start_soon(mystic_clock.start())
+    
+    dut.ui_in.value = 0x00
+    dut.uio_in.value = 0x00
+    dut.ena.value = 0
+    dut.rst_n.value = 1
+    
+    await RisingEdge(dut.clk)
+    await ReadOnly()
+    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
+    
+    assert pins["os_n"] == 1, "Error: Outputs not disabled when ena is low"

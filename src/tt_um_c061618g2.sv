@@ -81,7 +81,7 @@ module tt_um_c061618g2 (
 
     // Evaluate master system override control flags
     bit system_disabled;
-    assign system_disabled = (pmod2_in_bus.FLG_n == 1'b0) || (pmod2_in_bus.LOOP_IN == 1'b0);
+    assign system_disabled = (pmod2_in_bus.FLG_n == 1'b0) || (pmod2_in_bus.LOOP_IN == 1'b0) || (ena == 1'b0);
 
     // Move the selection outside into a continuous assignment
     wire a11 = pmod1_bus.addr[0]; 

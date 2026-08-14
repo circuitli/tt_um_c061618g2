@@ -5,7 +5,7 @@ project:
   discord:      ""      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
   description:  "A high-performance memory management unit for 8-bit processors with a 16-bit address bus, supporting up to 16 MB of banked memory expansion and an integrated anti-glitch filter network."
   language:     "SystemVerilog"
-  clock_hz:     50000000  # Nominal clock speed target (50 MHz) to comply with hardware limits
+  clock_hz:     80000000  # Nominal clock speed target (80 MHz) to comply with hardware limits
 
   # How many tiles your design occupies? A single tile is about 167x108 uM.
   tiles: "1x1"          # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2, 6x2 or 8x2

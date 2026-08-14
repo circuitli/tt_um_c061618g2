@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 `ifndef TT_UM_C061618G2_FORMAL_SV
 `define TT_UM_C061618G2_FORMAL_SV
 
@@ -75,15 +75,12 @@ module tt_um_c061618g2_formal (
     wire       loop_in         = uio_in[6];
 
     // Master safety cutoff definition matching production RTL
-    wire system_disabled = (flg_n == 1'b0) || (loop_in == 1'b0);
+    wire system_disabled = (flg_n == 1'b0) || (loop_in == 1'b0) || (ena == 1'b0);
 
     // ----------------------------------------------------------------
     // Global Subsystem Assumptions & Invariants
     // ----------------------------------------------------------------
     always @(*) begin
-        // Assume clock enable stays active during formal sequences
-        assume(ena == 1'b1);
-        
         // Pin Invariant Check: Direction control gates are hardcoded for Pmod 2 configurations
         assert_uio_direction: assert(uio_oe == 8'b00100000);
     end
@@ -101,6 +98,9 @@ module tt_um_c061618g2_formal (
         
         // Functional Clocked Safety Verification
         if (f_past_valid && !rst) begin
+            
+            // Passthrough Check: Verify that TRIGGER_OUT (uio_out[5]) directly tracks address line A11 (ui_in[0])
+            assert_trigger_out_passthrough: assert(uio_out[5] == ui_in[0]);
             
             // --- A. Master System Override Verification ---
             if (system_disabled) begin
@@ -121,23 +121,58 @@ module tt_um_c061618g2_formal (
                     assert_basic_enabled: assert(uo_out[1] == 1'b0); // basic_n pulls low
                     assert_os_masked:    assert(uo_out[2] == 1'b1); // os_n stays high
                 end
+
+                // 3. Strict Hardware I/O Select Decoding Bounds ($D800 - $DFFF)
+                if (map_n && ren && (addr == 5'h1B)) begin
+                    assert_io_enabled:   assert(uo_out[4] == 1'b0); // io_n pulls low
+                end
+
+                // 4. Expansion Cartridge Slot S4 Select Bounds
+                if (map_n && rd4 && (addr == 5'h10)) begin
+                    assert_s4_enabled:   assert(uo_out[5] == 1'b0); // s4_n pulls low
+                end
+
+                // 5. Expansion Cartridge Slot S5 Select Bounds
+                if (map_n && rd5 && (addr == 5'h10)) begin
+                    assert_s5_enabled:   assert(uo_out[0] == 1'b0); // s5_n pulls low
+                end
+
+                // 6. CAS Inhibit/Refresh Dynamic RAM Select Bounds
+                if (map_n && ref_n && (addr == 5'h1B)) begin
+                    assert_ci_enabled:   assert(uo_out[3] == 1'b0); // ci_n pulls low
+                end
                 
-                // 3. Mutual Exclusion Sanity Verification at Pin Layer
-                assert_pin_exclusivity: assert(!(uo_out[2] == 1'b0 && uo_out[1] == 1'b0));
+                // --- C. Expanded Pairwise Mutual Exclusion Matrix ---
+                // Ensures no two primary device chip selects can simultaneously seize the common data bus layout
+                assert_mut_os_basic: assert(!(uo_out[2] == 1'b0 && uo_out[1] == 1'b0));
+                assert_mut_os_io:    assert(!(uo_out[2] == 1'b0 && uo_out[4] == 1'b0));
+                assert_mut_os_s4:    assert(!(uo_out[2] == 1'b0 && uo_out[5] == 1'b0));
+                assert_mut_os_s5:    assert(!(uo_out[2] == 1'b0 && uo_out[0] == 1'b0));
+                
+                assert_mut_basic_io: assert(!(uo_out[1] == 1'b0 && uo_out[4] == 1'b0));
+                assert_mut_basic_s4: assert(!(uo_out[1] == 1'b0 && uo_out[5] == 1'b0));
+                assert_mut_basic_s5: assert(!(uo_out[1] == 1'b0 && uo_out[0] == 1'b0));
+                
+                assert_mut_io_s4:    assert(!(uo_out[4] == 1'b0 && uo_out[5] == 1'b0));
+                assert_mut_io_s5:    assert(!(uo_out[4] == 1'b0 && uo_out[0] == 1'b0));
+                
+                assert_mut_s4_s5:    assert(!(uo_out[5] == 1'b0 && uo_out[0] == 1'b0));
             end
         end
     end
 
     // ----------------------------------------------------------------
-    // Coverage Validation Points
+    // 4. Coverage Validation Points
     // ----------------------------------------------------------------
     always @(posedge clk) begin
         if (f_past_valid && !rst && !system_disabled) begin
-            // Verify reachability of a clean OS selection state
-            cover_os_active:    cover(uo_out[2] == 1'b0 && uo_out[1] == 1'b1);
-            
-            // Verify reachability of a clean BASIC selection state
-            cover_basic_active: cover(uo_out[1] == 1'b0 && uo_out[2] == 1'b1);
+            // Verify structural reachability of all decoded memory selection states
+            cover_os_active:    cover(uo_out[2] == 1'b0);
+            cover_basic_active: cover(uo_out[1] == 1'b0);
+            cover_io_active:    cover(uo_out[4] == 1'b0);
+            cover_s4_active:    cover(uo_out[5] == 1'b0);
+            cover_s5_active:    cover(uo_out[0] == 1'b0);
+            cover_ci_active:    cover(uo_out[3] == 1'b0);
         end
     end
 
@@ -146,3 +181,4 @@ module tt_um_c061618g2_formal (
 endmodule
 
 `endif
+
