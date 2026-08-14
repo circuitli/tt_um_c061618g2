@@ -23,6 +23,11 @@ jobs:
         shell: bash
         run: pip install -r test/requirements.txt
 
+      - name: Install Verilator 5+
+        uses: patchontech/setup-verilator@v1
+        with:
+          verilator-version: '5.036' # Sets the necessary event-timing engine version
+
       - name: Run tests
         run: |
           cd test
