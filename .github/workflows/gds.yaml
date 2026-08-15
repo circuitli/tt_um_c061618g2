@@ -77,13 +77,21 @@ jobs:
           cd test
           make SIM=verilator 2>&1 | tee verilator_run.log
 
-      - name: Inject Custom Verilator Data into TT Summary Page
+       - name: Inject Custom Verilator Data into TT Summary Page
         if: always()
         run: |
-          sed -i 's/\x1b[[0-9;]*m//g' verilator_run.log
-          echo "## 🛠️ Custom Verilator Build Summary" >> \$GITHUB_STEP_SUMMARY
-          echo "<details><summary>🔍 Click to view Verilator Warning & Lint Alerts</summary>" >> \$GITHUB_STEP_SUMMARY
-          echo '```text' >> \$GITHUB_STEP_SUMMARY
-          grep -iE "(%Warning|%Error)" verilator_run.log >> \$GITHUB_STEP_SUMMARY || echo "No Verilator warnings found." >> \$GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "</details>" >> $GITHUB_STEP_SUMMARY
+          # Point directly to the test subdirectory
+          LOG_FILE="test/verilator_run.log"
+          
+          if [ -f "\$LOG_FILE" ]; then
+            sed -i 's/\x1b[[0-9;]*m//g' "\$LOG_FILE"
+            
+            echo "## 🛠️ Custom Verilator Build Summary" >> \$GITHUB_STEP_SUMMARY
+            echo "<details><summary>🔍 Click to view Verilator Warning & Lint Alerts</summary>" >> \$GITHUB_STEP_SUMMARY
+            echo '```text' >> \$GITHUB_STEP_SUMMARY
+            grep -iE "(%Warning|%Error)" "\(LOG_FILE" >> \)GITHUB_STEP_SUMMARY || echo "No Verilator warnings found." >> \$GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "</details>" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ⚠️ Verilator log file not found at $LOG_FILE!" >> $GITHUB_STEP_SUMMARY
+          fi
