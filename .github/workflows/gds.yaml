@@ -77,18 +77,13 @@ jobs:
           cd test
           make SIM=verilator 2>&1 | tee verilator_run.log
 
-        name: Inject Custom Verilator Data into TT Summary Page
-        if: always() # Runs even if your verilator compilation or tests fail
+      - name: Inject Custom Verilator Data into TT Summary Page
+        if: always()
         run: |
-          # 1. Clean up command line color strings so they render well on GitHub
           sed -i 's/\x1b[[0-9;]*m//g' verilator_run.log
-          
-          # 2. Append a clean title banner
           echo "## 🛠️ Custom Verilator Build Summary" >> \$GITHUB_STEP_SUMMARY
-          
-          # 3. Inject explicit lint/warnings into a clean dropdown
           echo "<details><summary>🔍 Click to view Verilator Warning & Lint Alerts</summary>" >> \$GITHUB_STEP_SUMMARY
           echo '```text' >> \$GITHUB_STEP_SUMMARY
-          grep -iE "(%Warning|%Error)" verilator_run.log >> \$GITHUB_STEP_SUMMARY || echo "No Verilator warnings found in your custom Makefile execution." >> \$GITHUB_STEP_SUMMARY
-          echo '```' >> \$GITHUB_STEP_SUMMARY
-          echo "</details>" >> \$GITHUB_STEP_SUMMARY
+          grep -iE "(%Warning|%Error)" verilator_run.log >> \$GITHUB_STEP_SUMMARY || echo "No Verilator warnings found." >> \$GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
