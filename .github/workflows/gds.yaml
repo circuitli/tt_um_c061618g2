@@ -77,7 +77,7 @@ jobs:
           cd test
           make SIM=verilator 2>&1 | tee verilator_run.log
 
-       - name: Inject Custom Verilator Data into TT Summary Page
+      - name: Inject Custom Verilator Data into TT Summary Page
         if: always()
         run: |
           # Point directly to the test subdirectory
@@ -94,4 +94,4 @@ jobs:
             echo "</details>" >> $GITHUB_STEP_SUMMARY
           else
             echo "### ⚠️ Verilator log file not found at $LOG_FILE!" >> $GITHUB_STEP_SUMMARY
-          fi
+        fi
