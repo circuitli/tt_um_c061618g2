@@ -8,10 +8,6 @@ TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
 PROJECT_SOURCES = tt_um_c061618g2.sv
 RAW_PDK_CELLS = $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
-# Define the fallback path for the IHP PDK inside the GitHub Action environment
-#P#DK_ROOT ?= /home/runner/.volare
-# Use wildcard to search down through the hash snapshots and target the true file
-#RAW_PDK_CELLS = $(wildcard $(PDK_ROOT)/volare/ihp-sg13g2/versions/*/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/*.v)
 
 ifeq ($(SIM),verilator)
     VERILOG_SOURCES += $(PWD)/tb.v
@@ -28,34 +24,15 @@ ifeq ($(SIM),verilator)
     COMPILE_ARGS += --timing -y $(PWD) -y $(PWD)/../src
     COMPILE_ARGS += -Wno-fatal -Wno-UNOPTFLAT -Wno-BLKANDNBLK -Wno-MODDUP
 else ifeq ($(SIM),icarus)
-    # --------------------------------------------------------------------------
-    #  Icarus Verilog Path: Automated PDK Library Search
-    # --------------------------------------------------------------------------
-    # Always point to your testbench wrapper and the gate level netlist
-    #VERILOG_SOURCES += $(PWD)/tb.v
-
-    # FIXED: Tell Icarus to search the official, complete PDK directories 
-    # to automatically resolve decaps, fills, diodes, and standard cells.
-    #COMPILE_ARGS += -y /home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
-    #COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
-    
-    # Enforce modern SystemVerilog/Verilog IEEE parsing constraints
     COMPILE_ARGS += -g2012
 ifneq ($(GATES),yes)
 
 # RTL simulation:
-SIM_BUILD				= sim_build/rtl
-VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
-#VERILOG_SOURCES += $(PWD)/tb.v
-
-#COMPILE_ARGS    += -g2023
-
+    SIM_BUILD				= sim_build/rtl
+    VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
     # 2. Instruct Icarus to append the .v suffix to search tokens 
     # when hunting down missing modules like sg13g2_decap_8.
     COMPILE_ARGS += -y $(PWD) -y $(PWD)/../src
-    #COMPILE_ARGS += -v /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
-    #COMPILE_ARGS += -v /home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
-
 else
 
 # Gate level simulation:
@@ -64,8 +41,6 @@ COMPILE_ARGS    += -DGL_TEST
 #COMPILE_ARGS    += -gno-specify
 COMPILE_ARGS    += -DFUNCTIONAL
 COMPILE_ARGS    += -DSIM
-#COMPILE_ARGS    += -g2005
-#VERILOG_SOURCES += $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_io/verilog/sg13g2_io.v
 
 # this gets copied in by the GDS action workflow
 VERILOG_SOURCES += $(PWD)/gate_level_netlist.v
