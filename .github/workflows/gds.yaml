@@ -73,28 +73,28 @@ jobs:
         run: pip install cocotb pytest
 
       - name: Execute Full Verilator Gate-Level Simulation
-       run: |
-         cd test
-         make SIM=verilator 2>&1 | tee "$GITHUB_WORKSPACE/verilator_run.log"
-
-     - name: Inject Custom Verilator Data into TT Summary Page
-       if: always()
-       run: |
-         LOG_FILE="$GITHUB_WORKSPACE/verilator_run.log"
+        run: |
+          cd test
+          make SIM=verilator 2>&1 | tee "$GITHUB_WORKSPACE/verilator_run.log"
+ 
+      - name: Inject Custom Verilator Data into TT Summary Page
+        if: always()
+        run: |
+          LOG_FILE="$GITHUB_WORKSPACE/verilator_run.log"
          
-         if [ -f "$LOG_FILE" ]; then
-           # Clean out any ANSI color escape sequences from the terminal log
-           sed -i 's/\x1b\[[0-9;]*m//g' "$LOG_FILE"
+          if [ -f "$LOG_FILE" ]; then
+            # Clean out any ANSI color escape sequences from the terminal log
+            sed -i 's/\x1b\[[0-9;]*m//g' "$LOG_FILE"
            
-           echo "## 🛠️ Custom Verilator Build Summary" >> $GITHUB_STEP_SUMMARY
-           echo "<details><summary>🔍 Click to view Verilator Warning & Lint Alerts</summary>" >> $GITHUB_STEP_SUMMARY
-           echo '```text' >> $GITHUB_STEP_SUMMARY
+            echo "## 🛠️ Custom Verilator Build Summary" >> $GITHUB_STEP_SUMMARY
+            echo "<details><summary>🔍 Click to view Verilator Warning & Lint Alerts</summary>" >> $GITHUB_STEP_SUMMARY
+            echo '```text' >> $GITHUB_STEP_SUMMARY
            
-           # Search for Verilator warnings or errors and pipe them straight to the summary
-           grep -iE "(%Warning|%Error)" "$LOG_FILE" >> $GITHUB_STEP_SUMMARY || echo "No Verilator warnings found." >> $GITHUB_STEP_SUMMARY
+            # Search for Verilator warnings or errors and pipe them straight to the summary
+            grep -iE "(%Warning|%Error)" "$LOG_FILE" >> $GITHUB_STEP_SUMMARY || echo "No Verilator warnings found." >> $GITHUB_STEP_SUMMARY
            
-           echo '```' >> $GITHUB_STEP_SUMMARY
-           echo "</details>" >> $GITHUB_STEP_SUMMARY
-         else
-           echo "### ⚠️ Verilator log file not found at $LOG_FILE!" >> $GITHUB_STEP_SUMMARY
-         fi
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "</details>" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ⚠️ Verilator log file not found at $LOG_FILE!" >> $GITHUB_STEP_SUMMARY
+          fi
