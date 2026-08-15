@@ -83,34 +83,34 @@ jobs:
           LOG_FILE="$GITHUB_WORKSPACE/verilator_run.log"
          
           if [ -f "$LOG_FILE" ]; then
-           # Clean out any ANSI color escape sequences from the terminal log
-           sed -i 's/\x1b\[[0-9;]*m//g' "$LOG_FILE"
+            # Clean out any ANSI color escape sequences from the terminal log
+            sed -i 's/\x1b\[[0-9;]*m//g' "$LOG_FILE"
            
-           echo "## 🛠️ Tiny Tapeout Simulation Summary" >> $GITHUB_STEP_SUMMARY
+            echo "## 🛠️ Tiny Tapeout Simulation Summary" >> $GITHUB_STEP_SUMMARY
            
-           # 1. Extract Cocotb test matrix dynamically if it exists
-           if grep -q "TEST                       STATUS" "$LOG_FILE"; then
-             echo "### 📊 Cocotb Test Results" >> $GITHUB_STEP_SUMMARY
-             echo "" >> $GITHUB_STEP_SUMMARY
-             echo '```text' >> $GITHUB_STEP_SUMMARY
-             grep -A 20 "TEST                       STATUS" "$LOG_FILE" >> $GITHUB_STEP_SUMMARY
-             echo '```' >> $GITHUB_STEP_SUMMARY
-           fi
+            # 1. Extract Cocotb test matrix dynamically if it exists
+            if grep -q "TEST                       STATUS" "$LOG_FILE"; then
+              echo "### 📊 Cocotb Test Results" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo '```text' >> $GITHUB_STEP_SUMMARY
+              grep -A 20 "TEST                       STATUS" "$LOG_FILE" >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+            fi
            
-           # 2. Only generate the warning code block if actual warnings/errors exist
-           if grep -qiE "(%Warning|%Error)" "$LOG_FILE"; then
-             echo "### 🔍 Verilator Warning & Lint Alerts" >> $GITHUB_STEP_SUMMARY
-             echo "<details><summary>Click to view lint details</summary>" >> $GITHUB_STEP_SUMMARY
-             echo "" >> $GITHUB_STEP_SUMMARY
-             echo '```text' >> $GITHUB_STEP_SUMMARY
-             grep -iE "(%Warning|%Error)" "$LOG_FILE" >> $GITHUB_STEP_SUMMARY
-             echo '```' >> $GITHUB_STEP_SUMMARY
-             echo "</details>" >> $GITHUB_STEP_SUMMARY
-           else
-             echo "" >> $GITHUB_STEP_SUMMARY
-             echo "✅ **No Verilator warnings or structural lints detected.**" >> $GITHUB_STEP_SUMMARY
-           fi
-         else
-           echo "### ⚠️ Verilator log file not found at $LOG_FILE!" >> $GITHUB_STEP_SUMMARY
-         fi
+            # 2. Only generate the warning code block if actual warnings/errors exist
+            if grep -qiE "(%Warning|%Error)" "$LOG_FILE"; then
+              echo "### 🔍 Verilator Warning & Lint Alerts" >> $GITHUB_STEP_SUMMARY
+              echo "<details><summary>Click to view lint details</summary>" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo '```text' >> $GITHUB_STEP_SUMMARY
+              grep -iE "(%Warning|%Error)" "$LOG_FILE" >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+              echo "</details>" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "✅ **No Verilator warnings or structural lints detected.**" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "### ⚠️ Verilator log file not found at $LOG_FILE!" >> $GITHUB_STEP_SUMMARY
+          fi
 
