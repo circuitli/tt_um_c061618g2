@@ -75,13 +75,13 @@ jobs:
       - name: Execute Full Verilator Gate-Level Simulation
         run: |
           cd test
-          make SIM=verilator 2>&1 | tee verilator_run.log
+          make SIM=verilator 2>&1 | tee "\$GITHUB_WORKSPACE/verilator_run.log"
 
       - name: Inject Custom Verilator Data into TT Summary Page
         if: always()
         run: |
-          # Point directly to the test subdirectory
-          LOG_FILE="test/verilator_run.log"
+          # Use the absolute environment variable to reference the file
+          LOG_FILE="\$GITHUB_WORKSPACE/verilator_run.log"
           
           if [ -f "\$LOG_FILE" ]; then
             sed -i 's/\x1b[[0-9;]*m//g' "\$LOG_FILE"
