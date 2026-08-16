@@ -83,6 +83,9 @@ module tt_um_c061618g2_formal (
     always @(*) begin
         // Pin Invariant Check: Direction control gates are hardcoded for Pmod 2 configurations
         assert_uio_direction: assert(uio_oe == 8'b00100000);
+
+        // Pin Invariant Check: LOOP_OUT always high
+        assert_LOOP_OUT: assert(uo_out[6] == 1);
     end
 
     // ----------------------------------------------------------------
@@ -93,7 +96,7 @@ module tt_um_c061618g2_formal (
         // Target Reset Behavior Checking
         if (rst) begin
             assert_uo_reset:  assert(uo_out == 8'b00000000);
-            assert_uio_reset: assert(uio_out == 8'b00000000);
+            assert_uio_reset: assert(uio_out == 8'b00100000);
         end
         
         // Functional Clocked Safety Verification
@@ -116,7 +119,7 @@ module tt_um_c061618g2_formal (
                     assert_basic_masked: assert(uo_out[1] == 1'b1); // basic_n stays high
                 end
                 
-                // 2. Strict BASIC Interpreter ROM Decoding Bounds ($A000 - $BFFF)
+                // 2. Strict BASIC Interpreter ROM Decoding Bounds ($A000 - $BFFF),
                 if (map_n && be_n && (addr >= 5'h14) && (addr <= 5'h17)) begin
                     assert_basic_enabled: assert(uo_out[1] == 1'b0); // basic_n pulls low
                     assert_os_masked:    assert(uo_out[2] == 1'b1); // os_n stays high

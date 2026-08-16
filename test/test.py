@@ -225,15 +225,15 @@ async def test_trigger_out_passthrough(dut):
     
     await RisingEdge(dut.clk)
     await ReadOnly()
-    trigger_out = (dut.uio_out.value.to_unsigned() >> 4) & 1
+    trigger_out = (dut.uio_out.value.to_unsigned() >> 5) & 1
     assert trigger_out == 0, f"Error: TRIGGER_OUT failed to track A11 low! Got: {trigger_out}"
     
     await RisingEdge(dut.clk)
     dut.ui_in.value = pack_ui_in(addr=0x01, map_n=1, rd4=0, rd5=0)
     
     await RisingEdge(dut.clk)
-    await ReadOnly()
-    trigger_out = (dut.uio_out.value.to_unsigned() >> 4) & 1
+    await ReadOnly() 
+    trigger_out = (dut.uio_out.value.to_unsigned() >> 5) & 1
     assert trigger_out == 1, f"Error: TRIGGER_OUT failed to track A11 high! Got: {trigger_out}"
 
 @cocotb.test()

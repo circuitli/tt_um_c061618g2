@@ -96,8 +96,8 @@ module tt_um_c061618g2 (
     
     // --- Pmod 2 Outputs Mapping ---
     // Replaced the structure assignment pattern '{...} syntax to avoid Icarus Verilog parser errors.
-    // TRIGGER_OUT maps explicitly to Bit 4 of your 8-bit packed bidirectional output bus.
-    assign uio_out = {3'b000, a11, 4'b0000};
+    // TRIGGER_OUT maps explicitly to Bit 5 of your 8-bit packed bidirectional output bus.
+    assign uio_out = {2'b00, a11, 5'b00000};
 
     // --- Pmod 3 Outputs Mapping (uo_out) ---
     assign uo_out[7] = 1'b0; // Static ground tie-off
