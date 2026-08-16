@@ -41,12 +41,12 @@ prep -top tt_um_c061618g2_formal
 # Target Destination Path              # Local Source Repository Path
 defs/mmu_defs.sv                        ../src/defs/mmu_defs.sv
 core/mmu_core.sv                        ../src/core/mmu_core.sv
-module/anti_glitch_filter.sv        ../src/module/anti_glitch_filter.sv
+module/anti_glitch_filter.sv            ../src/module/anti_glitch_filter.sv
 tt_um_c061618g2.sv                      ../src/tt_um_c061618g2.sv
-src/defs/mmu_defs.sv                        ../src/defs/mmu_defs.sv
-src/core/mmu_core.sv                        ../src/core/mmu_core.sv
+src/defs/mmu_defs.sv                    ../src/defs/mmu_defs.sv
+src/core/mmu_core.sv                    ../src/core/mmu_core.sv
 src/module/anti_glitch_filter.sv        ../src/module/anti_glitch_filter.sv
-defs/mmu_defs_formal.sv defs/mmu_defs_formal.sv
-core/mmu_core_formal.sv core/mmu_core_formal.sv
-module/tt_anti_glitch_filter_formal.sv module/tt_anti_glitch_filter_formal.sv
-tt_um_c061618g2_formal.sv tt_um_c061618g2_formal.sv
+defs/mmu_defs_formal.sv                defs/mmu_defs_formal.sv
+core/mmu_core_formal.sv                core/mmu_core_formal.sv
+module/tt_anti_glitch_filter_formal.sv module/anti_glitch_filter_formal.sv
+tt_um_c061618g2_formal.sv              tt_um_c061618g2_formal.sv
