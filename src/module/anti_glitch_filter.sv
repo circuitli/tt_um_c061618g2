@@ -18,7 +18,7 @@
 `define ANTI_GLITCH_FILTER_SVH
 `default_nettype none
 
-module tt_anti_glitch_filter (
+module anti_glitch_filter (
      input  logic clk,              // System clock input for discrete time sampling
     input  logic rst_n,            // Asynchronous active-low global hardware reset
     input  logic raw_signal_in,    // Raw input wire carrying combinational hazards

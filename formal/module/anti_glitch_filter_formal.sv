@@ -19,7 +19,7 @@
  
 `default_nettype none
 
-module tt_anti_glitch_filter_formal (
+module anti_glitch_filter_formal (
     input wire clk,
     input wire rst_n,
     input wire raw_signal_in,
