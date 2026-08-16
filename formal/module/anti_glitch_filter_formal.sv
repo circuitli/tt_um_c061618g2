@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-`ifndef TT_ANTI_GLITCH_FILTER_FORMAL_SV
-`define TT_ANTI_GLITCH_FILTER_FORMAL_SV
+`ifndef ANTI_GLITCH_FILTER_FORMAL_SV
+`define ANTI_GLITCH_FILTER_FORMAL_SV
  
 `default_nettype none
 

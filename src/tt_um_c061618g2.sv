@@ -20,7 +20,7 @@
 `default_nettype none
 `include "src/defs/mmu_defs.sv"
 `include "src/core/mmu_core.sv"
-`include "src/module/tt_anti_glitch_filter.sv"
+`include "src/module/anti_glitch_filter.sv"
 
 module tt_um_c061618g2 (
     input  [7:0] ui_in,    // Dedicated hardware inputs
@@ -71,7 +71,7 @@ module tt_um_c061618g2 (
     );
 
     // 2. Clear RAM toggles via the delay filter circuit
-    tt_anti_glitch_filter filter_inst (
+    anti_glitch_filter filter_inst (
         .clk              (clk),   // Connect the system clock line
         .rst_n            (rst_n), // Connect the global reset line
         .raw_signal_in    (core_signals.ci_n),
