@@ -70,40 +70,40 @@ module mmu_core (
         core_out.ci_n         = 1'b1;
 
         // 2. Evaluate /S4 Expansion Right Cartridge Select
-        if (!a13 && !a14 && a15 && rd4 && !ref_n) begin
+        if (!a13 && !a14 && a15 && rd4 && ref_n) begin
             core_out.s4_n = 1'b0;
         end
 
         // 3. Evaluate /S5 Expansion Left Cartridge Select
-        if (!a13 && !a14 && a15 && rd5 && !ref_n) begin
+        if (a13 && !a14 && a15 && rd5 && ref_n) begin
             core_out.s5_n = 1'b0;
         end
 
         // 4. Evaluate /BASIC CS Memory Space Decode
-        if (!a13 && a14 && a15 && rd5 && !be_n && !ref_n) begin
+        if (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) begin
             core_out.basic_n = 1'b0;
         end
 
         // 5. Evaluate /IO Peripheral Space Decode ($D000)
-        if (a11 && a12 && !a13 && a14 && a15 && !ref_n) begin
+        if (!a11 && a12 && !a13 && a14 && a15 && ref_n) begin
             core_out.io_n = 1'b0;
         end
 
         // 6. Evaluate /OS Operating System ROM Decode
-        if ( (!a13 && a14 && a15 && !ren && !ref_n) ||
-             (a12 && !a14 && a15 && !ren && !ref_n) ||
-             (a11 && a12 && a13 && a14 && a15 && !ren && !mpd_n && !ref_n) ||
-             (a11 && a12 && a13 && a14 && a15 && !ren && map_n && !ref_n) ) begin
+        if ( (a13 && a14 && a15 && ren && ref_n) ||
+             (!a12 && a14 && a15 && ren && ref_n) ||
+             (a11 && a12 && !a13 && a14 && a15 && ren && mpd_n && ref_n) ||
+             (!a11 && a12 && !a13 && a14 && !a15 && ren && !map_n && ref_n) ) begin
             core_out.os_n = 1'b0;
         end
 
         // 7. Evaluate /CI Clock Inhibit Generation
-        if ( (!a13 && a14 && a15 && rd4 && !ref_n) ||
-             (!a13 && a14 && a15 && rd5 && !ref_n) ||
-             (!a13 && a14 && a15 && rd5 && !be_n && !ref_n) ||
+        if ( (!a13 && !a14 && a15 && rd4 && ref_n) ||
+             (a13 && !a14 && a15 && rd5 && ref_n) ||
+             (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) ||
              (core_out.os_n == 1'b0) ||
-             (a11 && a12 && !a13 && a14 && a15 && !ref_n) ||
-             (ref_n) ) begin
+             !(a11 && a12 && !a13 && a14 && a15 && ref_n) ||
+             (!ref_n) ) begin
             core_out.ci_n = 1'b0;
         end
     end

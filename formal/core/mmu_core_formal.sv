@@ -50,50 +50,50 @@ module mmu_core_formal (
         assert_loop_out:     assert (core_out.LOOP_OUT == 1'b1);
 
         // 2. Validate /S4 Cartridge Range Selector Check
-        if (!a13 && !a14 && a15 && rd4 && !ref_n) begin
+        if (!a13 && !a14 && a15 && rd4 && ref_n) begin
             assert_s4_active: assert (core_out.s4_n == 1'b0);
         end else begin
             assert_s4_inactive: assert (core_out.s4_n == 1'b1);
         end
 
         // 3. Validate /S5 Cartridge Range Selector Check
-        if (!a13 && !a14 && a15 && rd5 && !ref_n) begin
+        if (a13 && !a14 && a15 && rd5 && ref_n) begin
             assert_s5_active: assert (core_out.s5_n == 1'b0);
         end else begin
             assert_s5_inactive: assert (core_out.s5_n == 1'b1);
         end
 
         // 4. Validate /BASIC ROM Memory Space Selector Check
-        if (!a13 && a14 && a15 && rd5 && !be_n && !ref_n) begin
+        if (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) begin
             assert_basic_active: assert (core_out.basic_n == 1'b0);
         end else begin
             assert_basic_inactive: assert (core_out.basic_n == 1'b1);
         end
 
         // 5. Validate /IO Peripheral Select Check
-        if (a11 && a12 && !a13 && a14 && a15 && !ref_n) begin
+        if (!a11 && a12 && !a13 && a14 && a15 && ref_n) begin
             assert_io_active: assert (core_out.io_n == 1'b0);
         end else begin
             assert_io_inactive: assert (core_out.io_n == 1'b1);
         end
 
         // 6. Validate /OS Operating System ROM Selector Check
-        if ((!a13 && a14 && a15 && !ren && !ref_n) ||
-            (a12 && !a14 && a15 && !ren && !ref_n) ||
-            (a11 && a12 && a13 && a14 && a15 && !ren && !mpd_n && !ref_n) ||
-            (a11 && a12 && a13 && a14 && a15 && !ren && map_n && !ref_n)) begin
+        if ((a13 && a14 && a15 && ren && ref_n) ||
+            (!a12 && a14 && a15 && ren && ref_n) ||
+            (a11 && a12 && !a13 && a14 && a15 && ren && mpd_n && ref_n) ||
+            (!a11 && a12 && !a13 && a14 && !a15 && ren && !map_n && ref_n)) begin
             assert_os_active: assert (core_out.os_n == 1'b0);
         end else begin
             assert_os_inactive: assert (core_out.os_n == 1'b1);
         end
 
         // 7. Validate /CI Clock Inhibit Evaluation Check
-        if ((!a13 && a14 && a15 && rd4 && !ref_n) ||
-            (!a13 && a14 && a15 && rd5 && !ref_n) ||
-            (!a13 && a14 && a15 && rd5 && !be_n && !ref_n) ||
+        if ((!a13 && !a14 && a15 && rd4 && ref_n) ||
+            (a13 && !a14 && a15 && rd5 && ref_n) ||
+            (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) ||
             (core_out.os_n == 1'b0) ||
-            (a11 && a12 && !a13 && a14 && a15 && !ref_n) ||
-            (ref_n)) begin
+            (!a11 && a12 && !a13 && a14 && a15 && ref_n) ||
+            (!ref_n)) begin
             assert_ci_active: assert (core_out.ci_n == 1'b0);
         end else begin
             assert_ci_inactive: assert (core_out.ci_n == 1'b1);
