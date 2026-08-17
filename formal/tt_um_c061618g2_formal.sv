@@ -183,5 +183,17 @@ module tt_um_c061618g2_formal (
 
 endmodule
 
+// =========================================================================
+// FILE: mmu_bind.sv
+// DESCRIPTION: Binds the structural formal harness to the top-level wrapper
+// =========================================================================
+
+bind tt_um_c061618g2_formal  mmu_defs_formal i_mmu_defs_formal (
+    .ui_in   (ui_in),   // Automatic bit-stream cast: 8-bit wire -> pmod1_inputs_t
+    .uio_in  (uio_in),  // Automatic bit-stream cast: 8-bit wire -> pmod2_inputs_t
+    .uio_out (uio_out), // Automatic bit-stream cast: 8-bit wire -> pmod2_outputs_t
+    .uo_out  (uo_out)   // Automatic bit-stream cast: 8-bit wire -> pmod3_outputs_t
+);
+
 `endif
 
