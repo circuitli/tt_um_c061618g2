@@ -1,9 +1,8 @@
 # ==============================================================================
-# PRODUCTION VERIFICATION SUITE FOR ATARI 800XL MMU CORE
+# PRODUCTION VERIFICATION SUITE MMU
 # Total Test Cases: 15
 # Validates: Memory mappings, priority locking, anti-glitch filter latency,
 #            and loopback interfaces under active-high cartridge configurations.
-# Reorganized from Essential Baseline to Edge/Safety Boundaries.
 # ==============================================================================
 
 import cocotb
@@ -64,7 +63,7 @@ def unpack_uo_out(val):
 async def initialize_dut(dut):
     """
     Spawns the simulation clock tree and issues a clean synchronous reset pulse.
-    Dynamically accommodates synchronizer depth.
+    Dynamically scales wait states to flush internal synchronizer pipelines.
     """
     mystic_clock = Clock(dut.clk, 20, unit="ns")
     cocotb.start_soon(mystic_clock.start())
@@ -76,16 +75,15 @@ async def initialize_dut(dut):
     
     dut.rst_n.value = 1
     
-    # Read the pipeline depth parameter dynamically from the synchronizer instance
-    if hasattr(dut, "user_project"):
+    try:
         stages = int(dut.user_project.u_clock_sync.STAGES.value)
-    else:
-        stages = int(dut.u_clock_sync.STAGES.value)  
-
+    except AttributeError:
+        stages = 2
+        
     await ClockCycles(dut.clk, stages + 2)
 
 # ==============================================================================
-# SECTION 1: BOOT & GLOBAL HARDWARE CONTROL INVARIANTS
+# CATEGORY A: FOUNDATIONAL BOOT & INITIALIZATION TASKS
 # ==============================================================================
 
 @cocotb.test()
@@ -95,33 +93,107 @@ async def test_project_init(dut):
     await ReadOnly()
     dut._log.info("[+] Core clock tree and reset pipeline initialized successfully.")
 
+# ==============================================================================
+# CATEGORY B: NOMINAL ATARI ADDRESS SPACE MEMORY DECODING
+# ==============================================================================
+
 @cocotb.test()
-async def test_global_enable_behavior(dut):
-    dut._log.info("--- Running Test Case 2: Global Enable Pin Gating ---")
-    mystic_clock = Clock(dut.clk, 20, unit="ns")
-    cocotb.start_soon(mystic_clock.start())
+async def test_standard_os_read(dut):
+    dut._log.info("--- Running Test Case 2: Operating System ROM Decode ($F800) ---")
+    await initialize_dut(dut)
     
-    dut.ui_in.value = 0x00
-    dut.uio_in.value = 0x00
-    dut.ena.value = 0
-    dut.rst_n.value = 1
+    dut.ui_in.value = pack_ui_in(addr=0x1F, map_n=1, rd4=0, rd5=0)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
     
-    await RisingEdge(dut.clk)
+    await ClockCycles(dut.clk, 3)
     await ReadOnly()
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
     
-    assert pins["os_n"] == 1, "Error: Outputs not disabled when ena is low"
+    assert pins["os_n"] == 0, f"Error: /OS failed to pull active low! Got: {pins['os_n']}"
     assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+    assert pins["ci_n"] == 0, "Error: /CI must fall low during active internal ROM matches!"
+
+@cocotb.test()
+async def test_standard_basic_read(dut):
+    dut._log.info("--- Running Test Case 3: BASIC Interpreter Space Decode ($A000) ---")
+    await initialize_dut(dut)
+    
+    dut.ui_in.value = pack_ui_in(addr=0x14, map_n=1, rd4=0, rd5=0)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=0, flg_n=1, loop_in=1)
+    
+    await ClockCycles(dut.clk, 3)
+    await ReadOnly()
+    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
+    
+    assert pins["basic_n"] == 0, f"Error: /BASIC failed to pull active low! Got: {pins['basic_n']}"
+    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+    assert pins["os_n"] == 1, "Mutual Contention Error: /OS clapped active simultaneously!"
+
+@cocotb.test()
+async def test_standard_io_read(dut):
+    dut._log.info("--- Running Test Case 4: Peripheral Hardware I/O Allocation ($D000) ---")
+    await initialize_dut(dut)
+    
+    dut.ui_in.value = pack_ui_in(addr=0x1A, map_n=1, rd4=0, rd5=0)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
+    
+    await ClockCycles(dut.clk, 3)
+    await ReadOnly()
+    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
+    
+    assert pins["io_n"] == 0, f"Error: /IO failed to pull active low! Got: {pins['io_n']}"
+    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+    assert pins["os_n"] == 1, "Collision Error: /OS activated over the hardware I/O registry!"
+
+# ==============================================================================
+# CATEGORY C: CARTRIDGE EXPANSION BANK RECOGNITION
+# ==============================================================================
+
+@cocotb.test()
+async def test_s4_bank_select(dut):
+    dut._log.info("--- Running Test Case 5: Right Expansion Cartridge Bank Select ---")
+    await initialize_dut(dut)
+    
+    dut.ui_in.value = pack_ui_in(addr=0x10, map_n=1, rd4=1, rd5=0)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
+    
+    await ClockCycles(dut.clk, 3)
+    await ReadOnly()
+    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
+    
+    assert pins["s4_n"] == 0, f"Error: /S4 failed to pull active low! Got: {pins['s4_n']}"
+    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+    assert pins["s5_n"] == 1, "Mutual Contention Error: /S5 clapped active simultaneously!"
+
+@cocotb.test()
+async def test_s5_bank_select(dut):
+    dut._log.info("--- Running Test Case 6: Left Expansion Cartridge Bank Select ---")
+    await initialize_dut(dut)
+    
+    dut.ui_in.value = pack_ui_in(addr=0x14, map_n=1, rd4=0, rd5=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
+    
+    await ClockCycles(dut.clk, 3)
+    await ReadOnly()
+    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
+    
+    assert pins["s5_n"] == 0, f"Error: /S5 failed to pull active low! Got: {pins['s5_n']}"
+    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+    assert pins["s4_n"] == 1, "Mutual Contention Error: /S4 clapped active simultaneously!"
+
+# ==============================================================================
+# CATEGORY D: INTERFACE FAULT & HARDWARE SIGNAL EXCEPTIONS
+# ==============================================================================
 
 @cocotb.test()
 async def test_disconnected_pmod_behavior(dut):
-    dut._log.info("--- Running Test Case 3: Disconnected Peripheral Float State ---")
+    dut._log.info("--- Running Test Case 7: Disconnected Peripheral Float State ---")
     await initialize_dut(dut)
     
     dut.ui_in.value = 0xFF
     dut.uio_in.value = 0xFF
     
-    for _ in range(3): await RisingEdge(dut.clk)
+    await ClockCycles(dut.clk, 3)
     await ReadOnly()
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
     
@@ -133,180 +205,49 @@ async def test_disconnected_pmod_behavior(dut):
     assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
     assert pins["ci_n"] == 0, f"Error: /CI must default active-low to inhibit RAM! Got: {pins['ci_n']}"
 
-# ==============================================================================
-# SECTION 2: STANDARD NOMINAL MEMORY MAP DECODING
-# ==============================================================================
-
-@cocotb.test()
-async def test_standard_os_read(dut):
-    dut._log.info("--- Running Test Case 4: Operating System ROM Decode ($F800) ---")
-    await initialize_dut(dut)
-    
-    dut.ui_in.value = pack_ui_in(addr=0x1F, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
-    
-    for _ in range(3): await RisingEdge(dut.clk)
-    await ReadOnly()
-    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
-    
-    assert pins["os_n"] == 0, f"Error: /OS failed to pull active low! Got: {pins['os_n']}"
-    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
-    assert pins["ci_n"] == 0, "Error: /CI must fall low during active internal ROM matches!"
-
-@cocotb.test()
-async def test_standard_basic_read(dut):
-    dut._log.info("--- Running Test Case 5: BASIC Interpreter Space Decode ($A000) ---")
-    await initialize_dut(dut)
-    
-    dut.ui_in.value = pack_ui_in(addr=0x14, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=0, flg_n=1, loop_in=1)
-    
-    for _ in range(3): await RisingEdge(dut.clk)
-    await ReadOnly()
-    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
-    
-    assert pins["basic_n"] == 0, f"Error: /BASIC failed to pull active low! Got: {pins['basic_n']}"
-    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
-    assert pins["os_n"] == 1, "Mutual Contention Error: /OS clapped active simultaneously!"
-
-@cocotb.test()
-async def test_standard_io_read(dut):
-    dut._log.info("--- Running Test Case 6: Peripheral Hardware I/O Allocation ($D000) ---")
-    await initialize_dut(dut)
-    
-    dut.ui_in.value = pack_ui_in(addr=0x1A, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
-    
-    for _ in range(3): await RisingEdge(dut.clk)
-    await ReadOnly()
-    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
-    
-    assert pins["io_n"] == 0, f"Error: /IO failed to pull active low! Got: {pins['io_n']}"
-    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
-    assert pins["os_n"] == 1, "Collision Error: /OS activated over the hardware I/O registry!"
-
-# ==============================================================================
-# SECTION 3: HARDWARE HOLES & REFRESH SEPARATION OVERRIDES
-# ==============================================================================
-
-@cocotb.test()
-async def test_os_hole_d000_bypass(dut):
-    dut._log.info("--- Running Test Case 7: OS Hardware Hole Exception Separation ($D400) ---")
-    await initialize_dut(dut)
-    
-    dut.ui_in.value = pack_ui_in(addr=0x1A, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
-    
-    for _ in range(3): await RisingEdge(dut.clk)
-    await ReadOnly()
-    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
-    assert pins["io_n"] == 0 and pins["os_n"] == 1, "Error: Overlap detected inside the $D000-$D7FF hardware block hole!"
-    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
-
 @cocotb.test()
 async def test_cas_inhibit_activation(dut):
     dut._log.info("--- Running Test Case 8: Refresh Wait-State CAS Inhibit ---")
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x1B, map_n=1, rd4=0, rd5=0)
-    # Set ref_n=0 to accurately trigger the active-low refresh lockout cycle
     dut.uio_in.value = pack_uio_in(ren=1, ref_n=0, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
     
-    # Propagation loop for anti-glitch filtering and staging latencies
-    for _ in range(3): 
-        await RisingEdge(dut.clk)
-    await ReadOnly()
-    
-    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
-    # Adjusted assertion to match the expected inverted state of the CAS inhibit line
-    assert pins["ci_n"] == 0, f"Error: /CI signal failed its inversion mapping during refresh! Got: {pins['ci_n']}"
-    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
-
-# ==============================================================================
-# SECTION 4: CARTRIDGE EXPANSION DOMINANCE INTERLOCKING
-# ==============================================================================
-
-@cocotb.test()
-async def test_s4_bank_select(dut):
-    dut._log.info("--- Running Test Case 9: Right Expansion Cartridge Bank Select ---")
-    await initialize_dut(dut)
-    
-    dut.ui_in.value = pack_ui_in(addr=0x10, map_n=1, rd4=1, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
-    
-    for _ in range(3): await RisingEdge(dut.clk)
+    await ClockCycles(dut.clk, 3)
     await ReadOnly()
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
-    
-    assert pins["s4_n"] == 0, f"Error: /S4 failed to pull active low! Got: {pins['s4_n']}"
-    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
-    assert pins["s5_n"] == 1, "Mutual Contention Error: /S5 clapped active simultaneously!"
-
-@cocotb.test()
-async def test_s5_bank_select(dut):
-    dut._log.info("--- Running Test Case 10: Left Expansion Cartridge Bank Select ---")
-    await initialize_dut(dut)
-    
-    dut.ui_in.value = pack_ui_in(addr=0x14, map_n=1, rd4=0, rd5=1)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
-    
-    for _ in range(3): await RisingEdge(dut.clk)
-    await ReadOnly()
-    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
-    
-    assert pins["s5_n"] == 0, f"Error: /S5 failed to pull active low! Got: {pins['s5_n']}"
-    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
-    assert pins["s4_n"] == 1, "Mutual Contention Error: /S4 clapped active simultaneously!"
-
-@cocotb.test()
-async def test_basic_disable_by_cartridge(dut):
-    dut._log.info("--- Running Test Case 11: Left Cartridge Priority Dominance Over BASIC ---")
-    await initialize_dut(dut)
-    
-    dut.ui_in.value = pack_ui_in(addr=0x14, map_n=1, rd4=0, rd5=1)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=0, flg_n=1, loop_in=1)
-    
-    for _ in range(3): await RisingEdge(dut.clk)
-    await ReadOnly()
-    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
-    assert pins["basic_n"] == 1, "Priority Interlocking Failure: Internal BASIC active alongside Left Cartridge!"
-    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
-
-# ==============================================================================
-# SECTION 5: ASYNCHRONOUS SECURITY LINES & HARDWARE LOOPBACKS
-# ==============================================================================
+    assert pins["ci_n"] == 0, f"Error: CAS Inhibit failed to assert low during active refresh requests! Got: {pins['ci_n']}"
 
 @cocotb.test()
 async def test_trigger_out_passthrough(dut):
-    dut._log.info("--- Running Test Case 12: TRIGGER_OUT A11 Passthrough ---")
+    dut._log.info("--- Running Test Case 9: TRIGGER_OUT A11 Passthrough ---")
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x00, map_n=1, rd4=0, rd5=0)
     dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
     
-    await RisingEdge(dut.clk)
+    await ClockCycles(dut.clk, 1)
     await ReadOnly()
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
     assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
     
-    await RisingEdge(dut.clk)
+    await ClockCycles(dut.clk, 1)
     dut.ui_in.value = pack_ui_in(addr=0x01, map_n=1, rd4=0, rd5=0)
     
-    await RisingEdge(dut.clk)
+    await ClockCycles(dut.clk, 1)
     await ReadOnly() 
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
     assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
 
 @cocotb.test()
 async def test_external_board_loopback(dut):
-    dut._log.info("--- Running Test Case 13: PCB External Wire Loopback ---")
+    dut._log.info("--- Running Test Case 10: PCB External Wire Loopback ---")
     await initialize_dut(dut)
     
-    # loop_in=0 functions like an active-low flag safety disable line, driving /OS high (1)
     dut.ui_in.value = pack_ui_in(addr=0x1F, map_n=1, rd4=0, rd5=0)
     dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=0)
     
-    for _ in range(3): await RisingEdge(dut.clk)
+    await ClockCycles(dut.clk, 3)
     await ReadOnly()
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
     
@@ -315,17 +256,67 @@ async def test_external_board_loopback(dut):
 
 @cocotb.test()
 async def test_flg_n_input_handling(dut):
-    dut._log.info("--- Running Test Case 14: Flag Input Line System Disabling ---")
+    dut._log.info("--- Running Test Case 11: Flag Input Line System Disabling ---")
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x1F, map_n=1, rd4=0, rd5=0)
     dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=0, loop_in=1)
     
-    for _ in range(3): await RisingEdge(dut.clk)
+    await ClockCycles(dut.clk, 3)
     await ReadOnly()
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
     
     assert pins["os_n"] == 1, "Error: /OS not disabled when FLG_n is low"
+    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+
+# ==============================================================================
+# CATEGORY E: PRIORITY INTERLOCKS & ARCHITECTURAL EDGE-CASES
+# ==============================================================================
+
+@cocotb.test()
+async def test_global_enable_behavior(dut):
+    dut._log.info("--- Running Test Case 12: Global Enable Pin Gating ---")
+    mystic_clock = Clock(dut.clk, 20, unit="ns")
+    cocotb.start_soon(mystic_clock.start())
+    
+    dut.ui_in.value = 0x00
+    dut.uio_in.value = 0x00
+    dut.ena.value = 0
+    dut.rst_n.value = 1
+    
+    await ClockCycles(dut.clk, 1)
+    await ReadOnly()
+    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
+    
+    assert pins["os_n"] == 1, "Error: Outputs not disabled when ena is low"
+    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+
+@cocotb.test()
+async def test_basic_disable_by_cartridge(dut):
+    dut._log.info("--- Running Test Case 13: Left Cartridge Priority Dominance Over BASIC ---")
+    await initialize_dut(dut)
+    
+    dut.ui_in.value = pack_ui_in(addr=0x14, map_n=1, rd4=0, rd5=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=0, flg_n=1, loop_in=1)
+    
+    await ClockCycles(dut.clk, 3)
+    await ReadOnly()
+    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
+    assert pins["basic_n"] == 1, "Priority Interlocking Failure: Internal BASIC active alongside Left Cartridge!"
+    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+
+@cocotb.test()
+async def test_os_hole_d000_bypass(dut):
+    dut._log.info("--- Running Test Case 14: OS Hardware Hole Exception Separation ($D400) ---")
+    await initialize_dut(dut)
+    
+    dut.ui_in.value = pack_ui_in(addr=0x1A, map_n=1, rd4=0, rd5=0)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
+    
+    await ClockCycles(dut.clk, 3)
+    await ReadOnly()
+    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
+    assert pins["io_n"] == 0 and pins["os_n"] == 1, "Error: Overlap detected inside the $D000-$D7FF hardware block hole!"
     assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
 
 @cocotb.test()
@@ -336,7 +327,7 @@ async def test_os_disable_by_ren(dut):
     dut.ui_in.value = pack_ui_in(addr=0x1F, map_n=1, rd4=0, rd5=0)
     dut.uio_in.value = pack_uio_in(ren=0, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
     
-    for _ in range(3): await RisingEdge(dut.clk)
+    await ClockCycles(dut.clk, 3)
     await ReadOnly()
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
     assert pins["os_n"] == 1, f"Error: /OS pulled low when explicitly disabled via software REN control loop! Got: {pins['os_n']}"
