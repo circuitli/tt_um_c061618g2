@@ -13,5 +13,11 @@ jobs:
         with:
           submodules: recursive
 
+      # Pre-install Typst using a modern, robust action to place it in the tool cache
+      - name: Pre-install Typst Compiler
+        uses: typst-community/setup-typst@v5
+        with:
+          typst-version: '0.13.1'
+
       - name: Build docs
         uses: TinyTapeout/tt-gds-action/docs@ttihp26b
