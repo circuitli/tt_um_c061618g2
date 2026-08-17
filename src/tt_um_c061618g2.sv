@@ -20,7 +20,9 @@
 `default_nettype none
 `include "src/defs/mmu_defs.sv"
 `include "src/core/mmu_core.sv"
+`include "src/module/clock_synchronizer.sv"
 `include "src/module/anti_glitch_filter.sv"
+
 
 module tt_um_c061618g2 (
     input  [7:0] ui_in,    // Dedicated hardware inputs
@@ -32,6 +34,19 @@ module tt_um_c061618g2 (
     input  [0:0] clk,      // Part of the strict wrapper standard!
     input  [0:0] rst_n     // Part of the strict wrapper standard!
 );
+
+    // 1. Declare Internal Synchronized Clock Net
+    logic sys_clk;
+
+    // 2. Instantiate Clock Synchronizer
+    // Converts incoming active-low rst_n to active-high reset layout
+    clock_synchronizer #(
+        .STAGES(2)
+    ) u_clock_sync (
+        .rst      (!rst_n),
+        .raw_clk  (clk),
+        .sync_clk (sys_clk)
+    );
 
     // =========================================================================
     // SEPARATED INTERFACE STRUCTURE BINDING
@@ -72,7 +87,7 @@ module tt_um_c061618g2 (
 
     // 2. Clear RAM toggles via the delay filter circuit
     anti_glitch_filter filter_inst (
-        .clk              (clk),   // Connect the system clock line
+        .clk              (sys_clk),   // Connect the system clock line
         .rst_n            (rst_n), // Connect the global reset line
         .raw_signal_in    (core_signals.ci_n),
         .clean_signal_out (stabilized_ci_n)
