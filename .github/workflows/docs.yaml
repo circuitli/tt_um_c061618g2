@@ -13,11 +13,25 @@ jobs:
         with:
           submodules: recursive
 
-      # Pre-install Typst using a modern, robust action to place it in the tool cache
-      - name: Pre-install Typst Compiler
-        uses: typst-community/setup-typst@v5
-        with:
-          typst-version: '0.13.1'
+      # Workaround: Pre-populate the GitHub Actions runner tool cache.
+      # Since the internal scripts of the third-party 'tt-gds-action' use an obsolete version 
+      # of the setup utility, their API version resolution fails. Pre-seeding the expected 
+      # runner tool cache path forces the internal utility to find the binary locally and 
+      # bypass the broken remote resolution step entirely.
+      - name: Pre-populate Typst tool cache workaround
+        run: |
+          mkdir -p /tmp/typst
+          curl -L https://github.com/typst/typst/releases/download/v0.13.1/typst-x86_64-unknown-linux-musl.tar.xz -o /tmp/typst.tar.xz
+          tar -xf /tmp/typst.tar.xz -C /tmp/typst --strip-components=1
+          
+          # Structure the precise path pattern required by the setup action framework
+          mkdir -p "$RUNNER_TOOL_CACHE/typst/0.13.1/x64"
+          cp /tmp/typst/typst "$RUNNER_TOOL_CACHE/typst/0.13.1/x64/typst"
+          chmod +x "$RUNNER_TOOL_CACHE/typst/0.13.1/x64/typst"
+          
+          # Also install globally to the runner PATH as a fallback measure
+          sudo cp /tmp/typst/typst /usr/local/bin/typst
+          sudo chmod +x /usr/local/bin/typst
 
       - name: Build docs
         uses: TinyTapeout/tt-gds-action/docs@ttihp26b
