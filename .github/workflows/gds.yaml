@@ -61,6 +61,14 @@ jobs:
       - name: Checkout Repository Code
         uses: actions/checkout@v4
 
+      - name: Setup Verilator Compilation Cache
++       uses: actions/cache@v4
++       with:
++         path: test/sim_build
++         key: ${{ runner.os }}-verilator-gls-${{ github.sha }}
++         restore-keys: |
++           ${{ runner.os }}-verilator-gls-
++
       # Native download step: extracts the 'runs/' directory tree perfectly intact
       - name: Download GDS Netlist Artifacts
         uses: actions/download-artifact@v4
@@ -71,6 +79,8 @@ jobs:
         uses: veryl-lang/setup-verilator@v1
         with:
           version: '5.036'
+          cache: 'pip' # Native pip cache tracking for python environments
+
 
       - name: Set up Python Runtime
         uses: actions/setup-python@v5
