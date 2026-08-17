@@ -62,13 +62,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Verilator Compilation Cache
-+       uses: actions/cache@v4
-+       with:
-+         path: test/sim_build
-+         key: ${{ runner.os }}-verilator-gls-${{ github.sha }}
-+         restore-keys: |
-+           ${{ runner.os }}-verilator-gls-
-+
+        uses: actions/cache@v4
+        with:
+          path: test/sim_build
+          key: ${{ runner.os }}-verilator-gls-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-verilator-gls-
+
       # Native download step: extracts the 'runs/' directory tree perfectly intact
       - name: Download GDS Netlist Artifacts
         uses: actions/download-artifact@v4
