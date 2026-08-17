@@ -82,7 +82,7 @@ endmodule
 // =========================================================================
 // BIND DIRECTIVE: Inject properties cleanly into production RTL target
 // =========================================================================
-bind tt_anti_glitch_filter tt_anti_glitch_filter_formal i_tt_anti_glitch_filter_formal (
+bind anti_glitch_filter anti_glitch_filter_formal i_anti_glitch_filter_formal (
     .clk              (clk),
     .rst_n            (rst_n),
     .raw_signal_in    (raw_signal_in),
