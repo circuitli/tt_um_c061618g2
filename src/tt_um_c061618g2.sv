@@ -38,9 +38,7 @@ module tt_um_c061618g2 (
     wire TESTMODE_n = uio_in[4]; // Industrial test platforms
     wire flg_n      = uio_in[6]; // Consolidated active-low safety fault line
 
-    // Force both Yosys and OpenROAD to preserve this exact net name verbatim
-    // and prevent it from being renamed or optimized during flattening.
-    (* keep = "true", dont_touch = "true" *) wire sys_clk;
+    wire sys_clk;
 
     // 2. Instantiate Clock Synchronizer
     // Converts incoming active-low rst_n to active-high reset layout
