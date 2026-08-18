@@ -16,9 +16,12 @@
   "//": "SYNTH_STRATEGY - Force Yosys to prioritize delay minimization over area to handle high-frequency transitions",
   "SYNTH_STRATEGY": "DELAY 0",
 
+  "//": "FP_CORE_UTIL - Force LibreLane to generate a much larger dynamic box for our 3% cell logic by lowering core utilization",
+  "FP_CORE_UTIL": 30,
+
   "//": "PL_TARGET_DENSITY_PCT - You can increase this if Global Placement fails with error GPL-0302.",
   "//": "Users have reported that values up to 80 worked well for them.",
-  "PL_TARGET_DENSITY_PCT": 60,
+  "PL_TARGET_DENSITY_PCT": 40,
 
   "//": "RUN_POST_GPL_DESIGN_REPAIR - Bypass LibreLane crash by forcing automatic hold-buffer insertion after global placement",
   "RUN_POST_GPL_DESIGN_REPAIR": true,
