@@ -13,6 +13,9 @@
 
   "DESIGN_NAME": "tt_um_c061618g2",
 
+  "SYNTH_STRATEGY - Force Yosys to prioritize delay minimization over area to handle high-frequency transitions",
+  "SYNTH_STRATEGY": "DELAY 0",
+
   "//": "PL_TARGET_DENSITY_PCT - You can increase this if Global Placement fails with error GPL-0302.",
   "//": "Users have reported that values up to 80 worked well for them.",
   "PL_TARGET_DENSITY_PCT": 60,
@@ -26,10 +29,8 @@
   "//": "RUN_POST_GRT_DESIGN_REPAIR - Force physical cell legalisation and track repair after global routing to resolve severe hold violations",
   "RUN_POST_GRT_DESIGN_REPAIR": true,
 
-
   "//": "PL_RESETER_HOLD_SLACK_MARGIN - Force a heavy 400ps cushion to isolate fast data paths from clock mux skew",
-  "PL_RESETER_HOLD_SLACK_MARGIN": 0.40,
-
+  "//": "PL_RESETER_HOLD_SLACK_MARGIN",
 
   "//": "CLOCK_PERIOD - Increase this in case you are getting setup time violations.",
   "//": "The value is in nanoseconds, so 20ns == 50MHz.",
