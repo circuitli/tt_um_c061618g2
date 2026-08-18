@@ -12,6 +12,7 @@
   "//": "Here are some of the variables you may want to change:",
 
   "DESIGN_NAME": "tt_um_c061618g2",
+  "SDC_FILE": "src/mmu_constraints.sdc",
 
   "//": "SYNTH_STRATEGY - Force Yosys to prioritize delay minimization over area to handle high-frequency transitions",
   "SYNTH_STRATEGY": "DELAY 0",
