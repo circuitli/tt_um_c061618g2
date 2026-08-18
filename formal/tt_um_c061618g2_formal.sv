@@ -76,7 +76,7 @@ module tt_um_c061618g2_formal (
     wire       flg_n           = uio_in[6];
 
     // Master safety cutoff definition matching production RTL
-    wire system_disabled = (flg_n == 1'b0) || (ena == 1'b0);
+    wire system_disabled = (flg_n == 1'b0) || (ena == 1'b0) || (rst_n == 1'b0);
 
     // 16-Bit Descriptive Memory Address Space Constants
     parameter [15:0] CART_S4_START      = 16'h8000;
@@ -98,6 +98,22 @@ module tt_um_c061618g2_formal (
         assert_uio_direction: assert(uio_oe == 8'b00100000);
 
         assert_LOOP_OUT: assert(uo_out[6] == 1);
+
+        if (!TESTMODE_n) begin
+            // Safe state validation (active only after reset drops to prevent cycle 0 conflicts)
+            if (rst) begin
+                assert_dft_outputs_safe: assert (uo_out == 8'b01111111);
+            end
+        end
+    end
+
+    always @(posedge clk) begin
+        if (f_past_valid && !rst) begin
+            // Verifies the structural path on the active sampling edge
+            if (!TESTMODE_n) begin
+                assert_dft_clock_and_enable_isolation: assert (phase_clk == 1'b1);
+            end
+        end
     end
 
     // ----------------------------------------------------------------
@@ -107,7 +123,7 @@ module tt_um_c061618g2_formal (
         
         // Target Reset Behavior Checking
         if (rst) begin
-            assert_uo_reset:  assert(uo_out == 8'b01000000);
+            assert_uo_reset:  assert (uo_out == 8'b01111111);
             assert_uio_reset: assert(uio_out == 8'b00100000);
         end
         

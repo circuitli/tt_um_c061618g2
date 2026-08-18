@@ -7,7 +7,7 @@
 
 import cocotb
 from cocotb.clock import Clock
-from cocotb.triggers import RisingEdge, ReadOnly, ClockCycles
+from cocotb.triggers import RisingEdge, ReadOnly, ClockCycles, NextTimeStep
 
 def pack_ui_in(addr, map_n, rd4, rd5):
     """
@@ -327,13 +327,53 @@ async def test_production_bypass_active(dut):
     dut._log.info("--- Running Test Case 15: Active-Low Production TESTMODE_n Active Bypass (0) ---")
     await initialize_dut(dut)
     
-    # Assert active-low TESTMODE_n to 0 (forces the anti-glitch filter into combinational transparency mode)
+    # Assert active-low TESTMODE_n to 0 
     dut.ui_in.value = pack_ui_in(addr=0x1B, map_n=1, rd4=0, rd5=0)
     dut.uio_in.value = pack_uio_in(ren=1, ref_n=0, mpd_n=1, be_n=1, TESTMODE_n=0, flg_n=1)
     
-    # In manufacturing test bypass mode, outputs evaluate combinationally without filter accumulation delay loops
     await ClockCycles(dut.clk, 1)
     await ReadOnly()
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
+    
+    # This will now PASS beautifully because testmode doesn't freeze the outputs anymore!
     assert pins["ci_n"] == 0, f"DFT Failure: Anti-glitch filter did not bypass combinationally! Got: {pins['ci_n']}"
     assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+
+@cocotb.test()
+async def test_production_bypass_reset_interlock(dut):
+    dut._log.info("--- Running Test Case 16: DFT Reset Priority and Interlock Masking ---")
+    
+    # 1. Initialize and settle the 2-stage clock synchronizer
+    await initialize_dut(dut)
+    dut.rst_n.value = 1
+    await ClockCycles(dut.clk, 2) 
+    
+    # 2. Engage active-low TESTMODE_n (0) and configure memory inputs
+    dut.ui_in.value = pack_ui_in(addr=0x1B, map_n=1, rd4=0, rd5=0)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=0, mpd_n=1, be_n=1, TESTMODE_n=0, flg_n=1)
+    
+    # Let pins stabilize in dynamic test bypass mode
+    await ClockCycles(dut.clk, 1)
+    await ReadOnly()
+    pins_before = unpack_uo_out(dut.uo_out.value.to_unsigned())
+    assert pins_before["ci_n"] == 0, "Error: System should be passing data, not masked!"
+
+    # 3. Step out of the ReadOnly phase to enable writing
+    await NextTimeStep() 
+    
+    # 4. Strike the active-low reset line
+    dut._log.info("Applying rst_n to verify immediate combinational override...")
+    dut.rst_n.value = 0
+    
+    # 5. Let the simulator process the write through the combinational gates
+    await NextTimeStep()
+    await ReadOnly()
+    
+    # 6. Verify absolute masking priority (Must equal 127 / 0x7F)
+    current_uo = int(dut.uo_out.value)
+    assert current_uo == 127, f"DFT Security Breach: Hardware Reset did not override test mode! Expected 127, got {current_uo}"
+    
+    # Clean up and exit
+    await NextTimeStep()
+    dut.rst_n.value = 1
+    await ClockCycles(dut.clk, 2)
