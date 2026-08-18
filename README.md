@@ -31,11 +31,11 @@ The physical layout aligns with the Tiny Tapeout hardware tile format using the 
 |---|---|---|---|
 | `uio_in[0]` | `ren` | Input | Active-low ROM/RAM enable flag |
 | `uio_in[1]` | `ref_n` | Input | Active-low dynamic refresh cycle signal |
-| `uio_in[2]` | `mpd_n` | Input | Memory protect select flag |
+| `uio_in[2]` | `mpd_n` | Input | Active-Low memory protect select flag |
 | `uio_in[3]` | `be_n` | Input | Active-low baseline memory space enable |
-| `uio_in[4]` | `flg_n` | Input | System execution tracking status flag |
+| `uio_in[4]` | `TESTMODE_n` | Input | Active-Low production test mode bypass |
 | `uio_out[5]` | `TRIGGER_OUT` | Output | Dedicated Hardware Validation Output Trigger |
-| `uio_in[6]` | `LOOP_IN` | Input | Operational status feedback line |
+| `uio_in[6]` | `FLG_n` | Input | Active-Low system errorj  flag |
 | `uio_in[7]` | `unused` | Reserved | Tied off internally |
 
 ### System Output Vector (`uo_out`)
