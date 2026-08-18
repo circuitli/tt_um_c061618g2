@@ -17,8 +17,12 @@
   "//": "Users have reported that values up to 80 worked well for them.",
   "PL_TARGET_DENSITY_PCT": 60,
 
-  "//": "RUN_POST_GPL_DESIGN_REPAIR Bypass LibreLane crash by forcing automatic hold-buffer insertion after global placement",
+  "//": "RUN_POST_GPL_DESIGN_REPAIR - Bypass LibreLane crash by forcing automatic hold-buffer insertion after global placement",
   "RUN_POST_GPL_DESIGN_REPAIR": true,
+
+  "PL_RESETER_HOLD_SLACK_MARGIN - Force a heavy 400ps cushion to isolate fast data paths from clock mux skew",
+  "PL_RESETER_HOLD_SLACK_MARGIN": 0.40,
+
 
   "//": "CLOCK_PERIOD - Increase this in case you are getting setup time violations.",
   "//": "The value is in nanoseconds, so 20ns == 50MHz.",
