@@ -32,6 +32,9 @@
   "//": "PL_RESETER_HOLD_SLACK_MARGIN - Force a heavy 400ps cushion to isolate fast data paths from clock mux skew",
   "PL_RESETER_HOLD_SLACK_MARGIN": 0.40,
 
+  "//": "GLB_RESETER_HOLD_SLACK_MARGIN - Force a strict 400ps hold cushion during global routing to absorb clock mux skew across all wire networks",
+  "GLB_RESETER_HOLD_SLACK_MARGIN": 0.40
+
   "//": "CLOCK_PERIOD - Increase this in case you are getting setup time violations.",
   "//": "The value is in nanoseconds, so 20ns == 50MHz.",
   "CLOCK_PERIOD": 20,
