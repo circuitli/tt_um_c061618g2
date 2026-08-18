@@ -27,7 +27,7 @@
 
   "//": "PL_TARGET_DENSITY_PCT - You can increase this if Global Placement fails with error GPL-0302.",
   "//": "Users have reported that values up to 80 worked well for them.",
-  "PL_TARGET_DENSITY_PCT": 50,
+  "PL_TARGET_DENSITY_PCT": 60,
 
   "//": "RUN_POST_GPL_DESIGN_REPAIR - Bypass LibreLane crash by forcing automatic hold-buffer insertion after global placement",
   "RUN_POST_GPL_DESIGN_REPAIR": true,
@@ -39,7 +39,7 @@
   "RUN_POST_GRT_DESIGN_REPAIR": true,
 
    "//": "CELL_PAD - Increase cell padding to force the tool to leave empty space around every single logic gate",
-  "CELL_PAD": 2,
+  "CELL_PAD": 0,
 
   "//": "GRT_RESIZER_TIMING_OPTIONS - Direct the global router to optimize timing routes with maximum iterations",
   "GLB_RESIZER_TIMING_OPTIMIZATIONS": true,
