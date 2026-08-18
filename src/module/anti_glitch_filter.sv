@@ -21,28 +21,43 @@
 module anti_glitch_filter (
      input  logic clk,              // System clock input for discrete time sampling
     input  logic rst_n,            // Asynchronous active-low global hardware reset
+    input  logic TESTMODE_n,         // Full production test mode override switch
     input  logic raw_signal_in,    // Raw input wire carrying combinational hazards
     output logic clean_signal_out  // Glitch-isolated, stabilized output signal
 );
 
+    
     logic [1:0] shift_reg;
+    logic       filtered_signal;
 
+    // ----------------------------------------------------------------
+    // 1. Sequential Sampling and Hysteresis Voting Core
+    // ----------------------------------------------------------------
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            shift_reg        <= 2'b11; // Active-low idle high default
-            clean_signal_out <= 1'b1;  // Synchronous initialization
+            shift_reg       <= 2'b11; // Active-low idle high default
+            filtered_signal <= 1'b1;  // De-asserted default state
         end else begin
+            // Shift operations move left: old bit 0 moves to bit 1, new sample enters bit 0
             shift_reg <= {shift_reg[0], raw_signal_in};
             
-            // Pure sequential voting logic (No combinational loops)
+            // Pure sequential voting logic (No combinational feedback loops)
             if (shift_reg == 2'b00) begin
-                clean_signal_out <= 1'b0;
+                filtered_signal <= 1'b0; // Confirmed active-low pulse
             end else if (shift_reg == 2'b11) begin
-                clean_signal_out <= 1'b1;
+                filtered_signal <= 1'b1; // Confirmed inactive-high pulse
             end
             // Implicitly retains its previous register value if shift_reg is 2'b01 or 2'b10
         end
     end
+
+    // ----------------------------------------------------------------
+    // 2. Full Production DFT Bypass Architecture
+    // ----------------------------------------------------------------
+    // When TESTMODE is driven high by factory testers, the sequential latency 
+    // is completely bypassed. This gives Automated Test Equipment (ATE) direct, 
+    // combinational control over input stimulus without stepping through clock cycles.
+    assign clean_signal_out = !TESTMODE_n ? raw_signal_in : filtered_signal;
 
 endmodule
 `endif

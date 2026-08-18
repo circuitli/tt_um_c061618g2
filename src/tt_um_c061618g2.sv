@@ -35,6 +35,9 @@ module tt_um_c061618g2 (
     input  [0:0] rst_n     // Part of the strict wrapper standard!
 );
 
+    wire TESTMODE_n = uio_in[4]; // Industrial test platforms
+    wire flg_n      = uio_in[6]; // Consolidated active-low safety fault line
+
     // 1. Declare Internal Synchronized Clock Net
     logic sys_clk;
 
@@ -47,6 +50,9 @@ module tt_um_c061618g2 (
         .raw_clk  (clk),
         .sync_clk (sys_clk)
     );
+
+    // DFT Bypass Clock Tree Selector
+    wire phase_clk = !TESTMODE_n ? clk : sys_clk;
 
     // =========================================================================
     // SEPARATED INTERFACE STRUCTURE BINDING
@@ -87,15 +93,16 @@ module tt_um_c061618g2 (
 
     // 2. Clear RAM toggles via the delay filter circuit
     anti_glitch_filter filter_inst (
-        .clk              (sys_clk),   // Connect the system clock line
-        .rst_n            (rst_n), // Connect the global reset line
+        .clk              (phase_clk),     // Connect the system clock line
+        .rst_n            (rst_n),         // Connect the global reset line
+        .TESTMODE_n       (TESTMODE_n),    // Connect the full production test port
         .raw_signal_in    (core_signals.ci_n),
         .clean_signal_out (stabilized_ci_n)
     );
 
     // Evaluate master system override control flags
     bit system_disabled;
-    assign system_disabled = (pmod2_in_bus.FLG_n == 1'b0) || (pmod2_in_bus.LOOP_IN == 1'b0) || (ena == 1'b0);
+    assign system_disabled = (flg_n == 1'b0) || (ena == 1'b0);
 
     // Move the selection outside into a continuous assignment
     wire a11 = pmod1_bus.addr[0]; 

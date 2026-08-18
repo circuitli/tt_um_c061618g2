@@ -2,7 +2,7 @@
 # PRODUCTION VERIFICATION SUITE MMU
 # Total Test Cases: 15
 # Validates: Memory mappings, priority locking, anti-glitch filter latency,
-#            and loopback interfaces under active-high cartridge configurations.
+#            loopback interfaces, and active-low production test bypass paths.
 # ==============================================================================
 
 import cocotb
@@ -25,7 +25,7 @@ def pack_ui_in(addr, map_n, rd4, rd5):
     vector |= ((rd5 & 1) << 7)
     return vector
 
-def pack_uio_in(ren, ref_n, mpd_n, be_n, flg_n, loop_in):
+def pack_uio_in(ren, ref_n, mpd_n, be_n, TESTMODE_n=1, flg_n=1):
     """
     Packs bidirectional bus controls into an 8-bit input vector.
     Mapping:
@@ -33,16 +33,16 @@ def pack_uio_in(ren, ref_n, mpd_n, be_n, flg_n, loop_in):
       uio_in[1] -> ref_n (Active-Low Refresh Flag)
       uio_in[2] -> mpd_n
       uio_in[3] -> be_n (Active-Low BASIC Enable)
-      uio_in[4] -> flg_n
-      uio_in[6] -> loop_in
+      uio_in[4] -> TESTMODE_n (Active-Low Production Test Mode)
+      uio_in[6] -> flg_n (Active-Low System Disable Flag)
     """
     vector = 0
     vector |= (ren & 1) << 0
     vector |= (ref_n & 1) << 1
     vector |= (mpd_n & 1) << 2
     vector |= (be_n & 1) << 3
-    vector |= (flg_n & 1) << 4
-    vector |= (loop_in & 1) << 6
+    vector |= (TESTMODE_n & 1) << 4
+    vector |= (flg_n & 1) << 6
     return vector
 
 def unpack_uo_out(val):
@@ -103,7 +103,7 @@ async def test_standard_os_read(dut):
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x1F, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1)
     
     await ClockCycles(dut.clk, 3)
     await ReadOnly()
@@ -119,7 +119,7 @@ async def test_standard_basic_read(dut):
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x14, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=0, flg_n=1, loop_in=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=0, flg_n=1)
     
     await ClockCycles(dut.clk, 3)
     await ReadOnly()
@@ -135,7 +135,7 @@ async def test_standard_io_read(dut):
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x1A, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1)
     
     await ClockCycles(dut.clk, 3)
     await ReadOnly()
@@ -155,7 +155,7 @@ async def test_s4_bank_select(dut):
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x10, map_n=1, rd4=1, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1)
     
     await ClockCycles(dut.clk, 3)
     await ReadOnly()
@@ -171,7 +171,7 @@ async def test_s5_bank_select(dut):
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x14, map_n=1, rd4=0, rd5=1)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1)
     
     await ClockCycles(dut.clk, 3)
     await ReadOnly()
@@ -211,7 +211,7 @@ async def test_cas_inhibit_activation(dut):
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x1B, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=0, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=0, mpd_n=1, be_n=1, flg_n=1)
     
     await ClockCycles(dut.clk, 3)
     await ReadOnly()
@@ -224,7 +224,7 @@ async def test_trigger_out_passthrough(dut):
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x00, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1)
     
     await ClockCycles(dut.clk, 1)
     await ReadOnly()
@@ -240,27 +240,12 @@ async def test_trigger_out_passthrough(dut):
     assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
 
 @cocotb.test()
-async def test_external_board_loopback(dut):
-    dut._log.info("--- Running Test Case 10: PCB External Wire Loopback ---")
-    await initialize_dut(dut)
-    
-    dut.ui_in.value = pack_ui_in(addr=0x1F, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=0)
-    
-    await ClockCycles(dut.clk, 3)
-    await ReadOnly()
-    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
-    
-    assert pins["os_n"] == 1, f"Error: Core gating via loop_in failed to disable /OS! Got: {pins['os_n']}"
-    assert pins["LOOP_OUT"] == 1, f"Error: LOOP_OUT failed under loopback override! Got: {pins['LOOP_OUT']}"
-
-@cocotb.test()
 async def test_flg_n_input_handling(dut):
-    dut._log.info("--- Running Test Case 11: Flag Input Line System Disabling ---")
+    dut._log.info("--- Running Test Case 10: Flag Input Line System Disabling ---")
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x1F, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=0, loop_in=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=0)
     
     await ClockCycles(dut.clk, 3)
     await ReadOnly()
@@ -275,7 +260,7 @@ async def test_flg_n_input_handling(dut):
 
 @cocotb.test()
 async def test_global_enable_behavior(dut):
-    dut._log.info("--- Running Test Case 12: Global Enable Pin Gating ---")
+    dut._log.info("--- Running Test Case 11: Global Enable Pin Gating ---")
     mystic_clock = Clock(dut.clk, 20, unit="ns")
     cocotb.start_soon(mystic_clock.start())
     
@@ -293,11 +278,11 @@ async def test_global_enable_behavior(dut):
 
 @cocotb.test()
 async def test_basic_disable_by_cartridge(dut):
-    dut._log.info("--- Running Test Case 13: Left Cartridge Priority Dominance Over BASIC ---")
+    dut._log.info("--- Running Test Case 12: Left Cartridge Priority Dominance Over BASIC ---")
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x14, map_n=1, rd4=0, rd5=1)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=0, flg_n=1, loop_in=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=0, flg_n=1)
     
     await ClockCycles(dut.clk, 3)
     await ReadOnly()
@@ -307,11 +292,11 @@ async def test_basic_disable_by_cartridge(dut):
 
 @cocotb.test()
 async def test_os_hole_d000_bypass(dut):
-    dut._log.info("--- Running Test Case 14: OS Hardware Hole Exception Separation ($D400) ---")
+    dut._log.info("--- Running Test Case 13: OS Hardware Hole Exception Separation ($D400) ---")
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x1A, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1)
     
     await ClockCycles(dut.clk, 3)
     await ReadOnly()
@@ -321,14 +306,34 @@ async def test_os_hole_d000_bypass(dut):
 
 @cocotb.test()
 async def test_os_disable_by_ren(dut):
-    dut._log.info("--- Running Test Case 15: Software OS Disabling for Extended RAM Window ---")
+    dut._log.info("--- Running Test Case 14: Software OS Disabling for Extended RAM Window ---")
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x1F, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=0, ref_n=1, mpd_n=1, be_n=1, flg_n=1, loop_in=1)
+    dut.uio_in.value = pack_uio_in(ren=0, ref_n=1, mpd_n=1, be_n=1, flg_n=1)
     
     await ClockCycles(dut.clk, 3)
     await ReadOnly()
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
     assert pins["os_n"] == 1, f"Error: /OS pulled low when explicitly disabled via software REN control loop! Got: {pins['os_n']}"
+    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+
+# ==============================================================================
+# CATEGORY F: MANUFACTURING DFT PRODUCTION TEST MODE OPERATIONS
+# ==============================================================================
+
+@cocotb.test()
+async def test_production_bypass_active(dut):
+    dut._log.info("--- Running Test Case 15: Active-Low Production TESTMODE_n Active Bypass (0) ---")
+    await initialize_dut(dut)
+    
+    # Assert active-low TESTMODE_n to 0 (forces the anti-glitch filter into combinational transparency mode)
+    dut.ui_in.value = pack_ui_in(addr=0x1B, map_n=1, rd4=0, rd5=0)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=0, mpd_n=1, be_n=1, TESTMODE_n=0, flg_n=1)
+    
+    # In manufacturing test bypass mode, outputs evaluate combinationally without filter accumulation delay loops
+    await ClockCycles(dut.clk, 1)
+    await ReadOnly()
+    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
+    assert pins["ci_n"] == 0, f"DFT Failure: Anti-glitch filter did not bypass combinationally! Got: {pins['ci_n']}"
     assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
