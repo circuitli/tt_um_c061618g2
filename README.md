@@ -10,7 +10,7 @@ The hardware sits directly on the system's 16-bit address bus, intercepting the 
 * **Synchronous Glitch Rejection:** To prevent transient address hazards or routing path skew from corrupting downstream devices, the critical clock inhibit output line is passed through a multi-stage sequential shift register. This filter samples the internal state over active edges and uses a voting network to filter out sub-nanosecond noise spikes.
 
 ## 3. Hardware Framework Specification
-The physical layout aligns with the Tiny Tapeout hardware tile format using the 130nm SiGe BiCMOS foundry platform (IHP SG13G2). The design operates safely up to a maximum nominal clock speed of 80 MHz.
+The physical layout aligns with the Tiny Tapeout hardware tile format using the 130nm SiGe BiCMOS foundry platform (IHP SG13G2). The design operates safely up to a maximum nominal clock speed of 86 MHz.
 
 ## 4. Complete Pinout Mapping Matrix
 
