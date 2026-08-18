@@ -3,8 +3,8 @@
 # Target: 80 MHz Operation with 2-Stage Asynchronous Multiplexed Sync
 # ====================================================================
 
-# 1. Pull Clock Period Dynamically From config.json to Eliminate Double-Entry Bugs
-create_clock -name clk -period $::env(CLOCK_PERIOD) [get_ports {clk}]
+# 1. Hardcode the Clock Period directly to 12.5ns to prevent Tcl parsing bugs
+create_clock -name clk -period 12.5000 [get_ports clk]
 
 # 2. Inform the Layout Engine that the Clock Tree Wires Must Have Real Propagation Delay
 set_propagated_clock [get_clocks {clk}]
