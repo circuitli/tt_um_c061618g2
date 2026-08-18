@@ -23,6 +23,10 @@
   "//": "RUN_POST_GRT_RESIZER_TIMING - Force a final round of precise hold-buffer patching after physical wire routing lines are drawn",
   "RUN_POST_GRT_RESIZER_TIMING": true,
 
+  "//": "RUN_POST_GRT_DESIGN_REPAIR - Force physical cell legalisation and track repair after global routing to resolve severe hold violations",
+  "RUN_POST_GRT_DESIGN_REPAIR": true,
+
+
   "//": "PL_RESETER_HOLD_SLACK_MARGIN - Force a heavy 400ps cushion to isolate fast data paths from clock mux skew",
   "PL_RESETER_HOLD_SLACK_MARGIN": 0.40,
 
