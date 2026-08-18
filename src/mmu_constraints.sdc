@@ -5,13 +5,13 @@
 # 1. Define Primary Master Clock Input Window (85.91 MHz)
 create_clock -name clk -period 11.6400 [get_ports clk]
 
-# 2. MATCH YOUR HDL WRAPPER: Map the generated clock onto the shift vector
+# 2. Map the generated clock onto the shift vector
 # Traces the combinational delay through the gating assign logic natively
 create_generated_clock -name sys_clk \
     -source [get_ports clk] \
     -combinational \
-    [get_pins {u_clock_sync/sync_stages_reg[1]/Q}]
-
+    [get_pins {u_clock_sync/sync_stages_reg\[1\]/Q}]
+    
 # 3. Add a Strict 250-Picosecond Guard Band to Protect Against Jitter
 set_clock_uncertainty 0.2500 [get_clocks clk]
 set_clock_uncertainty 0.2500 [get_clocks sys_clk]
