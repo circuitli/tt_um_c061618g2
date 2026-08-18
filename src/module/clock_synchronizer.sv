@@ -35,7 +35,8 @@ module clock_synchronizer #(
 
     // Multi-stage synchronization array vector with synthesis attributes
     // to prevent primitive remapping and minimize physical routing delay.
-    (* async_reg = "true" *) logic [STAGES-1:0] sync_stages;
+    // Force the digital compiler to preserve the instantiation boundary names
+    (* async_reg = "true", keep = "true", dont_touch = "true" *) logic [STAGES-1:0] sync_stages;
 
     // ---------------------------------------------------------------------
     // Sequential Gating Logic
