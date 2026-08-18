@@ -56,7 +56,7 @@ module mmu_core (
     assign map_n = core_in.control_bits[0];
 
     // =========================================================================
-    // COMBINATORIAL DECODING ENGINE (1984 Atari Specification Matrix)
+    // COMBINATORIAL DECODING ENGINE
     // =========================================================================
     always_comb begin
         // 1. Establish Hard Core Pull-Up Defaults (Active-Low Inactive Baseline)

@@ -94,7 +94,7 @@ async def test_project_init(dut):
     dut._log.info("[+] Core clock tree and reset pipeline initialized successfully.")
 
 # ==============================================================================
-# CATEGORY B: NOMINAL ATARI ADDRESS SPACE MEMORY DECODING
+# CATEGORY B: NOMINAL ADDRESS SPACE MEMORY DECODING
 # ==============================================================================
 
 @cocotb.test()

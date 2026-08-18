@@ -42,7 +42,7 @@ module mmu_core_formal (
     wire map_n = core_in.control_bits[0];
 
     // =========================================================================
-    // FORMAL ASSERTIONS GENERATION (Derived from 1984 Atari MMU Equations)
+    // FORMAL ASSERTIONS GENERATION
     // =========================================================================
     always @(*) begin
         // 1. Validate Fixed Output Baselines
