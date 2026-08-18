@@ -12,6 +12,11 @@
   "//": "Here are some of the variables you may want to change:",
 
   "DESIGN_NAME": "tt_um_c061618g2",
+  
+  "//": "CLOCK_PERIOD - Increase this in case you are getting setup time violations.",
+  "//": "The value is in nanoseconds, so 20ns == 50MHz.",
+  "//_clock_period_warning": "CRITICAL: Do not modify this number! The actual master 80 MHz clock period is driven entirely by mmu_constraints.sdc",
+  "CLOCK_PERIOD": 12.5,
   "SDC_FILE": "src/mmu_constraints.sdc",
 
   "//": "SYNTH_STRATEGY - Force Yosys to prioritize delay minimization over area to handle high-frequency transitions",
@@ -32,10 +37,6 @@
 
   "//": "RUN_POST_GRT_DESIGN_REPAIR - Force physical cell legalisation and track repair after global routing to resolve severe hold violations",
   "RUN_POST_GRT_DESIGN_REPAIR": true,
-
-  "//": "CLOCK_PERIOD - Increase this in case you are getting setup time violations.",
-  "//": "The value is in nanoseconds, so 20ns == 50MHz.",
-  "CLOCK_PERIOD": 12.5,
 
    "//": "CELL_PAD - Increase cell padding to force the tool to leave empty space around every single logic gate",
   "CELL_PAD": 4,
