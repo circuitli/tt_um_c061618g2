@@ -17,7 +17,7 @@
   "SYNTH_STRATEGY": "DELAY 0",
 
   "//": "FP_CORE_UTIL - Force LibreLane to generate a much larger dynamic box for our 3% cell logic by lowering core utilization",
-  "FP_CORE_UTIL": 30,
+  "FP_CORE_UTIL": 20,
 
   "//": "PL_TARGET_DENSITY_PCT - You can increase this if Global Placement fails with error GPL-0302.",
   "//": "Users have reported that values up to 80 worked well for them.",
