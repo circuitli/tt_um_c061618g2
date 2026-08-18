@@ -38,10 +38,10 @@
 
    "//": "CELL_PAD - Increase cell padding to force the tool to leave empty space around every single logic gate",
   "CELL_PAD": 4,
-  
+
   "//": "GRT_RESIZER_TIMING_OPTIONS - Direct the global router to optimize timing routes with maximum iterations",
   "GLB_RESIZER_TIMING_OPTIMIZATIONS": true,
-  "RUN_POST_GRT_RESIZER_TIMING": true
+  "RUN_POST_GRT_RESIZER_TIMING": true,
 
   "//": "Hold slack margin - Increase them in case you are getting hold violations.",
   "PL_RESIZER_HOLD_SLACK_MARGIN": 0.1,
