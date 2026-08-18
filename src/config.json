@@ -20,6 +20,9 @@
   "//": "RUN_POST_GPL_DESIGN_REPAIR - Bypass LibreLane crash by forcing automatic hold-buffer insertion after global placement",
   "RUN_POST_GPL_DESIGN_REPAIR": true,
 
+  "//": "RUN_POST_GRT_RESIZER_TIMING - Force a final round of precise hold-buffer patching after physical wire routing lines are drawn",
+  "RUN_POST_GRT_RESIZER_TIMING": true,
+
   "//": "PL_RESETER_HOLD_SLACK_MARGIN - Force a heavy 400ps cushion to isolate fast data paths from clock mux skew",
   "PL_RESETER_HOLD_SLACK_MARGIN": 0.40,
 
