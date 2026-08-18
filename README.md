@@ -71,14 +71,19 @@ Validates the mathematical precision of the combinatorial address decoding matri
 make SIM=icarus
 ```
 
-### Mode 2: Gate-Level Simulation (GLS)
-Verifies the compiled structural netlist against real physical standard cell gate primitives. Gate-level simulation requires an **additional parameter** (`GATES=yes`) passed to the compilation flag matrix. This tells the wrapper toolchain to bypass behavioral descriptions, pull in the synthesized gate netlist, and properly evaluate the synchronous initialization sequences required to prevent uninitialized `X`-propagation:
+### Mode 2: Siimiplified Gate-Level Simulation (GLS)
+Verifies the compiled structural netlist against real physical standard cell gate libraries, but removing some code problematic with SystemVerilog. Gate-level simulation requires an **additional parameter** (`GATES=yes`) passed to the compilation flag matrix. This tells the wrapper toolchain to bypass behavioral descriptions, pull in the synthesized gate netlist, and properly evaluate the synchronous initialization sequences required to prevent uninitialized `X`-propagation:
 ```bash
-# Execute gate-level simulation with the mandatory gates parameter
+# Execute simplified gate-level simulation with the mandatory gates parameter
 make SIM=icarus GATES=yes
-```
 
-### Mode 3: Formal Verification
+### 𝐌𝐨𝐝𝐞 𝟑: 𝐅𝐮𝐥𝐥 𝐆𝐚𝐭𝐞-𝐋𝐞𝐯𝐞𝐥 𝐒𝐢𝐦𝐮𝐥𝐚𝐭𝐢𝐨𝐧 (𝐆𝐋𝐒)
+Verifies the compiled structural netlist against real physical standard cell gate primitives.
+```bash
+# Execute full gate-level simulation
+make SIM=verilator
+
+### Mode 4: Formal Verification
 Mathematically proves all state-space properties, mutual exclusion bounds, and glitch-rejection characteristics of the synchronous shift registers across all possible input conditions. Formal routines bypass testbench stimulus scripts and are executed directly through SymbiYosys:
 ```bash
 # Run formal bounded proofs using SymbiYosys
