@@ -21,7 +21,7 @@
 
   "//": "PL_TARGET_DENSITY_PCT - You can increase this if Global Placement fails with error GPL-0302.",
   "//": "Users have reported that values up to 80 worked well for them.",
-  "PL_TARGET_DENSITY_PCT": 65,
+  "PL_TARGET_DENSITY_PCT": 20,
 
   "//": "RUN_POST_GPL_DESIGN_REPAIR - Bypass LibreLane crash by forcing automatic hold-buffer insertion after global placement",
   "RUN_POST_GPL_DESIGN_REPAIR": true,
