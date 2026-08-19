@@ -17,7 +17,7 @@
   "//": "The value is in nanoseconds, so 20ns == 50MHz.",
    "//_comment_speed": "HARDENED TIMING: Hardcode period to 11.64ns to natively support 24x master crystal multiplier (85.91 MHz)",
   "_CLOCK_PERIOD": 6.25,
-  "CLOCK_PERIOD": 3.3333,
+  "CLOCK_PERIOD": 4.1667,
   "SDC_FILE": "src/mmu_constraints.sdc",
 
   "//": "SYNTH_STRATEGY - Force Yosys to prioritize delay minimization over area to handle high-frequency transitions",
