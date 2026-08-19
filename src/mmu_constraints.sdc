@@ -23,18 +23,16 @@ create_clock -name clk -period 11.6400 [get_ports clk]
 # 2. Add a Strict 250-Picosecond Guard Band to Protect Against Clock Jitter
 set_clock_uncertainty 0.2500 [get_clocks clk]
 
-# 3. DYNAMIC FANOUT ISOLATION LAYER (Prevents TritonCTS Crashes)
-# We isolate cross-domain paths by finding the cells driven by the locked sys_clk net.
-# This avoids defining an internal clock root that breaks the CTS engine.
-if { [info commands get_fanout] != "" } {
-    catch {
-        set sys_clk_sinks [get_fanout [get_nets sys_clk] -clock_sinks]
-        if { \$sys_clk_sinks != "" } {
-            set sys_clk_cells [get_cells -of_objects \$sys_clk_sinks]
-            set_false_path -from \$sys_clk_cells
-            set_false_path -to \$sys_clk_cells
-        }
-    }
+# ====================================================================
+# 3. UNIVERSAL FANOUT ISOLATION (Replaces the broken -clock_sinks flag)
+# Searches the locked net downstream to break asynchronous hold paths 
+# across the multiplexer rows without crashing TritonCTS.
+# ====================================================================
+set fanout_pins [get_pins -leaf -of_objects [get_nets sys_clk] -filter {direction == input}]
+
+if { [llength $fanout_pins] > 0 } {
+    set_false_path -from [all_registers] -to $fanout_pins
+    set_false_path -from [get_ports ui_in] -to $fanout_pins
 }
 
 # ====================================================================
