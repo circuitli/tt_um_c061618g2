@@ -16,7 +16,7 @@
   "//": "CLOCK_PERIOD - Increase this in case you are getting setup time violations.",
   "//": "The value is in nanoseconds, so 20ns == 50MHz.",
   "//_comment_speed": "HARDENED TIMING: Hardcode period to 11.64ns to natively support 24x master crystal multiplier (85.91 MHz)",
-  "CLOCK_PERIOD": 4.3478,
+  "CLOCK_PERIOD": 4.5455,
   "_CLOCK_PERIOD": 5.00,
   "SDC_FILE": "src/mmu_constraints.sdc",
 
