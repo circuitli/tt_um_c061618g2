@@ -40,7 +40,7 @@ module c061618g2_formal (
     // ----------------------------------------------------------------
     // 2. Hardware Design Under Test (DUT) Instantiation
     // ----------------------------------------------------------------
-    tt_um_c061618g2 dut (
+    c061618g2 dut (
         .ui_in   (ui_in),
         .uo_out  (uo_out),
         .uio_in  (uio_in),

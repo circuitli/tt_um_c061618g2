@@ -40,7 +40,7 @@ read -formal module/c061618g2_formal.sv
 read -formal tt_um_c061618g2_formal.sv
 
 # 1. Elaborate the hierarchy using your top-level formal module name
-prep -top tt_um_c061618g2_formal
+prep -top tt_um_c061618g2
 
 # 2. Run the clock-to-ff transformation pass as a standalone command
 clk2fflogic
@@ -51,7 +51,7 @@ defs/mmu_defs.sv                       ../src/defs/mmu_defs.sv
 core/mmu_core.sv                       ../src/core/mmu_core.sv
 module/clock_synchronizer.sv           ../src/module/clock_synchronizer.sv
 module/anti_glitch_filter.sv           ../src/module/anti_glitch_filter.sv
-module/c061618g2.sv                ../src/module/c061618g2.sv
+module/c061618g2.sv                    ../src/module/c061618g2.sv
 tt_um_c061618g2.sv                     ../src/tt_um_c061618g2.sv
 src/defs/mmu_defs.sv                   ../src/defs/mmu_defs.sv
 src/core/mmu_core.sv                   ../src/core/mmu_core.sv
