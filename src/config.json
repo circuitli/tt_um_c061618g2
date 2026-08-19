@@ -19,6 +19,8 @@
   "CLOCK_PERIOD": 4.9751,
   "_CLOCK_PERIOD": 5.00,
   "SDC_FILE": "src/mmu_constraints.sdc",
+  "MACRO_PLACEMENT_BOUNDS_FILE": "src/macro_bounds.json",
+  "_MACRO_PLACEMENT_CFG": "src/macro_placement.cfg",
 
   "//": "SYNTH_STRATEGY - Force Yosys to prioritize delay minimization over area to handle high-frequency transitions",
   "SYNTH_STRATEGY": "DELAY 0",
