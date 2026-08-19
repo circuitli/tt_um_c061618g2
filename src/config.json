@@ -25,9 +25,9 @@
   "PL_BOUNDS_INSTS": ["u_c061618g2"],
   "PL_BOUNDS_X0": [10.0],
   "PL_BOUNDS_Y0": [10.0],
-  "PL_BOUNDS_X1": [69.22],
-  "PL_BOUNDS_Y1": [45.28],
-  
+  "PL_BOUNDS_X1": [45.28],
+  "PL_BOUNDS_Y1": [70.48],
+
   "//": "SYNTH_STRATEGY - Force Yosys to prioritize delay minimization over area to handle high-frequency transitions",
   "SYNTH_STRATEGY": "DELAY 0",
 
