@@ -35,7 +35,7 @@ The physical layout aligns with the Tiny Tapeout hardware tile format using the 
 | `uio_in[3]` | `be_n` | Input | Active-low baseline memory space enable |
 | `uio_in[4]` | `TESTMODE_n` | Input | Active-Low production test mode bypass |
 | `uio_out[5]` | `TRIGGER_OUT` | Output | Dedicated Hardware Validation Output Trigger |
-| `uio_in[6]` | `FLG_n` | Input | Active-Low system errorj  flag |
+| `uio_in[6]` | `FLG_IN_n` | Input | Active-Low system errorj  flag |
 | `uio_in[7]` | `unused` | Reserved | Tied off internally |
 
 ### System Output Vector (`uo_out`)

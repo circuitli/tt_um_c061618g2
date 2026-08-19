@@ -36,7 +36,7 @@ module tt_um_c061618g2 (
 );
 
     wire TESTMODE_n = uio_in[4]; // Industrial test platforms
-    wire flg_n      = uio_in[6]; // Consolidated active-low safety fault line
+    wire FLG_IN_n      = uio_in[6]; // Consolidated active-low safety fault line
 
     // Force both Yosys and OpenROAD to preserve this exact net name 
     // and prevent it from being renamed or optimized during flattening.
@@ -103,7 +103,7 @@ module tt_um_c061618g2 (
 
     // Evaluate master system override control flags
     // If any of them drop to 0, functional operations are disabled.
-    wire system_disabled = (flg_n == 1'b0) || (ena == 1'b0) || (rst_n == 1'b0);
+    wire system_disabled = (FLG_IN_n == 1'b0) || (ena == 1'b0) || (rst_n == 1'b0);
 
     // Move the selection outside into a continuous assignment
     wire a11 = pmod1_bus.addr[0]; 

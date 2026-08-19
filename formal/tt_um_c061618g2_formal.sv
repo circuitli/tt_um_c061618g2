@@ -73,10 +73,10 @@ module tt_um_c061618g2_formal (
     wire       mpd_n           = uio_in[2];
     wire       be_n            = uio_in[3];
     wire       TESTMODE_n      = uio_in[4];
-    wire       flg_n           = uio_in[6];
+    wire       FLG_IN_n           = uio_in[6];
 
     // Master safety cutoff definition matching production RTL
-    wire system_disabled = (flg_n == 1'b0) || (ena == 1'b0) || (rst_n == 1'b0);
+    wire system_disabled = (FLG_IN_n == 1'b0) || (ena == 1'b0) || (rst_n == 1'b0);
 
     // 16-Bit Descriptive Memory Address Space Constants
     parameter [15:0] CART_S4_START      = 16'h8000;

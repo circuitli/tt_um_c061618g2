@@ -67,7 +67,7 @@ module mmu_defs_formal(
 
     // 2. PMOD 2 Input Mapping Verification (Numerical pin progression verification)
     assert property (p2_in.unused_p2_b7 == uio_in[7]);
-    assert property (p2_in.FLG_n        == uio_in[6]);
+    assert property (p2_in.FLG_IN_n        == uio_in[6]);
     assert property (p2_in.uio5_pad     == uio_in[5]);
     assert property (p2_TESTMODE_n      == uio_in[4]);
     assert property (p2_in.be_n         == uio_in[3]);

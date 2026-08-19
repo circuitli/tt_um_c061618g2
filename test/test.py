@@ -1,3 +1,17 @@
+# Copyright 2026 circuitli (https://github.com)
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://apache.org
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 # ==============================================================================
 # PRODUCTION VERIFICATION SUITE MMU
 # Total Test Cases: 15
@@ -25,7 +39,7 @@ def pack_ui_in(addr, map_n, rd4, rd5):
     vector |= ((rd5 & 1) << 7)
     return vector
 
-def pack_uio_in(ren, ref_n, mpd_n, be_n, TESTMODE_n=1, flg_n=1):
+def pack_uio_in(ren, ref_n, mpd_n, be_n, TESTMODE_n=1, FLG_IN_n=1):
     """
     Packs bidirectional bus controls into an 8-bit input vector.
     Mapping:
@@ -34,7 +48,7 @@ def pack_uio_in(ren, ref_n, mpd_n, be_n, TESTMODE_n=1, flg_n=1):
       uio_in[2] -> mpd_n
       uio_in[3] -> be_n (Active-Low BASIC Enable)
       uio_in[4] -> TESTMODE_n (Active-Low Production Test Mode)
-      uio_in[6] -> flg_n (Active-Low System Disable Flag)
+      uio_in[6] -> FLG_IN_n (Active-Low System Disable Flag)
     """
     vector = 0
     vector |= (ren & 1) << 0
@@ -42,7 +56,7 @@ def pack_uio_in(ren, ref_n, mpd_n, be_n, TESTMODE_n=1, flg_n=1):
     vector |= (mpd_n & 1) << 2
     vector |= (be_n & 1) << 3
     vector |= (TESTMODE_n & 1) << 4
-    vector |= (flg_n & 1) << 6
+    vector |= (FLG_IN_n & 1) << 6
     return vector
 
 def unpack_uo_out(val):
@@ -103,7 +117,7 @@ async def test_standard_os_read(dut):
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x1F, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, FLG_IN_n=1)
     
     await ClockCycles(dut.clk, 3)
     await ReadOnly()
@@ -119,7 +133,7 @@ async def test_standard_basic_read(dut):
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x14, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=0, flg_n=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=0, FLG_IN_n=1)
     
     await ClockCycles(dut.clk, 3)
     await ReadOnly()
@@ -135,7 +149,7 @@ async def test_standard_io_read(dut):
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x1A, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, FLG_IN_n=1)
     
     await ClockCycles(dut.clk, 3)
     await ReadOnly()
@@ -155,7 +169,7 @@ async def test_s4_bank_select(dut):
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x10, map_n=1, rd4=1, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, FLG_IN_n=1)
     
     await ClockCycles(dut.clk, 3)
     await ReadOnly()
@@ -171,7 +185,7 @@ async def test_s5_bank_select(dut):
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x14, map_n=1, rd4=0, rd5=1)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, FLG_IN_n=1)
     
     await ClockCycles(dut.clk, 3)
     await ReadOnly()
@@ -211,7 +225,7 @@ async def test_cas_inhibit_activation(dut):
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x1B, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=0, mpd_n=1, be_n=1, flg_n=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=0, mpd_n=1, be_n=1, FLG_IN_n=1)
     
     await ClockCycles(dut.clk, 3)
     await ReadOnly()
@@ -224,7 +238,7 @@ async def test_trigger_out_passthrough(dut):
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x00, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, FLG_IN_n=1)
     
     await ClockCycles(dut.clk, 1)
     await ReadOnly()
@@ -245,13 +259,13 @@ async def test_flg_n_input_handling(dut):
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x1F, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=0)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, FLG_IN_n=0)
     
     await ClockCycles(dut.clk, 3)
     await ReadOnly()
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
     
-    assert pins["os_n"] == 1, "Error: /OS not disabled when FLG_n is low"
+    assert pins["os_n"] == 1, "Error: /OS not disabled when FLG_IN_n is low"
     assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
 
 # ==============================================================================
@@ -282,7 +296,7 @@ async def test_basic_disable_by_cartridge(dut):
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x14, map_n=1, rd4=0, rd5=1)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=0, flg_n=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=0, FLG_IN_n=1)
     
     await ClockCycles(dut.clk, 3)
     await ReadOnly()
@@ -296,7 +310,7 @@ async def test_os_hole_d000_bypass(dut):
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x1A, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, flg_n=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, FLG_IN_n=1)
     
     await ClockCycles(dut.clk, 3)
     await ReadOnly()
@@ -310,7 +324,7 @@ async def test_os_disable_by_ren(dut):
     await initialize_dut(dut)
     
     dut.ui_in.value = pack_ui_in(addr=0x1F, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=0, ref_n=1, mpd_n=1, be_n=1, flg_n=1)
+    dut.uio_in.value = pack_uio_in(ren=0, ref_n=1, mpd_n=1, be_n=1, FLG_IN_n=1)
     
     await ClockCycles(dut.clk, 3)
     await ReadOnly()
@@ -329,7 +343,7 @@ async def test_production_bypass_active(dut):
     
     # Assert active-low TESTMODE_n to 0 
     dut.ui_in.value = pack_ui_in(addr=0x1B, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=0, mpd_n=1, be_n=1, TESTMODE_n=0, flg_n=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=0, mpd_n=1, be_n=1, TESTMODE_n=0, FLG_IN_n=1)
     
     await ClockCycles(dut.clk, 1)
     await ReadOnly()
@@ -350,7 +364,7 @@ async def test_production_bypass_reset_interlock(dut):
     
     # 2. Engage active-low TESTMODE_n (0) and configure memory inputs
     dut.ui_in.value = pack_ui_in(addr=0x1B, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=0, mpd_n=1, be_n=1, TESTMODE_n=0, flg_n=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=0, mpd_n=1, be_n=1, TESTMODE_n=0, FLG_IN_n=1)
     
     # Let pins stabilize in dynamic test bypass mode
     await ClockCycles(dut.clk, 1)

@@ -48,7 +48,7 @@ typedef struct packed {
     /* verilator lint_off UNUSEDSIGNAL */
     bit       unused_p2_b7; // Bit 7 -> Pmod 2, Pin 8
     /* verilator lint_on UNUSEDSIGNAL */
-    bit       FLG_n;    // Bit 6 -> uio_in -> PMOD 2 Pin 7 (Active-Low System Disable Flag)
+    bit       FLG_IN_n;    // Bit 6 -> uio_in -> PMOD 2 Pin 7 (Active-Low System Disable Flag)
     /* verilator lint_off UNUSEDSIGNAL */
     bit       uio5_pad;  // Bit 5 -> Pmod 2, Pin 6 (Exempted; Output Lane)
     /* verilator lint_on UNUSEDSIGNAL */
