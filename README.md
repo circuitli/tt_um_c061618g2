@@ -71,13 +71,13 @@ Validates the mathematical precision of the combinatorial address decoding matri
 make SIM=icarus
 ```
 
-### Mode 2: Siimiplified Gate-Level Simulation (GLS)
+### Mode 2: Visible Siimiplified Gate-Level Simulation (GLS)
 Verifies the compiled structural netlist against real physical standard cell gate libraries, but removing some code problematic with SystemVerilog. Gate-level simulation requires an **additional parameter** (`GATES=yes`) passed to the compilation flag matrix. This tells the wrapper toolchain to bypass behavioral descriptions, pull in the synthesized gate netlist, and properly evaluate the synchronous initialization sequences required to prevent uninitialized `X`-propagation:
 ```bash
 # Execute simplified gate-level simulation with the mandatory gates parameter
 make SIM=icarus GATES=yes
 
-### 𝐌𝐨𝐝𝐞 𝟑: 𝐅𝐮𝐥𝐥 𝐆𝐚𝐭𝐞-𝐋𝐞𝐯𝐞𝐥 𝐒𝐢𝐦𝐮𝐥𝐚𝐭𝐢𝐨𝐧 (𝐆𝐋𝐒)
+### 𝐌𝐨𝐝𝐞 𝟑: Portable Simplified 𝐆𝐚𝐭𝐞-𝐋𝐞𝐯𝐞𝐥 𝐒𝐢𝐦𝐮𝐥𝐚𝐭𝐢𝐨𝐧 (𝐆𝐋𝐒)
 Verifies the compiled structural netlist against real physical standard cell gate primitives.
 ```bash
 # Execute full gate-level simulation

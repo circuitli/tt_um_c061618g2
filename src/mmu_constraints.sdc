@@ -24,11 +24,11 @@ create_clock -name clk -period 11.6400 [get_ports clk]
 set_clock_uncertainty 0.2500 [get_clocks clk]
 
 # ====================================================================
-# 3. UNIVERSAL FANOUT ISOLATION (Replaces the broken -clock_sinks flag)
-# Searches the locked net downstream to break asynchronous hold paths 
-# across the multiplexer rows without crashing TritonCTS.
+# 3. UNIVERSAL FANOUT ISOLATION (OpenSTA Compliant)
+# Traverses the 'sys_clk' net to find all leaf input pins, 
+# cleanly slicing cross-domain paths without breaking TritonCTS.
 # ====================================================================
-set fanout_pins [get_pins -leaf -of_objects [get_nets sys_clk] -filter {direction == input}]
+set fanout_pins [get_pins -of_objects [get_nets sys_clk] -filter "direction == input"]
 
 if { [llength $fanout_pins] > 0 } {
     set_false_path -from [all_registers] -to $fanout_pins
