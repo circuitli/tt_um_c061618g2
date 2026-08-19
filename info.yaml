@@ -6,7 +6,7 @@ project:
   description:  "A high-performance memory management unit for 8-bit processors with a 16-bit address bus, supporting up to 16 MB of banked memory expansion and an integrated anti-glitch filter network."
   language:     "Verilog"
 #  clock_hz:     86000000  # Nominal clock speed target (86 MHz) to comply with hardware limits  
-  clock_hz:     320000000  # Nominal clock speed target (160 MHz) to comply with hardware limits
+  clock_hz:     300000000  # Nominal clock speed target (160 MHz) to comply with hardware limits
 
 
   # How many tiles your design occupies? A single tile is about 167x108 uM.

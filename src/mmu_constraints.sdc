@@ -19,8 +19,8 @@
 
 # 1. Define Primary Master Clock Input Port (160 MHz)
 #create_clock -name clk -period 6.2500 [get_ports clk]
-# 1. Define Primary Master Clock Input Port to exactly 320 MHz
-create_clock -name clk -period 3.1250 [get_ports clk]
+# 1. Define Primary Master Clock Input Port to exactly 300 MHz
+create_clock -name clk -period 3.3333 [get_ports clk]
 
 # 2. Add a Strict 250-Picosecond Guard Band to Protect Against Clock Jitter
 set_clock_uncertainty 0.2500 [get_clocks clk]
