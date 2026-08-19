@@ -17,10 +17,10 @@
 # Target: 85.91 MHz Operation (24x Master Crystal Multiplier)
 # ====================================================================
 
-# 1. Define Primary Master Clock Input Port (85.91 MHz)
-#create_clock -name clk -period 11.6400 [get_ports clk]
+# 1. Define Primary Master Clock Input Port (160 MHz)
+create_clock -name clk -period 6.2500 [get_ports clk]
 # 1. Define Primary Master Clock Input Port to exactly 100 MHz
-create_clock -name clk -period 10.0000 [get_ports clk]
+#create_clock -name clk -period 10.0000 [get_ports clk]
 
 
 # 2. Add a Strict 250-Picosecond Guard Band to Protect Against Clock Jitter
