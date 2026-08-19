@@ -17,8 +17,8 @@
 # Target: 85.91 MHz Operation (24x Master Crystal Multiplier)
 # ====================================================================
 
-# 1. Define Primary Master Clock Input Port (201 MHz)
-create_clock -name clk -period 4.9751 [get_ports clk]
+# 1. Define Primary Master Clock Input Port (197 MHz)
+create_clock -name clk -period 5.0761 [get_ports clk]
 # 1. Define Primary Master Clock Input Port to exactly 200 MHz
 #create_clock -name clk -period 5.0000 [get_ports clk]
 
