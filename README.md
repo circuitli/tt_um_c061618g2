@@ -87,4 +87,4 @@ Mathematically proves all state-space properties, mutual exclusion bounds, and g
 ```bash
 # Run formal bounded proofs using SymbiYosys
 sby -f src/formal/mmu.sby
-```
+

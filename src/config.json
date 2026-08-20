@@ -64,7 +64,7 @@
   "MACRO_PLACEMENT": [
     "u_c061618g2 10.0 10.0 N",
     "REGION u_c061618g2_region 10.0 10.0 55.36 25.12",
-    "u_c061618g2 REGION u_c061618g2_region"
+    "*u_c061618g2* REGION u_c061618g2_region"
   ],
   "_PLACEMENT_CONSTRAINTS": {
     "u_c061618g2_region": {
