@@ -21,6 +21,28 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-volare-ihp-sg13g2-
 
+        # ========================================================
+        # INSERT THE CUSTOM PATCH STEP RIGHT HERE:
+        # ========================================================
+      - name: Force OpenROAD Coordinate Box Injection
+        run: |
+          # 1. Search the environment container to find LibreLane's internal floorplan template script
+          FLOORPLAN_SCRIPT=$(find / -name "floorplan.tcl" 2>/dev/null | head -n 1)
+          
+          if [ ! -z "$FLOORPLAN_SCRIPT" ]; then
+            echo "Found OpenROAD script at $FLOORPLAN_SCRIPT. Injecting coordinate boxes..."
+            
+            # 2. Append the physical bounding boxes for each separate module instance to the template end
+            echo 'create_region_fence u_c061618g2_region 10.0 10.0 55.36 25.12' >> "$FLOORPLAN_SCRIPT"
+            echo 'iassign_region u_c061618g2_region [get_cells -hierarchical -filter "name =~ *u_c061618g2*"]' >> "$FLOORPLAN_SCRIPT"
+                        
+            echo "=========================================================="
+            echo "  SUCCESS: CLOUD SERVER ENGINE PATCHED WITH INSTANCE BOXES "
+            echo "=========================================================="
+          else
+            echo "Warning: Could not find internal floorplan script path."
+          fi
+
       - name: Build GDS
         uses: TinyTapeout/tt-gds-action@ttihp26b
         with:

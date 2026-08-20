@@ -27,7 +27,7 @@
       "source src/floorplan_hooks.tcl"
     ]
   },
-  "hooks": {
+  "_hooks": {
         "post_floorplan": "dir::src/floorplan_hooks.tcl"
     },
 
