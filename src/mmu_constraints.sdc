@@ -51,3 +51,12 @@ set_output_delay 2.0000 -clock [get_clocks clk] [get_ports uio_oe]
 set_load 0.0334 [get_ports uo_out]
 set_load 0.0334 [get_ports uio_out]
 set_load 0.0334 [get_ports uio_oe]
+
+# ========================================================
+# LAYOUT REGIONS ---
+# ========================================================
+# 1. Create the region and define its bounding box coordinates (X1 Y1 X2 Y2)
+add_region u_c061618g2_region 10.0 10.0 55.36 25.12
+
+# 2. Bind the hierarchical instance to the region
+assign_region u_c061618g2_region [get_cells -hierarchical *u_c061618g2]
