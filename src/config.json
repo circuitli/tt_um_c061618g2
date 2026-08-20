@@ -19,7 +19,7 @@
   "CLOCK_PERIOD": 5.0761,
   "_CLOCK_PERIOD": 5.00,
   "SDC_FILE": "src/mmu_constraints.sdc",
-  "MACRO_PLACEMENT_CFG": "dir::src/bounds.cfg",
+  "MACRO_PLACEMENT_CFG": "dir::bounds.cfg",
   "_MACRO_PLACEMENT_BOUNDS_FILE": "src/macro_bounds.json",
   "_MACRO_PLACEMENT_CFG": "src/macro_regions.cfg",
   "EXTRA_SPECS_TCL": "dir::src/floorplan_hooks.tcl",
