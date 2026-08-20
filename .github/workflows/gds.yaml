@@ -46,6 +46,9 @@ jobs:
 
       - name: Build GDS
         uses: TinyTapeout/tt-gds-action@ttihp26b
+        # APPLY THE ENVIRONMENT VARIABLE INJECTION HERE:
+        env:
+          FP_PLACEMENT_CONSTRAINTS: "src/floorplan_hooks.tcl"
         with:
           pdk: ihp-sg13g2
 
