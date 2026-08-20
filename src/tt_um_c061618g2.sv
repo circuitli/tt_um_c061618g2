@@ -44,7 +44,8 @@ module tt_um_c061618g2 (
     end
 `endif
 */
-     (* keep_hierarchy = "TRUE" *)   
+    (* keep_hierarchy = "TRUE" *)   
+    (* ungroup = 0 *)
     c061618g2 u_c061618g2 (
         .ui_in(ui_in),    
         .uo_out(uo_out),  

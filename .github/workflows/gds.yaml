@@ -25,6 +25,7 @@ jobs:
         # INSERT THE CUSTOM PATCH STEP RIGHT HERE:
         # ========================================================
       - name: Force OpenROAD Coordinate Box Injection
+        if: false
         run: |
           # 1. Search the environment container to find LibreLane's internal floorplan template script
           FLOORPLAN_SCRIPT=$(find / -name "floorplan.tcl" 2>/dev/null | head -n 1)
