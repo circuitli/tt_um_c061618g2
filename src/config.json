@@ -39,13 +39,13 @@
   "_FP_PLACEMENT_CONSTRAINTS": [
     "u_c061618g2", "10.0", "10.0", "55.36", "25.12", "FENCE"
   ],
-  "_MODULE_GROUPS": {
-    "u_c061618g2_box": {
+  "MODULE_GROUPS": {
+    "c061618g2_box": {
       "box": [10.0, 10.0, 55.36, 25.12],
-      "instances": ["u_c061618g2"],
+      "instances": ["*u_c061618g2*"],
       "type": "fence"
     }
-  },
+  }
   "_BLACKBOXES": {
     "u_c061618g2": {
       "box": [0, 0, 45.36, 15.12]
@@ -61,7 +61,7 @@
       }
     }
   },
-  "MACRO_PLACEMENT": [
+  "_MACRO_PLACEMENT": [
     "u_c061618g2 10.0 10.0 N",
     "REGION u_c061618g2_region 10.0 10.0 55.36 25.12",
     "*u_c061618g2* REGION u_c061618g2_region"
