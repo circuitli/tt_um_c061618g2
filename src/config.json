@@ -20,7 +20,8 @@
   "_CLOCK_PERIOD": 5.00,
   "SDC_FILE": "src/mmu_constraints.sdc",
   "_MACRO_PLACEMENT_BOUNDS_FILE": "src/macro_bounds.json",
-  "MACRO_PLACEMENT_CFG": "src/macro_regions.cfg",
+  "_MACRO_PLACEMENT_CFG": "src/macro_regions.cfg",
+  "EXTRA_SPECS_TCL": "dir::src/floorplan_hooks.tcl"
 
   "PL_MIN_PHI_COEFFICIENT": 0.95,
   "PL_MAX_PHI_COEFFICIENT": 1.05,
