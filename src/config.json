@@ -23,10 +23,10 @@
   "_MACRO_PLACEMENT_BOUNDS_FILE": "src/macro_bounds.json",
   "_EXTRA_SPECS_TCL": "dir::src/floorplan_hooks.tcl",
   "OpenROAD.Floorplan": {
-        "extra_tcl_lines": [
-          "source src/floorplan_hooks.tcl"
-        }
-    },
+    "extra_tcl_lines": [
+      "source src/floorplan_hooks.tcl"
+    ]
+  },
   "hooks": {
         "pre_floorplan": "dir::src/floorplan_hooks.tcl"
     },
