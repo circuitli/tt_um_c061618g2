@@ -41,7 +41,7 @@
       "instances": ["u_c061618g2/*"],
       "type": "fence"
     }
-  }
+  },
   "_PL_BOUNDS_INSTS": ["tt_um_c061618g2.u_c061618g2"],
   "_PL_BOUNDS_X0": [10.0],
   "_PL_BOUNDS_Y0": [10.0],
