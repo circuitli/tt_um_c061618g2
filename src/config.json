@@ -22,7 +22,7 @@
   "_MACRO_PLACEMENT_CFG": "dir::bounds.cfg",
   "_MACRO_PLACEMENT_BOUNDS_FILE": "src/macro_bounds.json",
   "_EXTRA_SPECS_TCL": "dir::src/floorplan_hooks.tcl",
-  "OpenROAD.Floorplan": {
+  "_OpenROAD.Floorplan": {
     "extra_tcl_lines": [
       "source src/floorplan_hooks.tcl"
     ]
@@ -51,7 +51,6 @@
       "box": [0, 0, 45.36, 15.12]
     }
   },
-  
   "_MACROS": {
     "c061618g2": {
       "instances": {
@@ -62,6 +61,11 @@
       }
     }
   },
+  "MACRO_PLACEMENT": [
+    "u_c061618g2 10.0 10.0 N",
+    "REGION u_c061618g2_region 10.0 10.0 55.36 25.12",
+    "u_c061618g2 REGION u_c061618g2_region"
+  ],
   "_PLACEMENT_CONSTRAINTS": {
     "u_c061618g2_region": {
       "box": [10.0, 10.0, 55.36, 25.12],
