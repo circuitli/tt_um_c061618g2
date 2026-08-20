@@ -22,6 +22,8 @@
   "_MACRO_PLACEMENT_BOUNDS_FILE": "src/macro_bounds.json",
   "_MACRO_PLACEMENT_CFG": "src/macro_placement.cfg",
 
+  "PL_MIN_PHI_COEFFICIENT": 0.95,
+  "PL_MAX_PHI_COEFFICIENT": 1.05,
   "PL_BOUNDS_INSTS": ["u_c061618g2"],
   "PL_BOUNDS_X0": [10.0],
   "PL_BOUNDS_Y0": [10.0],
