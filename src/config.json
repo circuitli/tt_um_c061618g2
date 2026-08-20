@@ -42,10 +42,14 @@
     }
   },
   
-  "_MACROS": {
-    "u_c061618g2": {
-      "location": [10.0, 10.0],
-      "orientation": "N"
+  "MACROS": {
+    "c061618g2": {
+      "instances": {
+        "u_c061618g2": {
+          "location": [10.0, 10.0],
+          "orientation": "N"
+        }
+      }
     }
   },
   "_PLACEMENT_CONSTRAINTS": {
