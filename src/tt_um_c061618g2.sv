@@ -32,6 +32,17 @@ module tt_um_c061618g2 (
     input  [0:0] rst_n     // Part of the strict wrapper standard!
 );
 
+    // INJECT THE PHYSICAL BOUNDING BOX DIRECTLY HERE:
+    // This forces the backend to evaluate the pure layout strings natively inside OpenROAD
+`ifdef SYNTHESIS
+    // OpenROAD native region execution parameters
+    // Syntax: create_region_fence <name> <X1> <Y1> <X2> <Y2>
+    initial begin
+        $display("openroad_command: create_region_fence u_box 10.0 10.0 55.36 25.12");
+        $display("openroad_command: assign_region u_box [get_cells -hierarchical -filter \"name =~ *u_c061618g2*\"]");
+    end
+`endif
+
      (* keep_hierarchy = "TRUE" *)   
     c061618g2 u_c061618g2 (
         .ui_in(ui_in),    
