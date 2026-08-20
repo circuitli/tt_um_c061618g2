@@ -39,6 +39,13 @@
   "_FP_PLACEMENT_CONSTRAINTS": [
     "u_c061618g2", "10.0", "10.0", "55.36", "25.12", "FENCE"
   ],
+  "MODULE_GROUPS": {
+    "u_c061618g2_box": {
+      "box": [10.0, 10.0, 55.36, 25.12],
+      "instances": ["u_c061618g2"],
+      "type": "fence"
+    }
+  },
   "_BLACKBOXES": {
     "u_c061618g2": {
       "box": [0, 0, 45.36, 15.12]
