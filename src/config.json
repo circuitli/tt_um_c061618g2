@@ -28,7 +28,7 @@
     ]
   },
   "hooks": {
-        "pre_floorplan": "dir::src/floorplan_hooks.tcl"
+        "post_floorplan": "dir::src/floorplan_hooks.tcl"
     },
 
   "PL_MIN_PHI_COEFFICIENT": 0.95,
@@ -68,7 +68,7 @@
       "boundary": [0, 0, 45.36, 15.12]
     }
   },
-  "PLACEMENT_CONSTRAINTS": {
+  "_PLACEMENT_CONSTRAINTS": {
     "u_c061618g2_region": {
       "box": [10.0, 10.0, 55.36, 25.12],
       "instances": ["*u_c061618g2*"],

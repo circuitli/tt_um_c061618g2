@@ -3,7 +3,7 @@ project:
   title:        "c061618g2"      # Project title
   author:       "circuitli"      # Your name
   discord:      ""      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
-  description:  "A high-performance memory management unit for 8-bit processors with a 16-bit address bus, supporting up to 16 MB of banked memory expansion and an integrated anti-glitch filter network."
+  description:  "A high-performance memory management unit for 8-bit processors with a 16-bit address bus with an integrated anti-glitch filter network."
   language:     "Verilog"
   clock_hz:     197000000  # Nominal clock speed target (197 MHz) to comply with hardware limits
 

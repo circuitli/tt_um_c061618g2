@@ -1,7 +1,7 @@
 ![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/test/badge.svg) ![](../../workflows/fpga/badge.svg)
 
 ## 1. Overview
-This project implements a high-density Memory Management Unit (MMU) designed to expand the physical memory addressing capabilities of traditional 8-bit computer architectures up to a maximum of 16 MB of banked RAM. Fabricated on the open-source 130nm Silicon-Germanium (SiGe) BiCMOS process node (IHP SG13G2), this chip translates logical processor addresses into dynamic memory page-select signals, optimizing power consumption and integration density.
+This project implements a high-density Memory Management Unit (MMU) fortraditional 8-bit computer architectures. Fabricated on the open-source 130nm Silicon-Germanium (SiGe) BiCMOS process node (IHP SG13G2), this chip translates logical processor addresses into dynamic memory page-select signals.
 
 ## 2. How It Works
 The hardware sits directly on the system's 16-bit address bus, intercepting the high-order address rows to decode sub-space windows. 
