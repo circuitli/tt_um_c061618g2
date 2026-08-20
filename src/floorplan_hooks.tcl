@@ -12,7 +12,7 @@ create_region_fence u_c061618g2_region 10.0 10.0 55.36 25.12
 
 # 3. Securely clamp your standard cells container instance inside the box
 # The -hierarchical filter looks deep into the structural netlist logic trees
-assign_region u_c061618g2_region [get_cells -hierarchical -filter "name =~ *u_c061618g2]*"]
+assign_region u_c061618g2_region [get_cells -hierarchical -filter "name =~ *u_c061618g2*"]
 
 puts "=========================================================="
 puts " SUCCESS: OPENROAD FORCED INSTANCE INTO THE BOX "
