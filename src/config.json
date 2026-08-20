@@ -33,6 +33,15 @@
 
   "PL_MIN_PHI_COEFFICIENT": 0.95,
   "PL_MAX_PHI_COEFFICIENT": 1.05,
+
+
+  "REGION_CONSTRAINTS": {
+    "u_c061618g2_region": {
+      "box": [10.0, 10.0, 55.36, 25.12],
+      "instances": ["u_c061618g2/*"],
+      "type": "fence"
+    }
+  }
   "_PL_BOUNDS_INSTS": ["tt_um_c061618g2.u_c061618g2"],
   "_PL_BOUNDS_X0": [10.0],
   "_PL_BOUNDS_Y0": [10.0],
