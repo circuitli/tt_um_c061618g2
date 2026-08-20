@@ -27,7 +27,10 @@
             "source src/floorplan_hooks.tcl"
         ]
     },
-    
+  "hooks": {
+        "pre_floorplan": "dir::src/floorplan_hooks.tcl"
+    },
+
   "PL_MIN_PHI_COEFFICIENT": 0.95,
   "PL_MAX_PHI_COEFFICIENT": 1.05,
   "_PL_BOUNDS_INSTS": ["tt_um_c061618g2.u_c061618g2"],
