@@ -32,6 +32,9 @@ module tt_um_c061618g2 (
     input  [0:0] rst_n     // Part of the strict wrapper standard!
 );
 
+ // INJECT THE RAW OPENROAD BOX COMMAND HERE:
+    // This tells Yosys to force OpenROAD to create a region fence box
+    (* abc9_box = "create_region u_c061618g2_region 10.0 10.0 55.36 25.12; assign_region u_c061618g2_region [get_cells -hierarchical -filter \"name =~ *u_*\"]" *)
     (* keep_hierarchy = "TRUE" *)   
     c061618g2 u_c061618g2 (
         .ui_in(ui_in),    
