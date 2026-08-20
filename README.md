@@ -48,7 +48,7 @@ The physical layout aligns with the Tiny Tapeout hardware tile format using the 
 | `uo_out[4]` | `io_n` | Output | Active-low peripheral I/O space select |
 | `uo_out[5]` | `s4_n` | Output | Active-low expansion chip select 4 |
 | `uo_out[6]` | `LOOP_OUT`| Output | Operational loop diagnostic status |
-| `uo_out[7]` | `bit7` | Output | Static ground isolation line |
+| `uo_out[7]` | `unnused` | Reserved | Static ground isolation line |
 
 ## 5. How to Run Simulation
 

@@ -46,7 +46,7 @@ typedef struct packed {
 // Traces inputs in numerical pin progression directly from Pin 1 to Pin 6:
 typedef struct packed {
     /* verilator lint_off UNUSEDSIGNAL */
-    bit       unused_p2_b7; // Bit 7 -> Pmod 2, Pin 8
+    bit       unused_p2_b7; // Bit 7 -> Pmod 2, Pin 8 - Reserved
     /* verilator lint_on UNUSEDSIGNAL */
     bit       FLG_IN_n;    // Bit 6 -> uio_in -> PMOD 2 Pin 7 (Active-Low System Disable Flag)
     /* verilator lint_off UNUSEDSIGNAL */
@@ -62,7 +62,7 @@ typedef struct packed {
 // Output Tracking Bundle:
 typedef struct packed {
     /* verilator lint_off UNUSEDSIGNAL */
-    bit       uio7_out; // Bit 7 -> Tied Low 
+    bit       uio7_out; // Bit 7 -> Tied Low - Reserved
     bit       uio6_out; // Bit 6 -> Tied Low
     /* verilator lint_on UNUSEDSIGNAL */
     bit       TRIGGER_OUT; // Bit 5 -> uio_out -> PMOD 2 Pin 5 ACTIVE TRIGGER DIG-TAP
@@ -77,7 +77,7 @@ typedef struct packed {
 
 // SystemVerilog packs left-to-right (MSB to LSB).
 typedef struct packed {
-    bit       unused_p3_b7;// Bit 7 -> Pmod 3, Pin 8 (Static 0 Ground Tie-off)
+    bit       unused_p3_b7;// Bit 7 -> Pmod 3, Pin 8 (Static 0 Ground Tie-off - Reserved)
     bit       LOOP_OUT; // Bit 6 -> Pmod 3, Pin 7 (ACTIVE-HIGH SYSTEM LOOP STATUS)
     bit       s4_n;     // Bit 5 -> /S4 Right Cartridge Select
     bit       io_n;     // Bit 4 -> /IO Peripheral Select ($D000)

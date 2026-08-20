@@ -19,7 +19,7 @@
 `default_nettype none
 
 module anti_glitch_filter (
-     input  logic clk,              // System clock input for discrete time sampling
+    input  logic clk,              // System clock input for discrete time sampling
     input  logic rst_n,            // Asynchronous active-low global hardware reset
     input  logic TESTMODE_n,         // Full production test mode override switch
     input  logic raw_signal_in,    // Raw input wire carrying combinational hazards

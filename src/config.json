@@ -36,10 +36,10 @@
   "_PL_MACRO_CHNL_VAL": {
     "u_c061618g2": [10.0, 10.0, 55.36, 25.12]
   },
-  "_FP_PLACEMENT_CONSTRAINTS": [
-    "u_c061618g2", "10.0", "10.0", "55.36", "25.12", "FENCE"
+  "FP_PLACEMENT_CONSTRAINTS": [
+    "*u_c061618g2/*", "10.0", "10.0", "55.36", "25.12", "FENCE"
   ],
-  "MODULE_GROUPS": {
+  "_MODULE_GROUPS": {
     "c061618g2_box": {
       "box": [10.0, 10.0, 55.36, 25.12],
       "instances": ["*u_c061618g2*"],
