@@ -61,6 +61,7 @@ module mmu_core (
     always_comb begin
         // 1. Establish Hard Core Pull-Up Defaults (Active-Low Inactive Baseline)
         core_out.unused_p3_b7 = 1'b0; // Static Ground Tie-off
+        core_out.FLG_n        = 1'b1;
         core_out.s4_n         = 1'b1;
         core_out.s5_n         = 1'b1;
         core_out.basic_n      = 1'b1;

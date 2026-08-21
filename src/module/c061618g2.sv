@@ -124,6 +124,7 @@ module c061618g2 (
 
     /* verilator lint_off UNUSED */
     wire unused_p3_b7 = core_signals.unused_p3_b7;
+    wire FLG_n_p3 = core_signals.FLG_n;
     /* verilator lint_on UNUSED */
 
     // =========================================================================
