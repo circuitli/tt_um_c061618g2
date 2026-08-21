@@ -39,7 +39,7 @@ module c061618g2 (
 );
 
     wire TESTMODE_n = uio_in[4]; // Industrial test platforms
-    wire FLG_IN_n      = uio_in[6]; // Consolidated active-low safety fault line
+    wire FLG_IN_n   = uio_in[6]; // Consolidated active-low safety fault line
 
     // Force both Yosys and OpenROAD to preserve this exact net name 
     // and prevent it from being renamed or optimized during flattening.
