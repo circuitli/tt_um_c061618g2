@@ -96,7 +96,7 @@ module c061618g2 (
     );
 
     // 2. Clear RAM toggles via the delay filter circuit
-    anti_glitch_filter filter_inst (
+    anti_glitch_filter ci_filter (
         .clk              (phase_clk),     // Connect the system clock line
         .rst_n            (rst_n),         // Connect the global reset line
         .TESTMODE_n       (TESTMODE_n),    // Connect the full production test port
@@ -107,13 +107,23 @@ module c061618g2 (
     // Evaluate master system override control flags
     // If any of them drop to 0, functional operations are disabled.
     wire system_disabled = (FLG_IN_n == 1'b0) || (ena == 1'b0) || (rst_n == 1'b0);
+    wire raw_flg_n = !system_disabled;
+    wire FLG_n;
+
+    // 3. Reporrt faults via the delay filter circuit
+    anti_glitch_filter flg_filter (
+        .clk              (phase_clk),     // Connect the system clock line
+        .rst_n            (rst_n),         // Connect the global reset line
+        .TESTMODE_n       (TESTMODE_n),    // Connect the full production test port
+        .raw_signal_in    (raw_flg_n),
+        .clean_signal_out (FLG_n)
+    );
 
     // Move the selection outside into a continuous assignment
     wire a11 = pmod1_bus.addr[0]; 
 
     /* verilator lint_off UNUSED */
     wire unused_p3_b7 = core_signals.unused_p3_b7;
-    wire LOOP_OUT     = core_signals.LOOP_OUT;
     /* verilator lint_on UNUSED */
 
     // =========================================================================
@@ -127,7 +137,7 @@ module c061618g2 (
 
     // --- Pmod 3 Outputs Mapping (uo_out) ---
     assign uo_out[7] = 1'b0; // Static ground tie-off
-    assign uo_out[6] = system_disabled ? 1'b1 : core_signals.LOOP_OUT;
+    assign uo_out[6] = FLG_n;
     assign uo_out[5] = system_disabled ? 1'b1 : core_signals.s4_n;
     assign uo_out[4] = system_disabled ? 1'b1 : core_signals.io_n;
     assign uo_out[3] = system_disabled ? 1'b1 : stabilized_ci_n;

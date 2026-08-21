@@ -87,7 +87,7 @@ module mmu_defs_formal(
 
     // 4. PMOD 3 Output Mapping Verification (Left-to-Right MSB to LSB packing check)
     assert property (p3_out.unused_p3_b7 == uo_out[7]);
-    assert property (p3_out.LOOP_OUT     == uo_out[6]);
+    assert property (p3_out.FLG_n        == uo_out[6]);
     assert property (p3_out.s4_n         == uo_out[5]);
     assert property (p3_out.io_n         == uo_out[4]);
     assert property (p3_out.ci_n         == uo_out[3]);

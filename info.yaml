@@ -50,7 +50,7 @@ pinout:
   uio[3]: "CI_L"
   uio[4]: "IO_L"
   uio[5]: "S4_L"
-  uio[6]: "LOOP_OUT"
+  uio[6]: "FLG_n"
   uio[7]: ""
 
 # Do not change!

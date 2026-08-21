@@ -47,7 +47,6 @@ module mmu_core_formal (
     always @(*) begin
         // 1. Validate Fixed Output Baselines
         assert_unused_p3_b7: assert (core_out.unused_p3_b7 == 1'b0);
-        assert_loop_out:     assert (core_out.LOOP_OUT == 1'b1);
 
         // 2. Validate /S4 Cartridge Range Selector Check
         if (!a13 && !a14 && a15 && rd4 && ref_n) begin

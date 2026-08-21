@@ -14,9 +14,7 @@
 
 # ==============================================================================
 # PRODUCTION VERIFICATION SUITE MMU
-# Total Test Cases: 15
-# Validates: Memory mappings, priority locking, anti-glitch filter latency,
-#            loopback interfaces, and active-low production test bypass paths.
+# Validates: Foundational Boot, Standard Mappings, and Exceptions
 # ==============================================================================
 
 import cocotb
@@ -70,7 +68,7 @@ def unpack_uo_out(val):
         "ci_n":     (val >> 3) & 1,
         "io_n":     (val >> 4) & 1,
         "s4_n":     (val >> 5) & 1,
-        "LOOP_OUT": (val >> 6) & 1,
+        "FLG_n":    (val >> 6) & 1,
         "bit7":     (val >> 7) & 1
     }
 
@@ -124,7 +122,7 @@ async def test_standard_os_read(dut):
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
     
     assert pins["os_n"] == 0, f"Error: /OS failed to pull active low! Got: {pins['os_n']}"
-    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+    assert pins["FLG_n"] == 1, "Error: FLG_n must remain fixed at 1!"
     assert pins["ci_n"] == 0, "Error: /CI must fall low during active internal ROM matches!"
 
 @cocotb.test()
@@ -140,7 +138,7 @@ async def test_standard_basic_read(dut):
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
     
     assert pins["basic_n"] == 0, f"Error: /BASIC failed to pull active low! Got: {pins['basic_n']}"
-    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+    assert pins["FLG_n"] == 1, "Error: FLG_n must remain fixed at 1!"
     assert pins["os_n"] == 1, "Mutual Contention Error: /OS clapped active simultaneously!"
 
 @cocotb.test()
@@ -156,7 +154,7 @@ async def test_standard_io_read(dut):
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
     
     assert pins["io_n"] == 0, f"Error: /IO failed to pull active low! Got: {pins['io_n']}"
-    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+    assert pins["FLG_n"] == 1, "Error: FLG_n must remain fixed at 1!"
     assert pins["os_n"] == 1, "Collision Error: /OS activated over the hardware I/O registry!"
 
 # ==============================================================================
@@ -176,7 +174,7 @@ async def test_s4_bank_select(dut):
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
     
     assert pins["s4_n"] == 0, f"Error: /S4 failed to pull active low! Got: {pins['s4_n']}"
-    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+    assert pins["FLG_n"] == 1, "Error: FLG_n must remain fixed at 1!"
     assert pins["s5_n"] == 1, "Mutual Contention Error: /S5 clapped active simultaneously!"
 
 @cocotb.test()
@@ -192,7 +190,7 @@ async def test_s5_bank_select(dut):
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
     
     assert pins["s5_n"] == 0, f"Error: /S5 failed to pull active low! Got: {pins['s5_n']}"
-    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+    assert pins["FLG_n"] == 1, "Error: FLG_n must remain fixed at 1!"
     assert pins["s4_n"] == 1, "Mutual Contention Error: /S4 clapped active simultaneously!"
 
 # ==============================================================================
@@ -216,7 +214,7 @@ async def test_disconnected_pmod_behavior(dut):
     assert pins["io_n"] == 1, "Error: /IO leaked low during disconnected state!"
     assert pins["s4_n"] == 1, "Error: /S4 leaked low during disconnected state!"
     assert pins["s5_n"] == 1, "Error: /S5 leaked low during disconnected state!"
-    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+    assert pins["FLG_n"] == 1, "Error: FLG_n must remain fixed at 1!"
     assert pins["ci_n"] == 0, f"Error: /CI must default active-low to inhibit RAM! Got: {pins['ci_n']}"
 
 @cocotb.test()
@@ -243,7 +241,7 @@ async def test_trigger_out_passthrough(dut):
     await ClockCycles(dut.clk, 1)
     await ReadOnly()
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
-    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+    assert pins["FLG_n"] == 1, "Error: FLG_n must remain fixed at 1!"
     
     await ClockCycles(dut.clk, 1)
     dut.ui_in.value = pack_ui_in(addr=0x01, map_n=1, rd4=0, rd5=0)
@@ -251,7 +249,7 @@ async def test_trigger_out_passthrough(dut):
     await ClockCycles(dut.clk, 1)
     await ReadOnly() 
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
-    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+    assert pins["FLG_n"] == 1, "Error: FLG_n must remain fixed at 1!"
 
 @cocotb.test()
 async def test_flg_n_input_handling(dut):
@@ -260,13 +258,13 @@ async def test_flg_n_input_handling(dut):
     
     dut.ui_in.value = pack_ui_in(addr=0x1F, map_n=1, rd4=0, rd5=0)
     dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, FLG_IN_n=0)
-    
-    await ClockCycles(dut.clk, 3)
+    # Wait 4 cycles to allow the master system anti-glitch filter to propagate the drop
+    await ClockCycles(dut.clk, 4)
     await ReadOnly()
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
     
     assert pins["os_n"] == 1, "Error: /OS not disabled when FLG_IN_n is low"
-    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+    assert pins["FLG_n"] == 0, f"Error: FLG_n failed to filter-propagate low! Got: {pins['FLG_n']}"
 
 # ==============================================================================
 # CATEGORY E: PRIORITY INTERLOCKS & ARCHITECTURAL EDGE-CASES
@@ -283,12 +281,12 @@ async def test_global_enable_behavior(dut):
     dut.ena.value = 0
     dut.rst_n.value = 1
     
-    await ClockCycles(dut.clk, 1)
+    await ClockCycles(dut.clk, 4)
     await ReadOnly()
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
     
     assert pins["os_n"] == 1, "Error: Outputs not disabled when ena is low"
-    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+    assert pins["FLG_n"] == 0, f"Error: FLG_n failed to filter-propagate low under zero enable! Got: {pins['FLG_n']}"
 
 @cocotb.test()
 async def test_basic_disable_by_cartridge(dut):
@@ -302,7 +300,7 @@ async def test_basic_disable_by_cartridge(dut):
     await ReadOnly()
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
     assert pins["basic_n"] == 1, "Priority Interlocking Failure: Internal BASIC active alongside Left Cartridge!"
-    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+    assert pins["FLG_n"] == 1, "Error: FLG_n must remain fixed at 1!"
 
 @cocotb.test()
 async def test_os_hole_d000_bypass(dut):
@@ -316,7 +314,7 @@ async def test_os_hole_d000_bypass(dut):
     await ReadOnly()
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
     assert pins["io_n"] == 0 and pins["os_n"] == 1, "Error: Overlap detected inside the $D000-$D7FF hardware block hole!"
-    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+    assert pins["FLG_n"] == 1, "Error: FLG_n must remain fixed at 1!"
 
 @cocotb.test()
 async def test_os_disable_by_ren(dut):
@@ -330,7 +328,7 @@ async def test_os_disable_by_ren(dut):
     await ReadOnly()
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
     assert pins["os_n"] == 1, f"Error: /OS pulled low when explicitly disabled via software REN control loop! Got: {pins['os_n']}"
-    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+    assert pins["FLG_n"] == 1, "Error: FLG_n must remain fixed at 1!"
 
 # ==============================================================================
 # CATEGORY F: MANUFACTURING DFT PRODUCTION TEST MODE OPERATIONS
@@ -351,7 +349,7 @@ async def test_production_bypass_active(dut):
     
     # This will now PASS beautifully because testmode doesn't freeze the outputs anymore!
     assert pins["ci_n"] == 0, f"DFT Failure: Anti-glitch filter did not bypass combinationally! Got: {pins['ci_n']}"
-    assert pins["LOOP_OUT"] == 1, "Error: LOOP_OUT must remain fixed at 1!"
+    assert pins["FLG_n"] == 1, "Error: FLG_n must remain fixed at 1!"
 
 @cocotb.test()
 async def test_production_bypass_reset_interlock(dut):
@@ -383,9 +381,9 @@ async def test_production_bypass_reset_interlock(dut):
     await NextTimeStep()
     await ReadOnly()
     
-    # 6. Verify absolute masking priority (Must equal 127 / 0x7F)
+    # 6. Verify absolute masking priority (Must equal 63 / 0x3F due to system_disabled under reset)
     current_uo = int(dut.uo_out.value)
-    assert current_uo == 127, f"DFT Security Breach: Hardware Reset did not override test mode! Expected 127, got {current_uo}"
+    assert current_uo == 63, f"DFT Security Breach: Hardware Reset did not override test mode! Expected 63, got {current_uo}"
     
     # Clean up and exit
     await NextTimeStep()

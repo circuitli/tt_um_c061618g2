@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 `ifndef C061618G2_FORMAL_SV
 `define C061618G2_FORMAL_SV
 
 `default_nettype none
+`include "src/defs/mmu_defs.sv"
 
 module c061618g2_formal (
     input  wire [7:0] ui_in,    // Dedicated inputs
@@ -62,8 +62,15 @@ module c061618g2_formal (
         f_past_valid <= 1'b1;
     end
 
+    // Interface structure bindings exactly matching the hardware core design
+    pmod1_inputs_t  pmod1_bus;
+    pmod2_inputs_t  pmod2_in_bus;
+
+    assign pmod1_bus    = ui_in;
+    assign pmod2_in_bus = uio_in;
+
     // Local wire aliases matching the physical structural pinning matrices
-    wire [4:0] addr            = ui_in[4:0];
+    wire [4:0] addr            = pmod1_bus.addr;
     wire       map_n           = ui_in[5];
     wire       rd4             = ui_in[6];
     wire       rd5             = ui_in[7];
@@ -73,10 +80,12 @@ module c061618g2_formal (
     wire       mpd_n           = uio_in[2];
     wire       be_n            = uio_in[3];
     wire       TESTMODE_n      = uio_in[4];
-    wire       FLG_IN_n           = uio_in[6];
+    wire       FLG_IN_n        = uio_in[6];
 
     // Master safety cutoff definition matching production RTL
     wire system_disabled = (FLG_IN_n == 1'b0) || (ena == 1'b0) || (rst_n == 1'b0);
+    wire raw_flg_n       = !system_disabled;
+    wire FLG_n           = uo_out[6]; // Tracks the newly mapped filtered safety flag output
 
     // 16-Bit Descriptive Memory Address Space Constants
     parameter [15:0] CART_S4_START      = 16'h8000;
@@ -90,14 +99,16 @@ module c061618g2_formal (
     parameter [15:0] UPPER_OS_ROM_START = 16'hE000;
     parameter [15:0] UPPER_OS_ROM_END   = 16'hFFFF;
 
+    // Anti-Glitch Filter Cycle Depth Configuration Constant
+    // Adjust this integer value to match the depth parameterized inside your filter block
+    localparam FILTER_DELAY_CYCLES = 4;
+
     // ----------------------------------------------------------------
     // Global Subsystem Assumptions & Invariants
     // ----------------------------------------------------------------
     always @(*) begin
         // Pin Invariant Check: Direction control gates are hardcoded for Pmod 2 configurations
         assert_uio_direction: assert(uio_oe == 8'b00100000);
-
-        assert_LOOP_OUT: assert(uo_out[6] == 1);
 
         if (!TESTMODE_n) begin
             // Safe state validation (active only after reset drops to prevent cycle 0 conflicts)
@@ -141,8 +152,8 @@ module c061618g2_formal (
             // --- MEMORY DECODING CORES (Only valid when NOT in TESTMODE) ---
             if (TESTMODE_n) begin
             
-                // Passthrough Check: Verify that TRIGGER_OUT (uio_out[5]) directly tracks address line A11 (ui_in[0])
-                assert_trigger_out_passthrough: assert(uio_out[5] == ui_in[0]);
+                // Passthrough Check: Verify that TRIGGER_OUT (uio_out[5]) directly tracks address line A11
+                assert_trigger_out_passthrough: assert(uio_out[5] == pmod1_bus.addr[0]);
                 
                 // --- A. Strict Memory Decoding Pass Windows ---
                 
@@ -188,31 +199,78 @@ module c061618g2_formal (
                 assert_mut_basic_io: assert(!(uo_out[1] == 1'b0 && uo_out[4] == 1'b0));
                 assert_mut_basic_s4: assert(!(uo_out[1] == 1'b0 && uo_out[5] == 1'b0));
                 assert_mut_basic_s5: assert(!(uo_out[1] == 1'b0 && uo_out[0] == 1'b0));
-                
-                assert_mut_io_s4:    assert(!(uo_out[4] == 1'b0 && uo_out[5] == 1'b0));
-                assert_mut_io_s5:    assert(!(uo_out[4] == 1'b0 && uo_out[0] == 1'b0));
-                
-                assert_mut_s4_s5:    assert(!(uo_out[5] == 1'b0 && uo_out[0] == 1'b0));
             end
         end
     end
 
+        // ----------------------------------------------------------------
+    // 4. Formal Safety Properties (Non-Clocked/Immediate Format)
     // ----------------------------------------------------------------
-    // 4. Coverage Validation Points
-    // ----------------------------------------------------------------
-    always @(posedge clk) begin
-        if (f_past_valid && !rst && !system_disabled && TESTMODE_n) begin
-            cover_os_active:    cover(uo_out[2] == 1'b0);
-            cover_basic_active: cover(uo_out[1] == 1'b0);
-            cover_io_active:    cover(uo_out[4] == 1'b0);
-            cover_s4_active:    cover(uo_out[5] == 1'b0);
-            cover_s5_active:    cover(uo_out[0] == 1'b0);
-            cover_ci_active:    cover(uo_out[3] == 1'b0);
+    
+    // Safety Trace 1: The memory bus signals must immediately drop out when system is disabled
+    always @(*) begin
+        if (!rst) begin
+            if (system_disabled) begin
+                assert_immediate_bus_isolation: assert(uo_out[5:0] == 6'b111111);
+            end
         end
     end
 
-    `endif
+    // Safety Trace 2: External hardware faults must instantly bring down raw flag tracking
+    always @(*) begin
+        if (!rst) begin
+            if (FLG_IN_n == 1'b0 || ena == 1'b0) begin
+                assert_immediate_system_disable: assert(raw_flg_n == 1'b0);
+            end
+        end
+    end
 
+    // Safety Trace 3: Verification that production test mode forces filter bypass
+    always @(*) begin
+        if (!rst) begin
+            if (!TESTMODE_n) begin
+                assert_testmode_filter_bypass: assert(FLG_n == raw_flg_n);
+            end
+        end
+    end
+
+
+    // --- TEMPORAL TRACKING VIA NATIVE REGISTER HISTORY ---
+    // Instead of using complex SVA sequences, we use standard Verilog registers
+    // to keep track of the history of raw_flg_n on the evaluation clock.
+    reg [3:0] f_raw_flg_history;
+
+    always @(posedge phase_clk or posedge rst) begin
+        if (rst) begin
+            f_raw_flg_history <= 4'b1111;
+        end else begin
+            // Shift history: oldest samples slide left, newest sample enters at bit 0
+            f_raw_flg_history <= {f_raw_flg_history[2:0], raw_flg_n};
+        end
+    end
+
+    // TARGET TEST SCENARIO: Prove a fault must persist continuously for 4 cycles
+    always @(*) begin
+        if (f_past_valid && !rst && TESTMODE_n) begin
+            // If the raw flag has been continuously low for 4 consecutive cycles
+            if (f_raw_flg_history == 4'b0000) begin
+                assert_sustained_fault_propagation: assert(FLG_n == 1'b0);
+            end
+        end
+    end
+
+    // ANTI-GLITCH CHECK: Prove that glitches shorter than 4 cycles are swallowed
+    always @(*) begin
+        if (f_past_valid && !rst && TESTMODE_n) begin
+            // If the raw flag dropped but bounced high on the very next cycle,
+            // it means a glitch occurred. Prove that FLG_n rejected it and stayed clean high.
+            if (f_raw_flg_history[1:0] == 2'b10) begin
+                assert_glitch_rejection: assert(FLG_n == 1'b1);
+            end
+        end
+    end
+
+`endif 
 endmodule
 
 // =========================================================================

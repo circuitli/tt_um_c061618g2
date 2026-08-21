@@ -78,7 +78,7 @@ typedef struct packed {
 // SystemVerilog packs left-to-right (MSB to LSB).
 typedef struct packed {
     bit       unused_p3_b7;// Bit 7 -> Pmod 3, Pin 8 (Static 0 Ground Tie-off - Reserved)
-    bit       LOOP_OUT; // Bit 6 -> Pmod 3, Pin 7 (ACTIVE-HIGH SYSTEM LOOP STATUS)
+    bit       FLG_n;    // Bit 6 -> Pmod 3, Pin 7 (Active-Low chip fault)
     bit       s4_n;     // Bit 5 -> /S4 Right Cartridge Select
     bit       io_n;     // Bit 4 -> /IO Peripheral Select ($D000)
     bit       ci_n;     // Bit 3 -> /CI CAS Inhibit (RAM bypass flag)
