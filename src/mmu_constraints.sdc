@@ -22,12 +22,17 @@ create_clock -name clk -period 5.0761 [get_ports clk]
 # 1. Define Primary Master Clock Input Port to exactly 200 MHz
 #create_clock -name clk -period 5.0000 [get_ports clk]
 
-# 2. Define the output of the clock gate module as a generated clock.
-# This tells the timing engine that sync_clk tracks master_clk exactly.
+# ====================================================================
+# 2. DEFINE GATED INTERNAL CLOCK ROOT NODE
+# Dynamically extracts the explicit output pin of the unflattened 
+# clock_synchronizer instance to bypass OpenSTA wildcard parsing bugs.
+# ====================================================================
+set sync_clk_pin [get_pins -of_objects [get_nets -hierarchical *u_clock_sync*sync_clk*] -filter "direction == output"]
+
 create_generated_clock -name sys_clk \
     -source [get_ports clk] \
     -divide_by 1 \
-    [get_pins -hierarchical -filter {name =~ *u_clock_sync*sync_clk}]
+    $sync_clk_pin
 
 # 3. Add a Strict 250-Picosecond Guard Band to Protect Against Clock Jitter
 set_clock_uncertainty 0.2500 [get_clocks clk]
