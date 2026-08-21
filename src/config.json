@@ -12,7 +12,7 @@
   "//": "Here are some of the variables you may want to change:",
 
   "DESIGN_NAME": "tt_um_c061618g2",
-  
+
   "//": "CLOCK_PERIOD - Increase this in case you are getting setup time violations.",
   "//": "The value is in nanoseconds, so 20ns == 50MHz.",
   "//_comment_speed": "HARDENED TIMING: Hardcode period to 11.64ns to natively support 24x master crystal multiplier (85.91 MHz)",
@@ -28,37 +28,37 @@
     ]
   },
   "_hooks": {
-        "post_floorplan": "dir::src/floorplan_hooks.tcl"
-    },
+    "post_floorplan": "dir::src/floorplan_hooks.tcl"
+  },
 
   "PL_MIN_PHI_COEFFICIENT": 0.95,
   "PL_MAX_PHI_COEFFICIENT": 1.05,
   "_PL_MACRO_CHNL_VAL": {
-    "u_c061618g2": [10.0, 10.0, 55.36, 25.12]
+    "u_c061618g2": [ 10.0, 10.0, 55.36, 25.12 ]
   },
   "__PLACEMENT_CONSTRAINTS": {
     "u_c061618g2": {
       "type": "fence",
-      "box": [10.0, 10.0, 55.36, 25.12]
+      "box": [ 10.0, 10.0, 55.36, 25.12 ]
     }
   },
   "_MODULE_GROUPS": {
     "c061618g2_box": {
-      "box": [10.0, 10.0, 55.36, 25.12],
-      "instances": ["*u_c061618g2*"],
+      "box": [ 10.0, 10.0, 55.36, 25.12 ],
+      "instances": [ "*u_c061618g2*" ],
       "type": "fence"
     }
   },
   "_BLACKBOXES": {
     "u_c061618g2": {
-      "box": [0, 0, 45.36, 15.12]
+      "box": [ 0, 0, 45.36, 15.12 ]
     }
   },
-  "_MACROS": {
+  "MACROS": {
     "c061618g2": {
       "instances": {
         "u_c061618g2": {
-          "location": [10.0, 10.0],
+          "location": [ 10.0, 10.0 ],
           "orientation": "N"
         }
       }
@@ -66,31 +66,34 @@
   },
   "_MACRO_PLACEMENT": {
     "u_c061618g2": {
-      "location": [10.0, 10.0],
+      "location": [ 10.0, 10.0 ],
       "orientation": "N",
-      "boundary": [0, 0, 45.36, 15.12]
+      "boundary": [ 0, 0, 45.36, 15.12 ]
     }
   },
   "_PLACEMENT_CONSTRAINTS": {
     "u_c061618g2_region": {
-      "box": [10.0, 10.0, 55.36, 25.12],
-      "instances": ["*u_c061618g2*"],
+      "box": [ 10.0, 10.0, 55.36, 25.12 ],
+      "instances": [ "*u_c061618g2*" ],
       "type": "fence"
     }
   },
-  "_PL_BOUNDS_INSTS": ["tt_um_c061618g2.u_c061618g2"],
-  "_PL_BOUNDS_X0": [10.0],
-  "_PL_BOUNDS_Y0": [10.0],
-  "_PL_BOUNDS_X1": [55.36],
-  "_____PL_BOUNDS_Y1": [25.12],
-  "____PL_BOUNDS_Y1": [35.20],
-  "_PL_BOUNDS_Y1": [40.24],
-  "__PL_BOUNDS_Y1": [45.28],
-  "___PL_BOUNDS_Y1": [50.32],
+  "_PL_BOUNDS_INSTS": [ "tt_um_c061618g2.u_c061618g2" ],
+  "_PL_BOUNDS_X0": [ 10.0 ],
+  "_PL_BOUNDS_Y0": [ 10.0 ],
+  "_PL_BOUNDS_X1": [ 55.36 ],
+  "_____PL_BOUNDS_Y1": [ 25.12 ],
+  "____PL_BOUNDS_Y1": [ 35.20 ],
+  "_PL_BOUNDS_Y1": [ 40.24 ],
+  "__PL_BOUNDS_Y1": [ 45.28 ],
+  "___PL_BOUNDS_Y1": [ 50.32 ],
 
 
   "//": "SYNTH_STRATEGY - Force Yosys to prioritize delay minimization over area to handle high-frequency transitions",
   "SYNTH_STRATEGY": "DELAY 0",
+
+  "//": "SYNTH_FLATTEN - Disable global flattening to preserve submodule boundaries for physical macro bounding and hierarchical power grid connection",
+  "SYNTH_FLATTEN": false,
 
   "//": "FP_CORE_UTIL - Force LibreLane to generate a much larger dynamic box for our 3% cell logic by lowering core utilization",
   "FP_CORE_UTIL": 80,
@@ -108,7 +111,7 @@
   "//": "RUN_POST_GRT_DESIGN_REPAIR - Force physical cell legalisation and track repair after global routing to resolve severe hold violations",
   "RUN_POST_GRT_DESIGN_REPAIR": true,
 
-   "//": "CELL_PAD - Increase cell padding to force the tool to leave empty space around every single logic gate",
+  "//": "CELL_PAD - Increase cell padding to force the tool to leave empty space around every single logic gate",
   "CELL_PAD": 0,
 
   "//": "RUN_POST_GRT - Direct the global router to optimize timing routes with maximum iterations",

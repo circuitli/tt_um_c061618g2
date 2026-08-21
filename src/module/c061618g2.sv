@@ -26,7 +26,7 @@
 `include "src/module/clock_synchronizer.sv"
 `include "src/module/anti_glitch_filter.sv"
 
-(* keep_hierarchy = "yes" *)
+(* keep_hierarchy = 1 *)
 module c061618g2 (
     input  [7:0] ui_in,    // Dedicated hardware inputs
     output [7:0] uo_out,   // Dedicated hardware outputs
