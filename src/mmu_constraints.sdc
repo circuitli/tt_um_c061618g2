@@ -24,10 +24,10 @@ create_clock -name clk -period 5.0761 [get_ports clk]
 
 # ====================================================================
 # 2. DEFINE GATED INTERNAL CLOCK ROOT NODE
-# Dynamically extracts the explicit output pin of the unflattened 
-# clock_synchronizer instance to bypass OpenSTA wildcard parsing bugs.
+# Queries OpenROAD's database for the exact output port object of the 
+# preserved u_clock_sync module to bypass all string-renaming mutations.
 # ====================================================================
-set sync_clk_pin [get_pins -of_objects [get_nets -hierarchical *u_clock_sync*sync_clk*] -filter "direction == output"]
+set sync_clk_pin [get_pins -hierarchical -filter {name =~ *u_clock_sync/* && direction == output}]
 
 create_generated_clock -name sys_clk \
     -source [get_ports clk] \
