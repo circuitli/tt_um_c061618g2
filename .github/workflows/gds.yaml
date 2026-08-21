@@ -31,7 +31,7 @@ jobs:
           
           # This maps your specific instance name dynamically to your exact box.
           # Format: ["<instance_name> <x1> <y1> <orientation>", "REGION <name> <x1> <y1> <x2> <y2>", ...]
-          DATA_STR='["u_c061618g2 10.0 10.0 N", "REGION region_u 10.0 10.0 55.36 25.12", "u_c061618g2 REGION region_u"]'
+          DATA_STR='["u_c061618g2 10.0 10.0 N", "REGION region_u 10.0 10.0 55.36 30.16", "u_c061618g2 REGION region_u"]'
           
           # Append the data directly to the active runner context state file
           echo "MACRO_PLACEMENT=${DATA_STR}" >> $GITHUB_ENV
