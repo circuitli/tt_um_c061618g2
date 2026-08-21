@@ -99,9 +99,9 @@
   "SYNTH_FLATTEN": false,
 
   "//": "SYNTH_PARAMETERS - Passes top-level elaboration flags to Yosys to explicitly preserve the hierarchical structural boundaries of internal submodules like clock_synchronizer during physical gate mapping.",
-  "SYNTH_PARAMETERS": {
-    "KEEP_HIERARCHY": true
-  },
+  "SYNTH_PARAMETERS": [
+    "KEEP_HIERARCHY=1"
+  ],
 
   "//": "FP_CORE_UTIL - Force LibreLane to generate a much larger dynamic box for our 3% cell logic by lowering core utilization",
   "FP_CORE_UTIL": 80,
