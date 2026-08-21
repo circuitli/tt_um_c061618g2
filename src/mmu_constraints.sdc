@@ -27,7 +27,7 @@ create_clock -name clk -period 5.0761 [get_ports clk]
 create_generated_clock -name sys_clk \
     -source [get_ports clk] \
     -divide_by 1 \
-    [get_nets u_clock_synchronizer/sync_clk]
+    [get_nets u_c061618g2/u_clock_sync/sync_clk]
 
 # 3. Add a Strict 250-Picosecond Guard Band to Protect Against Clock Jitter
 set_clock_uncertainty 0.2500 [get_clocks clk]
@@ -55,7 +55,7 @@ set_clock_uncertainty 0.2500 [get_clocks sys_clk]
 set_false_path -from [get_ports rst]
 
 # Isolate the input stages of the asynchronous shift register pipeline
-set_false_path -to [get_pins -hierarchical -filter {name =~ *u_clock_synchronizer*sync_stages*/*}]
+set_false_path -to [get_pins -hierarchical -filter {name =~ *u_clock_sync*sync_stages*/*}]
 
 # Define clk and sys_clk as synchronous to allow inter-domain timing closure
 set_clock_groups -logically_exclusive -group [get_clocks clk] -group [get_clocks sys_clk]
