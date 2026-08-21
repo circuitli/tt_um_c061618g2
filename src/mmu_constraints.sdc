@@ -31,7 +31,7 @@ create_generated_clock -name sys_clk \
 
 # 3. Add a Strict 250-Picosecond Guard Band to Protect Against Clock Jitter
 set_clock_uncertainty 0.2500 [get_clocks clk]
-set_clock_uncertainty 0.2500 [get_clocks sys_clk]
+set_clock_uncertainty 0.2500 [get_clocks sys_clk_net]
 
 # ====================================================================
 # 4. SAFE ASYNCHRONOUS BOUNDARY ISOLATION (OpenSTA Compliant)
