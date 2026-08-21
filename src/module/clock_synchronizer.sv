@@ -47,28 +47,18 @@ module clock_synchronizer #(
     // This holds the un-gating control signal low until raw_clk is low, 
     // guaranteeing that the clock gate opens without clipping or slivers.
     
+    // Sequential Gating Logic & Clock Generation
+    // Moving the clock gating step into the register layer locks the output pin name
     always_ff @(negedge raw_clk or posedge rst) begin
         if (rst) begin
-            // Clear the entire shift register pipeline instantly on reset
             sync_stages <= '0;
+            sync_clk    <= 1'b0;
         end else begin
-            // Concatenation shift operation: move bits left and shift in a solid 1
             sync_stages <= {sync_stages[STAGES-2:0], 1'b1};
+            // The gating condition is resolved sequentially to output a real, physical pin
+            sync_clk    <= raw_clk & sync_stages[STAGES-2];
         end
     end
-
-    // Clock gate combination logic. Using negedge flip-flops ensures that
-    // the gating control signal changes only when raw_clk is low, completely
-    // eliminating narrow clock pulse anomalies or sliver hazards.
-
-    // 1. First, apply the synthesis attributes directly to the signal declaration itself
-    (* keep = 1, dont_touch = 1 *) wire sync_clk_net;
-
-    // 2. Perform the continuous assignment cleanly without inline attributes
-    assign sync_clk_net = raw_clk & sync_stages[STAGES-1];
-    
-    // 3. Drive the module's actual output port
-    assign sync_clk = sync_clk_net;
 
 endmodule
 
