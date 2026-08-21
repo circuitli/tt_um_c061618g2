@@ -27,14 +27,14 @@ create_clock -name clk -period 5.0761 [get_ports clk]
 create_generated_clock -name sys_clk \
     -source [get_ports clk] \
     -divide_by 1 \
-    [get_nets sys_clk]
+    [get_pins -hierarchical *u_clock_sync/sync_clk]
 
 # 3. Add a Strict 250-Picosecond Guard Band to Protect Against Clock Jitter
 set_clock_uncertainty 0.2500 [get_clocks clk]
 set_clock_uncertainty 0.2500 [get_clocks sys_clk]
 
 # ====================================================================
-# 4. UNIVERSAL FANOUT ISOLATION (OpenSTA Compliant)
+# 4. SAFE ASYNCHRONOUS BOUNDARY ISOLATION (OpenSTA Compliant)
 # Traverses the 'sys_clk' net to find all leaf input pins, 
 # cleanly slicing cross-domain paths without breaking TritonCTS.
 # ====================================================================
@@ -52,13 +52,13 @@ set_clock_uncertainty 0.2500 [get_clocks sys_clk]
 # ====================================================================
 
 # Isolate the asynchronous master system reset port
-set_false_path -from [get_ports rst]
+set_false_path -from [get_ports rst_n]
 
 # Isolate the input stages of the asynchronous shift register pipeline
 set_false_path -to [get_pins -hierarchical -filter {name =~ *u_clock_sync*sync_stages*/*}]
 
 # Define clk and sys_clk as synchronous to allow inter-domain timing closure
-set_clock_groups -logically_exclusive -group [get_clocks clk] -group [get_clocks sys_clk]
+set_clock_groups -asynchronous -group [get_clocks clk] -group [get_clocks sys_clk]
 
 # ====================================================================
 # 4. Explicit Peripheral I/O Timing Boundaries (Referencing clk Only)

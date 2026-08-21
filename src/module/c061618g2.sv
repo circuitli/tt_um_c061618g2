@@ -43,7 +43,7 @@ module c061618g2 (
 
     // Force both Yosys and OpenROAD to preserve this exact net name 
     // and prevent it from being renamed or optimized during flattening.
-    (* keep = "true", dont_touch = "true" *) wire sys_clk;
+    (* keep = 1, dont_touch = 1 *) wire sys_clk;
 
     // 2. Instantiate Clock Synchronizer
     // Converts incoming active-low rst_n to active-high reset layout
