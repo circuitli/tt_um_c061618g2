@@ -31,7 +31,9 @@ module clock_synchronizer #(
 ) (
     input  logic rst,        // Asynchronous system reset input
     input  logic raw_clk,    // Asynchronous or raw input clock source
-    output logic sync_clk    // Stabilized, glitch-free synchronized clock output
+    // Applying the attribute directly to the output port is 100% legal in SBY 
+    // and forces Yosys to lock the outer boundary pin name for OpenROAD
+    (* keep = 1, dont_touch = 1 *) output logic sync_clk // Stabilized, glitch-free synchronized clock output
 );
 
     // Multi-stage synchronization array vector with synthesis attributes
