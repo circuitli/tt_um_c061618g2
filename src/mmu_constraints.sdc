@@ -27,7 +27,7 @@ create_clock -name clk -period 5.0761 [get_ports clk]
 create_generated_clock -name sys_clk \
     -source [get_ports clk] \
     -divide_by 1 \
-    [get_pins -hierarchical -filter {name =~ *u_clock_sync*sync_clk}]
+    [find_objects -type pin *u_clock_sync*sync_clk*]
 
 # 3. Add a Strict 250-Picosecond Guard Band to Protect Against Clock Jitter
 set_clock_uncertainty 0.2500 [get_clocks clk]
