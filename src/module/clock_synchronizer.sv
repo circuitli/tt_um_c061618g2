@@ -58,7 +58,7 @@ module clock_synchronizer #(
     // Clock gate combination logic. Using negedge flip-flops ensures that
     // the gating control signal changes only when raw_clk is low, completely
     // eliminating narrow clock pulse anomalies or sliver hazards.
-    assign sync_clk = raw_clk & sync_stages[STAGES-1];
+    (* keep = 1, dont_touch = 1 *) assign sync_clk = raw_clk & sync_stages[STAGES-1];
 
 endmodule
 
