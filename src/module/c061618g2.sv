@@ -47,6 +47,7 @@ module c061618g2 (
 
     // 2. Instantiate Clock Synchronizer
     // Converts incoming active-low rst_n to active-high reset layout
+    (* keep_hierarchy = 1 *)
     clock_synchronizer #(
         .STAGES(2)
     ) u_clock_sync (
