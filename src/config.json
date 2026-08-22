@@ -21,11 +21,14 @@
   "CLOCK_PERIOD": 4.9751,
   "____CLOCK_PERIOD": 4.6512,
 
+  "//": "SYNTH_STRATEGY - Restores the stable balanced logic restructuring formula to keep sequential steering paths clean and routable at high speeds.",
+  "SYNTH_STRATEGY": "DELAY 1",
+
   "//": "SYNTH_BUFFERING - Forces Yosys to insert explicit cell buffers on high-fanout data and clock paths during elaboration. This breaks up complex multi-pin logic networks and permanently prevents TritonCTS from throwing memory segmentation faults during the clock tree synthesis pass.",
   "SYNTH_BUFFERING": true,
 
-  "//": "SYNTH_STRATEGY - Restores the stable balanced logic restructuring formula to keep sequential steering paths clean and routable at high speeds.",
-  "SYNTH_STRATEGY": "AREA 3",
+  "//": "SYNTH_SIZING - Enables aggressive pre-placement cell sizing to scale up internal logic gates to high-performance variations early.",
+  "SYNTH_SIZING": true,
 
   "//": "SYNTH_HIER_PASS - Directs Yosys to perform synthesis hierarchically, locking down local submodule ports before physical cell mapping.",
   "SYNTH_HIER_PASS": true,
@@ -37,6 +40,9 @@
   "_SYNTH_PARAMETERS": [
     "KEEP_HIERARCHY=1"
   ],
+
+  "//": "MAX_FANOUT_CONSTRAINT - Clamps internal signal fanout to 4 targets, forcing the tool to clone sluggish data lines and restore crisp transitions.",
+  "MAX_FANOUT_CONSTRAINT": 4,
 
   "SDC_FILE": "src/mmu_constraints.sdc",
   "_MACRO_PLACEMENT_CFG": "",
@@ -142,8 +148,11 @@
   "PL_RESIZER_HOLD_SLACK_MARGIN": 0.1,
   "GRT_RESIZER_HOLD_SLACK_MARGIN": 0.05,
 
-  "//": "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT - Authorize the timing resizer to aggressively utilize our massive open tile space for hold-fixing buffers",
+  "//": "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT - Keeps your existing 100% freedom allocation active for fixing hold timing violations.",
   "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT": 100,
+
+  "//": "PL_RESIZE_BUFFER_PERCENTAGE - Allocates 40% extra optimization budget to allow OpenROAD to upsize slow gates to high-drive variants along your 229 MHz critical paths.",
+  "PL_RESIZE_BUFFER_PERCENTAGE": 40,
 
   "//": "RUN_LINTER, LINTER_INCLUDE_PDK_MODELS - Disabling the linter is not recommended!",
   "RUN_LINTER": 1,
