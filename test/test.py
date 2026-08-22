@@ -377,13 +377,14 @@ async def test_production_bypass_reset_interlock(dut):
     dut._log.info("Applying rst_n to verify immediate combinational override...")
     dut.rst_n.value = 0
     
-        # 5. Let the simulator process the write through the combinational gates
+    # 5. Let the simulator process the write through the combinational gates
     await NextTimeStep()
     await ReadOnly()
     
-    # 6. Verify absolute masking priority (127 confirms bits 0-6 are safely high)
+    # 6. Verify absolute masking priority (Must equal 63 because FLG_n safely reports 0 during reset)
     current_uo = int(dut.uo_out.value)
-    assert current_uo == 127, f"DFT Security Breach: Expected 127, got {current_uo}"
+    assert current_uo == 63, f"DFT Security Breach: Expected 63, got {current_uo}"
+
     
     # Clean up and exit
     await NextTimeStep()
