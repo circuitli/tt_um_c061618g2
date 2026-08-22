@@ -19,9 +19,11 @@
   "CLOCK_PERIOD": 5.0761,
   "_CLOCK_PERIOD": 5.00,
   "SDC_FILE": "src/mmu_constraints.sdc",
-  "MACRO_PLACEMENT_CFG": "src/floorplan_hooks.tcl",
+  "_MACRO_PLACEMENT_CFG": "",
   "_MACRO_PLACEMENT_BOUNDS_FILE": "src/macro_bounds.json",
   "_EXTRA_SPECS_TCL": "dir::src/floorplan_hooks.tcl",
+  "//": "HOOK_PLACE_INIT - Executes your custom Tcl script exactly when OpenROAD initializes the placement phase, allowing you to draw a size-bounded box for soft instances without crashing.",
+  "HOOK_PLACE_INIT": "src/floorplan_hooks.tcl",
   "_OpenROAD.Floorplan": {
     "extra_tcl_lines": [
       "source src/floorplan_hooks.tcl"
