@@ -56,6 +56,7 @@
   "_hooks": {
     "post_floorplan": "dir::src/floorplan_hooks.tcl"
   },
+  "HOOK_BEFORE_PLACEMENT": "src/floorplan_hooks.tcl",
 
   "PL_MIN_PHI_COEFFICIENT": 0.95,
   "PL_MAX_PHI_COEFFICIENT": 1.05,
@@ -156,7 +157,7 @@
 
   "//": "PL_RESIZER_TIMING_OPTIMIZATIONS - Runs critical slack path resizing directly within the global placement iteration window.",
   "PL_RESIZER_TIMING_OPTIMIZATIONS": true,
-  
+
   "//": "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT - Keeps your existing 100% freedom allocation active for fixing hold timing violations.",
   "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT": 100,
 
