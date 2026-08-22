@@ -18,8 +18,8 @@
   "//_comment_speed": "HARDENED TIMING: Hardcode period to 11.64ns to natively support 24x master crystal multiplier (85.91 MHz)",
   "__CLOCK_PERIOD": 5.0761,
   "_CLOCK_PERIOD": 5.00,
-  "____CLOCK_PERIOD": 4.9751,
-  "CLOCK_PERIOD": 4.6512,
+  "CLOCK_PERIOD": 4.9751,
+  "____CLOCK_PERIOD": 4.6512,
 
   "//": "SYNTH_STRATEGY - Restores the stable balanced logic restructuring formula to keep sequential steering paths clean and routable at high speeds.",
   "SYNTH_STRATEGY": "DELAY 1",
