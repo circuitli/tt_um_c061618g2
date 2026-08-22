@@ -27,7 +27,7 @@ create_clock -name clk -period 5.0761 [get_ports clk]
 # Queries OpenROAD's database for the exact output port object of the 
 # preserved u_clock_sync module to bypass all string-renaming mutations.
 # ====================================================================
-set sync_clk_pin [get_pins u_clock_sync/sync_clk]
+set sync_clk_pin [get_pins -hierarchical -filter {name =~ *u_clock_sync*sync_clk*}]
 
 create_generated_clock -name sys_clk \
     -source [get_ports clk] \
