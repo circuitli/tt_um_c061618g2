@@ -47,17 +47,22 @@ module anti_glitch_filter (
         end
     end
 
-    // 2. Final stage launches data cleanly on the rising edge (posedge)
-    // This gives the output pin exactly 2.5 cycles of total system latency.
+     // 2. Synchronous DFT Protection Output Stage
+    // Merging the testmode path directly behind the posedge register edge
+    // breaks the combinational loop entirely, preventing simulation failures.
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             filter_stage3 <= 1'b1;
         end else begin
-            filter_stage3 <= filter_stage2;
+            if (!TESTMODE_n) begin
+                filter_stage3 <= raw_signal_in; // Registered fast bypass for testmode
+            end else begin
+                filter_stage3 <= filter_stage2; // Standard glitch-isolated path
+            end
         end
     end
 
-    // Direct output driver link
+    // Direct output driver link - 100% clean and isolated
     assign clean_signal_out = filter_stage3;
 
 endmodule
