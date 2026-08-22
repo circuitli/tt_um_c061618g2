@@ -149,47 +149,47 @@ module c061618g2_formal (
                 assert_dft_clock_norm: assert(phase_clk == sys_clk);
             end
             
-            // --- MEMORY DECODING CORES (Only valid when NOT in TESTMODE) ---
+                        // --- MEMORY DECODING CORES (Only valid when NOT in TESTMODE) ---
             if (TESTMODE_n) begin
             
-                // Passthrough Check: Verify that TRIGGER_OUT (uio_out[5]) directly tracks address line A11
+                // Passthrough Check: Tracks A11 instantly
                 assert_trigger_out_passthrough: assert(uio_out[5] == pmod1_bus.addr[0]);
                 
-                // --- A. Strict Memory Decoding Pass Windows ---
+                // --- A. Strict Memory Decoding Pass Windows (Timed to a 3-Cycle Delay) ---
                 
                 // 1. Split-Zone OS Kernel ROM Decoding Bounds ($C000-$CFFF and $E000-$FFFF)
-                if (map_n && ren && (((addr >= LOWER_OS_ROM_START[15:11]) && (addr <= LOWER_OS_ROM_END[15:11])) || 
-                                    ((addr >= UPPER_OS_ROM_START[15:11]) && (addr <= UPPER_OS_ROM_END[15:11])))) begin
+                if ($past(map_n, 3) && $past(ren, 3) && ((( $past(addr, 3) >= LOWER_OS_ROM_START[15:11]) && ( $past(addr, 3) <= LOWER_OS_ROM_END[15:11])) || 
+                                                        (( $past(addr, 3) >= UPPER_OS_ROM_START[15:11]) && ( $past(addr, 3) <= UPPER_OS_ROM_END[15:11])))) begin
                     assert_os_enabled:   assert(uo_out[2] == 1'b0); // os_n pulls low
                     assert_basic_masked: assert(uo_out[1] == 1'b1); // basic_n stays high
                 end
                 
-                // 2. Strict BASIC Interpreter ROM Decoding Bounds ($A000 - $BFFF) with Left Cartridge Interlocking
-                if (map_n && be_n && !rd5 && (addr >= CART_S5_START[15:11]) && (addr <= CART_S5_END[15:11])) begin
+                // 2. Strict BASIC Interpreter ROM Decoding Bounds ($A000 - $BFFF)
+                if ($past(map_n, 3) && $past(be_n, 3) && !$past(rd5, 3) && ($past(addr, 3) >= CART_S5_START[15:11]) && ($past(addr, 3) <= CART_S5_END[15:11])) begin
                     assert_basic_enabled: assert(uo_out[1] == 1'b0); // basic_n pulls low
                     assert_os_masked:    assert(uo_out[2] == 1'b1); // os_n stays high
                 end
 
                 // 3. Strict Hardware I/O Select Decoding Bounds ($D000 - $D7FF)
-                if (map_n && ren && (addr == HARDWARE_IO_START[15:11])) begin
+                if ($past(map_n, 3) && $past(ren, 3) && ($past(addr, 3) == HARDWARE_IO_START[15:11])) begin
                     assert_io_enabled:   assert(uo_out[4] == 1'b0); // io_n pulls low
                 end
 
                 // 4. Expansion Cartridge Slot S4 Select Bounds ($8000 - $9FFF)
-                if (map_n && rd4 && (addr >= CART_S4_START[15:11]) && (addr <= CART_S4_END[15:11])) begin
+                if ($past(map_n, 3) && $past(rd4, 3) && ($past(addr, 3) >= CART_S4_START[15:11]) && ($past(addr, 3) <= CART_S4_END[15:11])) begin
                     assert_s4_enabled:   assert(uo_out[5] == 1'b0); // s4_n pulls low
                 end
 
                 // 5. Expansion Cartridge Slot S5 Select Bounds ($A000 - $BFFF)
-                if (map_n && rd5 && (addr >= CART_S5_START[15:11]) && (addr <= CART_S5_END[15:11])) begin
+                if ($past(map_n, 3) && $past(rd5, 3) && ($past(addr, 3) >= CART_S5_START[15:11]) && ($past(addr, 3) <= CART_S5_END[15:11])) begin
                     assert_s5_enabled:   assert(uo_out[0] == 1'b0); // s5_n pulls low
                 end
 
-                // 6. CAS Inhibit/Refresh Dynamic RAM Select Bounds
-                if (map_n && ref_n && (addr == HARDWARE_IO_START[15:11])) begin
+                // 6. CAS Inhibit/Refresh Dynamic RAM Select Bounds (Your active-low filter line)
+                if ($past(map_n, 3) && $past(ref_n, 3) && ($past(addr, 3) == HARDWARE_IO_START[15:11])) begin
                     assert_ci_enabled:   assert(uo_out[3] == 1'b0); // ci_n pulls low
                 end
-                
+
                 // --- B. Expanded Pairwise Mutual Exclusion Matrix ---
                 assert_mut_os_basic: assert(!(uo_out[2] == 1'b0 && uo_out[1] == 1'b0));
                 assert_mut_os_io:    assert(!(uo_out[2] == 1'b0 && uo_out[4] == 1'b0));

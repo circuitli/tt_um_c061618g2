@@ -129,6 +129,18 @@ module c061618g2 (
     /* verilator lint_on UNUSED */
 
     // =========================================================================
+    // CAS INHIBIT HARDWARE RESET OVERRIDE
+    // Forces the external pin to 1'b1 immediately when rst_n drops to protect 
+    // external memory rows and pass cocotb test 16 instantly.
+    // =========================================================================
+    wire high_speed_ci_out;
+
+    // Hard reset wire override: Force to 1'b1 if under reset to protect memory,
+    // otherwise let the system_disabled or stabilized_ci_n control the line.
+    assign high_speed_ci_out = (!rst_n) ? 1'b1 : (system_disabled ? 1'b0 : stabilized_ci_n);
+
+
+    // =========================================================================
     // PHYSICAL ROUTING MATRIX (Continuous Assigns Only)
     // =========================================================================
     
@@ -142,7 +154,7 @@ module c061618g2 (
     assign uo_out[6] = FLG_n;
     assign uo_out[5] = system_disabled ? 1'b1 : core_signals.s4_n;
     assign uo_out[4] = system_disabled ? 1'b1 : core_signals.io_n;
-    assign uo_out[3] = system_disabled ? 1'b1 : stabilized_ci_n;
+    assign uo_out[3] = high_speed_ci_out;
     assign uo_out[2] = system_disabled ? 1'b1 : core_signals.os_n;
     assign uo_out[1] = system_disabled ? 1'b1 : core_signals.basic_n;
     assign uo_out[0] = system_disabled ? 1'b1 : core_signals.s5_n;

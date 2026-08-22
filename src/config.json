@@ -127,7 +127,7 @@
 
   "//": "PL_TARGET_DENSITY_PCT - You can increase this if Global Placement fails with error GPL-0302.",
   "//": "Users have reported that values up to 80 worked well for them.",
-  "PL_TARGET_DENSITY_PCT": 95,
+  "PL_TARGET_DENSITY_PCT": 55,
 
   "//": "RUN_POST_GPL_DESIGN_REPAIR - Bypass LibreLane crash by forcing automatic hold-buffer insertion after global placement",
   "RUN_POST_GPL_DESIGN_REPAIR": true,
@@ -161,7 +161,7 @@
   "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT": 100,
 
   "//": "PL_RESIZE_BUFFER_PERCENTAGE - Allocates 40% extra optimization budget to allow OpenROAD to upsize slow gates to high-drive variants along your 229 MHz critical paths.",
-  "PL_RESIZE_BUFFER_PERCENTAGE": 40,
+  "PL_RESIZE_BUFFER_PERCENTAGE": 50,
 
   "//": "RUN_LINTER, LINTER_INCLUDE_PDK_MODELS - Disabling the linter is not recommended!",
   "RUN_LINTER": 1,
