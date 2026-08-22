@@ -21,6 +21,20 @@
   "____CLOCK_PERIOD": 4.9751,
   "CLOCK_PERIOD": 4.6512,
 
+  "//": "SYNTH_STRATEGY - Force Yosys to prioritize delay minimization over area to handle high-frequency transitions",
+  "SYNTH_STRATEGY": "AREA 3",
+
+  "//": "SYNTH_HIER_PASS - Directs Yosys to perform synthesis hierarchically, locking down local submodule ports before physical cell mapping.",
+  "SYNTH_HIER_PASS": true,
+
+  "//": "SYNTH_FLATTEN - Disable global flattening to preserve submodule boundaries for physical macro bounding and hierarchical power grid connection",
+  "SYNTH_FLATTEN": false,
+
+  "//": "SYNTH_PARAMETERS - Passes top-level elaboration flags to Yosys to explicitly preserve the hierarchical structural boundaries of internal submodules like clock_synchronizer during physical gate mapping.",
+  "_SYNTH_PARAMETERS": [
+    "KEEP_HIERARCHY=1"
+  ],
+
   "SDC_FILE": "src/mmu_constraints.sdc",
   "_MACRO_PLACEMENT_CFG": "",
   "_MACRO_PLACEMENT_BOUNDS_FILE": "src/macro_bounds.json",
@@ -98,21 +112,6 @@
   "_PL_BOUNDS_Y1": [ 40.24 ],
   "__PL_BOUNDS_Y1": [ 45.28 ],
   "___PL_BOUNDS_Y1": [ 50.32 ],
-
-
-  "//": "SYNTH_STRATEGY - Force Yosys to prioritize delay minimization over area to handle high-frequency transitions",
-  "SYNTH_STRATEGY": "DELAY 1",
-
-  "//": "SYNTH_HIER_PASS - Directs Yosys to perform synthesis hierarchically, locking down local submodule ports before physical cell mapping.",
-  "SYNTH_HIER_PASS": true,
-
-  "//": "SYNTH_FLATTEN - Disable global flattening to preserve submodule boundaries for physical macro bounding and hierarchical power grid connection",
-  "SYNTH_FLATTEN": false,
-
-  "//": "SYNTH_PARAMETERS - Passes top-level elaboration flags to Yosys to explicitly preserve the hierarchical structural boundaries of internal submodules like clock_synchronizer during physical gate mapping.",
-  "_SYNTH_PARAMETERS": [
-    "KEEP_HIERARCHY=1"
-  ],
 
   "//": "FP_CORE_UTIL - Force LibreLane to generate a much larger dynamic box for our 3% cell logic by lowering core utilization",
   "FP_CORE_UTIL": 80,
