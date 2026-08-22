@@ -48,6 +48,9 @@
   "_MACRO_PLACEMENT_CFG": "",
   "_MACRO_PLACEMENT_BOUNDS_FILE": "src/macro_bounds.json",
   "_EXTRA_SPECS_TCL": "dir::src/floorplan_hooks.tcl",
+  "EXTRA_PLACEMENT_TCL_FILES": [
+    "src/floorplan_hooks.tcl"
+  ],
   "_OpenROAD.Floorplan": {
     "extra_tcl_lines": [
       "source src/floorplan_hooks.tcl"
@@ -56,7 +59,7 @@
   "_hooks": {
     "post_floorplan": "dir::src/floorplan_hooks.tcl"
   },
-  "HOOK_BEFORE_PLACEMENT": "src/floorplan_hooks.tcl",
+  "_HOOK_BEFORE_PLACEMENT": "src/floorplan_hooks.tcl",
 
   "PL_MIN_PHI_COEFFICIENT": 0.95,
   "PL_MAX_PHI_COEFFICIENT": 1.05,
