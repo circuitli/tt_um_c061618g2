@@ -99,7 +99,7 @@
 
 
   "//": "SYNTH_STRATEGY - Force Yosys to prioritize delay minimization over area to handle high-frequency transitions",
-  "SYNTH_STRATEGY": "DELAY 0",
+  "SYNTH_STRATEGY": "DELAY 1",
 
   "//": "SYNTH_HIER_PASS - Directs Yosys to perform synthesis hierarchically, locking down local submodule ports before physical cell mapping.",
   "SYNTH_HIER_PASS": true,

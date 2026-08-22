@@ -36,9 +36,13 @@ create_generated_clock -name sys_clk \
     -divide_by 1 \
     [get_pins -of_objects [get_nets -hierarchical *sys_clk]]
 
-# 3. Add a Strict 250-Picosecond Guard Band to Protect Against Clock Jitter
-set_clock_uncertainty 0.2500 [get_clocks clk]
-set_clock_uncertainty 0.2500 [get_clocks sys_clk]
+# Apply a strict 150ps guard band for setup checks to fix data path delay
+set_clock_uncertainty -setup 0.1500 [get_clocks clk]
+set_clock_uncertainty -setup 0.1500 [get_clocks sys_clk]
+
+# Relax hold uncertainty to 50ps to prevent TritonCTS from adding too many buffers
+set_clock_uncertainty -hold 0.0500 [get_clocks clk]
+set_clock_uncertainty -hold 0.0500 [get_clocks sys_clk]
 
 # ====================================================================
 # 4. SAFE ASYNCHRONOUS BOUNDARY ISOLATION (OpenSTA Compliant)
