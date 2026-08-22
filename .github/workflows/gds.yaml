@@ -25,7 +25,7 @@ jobs:
         # INSERT THE CUSTOM PATCH STEP RIGHT HERE:
         # ========================================================
       - name: Force OpenROAD Coordinate Box Injection
-        if: true
+        if: false
         run: |
           echo "Writing explicit coordinate fence bounds straight to environment..."
           
