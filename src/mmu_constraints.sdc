@@ -61,7 +61,11 @@ set_false_path -from [get_ports rst_n]
 set_false_path -to [get_pins -hierarchical -filter {name =~ *u_clock_sync*sync_stages*/*}]
 
 # Define clk and sys_clk as synchronous to allow inter-domain timing closure
-set_clock_groups -asynchronous -group [get_clocks clk] -group [get_clocks sys_clk]
+#set_clock_groups -asynchronous -group [get_clocks clk] -group [get_clocks sys_clk]
+
+# Explicitly tells OpenSTA that clk and sys_clk are logically exclusive, 
+# preventing the timing engine from analyzing impossible cross-domain interactions.
+set_clock_groups -logically_exclusive -group [get_clocks clk] -group [get_clocks sys_clk]
 
 # ====================================================================
 # 4. Explicit Peripheral I/O Timing Boundaries (Referencing clk Only)
