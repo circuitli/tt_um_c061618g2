@@ -24,11 +24,11 @@
 # ====================================================================
 # 1. DEFINE PRIMARY MASTER CLOCK INPUT PORT (201 MHz)
 # ====================================================================
-#create_clock -name clk -period 4.9571 [get_ports clk]
+create_clock -name clk -period 4.9571 [get_ports clk]
 # ====================================================================
 # 1. DEFINE PRIMARY MASTER CLOCK INPUT PORT (215 MHz)
 # ====================================================================
-create_clock -name clk -period 4.6512 [get_ports clk]
+#create_clock -name clk -period 4.6512 [get_ports clk]
 
 
 # ====================================================================
