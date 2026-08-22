@@ -36,6 +36,14 @@
   "_PL_MACRO_CHNL_VAL": {
     "u_c061618g2": [ 10.0, 10.0, 55.36, 25.12 ]
   },
+  "//": "PL_REGIONS - Binds the entire unflattened u_c061618g2 macro logic block inside a strict physical coordinate bounding box on the Tiny Tapeout wrapper grid without needing a hard GDS database.",
+  "PL_REGIONS": {
+    "u_c061618g2_region": {
+      "instances": [ "u_c061618g2" ],
+      "bounds": [ 10.0, 10.0, 55.36, 25.12 ],
+      "type": "guide"
+    }
+  },
   "__PLACEMENT_CONSTRAINTS": {
     "u_c061618g2": {
       "type": "fence",
