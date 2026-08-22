@@ -34,7 +34,7 @@
   "SYNTH_HIER_PASS": true,
 
   "//": "SYNTH_FLATTEN - Disable global flattening to preserve submodule boundaries for physical macro bounding and hierarchical power grid connection",
-  "SYNTH_FLATTEN": false,
+  "SYNTH_FLATTEN": true,
 
   "//": "SYNTH_PARAMETERS - Passes top-level elaboration flags to Yosys to explicitly preserve the hierarchical structural boundaries of internal submodules like clock_synchronizer during physical gate mapping.",
   "_SYNTH_PARAMETERS": [
