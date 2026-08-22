@@ -25,7 +25,7 @@
   "SYNTH_BUFFERING": true,
 
   "//": "SYNTH_STRATEGY - Restores the stable balanced logic restructuring formula to keep sequential steering paths clean and routable at high speeds.",
-  "SYNTH_STRATEGY": "DELAY 1",
+  "SYNTH_STRATEGY": "AREA 3",
 
   "//": "SYNTH_HIER_PASS - Directs Yosys to perform synthesis hierarchically, locking down local submodule ports before physical cell mapping.",
   "SYNTH_HIER_PASS": true,
