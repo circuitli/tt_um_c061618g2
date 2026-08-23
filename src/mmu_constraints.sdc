@@ -42,8 +42,8 @@ create_generated_clock -name sys_clk \
     [get_pins -of_objects [get_nets -hierarchical *sys_clk]]
 
 # Apply a strict 150ps guard band for setup checks to fix data path delay
-set_clock_uncertainty -setup 0.0500 [get_clocks clk]
-set_clock_uncertainty -setup 0.0500 [get_clocks sys_clk]
+set_clock_uncertainty -setup 0.0250 [get_clocks clk]
+set_clock_uncertainty -setup 0.0250 [get_clocks sys_clk]
 
 # Relax hold uncertainty to 50ps to prevent TritonCTS from adding too many buffers
 set_clock_uncertainty -hold 0.0500 [get_clocks clk]
