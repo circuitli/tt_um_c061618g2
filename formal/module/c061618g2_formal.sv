@@ -157,68 +157,83 @@ module c061618g2_formal (
             // FLG_n must respond instantaneously to conditions, ignoring the counter
             assert_flg_bypasses_divider: assert(FLG_n == system_disabled);
 
-            // Verify the internal sample counter tracks continuously ---
+                        // Verify the internal sample counter tracks continuously ---
+            // If the past state wasn't 3, all 6 divided lines must hold perfectly stable
             if ($past(internal_sample_cnt) != 2'd3) begin
-                assert_divider_output_held: assert($stable(uo_out[3]));
+                assert_divider_s5_held:    assert($stable(uo_out[0]));
+                assert_divider_basic_held: assert($stable(uo_out[1]));
+                assert_divider_os_held:    assert($stable(uo_out[2]));
+                assert_divider_ci_held:    assert($stable(uo_out[3]));
+                assert_divider_io_held:    assert($stable(uo_out[4]));
+                assert_divider_s4_held:    assert($stable(uo_out[5]));
             end
             
             // --- MEMORY DECODING CORES (Only valid when NOT in TESTMODE) ---
             if (TESTMODE_n) begin
             
-                // Passthrough Check: Tracks A11 instantly
+                // Passthrough Check: TRIGGER_OUT tracks A11 instantly on every cycle (Exempt from divider)
                 assert_trigger_out_passthrough: assert(uio_out[5] == pmod1_bus.addr[0]);
                 
-                // --- A. Strict Memory Decoding Pass Windows (Timed to a 3-Cycle Delay) ---
+                // Asynchronous Safety Check: If system is disabled, all 5 memory selectors must snap high immediately
+                if (system_disabled) begin
+                    assert_immediate_mask_s4:    assert(uo_out[5] == 1'b1);
+                    assert_immediate_mask_io:    assert(uo_out[4] == 1'b1);
+                    assert_immediate_mask_ci:    assert(uo_out[3] == 1'b1);
+                    assert_immediate_mask_os:    assert(uo_out[2] == 1'b1);
+                    assert_immediate_mask_basic: assert(uo_out[1] == 1'b1);
+                    assert_immediate_mask_s5:    assert(uo_out[0] == 1'b1);
+                end
+
+                // --- A. Strict Memory Decoding Pass Windows (Synchronized to Divider Step 0) ---
+                // Evaluated only on valid sample update cycles when the system is actively running.
+                if (internal_sample_cnt == 2'd0 && !system_disabled) begin
                 
-                // 1. Split-Zone OS Kernel ROM Decoding Bounds ($C000-$CFFF and $E000-$FFFF)
-                if ($past(map_n, 3) && $past(ren, 3) && ((( $past(addr, 3) >= LOWER_OS_ROM_START[15:11]) && ( $past(addr, 3) <= LOWER_OS_ROM_END[15:11])) || 
-                                                        (( $past(addr, 3) >= UPPER_OS_ROM_START[15:11]) && ( $past(addr, 3) <= UPPER_OS_ROM_END[15:11])))) begin
-                    assert_os_enabled:   assert(uo_out[2] == 1'b0); // os_n pulls low
-                    assert_basic_masked: assert(uo_out[1] == 1'b1); // basic_n stays high
-                end
-                
-                // 2. Strict BASIC Interpreter ROM Decoding Bounds ($A000 - $BFFF)
-                if ($past(map_n, 3) && $past(be_n, 3) && !$past(rd5, 3) && ($past(addr, 3) >= CART_S5_START[15:11]) && ($past(addr, 3) <= CART_S5_END[15:11])) begin
-                    assert_basic_enabled: assert(uo_out[1] == 1'b0); // basic_n pulls low
-                    assert_os_masked:    assert(uo_out[2] == 1'b1); // os_n stays high
-                end
-
-                // 3. Strict Hardware I/O Select Decoding Bounds ($D000 - $D7FF)
-                if ($past(map_n, 3) && $past(ren, 3) && ($past(addr, 3) == HARDWARE_IO_START[15:11])) begin
-                    assert_io_enabled:   assert(uo_out[4] == 1'b0); // io_n pulls low
-                end
-
-                // 4. Expansion Cartridge Slot S4 Select Bounds ($8000 - $9FFF)
-                if ($past(map_n, 3) && $past(rd4, 3) && ($past(addr, 3) >= CART_S4_START[15:11]) && ($past(addr, 3) <= CART_S4_END[15:11])) begin
-                    assert_s4_enabled:   assert(uo_out[5] == 1'b0); // s4_n pulls low
-                end
-
-                // 5. Expansion Cartridge Slot S5 Select Bounds ($A000 - $BFFF)
-                if ($past(map_n, 3) && $past(rd5, 3) && ($past(addr, 3) >= CART_S5_START[15:11]) && ($past(addr, 3) <= CART_S5_END[15:11])) begin
-                    assert_s5_enabled:   assert(uo_out[0] == 1'b0); // s5_n pulls low
-                end
-
-                // 6. CAS Inhibit/Refresh Dynamic RAM Select Bounds (Your active-low filter line)
-                if ($past(map_n, 3) && $past(ref_n, 3) && ($past(addr, 3) == HARDWARE_IO_START[15:11])) begin
-                    // 6. ADAPTED FOR DIVIDER: CAS Inhibit/Refresh Dynamic RAM Select Bounds
-                    // Output is now validated right after the 4th clock edge sample occurs (state 0)
-                    if (internal_sample_cnt == 2'd0) begin
-                        if ($past(map_n, 1) && $past(ref_n, 1) && ($past(addr, 1) == HARDWARE_IO_START[15:11])) begin
-                            assert_ci_enabled: assert(uo_out[3] == 1'b0); // ci_n pulls low safely on sample edge
-                        end
+                    // 1. Split-Zone OS Kernel ROM Decoding Bounds ($C000-$CFFF and $E000-$FFFF)
+                    if ($past(map_n, 1) && $past(ren, 1) && ((( $past(addr, 1) >= LOWER_OS_ROM_START[15:11]) && ( $past(addr, 1) <= LOWER_OS_ROM_END[15:11])) || 
+                                                            (( $past(addr, 1) >= UPPER_OS_ROM_START[15:11]) && ( $past(addr, 1) <= UPPER_OS_ROM_END[15:11])))) begin
+                        assert_os_enabled:   assert(uo_out[2] == 1'b0); // os_n pulls low
+                        assert_basic_masked: assert(uo_out[1] == 1'b1); // basic_n stays high
                     end
-                 end
+                    
+                    // 2. Strict BASIC Interpreter ROM Decoding Bounds ($A000 - $BFFF)
+                    if ($past(map_n, 1) && $past(be_n, 1) && !$past(rd5, 1) && ($past(addr, 1) >= CART_S5_START[15:11]) && ($past(addr, 1) <= CART_S5_END[15:11])) begin
+                        assert_basic_enabled: assert(uo_out[1] == 1'b0); // basic_n pulls low
+                        assert_os_masked:    assert(uo_out[2] == 1'b1); // os_n stays high
+                    end
 
-                // --- B. Expanded Pairwise Mutual Exclusion Matrix ---
-                assert_mut_os_basic: assert(!(uo_out[2] == 1'b0 && uo_out[1] == 1'b0));
-                assert_mut_os_io:    assert(!(uo_out[2] == 1'b0 && uo_out[4] == 1'b0));
-                assert_mut_os_s4:    assert(!(uo_out[2] == 1'b0 && uo_out[5] == 1'b0));
-                assert_mut_os_s5:    assert(!(uo_out[2] == 1'b0 && uo_out[0] == 1'b0));
-                
-                assert_mut_basic_io: assert(!(uo_out[1] == 1'b0 && uo_out[4] == 1'b0));
-                assert_mut_basic_s4: assert(!(uo_out[1] == 1'b0 && uo_out[5] == 1'b0));
-                assert_mut_basic_s5: assert(!(uo_out[1] == 1'b0 && uo_out[0] == 1'b0));
+                    // 3. Strict Hardware I/O Select Decoding Bounds ($D000 - $D7FF)
+                    if ($past(map_n, 1) && $past(ren, 1) && ($past(addr, 1) == HARDWARE_IO_START[15:11])) begin
+                        assert_io_enabled:   assert(uo_out[4] == 1'b0); // io_n pulls low
+                    end
+
+                    // 4. Expansion Cartridge Slot S4 Select Bounds ($8000 - $9FFF)
+                    if ($past(map_n, 1) && $past(rd4, 1) && ($past(addr, 1) >= CART_S4_START[15:11]) && ($past(addr, 1) <= CART_S4_END[15:11])) begin
+                        assert_s4_enabled:   assert(uo_out[5] == 1'b0); // s4_n pulls low
+                    end
+
+                    // 5. Expansion Cartridge Slot S5 Select Bounds ($A000 - $BFFF)
+                    if ($past(map_n, 1) && $past(rd5, 1) && ($past(addr, 1) >= CART_S5_START[15:11]) && ($past(addr, 1) <= CART_S5_END[15:11])) begin
+                        assert_s5_enabled:   assert(uo_out[0] == 1'b0); // s5_n pulls low
+                    end
+
+                    // 6. CAS Inhibit/Refresh Dynamic RAM Select Bounds ($D000 - $D7FF)
+                    if ($past(map_n, 1) && $past(ref_n, 1) && ($past(addr, 1) == HARDWARE_IO_START[15:11])) begin
+                        assert_ci_enabled:   assert(uo_out[3] == 1'b0); // ci_n pulls low safely on sample edge
+                    end
+
+                    // --- B. Expanded Pairwise Mutual Exclusion Matrix ---
+                    // Checked exclusively on sampling cycles to prevent false transient path matches
+                    assert_mut_os_basic: assert(!(uo_out[2] == 1'b0 && uo_out[1] == 1'b0));
+                    assert_mut_os_io:    assert(!(uo_out[2] == 1'b0 && uo_out[4] == 1'b0));
+                    assert_mut_os_s4:    assert(!(uo_out[2] == 1'b0 && uo_out[5] == 1'b0));
+                    assert_mut_os_s5:    assert(!(uo_out[2] == 1'b0 && uo_out[0] == 1'b0));
+                    
+                    assert_mut_basic_io: assert(!(uo_out[1] == 1'b0 && uo_out[4] == 1'b0));
+                    assert_mut_basic_s4: assert(!(uo_out[1] == 1'b0 && uo_out[5] == 1'b0));
+                    assert_mut_basic_s5: assert(!(uo_out[1] == 1'b0 && uo_out[0] == 1'b0));
+                end
             end
+
         end
     end
 

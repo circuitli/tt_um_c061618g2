@@ -231,25 +231,88 @@ async def test_cas_inhibit_activation(dut):
     assert pins["ci_n"] == 0, f"Error: CAS Inhibit failed to assert low during active refresh requests! Got: {pins['ci_n']}"
 
 @cocotb.test()
-async def test_trigger_out_passthrough(dut):
-    dut._log.info("--- Running Test Case 9: TRIGGER_OUT A11 Passthrough ---")
+async def test_trigger_out_passthrough_fixed(dut):
+    dut._log.info("--- Running Fixed Test Case 9: TRIGGER_OUT A11 Passthrough ---")
     await initialize_dut(dut)
+    dut.rst_n.value = 1
     
+    # 1. Drive initial address tracking bit A11 to 0
     dut.ui_in.value = pack_ui_in(addr=0x00, map_n=1, rd4=0, rd5=0)
-    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, FLG_IN_n=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, TESTMODE_n=1, FLG_IN_n=1)
     
-    await ClockCycles(dut.clk, 1)
+    # Settle the anti-glitch filter blocks post-initialization
+    await ClockCycles(dut.clk, 5)
     await ReadOnly()
-    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
-    assert pins["FLG_n"] == 1, "Error: FLG_n must remain fixed at 1!"
     
-    await ClockCycles(dut.clk, 1)
+    pins_uo = unpack_uo_out(dut.uo_out.value.to_unsigned())
+    
+    # FIX: Read Bit 5 of uio_out directly to evaluate TRIGGER_OUT
+    trigger_out_initial = (dut.uio_out.value >> 5) & 1
+    
+    assert pins_uo["FLG_n"] == 1, f"Error: FLG_n failed to settle at 1! Got: {pins_uo['FLG_n']}"
+    assert trigger_out_initial == 0, f"Error: TRIGGER_OUT should track initial addr 0! Got: {trigger_out_initial}"
+    
+    # 2. Toggle the address bit to 1
+    await NextTimeStep()
+    dut._log.info("Toggling address bit to 1 to verify INSTANT combinational passthrough...")
     dut.ui_in.value = pack_ui_in(addr=0x01, map_n=1, rd4=0, rd5=0)
     
+    # 3. Check after exactly 1 clock cycle to prove it bypasses all delay paths
     await ClockCycles(dut.clk, 1)
     await ReadOnly() 
-    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
-    assert pins["FLG_n"] == 1, "Error: FLG_n must remain fixed at 1!"
+    
+    pins_uo_after = unpack_uo_out(dut.uo_out.value.to_unsigned())
+    
+    # FIX: Read Bit 5 of uio_out directly again
+    trigger_out_after = (dut.uio_out.value >> 5) & 1
+    
+    assert pins_uo_after["FLG_n"] == 1, "Error: FLG_n mutated during passthrough test!"
+    assert trigger_out_after == 1, "DFT Timing Failure: TRIGGER_OUT failed to pass through instantly!"
+    dut._log.info("Success: TRIGGER_OUT bypassed all filters and registers flawlessly.")
+
+@cocotb.test()
+async def test_trigger_out_passthrough_fixed(dut):
+    dut._log.info("--- Running Fixed Test Case 9: TRIGGER_OUT A11 Passthrough ---")
+    await initialize_dut(dut)
+    dut.rst_n.value = 1
+    
+    # 1. Drive initial address tracking bit A11 (addr) to 0
+    dut.ui_in.value = pack_ui_in(addr=0x00, map_n=1, rd4=0, rd5=0)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, TESTMODE_n=1, FLG_IN_n=1)
+    
+    # Settle the anti-glitch filter blocks for 5 cycles first 
+    # to guarantee FLG_n settles cleanly at 1 before running assertions
+    dut._log.info("Settling the anti-glitch filter blocks post-initialization...")
+    await ClockCycles(dut.clk, 5)
+    await ReadOnly()
+    
+    pins_uo = unpack_uo_out(dut.uo_out.value.to_unsigned())
+    
+    # Cast explicitly to integer to extract Bit 5 of uio_out (TRIGGER_OUT)
+    trigger_out = (dut.uio_out.value.integer >> 5) & 1
+    
+    # Verify clean initial starting states
+    assert trigger_out == 0, f"Error: TRIGGER_OUT failed initial track. Expected 0, got {trigger_out}"
+    assert pins_uo["FLG_n"] == 1, f"Error: Background status line FLG_n failed to settle at 1! Got: {pins_uo['FLG_n']}"
+    
+    # 2. Toggle the address bit to 1 (maps core_in.addr[0] / a11 to 1)
+    await NextTimeStep()
+    dut._log.info("Toggling address bit to 1 to verify INSTANT combinational passthrough...")
+    dut.ui_in.value = pack_ui_in(addr=0x01, map_n=1, rd4=0, rd5=0)
+    
+    # 3. Check after exactly 1 clock cycle to prove it bypasses all 4-cycle loop delay logic paths
+    await ClockCycles(dut.clk, 1)
+    await ReadOnly() 
+    
+    pins_uo_after = unpack_uo_out(dut.uo_out.value.to_unsigned())
+    trigger_out_after = (dut.uio_out.value.integer >> 5) & 1
+    
+    # CRITICAL EVENT VERIFICATION: Confirm TRIGGER_OUT responded instantly to the toggled address pin
+    assert trigger_out_after == 1, f"DFT Timing Failure: TRIGGER_OUT failed to pass through instantly! Expected 1, got {trigger_out_after}"
+    
+    # Background Check: Ensure the filtered status lane didn't randomly change
+    assert pins_uo_after["FLG_n"] == 1, "Error: Background indicator FLG_n shifted during passthrough test!"
+    dut._log.info("Success: TRIGGER_OUT verified independently as an immediate combinational path.")
 
 @cocotb.test()
 async def test_flg_n_input_handling(dut):
@@ -331,12 +394,98 @@ async def test_os_disable_by_ren(dut):
     assert pins["FLG_n"] == 1, "Error: FLG_n must remain fixed at 1!"
 
 # ==============================================================================
-# CATEGORY F: MANUFACTURING DFT PRODUCTION TEST MODE OPERATIONS
+# CATEGORY F: DIVIDER TESTS
+# ==============================================================================
+
+@cocotb.test()
+async def test_all_divided_memory_decoders(dut):
+    dut._log.info("--- Running Test Case 15: Multi-Signal Memory Decoder Verification ---")
+    await initialize_dut(dut)
+    dut.rst_n.value = 1
+    await ClockCycles(dut.clk, 2)
+    
+    # --- TEST A: OS KERNEL ROM SELECT ($C000 maps to upper address blocks) ---
+    # Force address bit fields to match LOWER_OS_ROM_START [15:11]
+    dut.ui_in.value = pack_ui_in(addr=0x18, map_n=1, rd4=0, rd5=0) 
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, TESTMODE_n=1, FLG_IN_n=1)
+    
+    # Pulse 5 cycles to guarantee the divider hits sample_cnt==3 and steps to 0
+    await ClockCycles(dut.clk, 5)
+    await ReadOnly()
+    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
+    assert pins["os_n"] == 0, f"Error: os_n failed to activate. Got pins: {pins}"
+    assert pins["basic_n"] == 1, "Error: basic_n misfired!"
+
+    # --- TEST B: EXPANSION SLOT S4 SELECT ($8000) ---
+    await NextTimeStep()
+    dut.ui_in.value = pack_ui_in(addr=0x10, map_n=1, rd4=1, rd5=0)
+    
+    await ClockCycles(dut.clk, 5)
+    await ReadOnly()
+    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
+    assert pins["s4_n"] == 0, f"Error: s4_n failed to activate. Got pins: {pins}"
+    assert pins["os_n"] == 1, "Error: os_n failed to deactivate!"
+
+
+@cocotb.test()
+async def test_immediate_all_signals_masking(dut):
+    dut._log.info("--- Running Fixed Immediate Multi-Signal Masking Verification ---")
+    await initialize_dut(dut)
+    dut.rst_n.value = 1
+    await ClockCycles(dut.clk, 2)
+    
+    # 1. Establish an active memory access state matching your S5 decode equation ($A000 Area)
+    # addr=0x14 drives a15=1, a14=0, a13=1. rd5=1 satisfies the S5 select gate conditions.
+    dut.ui_in.value = pack_ui_in(addr=0x14, map_n=1, rd4=0, rd5=1)
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, TESTMODE_n=1, FLG_IN_n=1)
+    
+    # 2. Settle the parallel divider registers past the 4-cycle window
+    await ClockCycles(dut.clk, 5)
+    await ReadOnly()
+    pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
+    
+    # Validates your active-low cartridge lane to successfully bypass the setup phase
+    assert pins["s5_n"] == 0, f"Setup Error: s5_n failed to activate before mask test. Got pins: {pins}"
+    
+    # 3. Trip the safety flag (FLG_IN_n = 0 forces system_disabled = 1)
+    await NextTimeStep()
+    dut._log.info("Tripping system safety block via FLG_IN_n...")
+    dut.uio_in.value = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, TESTMODE_n=1, FLG_IN_n=0)
+    
+    # 4. STEP A: Check IMMEDIATELY on the same delta cycle step (No clock pulse!)
+    # The combinational bypass must force ALL 5 selectors and ci_n high instantly.
+    await NextTimeStep()
+    await ReadOnly()
+    pins_instant = unpack_uo_out(dut.uo_out.value.to_unsigned())
+    
+    assert pins_instant["os_n"] == 1, "Asynchronous Masking Failure on os_n!"
+    assert pins_instant["basic_n"] == 1, "Asynchronous Masking Failure on basic_n!"
+    assert pins_instant["io_n"] == 1, "Asynchronous Masking Failure on io_n!"
+    assert pins_instant["s4_n"] == 1, "Asynchronous Masking Failure on s4_n!"
+    assert pins_instant["s5_n"] == 1, "Asynchronous Masking Failure on s5_n!"
+    assert pins_instant["ci_n"] == 1, "Asynchronous Masking Failure on ci_n!"
+    
+    # FLG_n stays at 1 here because rst_n is high (1) and the clock hasn't pulsed
+    assert pins_instant["FLG_n"] == 1, "Error: FLG_n changed without a clock edge or an active rst_n!"
+    
+    # 5. STEP B: Pulse the clock to let the anti-glitch filter shift its internal state
+    await NextTimeStep()
+    dut._log.info("Pulsing clock to allow the anti-glitch filter to propagate the safety fault...")
+    await ClockCycles(dut.clk, 4)
+    await ReadOnly()
+    pins_filtered = unpack_uo_out(dut.uo_out.value.to_unsigned())
+    
+    # Now that the filter has been clocked 4 times, FLG_n clears to 0 safely
+    assert pins_filtered["FLG_n"] == 0, "Safety Failure: FLG_n status line failed to drop to 0 after filter cycles!"
+    dut._log.info("Success: All multi-lane outputs verified successfully across filter windows.")
+
+# ==============================================================================
+# CATEGORY 8: MANUFACTURING DFT PRODUCTION TEST MODE OPERATIONS
 # ==============================================================================
 
 @cocotb.test()
 async def test_production_bypass_active(dut):
-    dut._log.info("--- Running Test Case 15: Active-Low Production TESTMODE_n Active Bypass (0) ---")
+    dut._log.info("--- Running Test Case 17: Active-Low Production TESTMODE_n Active Bypass (0) ---")
     await initialize_dut(dut)
     
     # Assert active-low TESTMODE_n to 0 
@@ -353,7 +502,7 @@ async def test_production_bypass_active(dut):
 
 @cocotb.test()
 async def test_production_bypass_reset_interlock(dut):
-    dut._log.info("--- Running Test Case 16: DFT Reset Priority and Interlock Masking ---")
+    dut._log.info("--- Running Test Case 18: DFT Reset Priority and Interlock Masking ---")
     
     # 1. Initialize and settle the 2-stage clock synchronizer
     await initialize_dut(dut)
@@ -364,9 +513,9 @@ async def test_production_bypass_reset_interlock(dut):
     dut.ui_in.value = pack_ui_in(addr=0x1B, map_n=1, rd4=0, rd5=0)
     dut.uio_in.value = pack_uio_in(ren=1, ref_n=0, mpd_n=1, be_n=1, TESTMODE_n=0, FLG_IN_n=1)
     
-    # Force 4 clock cycles to allow your divider to sample the input safely
-    dut._log.info("Cycling 4 times to let the divider latch the input...")
-    await ClockCycles(dut.clk, 4)
+    # Cycle 5 times to completely cross the divider registration boundary
+    dut._log.info("Cycling 5 times to let the divider latch the input...")
+    await ClockCycles(dut.clk, 5)
     
     # 3. VERIFY FUNCTIONAL DELAY OUTPUT BEFORE RESET (Must not be cleared yet)
     await ReadOnly()
@@ -385,13 +534,13 @@ async def test_production_bypass_reset_interlock(dut):
     await ReadOnly()
     
     # 6. Verify absolute masking priority post-reset 
-    # (Bit 3 will be 0 due to active-low reset clearing data_out_reg)
     current_uo = int(dut.uo_out.value)
     dut._log.info(f"Current uo_out register value reads: {current_uo}")
     
-    # If bit 3 drops to 0 on reset, the integer will read 55 instead of 63.
-    # Adjust this assertion value to match your test matrix target for a reset condition!
-    assert current_uo == 55, f"DFT Security Breach: Expected 55 under reset clear, got {current_uo}"
+    # Expected value is exactly 63 because system_disabled goes true on rst_n=0,
+    # immediately forcing all 6 memory selections high (1) combinationally,
+    # while FLG_n drops to 0 asynchronously.
+    assert current_uo == 63, f"DFT Security Breach: Expected 63 under reset clear, got {current_uo}"
     
     # Clean up and exit
     await NextTimeStep()

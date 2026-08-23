@@ -86,7 +86,6 @@ module c061618g2 (
     // =========================================================================
     pmod3_outputs_t core_signals;
     bit             stabilized_ci_n;
-    bit             divided_ci_n;
 
     // 1. Process Core Decoding Matrix
     mmu_core core_inst (
@@ -126,14 +125,6 @@ module c061618g2 (
         .clean_signal_out (FLG_n)
     );
 
-    // 4. Divide signal by 4
-    signal_divider_by_4  ci_divider (
-        .clk              (phase_clk),     // Connect the system clock line
-        .rst_n            (rst_n),         // Connect the global reset line
-        .signal_in    (stabilized_ci_n),
-        .signal_out       (divided_ci_n)
-    );
-
     // Move the selection outside into a continuous assignment
     wire a11 = pmod1_bus.addr[0]; 
 
@@ -142,25 +133,82 @@ module c061618g2 (
     wire FLG_n_p3 = core_signals.FLG_n;
     /* verilator lint_on UNUSED */
 
+    // -------------------------------------------------------------------------
+    // HARDWARE DIVIDER REGISTER ARRAY INSTANTIATION (SIGNAL_DIVIDER_BY_4)
+    // -------------------------------------------------------------------------
+    wire divided_ci_n;
+    wire divided_s4_n;
+    wire divided_io_n;
+    wire divided_os_n;
+    wire divided_basic_n;
+    wire divided_s5_n;
+
+    // A. CAS Inhibit / Refresh Divider Configuration
+    signal_divider_by_4 ci_divider (
+        .clk        (phase_clk),
+        .rst_n      (rst_n),
+        .signal_in  (stabilized_ci_n),
+        .signal_out (divided_ci_n)
+    );
+
+    // B. Expansion Cartridge S4 Divider Configuration
+    signal_divider_by_4 s4_divider (
+        .clk        (phase_clk),
+        .rst_n      (rst_n),
+        .signal_in  (core_signals.s4_n),
+        .signal_out (divided_s4_n)
+    );
+
+    // C. Hardware I/O Select Divider Configuration
+    signal_divider_by_4 io_divider (
+        .clk        (phase_clk),
+        .rst_n      (rst_n),
+        .signal_in  (core_signals.io_n),
+        .signal_out (divided_io_n)
+    );
+
+    // D. OS Kernel ROM Select Divider Configuration
+    signal_divider_by_4 os_divider (
+        .clk        (phase_clk),
+        .rst_n      (rst_n),
+        .signal_in  (core_signals.os_n),
+        .signal_out (divided_os_n)
+    );
+
+    // E. BASIC Interpreter ROM Select Divider Configuration
+    signal_divider_by_4 basic_divider (
+        .clk        (phase_clk),
+        .rst_n      (rst_n),
+        .signal_in  (core_signals.basic_n),
+        .signal_out (divided_basic_n)
+    );
+
+    // F. Expansion Cartridge S5 Divider Configuration
+    signal_divider_by_4 s5_divider (
+        .clk        (phase_clk),
+        .rst_n      (rst_n),
+        .signal_in  (core_signals.s5_n),
+        .signal_out (divided_s5_n)
+    );
+
     // =========================================================================
-    // PHYSICAL ROUTING MATRIX (Continuous Assigns Only)
+    // PHYSICAL ROUTING MATRIX (Streamlined & Optimized)
     // =========================================================================
     
     // --- Pmod 2 Outputs Mapping ---
-    // Replaced the structure assignment pattern '{...} syntax to avoid Icarus Verilog parser errors.
-    // TRIGGER_OUT maps explicitly to Bit 5 of your 8-bit packed bidirectional output bus.
+    // TRIGGER_OUT maps explicitly to Bit 5. It bypasses all dividers (Instantaneous).
     assign uio_out = {2'b00, a11, 5'b00000};
 
     // --- Pmod 3 Outputs Mapping (uo_out) ---
-    assign uo_out[7] = 1'b0;                                        // Static ground tie-off
-    assign uo_out[6] = FLG_n;                                       // Natively tracks the parameterized fault filter (Bypassed under Test Mode)
-    assign uo_out[5] = (system_disabled || !rst_n) ? 1'b1 : core_signals.s4_n;
-    assign uo_out[4] = (system_disabled || !rst_n) ? 1'b1 : core_signals.io_n;
-    assign uo_out[3] = divided_ci_n;                                // Natively tracks the generic CAS inhibit filter
-    assign uo_out[2] = (system_disabled || !rst_n) ? 1'b1 : core_signals.os_n;
-    assign uo_out[1] = (system_disabled || !rst_n) ? 1'b1 : core_signals.basic_n;
-    assign uo_out[0] = (system_disabled || !rst_n) ? 1'b1 : core_signals.s5_n;
-
+    // Cleared of redundant !rst_n logic loops. system_disabled handles the entire cutoff.
+    assign uo_out[7] = 1'b0;                                                // Static ground tie-off
+    assign uo_out[6] = FLG_n;                                               // Instantaneous safety fault flag bypass path
+    assign uo_out[5] = system_disabled ? 1'b1 : divided_s4_n;               // S4 Expansion Select Lane
+    assign uo_out[4] = system_disabled ? 1'b1 : divided_io_n;               // Hardware I/O Select Lane
+    assign uo_out[3] = system_disabled ? 1'b1 : divided_ci_n;               // Synchronized CAS Inhibit Lane
+    assign uo_out[2] = system_disabled ? 1'b1 : divided_os_n;               // OS Kernel Selected Memory Lane
+    assign uo_out[1] = system_disabled ? 1'b1 : divided_basic_n;            // BASIC Interpreter Selected Memory Lane
+    assign uo_out[0] = system_disabled ? 1'b1 : divided_s5_n;               // S5 Expansion Select Lane
 
 endmodule
 
