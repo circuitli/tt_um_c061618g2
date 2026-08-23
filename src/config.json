@@ -19,8 +19,8 @@
   "__CLOCK_PERIOD": 5.0761,
   "_CLOCK_PERIOD": 5.00,
   "____CLOCK_PERIOD": 4.9751,
-  "_____CLOCK_PERIOD": 4.6512,
-  "CLOCK_PERIOD": 4.3478,
+  "CLOCK_PERIOD": 4.6512,
+  "_____CLOCK_PERIOD": 4.3478,
 
   "//": "SYNTH_STRATEGY - Restores the stable balanced logic restructuring formula to keep sequential steering paths clean and routable at high speeds.",
   "SYNTH_STRATEGY": "DELAY 1",
