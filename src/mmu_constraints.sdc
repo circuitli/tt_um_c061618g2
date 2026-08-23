@@ -14,7 +14,7 @@
 
 # ====================================================================
 # Synopsys Design Constraints (SDC) - Failsafe Fanout Isolation Profile
-# Target: 85.91 MHz Operation (24x Master Crystal Multiplier)
+# Target: 201 MHz Operation (56x Video Clock Multiplier)
 # ====================================================================
 
 # 1. Define Primary Master Clock Input Port (197 MHz)
@@ -25,11 +25,6 @@
 # 1. DEFINE PRIMARY MASTER CLOCK INPUT PORT (201 MHz)
 # ====================================================================
 create_clock -name clk -period 4.9571 [get_ports clk]
-# ====================================================================
-# 1. DEFINE PRIMARY MASTER CLOCK INPUT PORT (215 MHz)
-# ====================================================================
-#create_clock -name clk -period 4.6512 [get_ports clk]
-
 
 # ====================================================================
 # 2. DEFINE GATED INTERNAL CLOCK ROOT NODE
@@ -42,8 +37,8 @@ create_generated_clock -name sys_clk \
     [get_pins -of_objects [get_nets -hierarchical *sys_clk]]
 
 # Apply a strict 150ps guard band for setup checks to fix data path delay
-set_clock_uncertainty -setup 0.1500 [get_clocks clk]
-set_clock_uncertainty -setup 0.1500 [get_clocks sys_clk]
+set_clock_uncertainty -setup 0.0500 [get_clocks clk]
+set_clock_uncertainty -setup 0.0500 [get_clocks sys_clk]
 
 # Relax hold uncertainty to 50ps to prevent TritonCTS from adding too many buffers
 set_clock_uncertainty -hold 0.0500 [get_clocks clk]
