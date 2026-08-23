@@ -133,7 +133,10 @@
   "//": "Users have reported that values up to 80 worked well for them.",
   "PL_TARGET_DENSITY_PCT": 55,
 
-  "//": "Commands the physical placer to over-optimize internal layout targets by an extra 60ps, forcing OpenROAD to inject high-drive buffers that clear the remaining 25ps timing gap while strictly obeying the mandatory 2.0ns Tiny Tapeout output specifications.",
+  "//1": "Master boolean activation switch that turns on the placement-stage timing repair tool block, instructing OpenROAD to actively resize logic gates and patch setup violations before routing begins.",
+  "PL_REPAIR_TIMING": true,
+
+  "//2": "Forces the placement-stage timing repair tool to treat your target clock window as 60 picoseconds tighter, driving it to upgrade your output path buffers to clear the remaining 25ps deficit legally under the Tiny Tapeout hardware specifications.",
   "PL_REPAIR_TIMING_SETUP_MARGIN": 0.06,
 
   "//": "RUN_POST_GPL_DESIGN_REPAIR - Bypass LibreLane crash by forcing automatic hold-buffer insertion after global placement",
