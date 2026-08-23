@@ -25,7 +25,7 @@
 //              registers for the synchronization pipeline stages.
 // =========================================================================
 
-(* keep_hierarchy = 1 *)
+(* keep = 1 *)
 module clock_synchronizer #(
     parameter int STAGES = 2 
 ) (

@@ -48,7 +48,6 @@ module c061618g2 (
 
     // 2. Instantiate Clock Synchronizer
     // Converts incoming active-low rst_n to active-high reset layout
-    (* keep = 1, keep_hierarchy = 1 *)
     clock_synchronizer #(
         .STAGES(2)
     ) u_clock_sync (
@@ -115,7 +114,6 @@ module c061618g2 (
     wire FLG_n;
 
     // 3. Reporrt faults via the delay filter circuit
-    (* keep = 1, keep_hierarchy = 1 *)
     anti_glitch_filter  #(
         .RESET_VALUE(1'b0)      // Forces an active fault-asserted low state
     ) flg_filter (
