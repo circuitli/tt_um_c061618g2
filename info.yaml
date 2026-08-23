@@ -40,7 +40,7 @@ pinout:
   uo[3]: "BE_L"
   uo[4]: "TESTMODE_L"
   uo[5]: "TRIGGER_OUT_L"
-  uo[6]: "FLG_L"
+  uo[6]: "FLG_IN_L"
   uo[7]: ""
 
   # Bidirectional pins
@@ -50,7 +50,7 @@ pinout:
   uio[3]: "CI_L"
   uio[4]: "IO_L"
   uio[5]: "S4_L"
-  uio[6]: "FLG_n"
+  uio[6]: "FLG_L"
   uio[7]: ""
 
 # Do not change!
