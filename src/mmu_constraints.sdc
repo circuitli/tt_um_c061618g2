@@ -24,12 +24,12 @@
 # ====================================================================
 # 1. DEFINE PRIMARY MASTER CLOCK INPUT PORT (201 MHz)
 # ====================================================================
-create_clock -name clk -period 4.9571 [get_ports clk]
+#create_clock -name clk -period 4.9571 [get_ports clk]
 # ====================================================================
 # 1. DEFINE PRIMARY MASTER CLOCK INPUT PORT (215 MHz Target)
 # ====================================================================
 # 4.6512 ns corresponds exactly to a 215 MHz master clock frequency
-#create_clock -name clk -period 4.6512 [get_ports clk]
+create_clock -name clk -period 4.6512 [get_ports clk]
 
 # ====================================================================
 # 2. DEFINE GATED INTERNAL CLOCK ROOT NODE
