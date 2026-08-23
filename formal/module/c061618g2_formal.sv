@@ -187,7 +187,10 @@ module c061618g2_formal (
                 // --- A. Strict Memory Decoding Pass Windows (Synchronized to Divider Step 0) ---
                 // Evaluated only on valid sample update cycles when the system is actively running.
                 if (internal_sample_cnt == 2'd0 && !system_disabled) begin
-                
+
+                    // Validate that the registered flag pin matches the internal past state
+                    assert_background_flg_stable: assert(uo_out[6] == $past(FLG_n, 1));
+ 
                     // 1. Split-Zone OS Kernel ROM Decoding Bounds ($C000-$CFFF and $E000-$FFFF)
                     if ($past(map_n, 1) && $past(ren, 1) && ((( $past(addr, 1) >= LOWER_OS_ROM_START[15:11]) && ( $past(addr, 1) <= LOWER_OS_ROM_END[15:11])) || 
                                                             (( $past(addr, 1) >= UPPER_OS_ROM_START[15:11]) && ( $past(addr, 1) <= UPPER_OS_ROM_END[15:11])))) begin

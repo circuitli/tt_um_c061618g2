@@ -98,7 +98,6 @@ module c061618g2 (
     );
 
     // 2. Clear RAM toggles via the delay filter circuit
-    (* keep = 1, keep_hierarchy = 1 *)
     anti_glitch_filter  #(
         .RESET_VALUE(1'b1)      // Forces a safe, idle-high state
     ) ci_filter (
@@ -116,6 +115,7 @@ module c061618g2 (
     wire FLG_n;
 
     // 3. Reporrt faults via the delay filter circuit
+    (* keep = 1, keep_hierarchy = 1 *)
     anti_glitch_filter  #(
         .RESET_VALUE(1'b0)      // Forces an active fault-asserted low state
     ) flg_filter (
@@ -200,10 +200,20 @@ module c061618g2 (
     // TRIGGER_OUT maps explicitly to Bit 5. It bypasses all dividers (Instantaneous).
     assign uio_out = {2'b00, a11, 5'b00000};
 
+    // --- Dedicated Boundary Output Register for the Safety Flag ---
+    logic flg_out_reg;
+    always_ff @(posedge phase_clk or negedge rst_n) begin
+        if (!rst_n) begin
+            flg_out_reg <= 1'b0; // Resets safely to active fault-asserted low
+        end else begin
+            flg_out_reg <= FLG_n; // Latches the anti-glitch filter status
+        end
+    end
+
     // --- Pmod 3 Outputs Mapping (uo_out) ---
     // Cleared of redundant !rst_n logic loops. system_disabled handles the entire cutoff.
     assign uo_out[7] = 1'b0;                                                // Static ground tie-off
-    assign uo_out[6] = FLG_n;                                               // Instantaneous safety fault flag bypass path
+    assign uo_out[6] = flg_out_reg;                                         // Driven by a clean flip-flop!
     assign uo_out[5] = system_disabled ? 1'b1 : divided_s4_n;               // S4 Expansion Select Lane
     assign uo_out[4] = system_disabled ? 1'b1 : divided_io_n;               // Hardware I/O Select Lane
     assign uo_out[3] = system_disabled ? 1'b1 : divided_ci_n;               // Synchronized CAS Inhibit Lane
