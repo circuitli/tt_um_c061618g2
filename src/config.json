@@ -134,10 +134,16 @@
   "PL_TARGET_DENSITY_PCT": 55,
 
   "//1": "Master boolean activation switch that turns on the placement-stage timing repair tool block, instructing OpenROAD to actively resize logic gates and patch setup violations before routing begins.",
-  "PL_REPAIR_TIMING": true,
+  "_PL_REPAIR_TIMING": true,
 
   "//2": "Forces the placement-stage timing repair tool to treat your target clock window as 60 picoseconds tighter, driving it to upgrade your output path buffers to clear the remaining 25ps deficit legally under the Tiny Tapeout hardware specifications.",
-  "PL_REPAIR_TIMING_SETUP_MARGIN": 0.06,
+  "_PL_REPAIR_TIMING_SETUP_MARGIN": 0.06,
+
+  "//1": "Enables the late-stage global routing optimization loop, allowing OpenLane to drop heavy repeater buffers outside your frozen hierarchy boxes to patch the remaining 25ps deficit.",
+  "GLB_REPAIR_TIMING": true,
+
+  "//2": "Over-constrains the global router by 50 picoseconds to force the engine to select high-current driving cells for your external uo_out pin connections.",
+  "GLB_REPAIR_TIMING_SETUP_MARGIN": 0.05,
 
   "//": "RUN_POST_GPL_DESIGN_REPAIR - Bypass LibreLane crash by forcing automatic hold-buffer insertion after global placement",
   "RUN_POST_GPL_DESIGN_REPAIR": true,
