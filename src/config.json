@@ -133,6 +133,9 @@
   "//": "Users have reported that values up to 80 worked well for them.",
   "PL_TARGET_DENSITY_PCT": 55,
 
+  "//": "Commands the physical placer to over-optimize internal layout targets by an extra 60ps, forcing OpenROAD to inject high-drive buffers that clear the remaining 25ps timing gap while strictly obeying the mandatory 2.0ns Tiny Tapeout output specifications.",
+  "PL_REPAIR_TIMING_SETUP_MARGIN": 0.06,
+
   "//": "RUN_POST_GPL_DESIGN_REPAIR - Bypass LibreLane crash by forcing automatic hold-buffer insertion after global placement",
   "RUN_POST_GPL_DESIGN_REPAIR": true,
 
