@@ -98,6 +98,7 @@ module c061618g2 (
     );
 
     // 2. Clear RAM toggles via the delay filter circuit
+    (* keep = 1, keep_hierarchy = 1 *)
     anti_glitch_filter  #(
         .RESET_VALUE(1'b1)      // Forces a safe, idle-high state
     ) ci_filter (
