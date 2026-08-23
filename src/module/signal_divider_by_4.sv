@@ -18,6 +18,7 @@
 `define SIGNAL_DIVIDER_BY_4_SV
 `default_nettype none
 
+(* keep_hierarchy = 1 *)
 module signal_divider_by_4 (
     input  logic clk,              // Master reference clock
     input  logic rst_n,            // Active-low global system reset
