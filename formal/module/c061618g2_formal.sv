@@ -87,6 +87,10 @@ module c061618g2_formal (
     wire raw_flg_n       = !system_disabled;
     wire FLG_n           = uo_out[6]; // Tracks the newly mapped filtered safety flag output
 
+    // --- NEW: Expose the Internal Sample Counter from your instantiated sub-module ---
+    // Maps the 2-bit tracking register from your untouched divider component
+    wire [1:0] internal_sample_cnt = dut.ci_divider.sample_cnt;
+
     // 16-Bit Descriptive Memory Address Space Constants
     parameter [15:0] CART_S4_START      = 16'h8000;
     parameter [15:0] CART_S4_END        = 16'h9FFF;
@@ -148,8 +152,17 @@ module c061618g2_formal (
             if (TESTMODE_n) begin
                 assert_dft_clock_norm: assert(phase_clk == sys_clk);
             end
+
+            // Verify FLG_n bypasses the divider completely ---
+            // FLG_n must respond instantaneously to conditions, ignoring the counter
+            assert_flg_bypasses_divider: assert(FLG_n == system_disabled);
+
+            // Verify the internal sample counter tracks continuously ---
+            if ($past(internal_sample_cnt) != 2'd3) begin
+                assert_divider_output_held: assert($stable(uo_out[3]));
+            end
             
-                        // --- MEMORY DECODING CORES (Only valid when NOT in TESTMODE) ---
+            // --- MEMORY DECODING CORES (Only valid when NOT in TESTMODE) ---
             if (TESTMODE_n) begin
             
                 // Passthrough Check: Tracks A11 instantly
@@ -187,8 +200,14 @@ module c061618g2_formal (
 
                 // 6. CAS Inhibit/Refresh Dynamic RAM Select Bounds (Your active-low filter line)
                 if ($past(map_n, 3) && $past(ref_n, 3) && ($past(addr, 3) == HARDWARE_IO_START[15:11])) begin
-                    assert_ci_enabled:   assert(uo_out[3] == 1'b0); // ci_n pulls low
-                end
+                    // 6. ADAPTED FOR DIVIDER: CAS Inhibit/Refresh Dynamic RAM Select Bounds
+                    // Output is now validated right after the 4th clock edge sample occurs (state 0)
+                    if (internal_sample_cnt == 2'd0) begin
+                        if ($past(map_n, 1) && $past(ref_n, 1) && ($past(addr, 1) == HARDWARE_IO_START[15:11])) begin
+                            assert_ci_enabled: assert(uo_out[3] == 1'b0); // ci_n pulls low safely on sample edge
+                        end
+                    end
+                 end
 
                 // --- B. Expanded Pairwise Mutual Exclusion Matrix ---
                 assert_mut_os_basic: assert(!(uo_out[2] == 1'b0 && uo_out[1] == 1'b0));

@@ -27,6 +27,7 @@ read -sv defs/mmu_defs.sv
 read -sv core/mmu_core.sv
 read -sv module/clock_synchronizer.sv
 read -sv module/anti_glitch_filter.sv
+read -sv module/signal_divider_by_4.sv
 read -sv module/c061618g2.sv
 read -sv tt_um_c061618g2.sv
 
@@ -36,6 +37,7 @@ read -formal defs/mmu_defs_formal.sv
 read -formal core/mmu_core_formal.sv
 read -formal module/clock_synchronizer_formal.sv
 read -formal module/anti_glitch_filter_formal.sv
+read -formal module/signal_divider_by_4_formal.sv
 read -formal module/c061618g2_formal.sv
 read -formal tt_um_c061618g2_formal.sv
 
@@ -51,16 +53,19 @@ defs/mmu_defs.sv                       ../src/defs/mmu_defs.sv
 core/mmu_core.sv                       ../src/core/mmu_core.sv
 module/clock_synchronizer.sv           ../src/module/clock_synchronizer.sv
 module/anti_glitch_filter.sv           ../src/module/anti_glitch_filter.sv
+module/signal_divider_by_4.sv          ../src/module/signal_divider_by_4.sv
 module/c061618g2.sv                    ../src/module/c061618g2.sv
 tt_um_c061618g2.sv                     ../src/tt_um_c061618g2.sv
 src/defs/mmu_defs.sv                   ../src/defs/mmu_defs.sv
 src/core/mmu_core.sv                   ../src/core/mmu_core.sv
 src/module/clock_synchronizer.sv       ../src/module/clock_synchronizer.sv
 src/module/anti_glitch_filter.sv       ../src/module/anti_glitch_filter.sv
+src/module/signal_divider_by_4.sv      ../src/module/signal_divider_by_4.sv
 src/module/c061618g2.sv                ../src/module/c061618g2.sv
 defs/mmu_defs_formal.sv                 defs/mmu_defs_formal.sv
 core/mmu_core_formal.sv                 core/mmu_core_formal.sv
 module/clock_synchronizer_formal.sv     module/clock_synchronizer_formal.sv
 module/anti_glitch_filter_formal.sv     module/anti_glitch_filter_formal.sv
+module/signal_divider_by_4_formal.sv    module/signal_divider_by_4_formal.sv
 module/c061618g2_formal.sv              module/c061618g2_formal.sv
 tt_um_c061618g2_formal.sv               tt_um_c061618g2_formal.sv

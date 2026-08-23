@@ -18,7 +18,6 @@
 `define ANTI_GLITCH_FILTER_SVH
 `default_nettype none
 
-(* keep_hierarchy = 1 *)
 module anti_glitch_filter #(
     parameter bit RESET_VALUE = 1'b1  // The literal bit driven ONLY during a raw hardware reset
 ) (

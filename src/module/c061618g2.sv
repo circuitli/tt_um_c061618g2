@@ -25,6 +25,7 @@
 `include "src/core/mmu_core.sv"
 `include "src/module/clock_synchronizer.sv"
 `include "src/module/anti_glitch_filter.sv"
+`include "src/module/signal_divider_by_4.sv"
 
 (* keep_hierarchy = 1 *)
 module c061618g2 (
@@ -84,7 +85,8 @@ module c061618g2 (
     // CORE SELECTIONS & DECODING PASS
     // =========================================================================
     pmod3_outputs_t core_signals;
-    bit         stabilized_ci_n;
+    bit             stabilized_ci_n;
+    bit             divided_ci_n;
 
     // 1. Process Core Decoding Matrix
     mmu_core core_inst (
@@ -124,6 +126,14 @@ module c061618g2 (
         .clean_signal_out (FLG_n)
     );
 
+    // 4. Divide signal by 4
+    signal_divider_by_4  ci_divider (
+        .clk              (phase_clk),     // Connect the system clock line
+        .rst_n            (rst_n),         // Connect the global reset line
+        .signal_in    (stabilized_ci_n),
+        .signal_out       (divided_ci_n)
+    );
+
     // Move the selection outside into a continuous assignment
     wire a11 = pmod1_bus.addr[0]; 
 
@@ -143,10 +153,10 @@ module c061618g2 (
 
     // --- Pmod 3 Outputs Mapping (uo_out) ---
     assign uo_out[7] = 1'b0;                                        // Static ground tie-off
-    assign uo_out[6] = FLG_n;                                       // Natively tracks your parameterized fault filter (Bypassed under Test Mode)
+    assign uo_out[6] = FLG_n;                                       // Natively tracks the parameterized fault filter (Bypassed under Test Mode)
     assign uo_out[5] = (system_disabled || !rst_n) ? 1'b1 : core_signals.s4_n;
     assign uo_out[4] = (system_disabled || !rst_n) ? 1'b1 : core_signals.io_n;
-    assign uo_out[3] = stabilized_ci_n;                            // Natively tracks your generic CAS inhibit filter (Clean 2.5-cycle path)
+    assign uo_out[3] = divided_ci_n;                                // Natively tracks the generic CAS inhibit filter
     assign uo_out[2] = (system_disabled || !rst_n) ? 1'b1 : core_signals.os_n;
     assign uo_out[1] = (system_disabled || !rst_n) ? 1'b1 : core_signals.basic_n;
     assign uo_out[0] = (system_disabled || !rst_n) ? 1'b1 : core_signals.s5_n;
