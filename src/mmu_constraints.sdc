@@ -73,8 +73,8 @@ set_clock_uncertainty 0.0 [get_clocks dummy_clk]
 # ====================================================================
 # 2. PURE ASYNCHRONOUS DELAY MANAGEMENT (BALANCED HIGH-UPGRADE WINDOW)
 # ====================================================================
-set_max_delay 10.0 -path_exceptions_only -from [get_ports {ui_in[*] uio_in[*]}] -to [get_ports {uo_out[*] uio_out[*]}]
-set_min_delay  0.1 -path_exceptions_only -from [get_ports {ui_in[*] uio_in[*]}] -to [get_ports {uo_out[*] uio_out[*]}]
+set_max_delay 25.0 -from [get_ports {ui_in[*] uio_in[*]}] -to [get_ports {uo_out[*] uio_out[*]}]
+set_min_delay  1.1 -from [get_ports {ui_in[*] uio_in[*]}] -to [get_ports {uo_out[*] uio_out[*]}]
 
 # ====================================================================
 # 3. COMBINATIONAL INPUT AND ACTIVE OUTPUT DELAYS
