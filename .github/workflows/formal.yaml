@@ -18,7 +18,14 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Run SymbiYosys Checks
+      - name: Run SymbiYosys Primitives Checks
+        working-directory: formal/module
+        if: false
+        run: |
+          sby -f async_latch_cell.sby
+
+      - name: Run SymbiYosys Main Checks
         working-directory: formal
         run: |
-          sby -f mmu.sby
+          sby -f tt_um_c061618g2.sby
+

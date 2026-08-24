@@ -25,6 +25,7 @@ ifeq ($(SIM),verilator)
     COMPILE_ARGS += -Wno-fatal -Wno-UNOPTFLAT -Wno-BLKANDNBLK -Wno-MODDUP
 else ifeq ($(SIM),icarus)
     COMPILE_ARGS += -g2012
+    COMPILE_ARGS += -DCOCOTB_SIM
 ifneq ($(GATES),yes)
 
 # RTL simulation:

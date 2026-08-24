@@ -32,4 +32,4 @@ out/
 __pycache__/
 
 # SymbiYosys Proof Output Directory
-formal/mmu/
+formal/tt_um_c061618g2/

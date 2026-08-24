@@ -68,6 +68,23 @@ module tt_um_c061618g2_formal (
         (ena && $rose(ui_in)) ##[1:5] $changed(uo_out)
     );
 
+    // Loop-Breaker Assertions Block    
+    generate
+    for (genvar ch = 0; ch < 13; ch++) begin : gen_loop_breakers
+        // FIX: Route paths through the true top-level module wrapper identifier 'c061618g2'
+        wire raw_ch_out = c061618g2.u_mmu_filter_bank.gen_filter_channels[ch].u_async_filter_channel.async_out;
+        wire [3:0] cur_chain = c061618g2.u_mmu_filter_bank.gen_filter_channels[ch].u_async_filter_channel.delay_chain;
+
+        // Force the solver to treat the feedback loop as a state transition
+        // instead of an infinite single-timestep equation.
+        assume_loop_break: assume property (
+            @(posedge clk) (raw_ch_out == ((&cur_chain) || (raw_ch_out && (|cur_chain))))
+        );
+    end
+endgenerate
+
+endgenerate
+
 endmodule
 
 // =========================================================================

@@ -19,17 +19,17 @@
   "__CLOCK_PERIOD": 5.0761,
   "_CLOCK_PERIOD": 5.00,
   "____CLOCK_PERIOD": 4.9751,
-  "CLOCK_PERIOD": 4.6512,
+  "old CLOCK_PERIOD": 4.6512,
   "_____CLOCK_PERIOD": 4.3478,
 
   "//": "SYNTH_STRATEGY - Restores the stable balanced logic restructuring formula to keep sequential steering paths clean and routable at high speeds.",
   "SYNTH_STRATEGY": "DELAY 1",
 
   "//": "SYNTH_BUFFERING - Forces Yosys to insert explicit cell buffers on high-fanout data and clock paths during elaboration. This breaks up complex multi-pin logic networks and permanently prevents TritonCTS from throwing memory segmentation faults during the clock tree synthesis pass.",
-  "SYNTH_BUFFERING": true,
+  "SYNTH_BUFFERING": 0,
 
   "//": "SYNTH_SIZING - Enables aggressive pre-placement cell sizing to scale up internal logic gates to high-performance variations early.",
-  "SYNTH_SIZING": true,
+  "SYNTH_SIZING": 0,
 
   "//": "SYNTH_HIER_PASS - Directs Yosys to perform synthesis hierarchically, locking down local submodule ports before physical cell mapping.",
   "SYNTH_HIER_PASS": true,
@@ -172,7 +172,7 @@
   "PL_RESIZER_DESIGN_OPTIMIZATIONS": true,
 
   "//": "PL_RESIZER_TIMING_OPTIMIZATIONS - Runs critical slack path resizing directly within the global placement iteration window.",
-  "PL_RESIZER_TIMING_OPTIMIZATIONS": true,
+  "PL_RESIZER_TIMING_OPTIMIZATIONS": 0,
 
   "//": "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT - Keeps your existing 100% freedom allocation active for fixing hold timing violations.",
   "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT": 100,
@@ -186,7 +186,8 @@
 
   "//": "If you need a custom clock configuration, read the following documentation first:",
   "//": "https://tinytapeout.com/faq/#how-can-i-map-an-additional-external-clock-to-one-of-the-gpios",
-  "CLOCK_PORT": "clk",
+  "CLOCK_PORT": null,
+  "CLOCK_NET": null,
 
   "//": "Configuration docs: https://librelane.readthedocs.io/en/latest/reference/configuration.html",
 
@@ -218,9 +219,9 @@
   "FP_PDN_VPITCH": 38.87,
 
   "//": "Clock",
-  "RUN_CTS": 1,
+  "RUN_CTS": 0,
   "//": "CLOCK_TREE_SYNTHESIS - Force Clock Tree Synthesis to explicitly balance insertion delays across the phase clock multiplexer",
-  "CLOCK_TREE_SYNTHESIS": true,
+  "CLOCK_TREE_SYNTHESIS": false,
 
   "//": "Don't generate power rings",
   "FP_PDN_MULTILAYER": 0,

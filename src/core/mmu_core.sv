@@ -59,6 +59,9 @@ module mmu_core (
     // COMBINATORIAL DECODING ENGINE
     // =========================================================================
     always_comb begin
+        // 1. PLACE ALL VARIABLE DECLARATIONS AT THE VERY TOP
+        logic local_os_n;
+
         // 1. Establish Hard Core Pull-Up Defaults (Active-Low Inactive Baseline)
         core_out.unused_p3_b7 = 1'b0; // Static Ground Tie-off
         core_out.FLG_n        = 1'b1;
@@ -68,6 +71,10 @@ module mmu_core (
         core_out.io_n         = 1'b1;
         core_out.os_n         = 1'b1;
         core_out.ci_n         = 1'b1;
+
+        // Extract the raw OS decoding state into a temporary 
+        // local tracking variable. This breaks the implicit loop on core_out.os_n.
+        local_os_n = 1'b1;
 
         // 2. Evaluate /S4 Expansion Right Cartridge Select
         if (!a13 && !a14 && a15 && rd4 && ref_n) begin
@@ -94,14 +101,18 @@ module mmu_core (
              (!a12 && a14 && a15 && ren && ref_n) ||
              (a11 && a12 && !a13 && a14 && a15 && ren && mpd_n && ref_n) ||
              (!a11 && a12 && !a13 && a14 && !a15 && ren && !map_n && ref_n) ) begin
-            core_out.os_n = 1'b0;
+            local_os_n  = 1'b0;
         end
 
+         // Drive the clean output port net safely
+        core_out.os_n = local_os_n;
+
         // 7. Evaluate /CI Clock Inhibit Generation
+        // Reference local_os_n instead of core_out.os_n to smash the loop trap
         if ( (!a13 && !a14 && a15 && rd4 && ref_n) ||
              (a13 && !a14 && a15 && rd5 && ref_n) ||
              (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) ||
-             (core_out.os_n == 1'b1) ||
+             (local_os_n == 1'b1) ||
              !(a11 && a12 && !a13 && a14 && a15 && ref_n) ||
              (!ref_n) ) begin
             core_out.ci_n = 1'b0;

@@ -3,9 +3,10 @@ project:
   title:        "c061618g2"      # Project title
   author:       "circuitli"      # Your name
   discord:      ""      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
-  description:  "A high-performance memory management unit for 8-bit processors with a 16-bit address bus with an integrated anti-glitch filter network."
+  description:  "A high-performance MMU with an integrated anti-glitch filter network for 8-bit processors with a 16-bit address bus."
   language:     "Verilog"
-  clock_hz:     215000000  # Nominal clock speed target (215 MHz) to comply with hardware limits
+  #clock_hz:     215000000  # Nominal clock speed target (215 MHz) to comply with hardware limits
+  clock_hz: 0          # Tells Tiny Tapeout this is a clockless/asynchronous design
 
 
   # How many tiles your design occupies? A single tile is about 167x108 uM.

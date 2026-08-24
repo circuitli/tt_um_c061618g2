@@ -1,0 +1,84 @@
+/*
+ * Copyright 2026 circuitli (https://github.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://apache.org
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+`ifndef ASYNC_GLITCH_FILTER_SVH
+`define ASYNC_GLITCH_FILTER_SVH
+`default_nettype none
+
+`include "src/module/async_latch_cell.sv"
+
+module async_glitch_filter #(
+    parameter int STAGES = 4
+)(
+    input  logic rst_n,
+    input  logic async_in,
+    output wire  async_out
+);
+
+    // Parameterized clockless directional delay wire network
+    wire [STAGES-1:0] delay_chain;
+
+    // =========================================================================
+    // CASCADED ASYNCHRONOUS BUFFER TREE (ONE-WAY BALANCED TIMELINE)
+    // By separating each stage into independent wire assignments with an inline
+    // simulation delay, we force Icarus Verilog to unroll the shift chain along 
+    // the physical timeline graph, destroying zero-delay delta-cycle loops.
+    // =========================================================================
+    generate
+        if (STAGES > 1) begin : gen_delay_chain
+            `ifdef COCOTB_SIM
+                assign #1 delay_chain[0] = async_in;
+                for (genvar i = 1; i < STAGES; i = i + 1) begin : gen_stages
+                    assign #1 delay_chain[i] = delay_chain[i-1];
+                end
+            `else
+                assign delay_chain[0] = async_in;
+                for (genvar i = 1; i < STAGES; i = i + 1) begin : gen_stages
+                    assign delay_chain[i] = delay_chain[i-1];
+                end
+            `endif
+        end else begin : gen_single_stage
+            `ifdef COCOTB_SIM
+                assign #1 delay_chain[0] = async_in;
+            `else
+                assign delay_chain[0] = async_in;
+            `endif
+        end
+    endgenerate
+
+    wire filter_set  = &delay_chain;
+    wire filter_hold = |delay_chain;
+
+    wire latch_raw_out;
+
+    // Instantiated as a clean 1-bit component with no stage parameters
+    async_latch_cell u_latch_inst (
+        .rst_n (rst_n),
+        .set   (filter_set),
+        .hold  (filter_hold),
+        .q     (latch_raw_out)
+    );
+
+    // Final multiplexer output stage routing
+    `ifdef COCOTB_SIM
+        assign #1 async_out = rst_n ? latch_raw_out : async_in;
+    `else
+        assign async_out = rst_n ? latch_raw_out : async_in;
+    `endif
+
+endmodule
+
+`endif

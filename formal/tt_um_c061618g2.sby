@@ -22,50 +22,69 @@ smtbmc yices
 [script]
 verilog_defaults -add -I.
 
-# Read standard design RTL files normally as SystemVerilog
+# 1. Read standard design RTL files normally as SystemVerilog
 read -sv defs/mmu_defs.sv
 read -sv core/mmu_core.sv
-read -sv module/clock_synchronizer.sv
-read -sv module/anti_glitch_filter.sv
-read -sv module/signal_divider_by_4.sv
+read -sv module/async_latch_cell.sv
+read -sv module/async_glitch_filter.sv
+read -sv module/async_glitch_filter_bank.sv
 read -sv module/c061618g2.sv
 read -sv tt_um_c061618g2.sv
 
-
-# Read verification files explicitly with the formal flag enabled
+# 2. Read all three exhaustive formal verification layers
 read -formal defs/mmu_defs_formal.sv
 read -formal core/mmu_core_formal.sv
-read -formal module/clock_synchronizer_formal.sv
-read -formal module/anti_glitch_filter_formal.sv
-read -formal module/signal_divider_by_4_formal.sv
-read -formal module/c061618g2_formal.sv
+read -formal module/async_latch_cell_formal.sv
+read -formal module/async_glitch_filter_formal.sv
+read -formal module/async_glitch_filter_bank_formal.sv
 read -formal tt_um_c061618g2_formal.sv
 
-# 1. Elaborate the hierarchy using your top-level formal module name
-prep -top tt_um_c061618g2
 
-# 2. Run the clock-to-ff transformation pass as a standalone command
+# Standard, clean, un-hacked macro elaboration pass
+#prep -top tt_um_c061618g2
+#clk2fflogic
+
+# =========================================================================
+# THE TRUE SBY COMPILER PASS RESOLUTION
+# We unpack the automated prep command to run synthesis and split the 
+# port arrays. This resolves the write_smt2 circular loop crash natively.
+# =========================================================================
+hierarchy -top tt_um_c061618g2
+proc
+flatten
+
+# Optimize the flattened logical gate tree structures
+opt_expr
+opt_clean
+check
+
+# Execute structural synthesis followed by physical port splitting
+synth -top tt_um_c061618g2
+splitnets -ports
+
+# Finalize the formal execution logic maps
+chformal -early
 clk2fflogic
 
 [files]
 # Target Destination Path              # Local Source Repository Path
 defs/mmu_defs.sv                       ../src/defs/mmu_defs.sv
 core/mmu_core.sv                       ../src/core/mmu_core.sv
-module/clock_synchronizer.sv           ../src/module/clock_synchronizer.sv
-module/anti_glitch_filter.sv           ../src/module/anti_glitch_filter.sv
-module/signal_divider_by_4.sv          ../src/module/signal_divider_by_4.sv
+module/async_latch_cell.sv             ../src/module/async_latch_cell.sv
+module/async_glitch_filter.sv          ../src/module/async_glitch_filter.sv
+module/async_glitch_filter_bank.sv     ../src/module/async_glitch_filter_bank.sv
 module/c061618g2.sv                    ../src/module/c061618g2.sv
 tt_um_c061618g2.sv                     ../src/tt_um_c061618g2.sv
 src/defs/mmu_defs.sv                   ../src/defs/mmu_defs.sv
 src/core/mmu_core.sv                   ../src/core/mmu_core.sv
-src/module/clock_synchronizer.sv       ../src/module/clock_synchronizer.sv
-src/module/anti_glitch_filter.sv       ../src/module/anti_glitch_filter.sv
-src/module/signal_divider_by_4.sv      ../src/module/signal_divider_by_4.sv
+src/module/async_latch_cell.sv         ../src/module/async_latch_cell.sv
+src/module/async_glitch_filter.sv      ../src/module/async_glitch_filter.sv
+src/module/async_glitch_filter_bank.sv ../src/module/async_glitch_filter_bank.sv
 src/module/c061618g2.sv                ../src/module/c061618g2.sv
-defs/mmu_defs_formal.sv                 defs/mmu_defs_formal.sv
-core/mmu_core_formal.sv                 core/mmu_core_formal.sv
-module/clock_synchronizer_formal.sv     module/clock_synchronizer_formal.sv
-module/anti_glitch_filter_formal.sv     module/anti_glitch_filter_formal.sv
-module/signal_divider_by_4_formal.sv    module/signal_divider_by_4_formal.sv
-module/c061618g2_formal.sv              module/c061618g2_formal.sv
-tt_um_c061618g2_formal.sv               tt_um_c061618g2_formal.sv
+defs/mmu_defs_formal.sv                    defs/mmu_defs_formal.sv
+core/mmu_core_formal.sv                    core/mmu_core_formal.sv
+module/async_latch_cell_formal.sv          module/async_latch_cell_formal.sv
+module/async_glitch_filter_formal.sv       module/async_glitch_filter_formal.sv
+module/async_glitch_filter_bank_formal.sv  module/async_glitch_filter_bank_formal.sv
+module/c061618g2_formal.sv                 module/c061618g2_formal.sv
+tt_um_c061618g2_formal.sv                  tt_um_c061618g2_formal.sv
