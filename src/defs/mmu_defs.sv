@@ -52,7 +52,9 @@ typedef struct packed {
     /* verilator lint_off UNUSEDSIGNAL */
     bit       uio5_pad;  // Bit 5 -> Pmod 2, Pin 6 (Exempted; Output Lane)
     /* verilator lint_on UNUSEDSIGNAL */
-    bit       TESTMODE_n; // Bit 4 -> uio_in[4] -> PMOD 2 Pin 7 (Active-Low production test mode bypass)
+    /* verilator lint_off UNUSEDSIGNAL */ // Combinatorial
+    bit       TESTMODE_n; // Bit 4 -> uio_in[4] -> PMOD 2 Pin 7 (Active-Low production test mode bypass) 
+    /* verilator lint_on UNUSEDSIGNAL */
     bit       be_n;     // Bit 3 -> uio_in -> PMOD 2 Pin 4 (/BE BASIC software enable)
     bit       mpd_n;    // Bit 2 -> uio_in -> PMOD 2 Pin 3 (/MPD Math Pack Disable)
     bit       ref_n;    // Bit 1 -> uio_in -> PMOD 2 Pin 2 (/REF DRAM Refresh)

@@ -33,7 +33,9 @@ module c061618g2 (
     output [7:0] uio_out,  // Bidirectional bus output network
     output wire [7:0] uio_oe,   // <-- MUST BE DECLARED AS AN OUTPUT PORT WIRE HERE! [2]
     input  ena,      // Leave this here! The compiler requires it.
+    /* verilator lint_off UNUSEDSIGNAL */
     input  clk,      // Part of the strict wrapper standard!
+    /* verilator lint_on UNUSEDSIGNAL */
     input  rst_n     // Part of the strict wrapper standard!
 );
 
