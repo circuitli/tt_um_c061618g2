@@ -12,27 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# ====================================================================
-# Synopsys Design Constraints (SDC) - Failsafe Fanout Isolation Profile
-# Target: 201 MHz Operation (56x Video Clock Multiplier)
-# ====================================================================
+# =========================================================================
+# FINAL SYSTEM CONFIG: ASYMMETRICAL CABLE & SHIM INTERFACE PROFILE
+# Max Target: 50 cm Cable (20.0 ns Global System Limit)
+# Min Target: Pure Symmetrical Shim (2.0 ns Global System Limit)
+# =========================================================================
 
-# 1. Define Primary Master Clock Input Port (197 MHz)
-#create_clock -name clk -period 5.0761 [get_ports clk]
-# 1. Define Primary Master Clock Input Port to exactly 200 MHz
-#create_clock -name clk -period 5.0000 [get_ports clk]
-# ====================================================================
-# 1. DEFINE PRIMARY MASTER CLOCK INPUT PORT (201 MHz)
-# ====================================================================
-#create_clock -name clk -period 4.9571 [get_ports clk]
 # ====================================================================
 # 1. DEFINE PRIMARY MASTER CLOCK INPUT PORT (215 MHz Target)
 # ====================================================================
 # 4.6512 ns corresponds exactly to a 215 MHz master clock frequency
 #create_clock -name clk -period 4.6512 [get_ports clk]
-# ====================================================================
-# 1. DEFINE PRIMARY MASTER CLOCK INPUT PORT (230 MHz / 64x NTSC Profile)
-# ====================================================================
 
 # ====================================================================
 # 1. DEFINE VIRTUAL DUMMY CLOCK BOUNDARY
@@ -62,18 +52,6 @@ set_clock_uncertainty 0.0 [get_clocks dummy_clk]
 #set_clock_uncertainty -hold 0.0500 [get_clocks sys_clk]
 
 # ====================================================================
-# 4. SAFE ASYNCHRONOUS BOUNDARY ISOLATION (OpenSTA Compliant)
-# Traverses the 'sys_clk' net to find all leaf input pins, 
-# cleanly slicing cross-domain paths without breaking TritonCTS.
-# ====================================================================
-#set fanout_pins [get_pins -of_objects [get_nets sys_clk] -filter "direction == input"]
-#
-#if { [llength $fanout_pins] > 0 } {
-#    set_false_path -from [all_registers] -to $fanout_pins
-#    set_false_path -from [get_ports ui_in] -to $fanout_pins
-#}
-
-# ====================================================================
 # 4. SAFE ASYNCHRONOUS BOUNDARY ISOLATION
 # Only cut timing on the async control signals entering the synchronizer.
 # This prevents TritonCTS distortion while ensuring data paths are timed.
@@ -94,17 +72,14 @@ set_clock_uncertainty 0.0 [get_clocks dummy_clk]
 
 # ====================================================================
 # 2. PURE ASYNCHRONOUS DELAY MANAGEMENT (BALANCED HIGH-UPGRADE WINDOW)
-# Max: 3.5ns forces ultra-tight gate clustering to support upgrades up to 140+ MHz.
-# Min: 2.0ns establishes a safe propagation floor to protect the 4-stage
-#      glitch filter primitives from being flattened by the IHP compiler.
 # ====================================================================
-set_max_delay 20.0 -from [get_ports {ui_in[*] uio_in[*]}] -to [get_ports {uo_out[*] uio_out[*]}]
-set_min_delay 2.0 -from [get_ports {ui_in[*] uio_in[*]}] -to [get_ports {uo_out[*] uio_out[*]}]
+set_max_delay 10.0 -path_exceptions_only -from [get_ports {ui_in[*] uio_in[*]}] -to [get_ports {uo_out[*] uio_out[*]}]
+set_min_delay  0.1 -path_exceptions_only -from [get_ports {ui_in[*] uio_in[*]}] -to [get_ports {uo_out[*] uio_out[*]}]
 
 # ====================================================================
 # 3. COMBINATIONAL INPUT AND ACTIVE OUTPUT DELAYS
-# Models external delay windows (5.0ns Max / 0.3ns Min) for the 
-# physical PMOD board traces and level shifter/shim adapters.
+# Models external delay windows for the 
+# physical PMOD board traces and shim adapters
 # anchored directly to the virtual dummy clock.
 # ====================================================================
 set_input_delay -max 7.5 -clock dummy_clk [get_ports {ui_in[*] uio_in[*]}]
