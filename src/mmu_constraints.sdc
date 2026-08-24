@@ -98,7 +98,7 @@ create_clock -name dummy_clk -period 1.0
 #      glitch filter primitives from being flattened by the IHP compiler.
 # ====================================================================
 set_max_delay 3.5 -from [get_ports {ui_in[*] uio_in[*]}] -to [get_ports {uo_out[*] uio_out[*]}]
-set_max_delay -min 2.0 -from [get_ports {ui_in[*] uio_in[*]}] -to [get_ports {uo_out[*] uio_out[*]}]
+set_min_delay 2.0 -from [get_ports {ui_in[*] uio_in[*]}] -to [get_ports {uo_out[*] uio_out[*]}]
 
 # ====================================================================
 # 3. COMBINATIONAL INPUT AND ACTIVE OUTPUT DELAYS
