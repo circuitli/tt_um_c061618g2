@@ -41,6 +41,7 @@
 # reference clock that does not generate a physical clock tree network.
 # ====================================================================
 create_clock -name dummy_clk -period 50.0
+set_clock_uncertainty 0.0 [get_clocks dummy_clk]
 
 # ====================================================================
 # 2. DEFINE GATED INTERNAL CLOCK ROOT NODE
@@ -107,10 +108,10 @@ set_min_delay 2.0 -from [get_ports {ui_in[*] uio_in[*]}] -to [get_ports {uo_out[
 # anchored directly to the virtual dummy clock.
 # ====================================================================
 set_input_delay -max 5.0 -clock dummy_clk [get_ports {ui_in[*] uio_in[*]}]
-set_input_delay -min 0.3 -clock dummy_clk [get_ports {ui_in[*] uio_in[*]}]
+set_input_delay -min 0.5 -clock dummy_clk [get_ports {ui_in[*] uio_in[*]}]
 
 set_output_delay -max 5.0 -clock dummy_clk [get_ports {uo_out[*] uio_out[*]}]
-set_output_delay -min 0.3 -clock dummy_clk [get_ports {uo_out[*] uio_out[*]}]
+set_output_delay -min 0.5 -clock dummy_clk [get_ports {uo_out[*] uio_out[*]}]
 
 # ====================================================================
 # 3. STATIC PORT EXEMPTION (Fixes the uio_oe Delay Contradiction)
