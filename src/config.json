@@ -16,11 +16,6 @@
   "//": "CLOCK_PERIOD - Increase this in case you are getting setup time violations.",
   "//": "The value is in nanoseconds, so 20ns == 50MHz.",
   "//_comment_speed": "HARDENED TIMING: Hardcode period to 11.64ns to natively support 24x master crystal multiplier (85.91 MHz)",
-  "__CLOCK_PERIOD": 5.0761,
-  "_CLOCK_PERIOD": 5.00,
-  "____CLOCK_PERIOD": 4.9751,
-  "old CLOCK_PERIOD": 4.6512,
-  "_____CLOCK_PERIOD": 4.3478,
   "CLOCK_PERIOD": 0,
 
   "//": "SYNTH_STRATEGY - Restores the stable balanced logic restructuring formula to keep sequential steering paths clean and routable at high speeds.",
@@ -40,6 +35,15 @@
 
   "//": "SYNTH_SHARE_RESOURCES - Dictates whether Yosys forces resource sharing by actively identifying matching algebraic sub-expressions (like duplicated multiplexers or address decoders) and merging them into unified gate networks. For purely combinational macros, leaving this enabled or disabled changes area footprint without breaking function.",
   "SYNTH_SHARE_RESOURCES": 1,
+
+  "//": "SYNTH_NO_FLIP_FLOPS - Explicitly tells Yosys that the design does not contain structural sequential memory elements. This halts structural latched-path mapping loops.",
+  "SYNTH_NO_FLIP_FLOPS": 1,
+
+  "//": "SYNTH_TIMING_DERATING - Controls whether synchronous design flows calculation margin offsets for clock boundaries. Setting this to 0 prevents clock-skew analysis tools from complaining about your clockless layout.",
+  "SYNTH_TIMING_DERATING": 0,
+
+  "//": "SYNTH_ABC_LEGACY_FLOW - Forces OpenLane to drop the modern abc9 flow (which assumes structural sequential cell paths) and drop back to the standard legacy ABC string matching architecture.",
+  "SYNTH_ABC_LEGACY_FLOW": 1,
 
   "//": "SYNTH_PARAMETERS - Passes top-level elaboration flags to Yosys to explicitly preserve the hierarchical structural boundaries of internal submodules like clock_synchronizer during physical gate mapping.",
   "_SYNTH_PARAMETERS": [

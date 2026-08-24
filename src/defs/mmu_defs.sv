@@ -64,8 +64,8 @@ typedef struct packed {
 // Output Tracking Bundle:
 typedef struct packed {
     /* verilator lint_off UNUSEDSIGNAL */
-    bit       uio7_out; // Bit 7 -> Tied Low - Reserved
-    bit       uio6_out; // Bit 6 -> Tied Low
+    bit       uio7_out; // Bit 7 -> Tied Low (Reserved)
+    bit       uio6_out; // Bit 6 -> Tied Low (Dedicated Input Pin Lane)
     /* verilator lint_on UNUSEDSIGNAL */
     bit       TRIGGER_OUT; // Bit 5 -> uio_out -> PMOD 2 Pin 5 ACTIVE TRIGGER DIG-TAP
     /* verilator lint_off UNUSEDSIGNAL */

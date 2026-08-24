@@ -39,7 +39,11 @@ module c061618g2 (
     input  rst_n     // Part of the strict wrapper standard!
 );
 
-    wire TESTMODE_n = uio_in[4]; // Industrial test platforms
+    /* verilator lint_off UNUSEDSIGNAL */
+    bit unused_p2_b7 = uio_in[7]; // Bit 7 -> Pmod 2, Pin 8 - Reserved
+    bit uio5_pad     = uio_in[5]; // Bit 5 -> Pmod 2, Pin 6 (Exempted; Output Lane)
+    bit TESTMODE_n   = uio_in[4]; // Industrial test platforms
+    /* verilator lint_on UNUSEDSIGNAL */
 
     // 2. Continuous 13-bit concatenation (MSB to LSB)
     //    ui_in[0] (A11) naturally lands at index 0 (LSB) of the bus!
@@ -91,21 +95,9 @@ module c061618g2 (
     logic clean_ren;
 
     assign {clean_be_n, clean_mpd_n, clean_ref_n, clean_ren} = filtered[11:8];
-
-    // =========================================================================
-    // SEPARATED INTERFACE STRUCTURE BINDING
-    // =========================================================================
-     /* verilator lint_off UNUSED */
-    pmod2_outputs_t pmod2_out_bus;
-    /* verilator lint_on UNUSED */
     
     // ---- BUS DIRECTION HARDCODING ----
     assign uio_oe = 8'b00100000; 
-
-    /* verilator lint_off UNUSED */
-    //wire unused_p2_b7 = uio_in[7]; // Bit 7 -> Pmod 2, Pin 8
-    //wire uio5_pad     = uio_in[5];  // Bit 5 -> Pmod 2, Pin 6 (Exempted; Output Lane)
-    /* verilator lint_on UNUSED */
 
     // =========================================================================
     // CORE SELECTIONS & DECODING PASS
