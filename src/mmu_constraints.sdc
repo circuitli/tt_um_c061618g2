@@ -40,7 +40,7 @@
 # constraints, even for pure clockless designs. We declare a virtual 
 # reference clock that does not generate a physical clock tree network.
 # ====================================================================
-create_clock -name dummy_clk -period 1.0
+create_clock -name dummy_clk -period 50.0
 
 # ====================================================================
 # 2. DEFINE GATED INTERNAL CLOCK ROOT NODE
