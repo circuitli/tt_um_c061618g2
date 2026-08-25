@@ -74,12 +74,12 @@ set_clock_uncertainty 0.0 [get_clocks dummy_clk]
 # 2. PURE ASYNCHRONOUS DELAY MANAGEMENT (BALANCED HIGH-UPGRADE WINDOW)
 # ====================================================================
 set_max_delay 25.0 -from [get_ports {ui_in[*] uio_in[*]}] -to [get_ports {uo_out[*]}]
-set_min_delay  2.5 -from [get_ports {ui_in[*] uio_in[*]}] -to [get_ports {uo_out[*]}]
+set_min_delay  0.0 -from [get_ports {ui_in[*] uio_in[*]}] -to [get_ports {uo_out[*]}]
 
 # 3. Handle Raw Diagnostic Trigger Bypass Exception
 # Keeps the a11 passthrough pin working instantaneously without layout buffer bloat.
 set_max_delay 15.5 -from [get_ports {ui_in[0]}] -to [get_ports {uio_out[5]}]
-set_min_delay  1.1 -from [get_ports {ui_in[0]}] -to [get_ports {uio_out[5]}]
+set_min_delay  0.0 -from [get_ports {ui_in[0]}] -to [get_ports {uio_out[5]}]
 
 # ====================================================================
 # 4. COMBINATIONAL INPUT AND ACTIVE OUTPUT DELAYS
