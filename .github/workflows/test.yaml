@@ -37,9 +37,8 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install --upgrade volare
           
-          # Adding '--include-aoi' tells volare to search the public open-source
-          # community foundry index trees instead of querying private repo tokens!
-          python3 -m volare enable --pdk sg13g2 ttihp26b --include-aoi
+          # This command mounts the standard cell grid straight from cache!
+          python3 -m volare enable --pdk sg13g2 ttihp26b --include-libraries
           
           echo "[SUCCESS] Directory layout endpoints are live on the virtual machine!"
 
