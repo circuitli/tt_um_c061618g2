@@ -51,6 +51,9 @@
   "//": "SYNTH_READ_BLACKBOX_ATTRIBUTES - Forces the gate-level linter tool to drop loop alerts when analyzing cross-coupled asynchronous primitives.",
   "SYNTH_READ_BLACKBOX_ATTRIBUTES": true,
 
+  "//": "SYNTH_MAX_FANOUT - Sets a matching high fanout ceiling for the front-end ABC logic mapping tool pass.",
+  "SYNTH_MAX_FANOUT": 100,
+
   "//": "SYNTH_PARAMETERS - Passes top-level elaboration flags to Yosys to explicitly preserve the hierarchical structural boundaries of internal submodules like clock_synchronizer during physical gate mapping.",
   "_SYNTH_PARAMETERS": [
     "KEEP_HIERARCHY=1"
@@ -62,8 +65,8 @@
   "//": "QUIT_ON_SYNTH_CHECKS - Forces Yosys to bypass design failures on multi-driver nets or combinational latching loops, permitting custom asynchronous paths.",
   "QUIT_ON_SYNTH_CHECKS": false,
 
-  "//": "MAX_FANOUT_CONSTRAINT - Clamps internal signal fanout to 4 targets, forcing the tool to clone sluggish data lines and restore crisp transitions.",
-  "MAX_FANOUT_CONSTRAINT": 20,
+  "//": "MAX_FANOUT_CONSTRAINT - Clamps internal signal fanout, forcing the tool to clone sluggish data lines and restore crisp transitions.",
+  "MAX_FANOUT_CONSTRAINT": 100,
 
   "SDC_FILE": "src/mmu_constraints.sdc",
   "_MACRO_PLACEMENT_CFG": "",
