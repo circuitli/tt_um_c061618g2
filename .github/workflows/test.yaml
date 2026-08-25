@@ -31,8 +31,10 @@ jobs:
       # =========================================================================
       - name: Mount and Enable Cached Volare PDK Folder
         run: |
-          # 1. Force upgrade pip and install the latest stable version of volare
-          python3 -m pip install --upgrade pip          
+          # 1. Update the installer tools to the latest versions
+          python3 -m pip install --upgrade pip
+          python3 -m pip install --upgrade volare
+          
           # 2. CORRECTED: Changed '--pdk ihp-sg13g2' to the registered tag '--pdk sg13g2'
           # This enables Volare to instantly locate and link your cached files!
           volare enable --pdk sg13g2 ttihp26b
