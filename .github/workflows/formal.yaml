@@ -33,12 +33,14 @@ jobs:
       # =========================================================================
       - name: Mount and Enable Cached Volare PDK Folder
         run: |
-          # 1. Force the volare tool to initialize and link the cached files
-          # (Replace 'ttihp26b' with your exact target commit version if different)
+          # 1. Pull the official stable tool package
           pip install volare
-          volare enable --pdk ihp-sg13g2 ttihp26b
           
-          echo "[SUCCESS] Volare directory paths are now live on the host runner!"
+          # 2. CORRECTED: Changed '--pdk ihp-sg13g2' to the registered tag '--pdk sg13g2'
+          # This enables Volare to instantly locate and link your cached files!
+          volare enable --pdk sg13g2 ttihp26b
+          
+          echo "[SUCCESS] Asynchronous IHP PDK links are now live on the runner!"
 
       # =========================================================================
       # LINK VOLARE CACHE DIRECTLY TO THE FORMAL DIRECTORY
