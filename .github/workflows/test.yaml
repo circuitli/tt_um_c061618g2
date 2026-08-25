@@ -24,7 +24,7 @@ jobs:
           path: ~/.volare
           # Dynamically keys the cache directly off the repository's tracked 
           # OpenLane tool_metadata.yml file configuration block, preventing typos!
-          key: ${{ runner.os }}-volare-sg13g2-${{ hashFiles('**/tool_metadata.yml') }}
+          key: ${{ runner.os }}-volare-sg13g2-${{ hashFiles('info.yaml') }}
           restore-keys: |
             ${{ runner.os }}-volare-sg13g2-
 
@@ -33,17 +33,15 @@ jobs:
       # =========================================================================
       - name: Mount and Enable Cached Volare PDK Folder
         run: |
-          # 1. Update the installer tools to the latest versions
+          # 1. Upgrade python installation parameters
           python3 -m pip install --upgrade pip
           python3 -m pip install --upgrade volare
           
-          # Extracts the correct active version hash directly from the project manifest
-          OPENLANE_HASH=$(python3 -c "import yaml; print(yaml.safe_load(open('tool_metadata.yml'))[0]['commit'])")
+          # 2. Pass the design commit hash 'ttihp26b' as a static literal token string.
+          # This completely stops the FileNotFoundError crash!
+          python3 -m volare enable --pdk sg13g2 ttihp26b
           
-          # Call volare dynamically using the real manifest string tags!
-          python3 -m volare enable --pdk sg13g2 $OPENLANE_HASH
-          
-          echo "[SUCCESS] PDK directories are fully live on disk!"
+          echo "[SUCCESS] Directory layout endpoints are live on the virtual machine!"
 
       - name: Install iverilog
         shell: bash
