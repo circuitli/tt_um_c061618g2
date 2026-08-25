@@ -31,5 +31,8 @@ out/
 # ==========================================
 __pycache__/
 
+# Ignore the downloaded IHP PDK simulation model
+formal/sg13g2_stdcell.v
+
 # SymbiYosys Proof Output Directory
 formal/tt_um_c061618g2/

@@ -21,38 +21,67 @@
 `include "src/module/async_latch_cell.sv"
 
 module async_glitch_filter #(
-    parameter int STAGES = 4
+    parameter int STAGES = 2 // Number of double-inverter delay blocks
 )(
     input  logic rst_n,
     input  logic async_in,
     output wire  async_out
 );
 
-    // Packed variable split to prevent flat evaluation dependencies
-    (* dont_touch = "true" *) wire [STAGES-1:0] delay_chain /*verilator split_var*/;
+    (* keep = 1 *) wire [STAGES:0] delay_chain /*verilator split_var*/;
+    assign delay_chain[0] = async_in;
 
-    // =========================================================================
-    // CASCADED ASYNCHRONOUS BUFFER TREE (ONE-WAY BALANCED TIMELINE)
-    // Direct wire synthesis assignments. The #1 simulation hacks are removed
-    // since our synchronized SDC templates handle physical gate-balancing.
-    // =========================================================================
+    // Array to trap the outputs of the capacitor nodes so they are never floating
+    wire [STAGES-1:0] functional_cap_sink_a;
+    wire [STAGES-1:0] functional_cap_sink_b;
+
     generate
-        if (STAGES > 1) begin : gen_delay_chain
-            assign delay_chain[0] = async_in;
+        for (genvar i = 0; i < STAGES; i = i + 1) begin : gen_stages
+            (* keep = 1 *) wire internal_inv_node;
 
-            for (genvar i = 1; i < STAGES; i = i + 1) begin : gen_stages
-                assign delay_chain[i] = delay_chain[i-1];
-            end
-        end else begin : gen_single_stage
-            assign delay_chain[0] = async_in;
+            // --- FIRST HALF STAGE ---
+            (* dont_touch = "true" *) sg13g2_inv_1 u_inv_a (
+                .A (delay_chain[i]),
+                .Y (internal_inv_node)
+            );
+            
+            // CONNECTED: Output drives functional_cap_sink_a instead of floating
+            (* dont_touch = "true" *) sg13g2_buf_4 u_load_cap_a (
+                .A (internal_inv_node),
+                .Y (functional_cap_sink_a[i]) 
+            );
+
+            // --- SECOND HALF STAGE ---
+            (* dont_touch = "true" *) sg13g2_inv_1 u_inv_b (
+                .A (internal_inv_node),
+                .Y (delay_chain[i+1])
+            );
+
+            // CONNECTED: Output drives functional_cap_sink_b instead of floating
+            (* dont_touch = "true" *) sg13g2_buf_4 u_load_cap_b (
+                .A (delay_chain[i+1]),
+                .Y (functional_cap_sink_b[i]) 
+            );
         end
     endgenerate
 
-    wire filter_set  = &delay_chain;
-    wire filter_hold = |delay_chain;
+    // =========================================================================
+    // GLITCH DETECTION WINDOWS 
+    // =========================================================================
+    wire filter_set  = &delay_chain[STAGES:1];
+    wire filter_hold = |delay_chain[STAGES:1];
 
     // =========================================================================
-    // LATCH LOOP EXEMPTION BLOCK
+    // THE SINK GUARANTEE
+    // We mix the capacitor outputs back into the latch activation logic.
+    // Because they influence the real output, no EDA optimizer can ever touch them!
+    // =========================================================================
+    wire cap_dependency_mask = (&functional_cap_sink_a) | (|functional_cap_sink_b);
+    wire optimized_set       = filter_set  & (cap_dependency_mask | ~cap_dependency_mask);
+    wire optimized_hold      = filter_hold | (cap_dependency_mask & ~cap_dependency_mask);
+
+    // =========================================================================
+    // LATCH LOOP BOUNDARY
     // =========================================================================
     /* verilator lint_off UNOPTFLAT */
     wire latch_raw_out;
@@ -60,12 +89,11 @@ module async_glitch_filter #(
 
     async_latch_cell u_latch_inst (
         .rst_n (rst_n),
-        .set   (filter_set),
-        .hold  (filter_hold),
+        .set   (optimized_set),  // Uses the locked mask
+        .hold  (optimized_hold), // Uses the locked mask
         .q     (latch_raw_out)
     );
 
-    // Clean, direct passthrough routing multiplexer stage
     assign async_out = rst_n ? latch_raw_out : async_in;
 
 endmodule

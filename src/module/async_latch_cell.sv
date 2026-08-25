@@ -27,24 +27,33 @@ module async_latch_cell (
 );
 
     // =========================================================================
-    // STRUCTURAL RECURSIVE FEEDBACK LOOP
-    // Keep attributes protect the combinatorial latch from being flattened 
-    // or optimized away during the OpenLane gs130g2 synthesis pass.
+    // HARDENED MUX-BASED ASYNCHRONOUS LATCH
+    // Replaces dangerous discrete logic feedback loops with a glitch-minimized
+    // IHP SG130G2 hardware multiplexer cell.
     // =========================================================================
-    (* keep = 1 *) wire latch_gated_fb;
-    (* keep = 1 *) wire latch_forward;
+    
+    (* keep = 1 *) wire mux_out;
+    (* keep = 1 *) wire feedback_loop;
 
     `ifdef COCOTB_SIM
-        // MANDATORY: Forces Icarus Verilog to advance its delta time wheel
-        // and prevents simulator lockups during clockless evaluation loops.
-        assign #1 latch_gated_fb = q & hold;
+        // Prevent delta-cycle simulator lockups during zero-delay simulation
+        assign #1 feedback_loop = q;
     `else
-        // NATIVE SILICON: Maps to a clean standard cell gate network.
-        assign latch_gated_fb = q & hold;
+        assign feedback_loop = q;
     `endif
 
-    assign latch_forward  = set | latch_gated_fb;
-    assign q              = rst_n ? latch_forward : 1'b0;
+    // Functional Truth:
+    // When 'set' is active (high), we force the latch to sample 'hold'.
+    // When 'set' is inactive (low), the latch samples its own 'feedback_loop'.
+    (* dont_touch = "true" *) sg13g2_mux2_1 u_latch_core (
+        .A0 (feedback_loop), // Selected when set == 0
+        .A1 (hold),          // Selected when set == 1
+        .S  (set),
+        .Y  (mux_out)
+    );
+
+    // Synchronous or Asynchronous clear path hookup
+    assign q = rst_n ? mux_out : 1'b0;
 
 endmodule
 
