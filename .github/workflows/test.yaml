@@ -35,6 +35,10 @@ jobs:
       # 2. COPY DIRECTLY INTO THE OFFICIAL MAKEFILE TARGET PATH
       # =========================================================================
       - name: Copy PDK to Official Location for Simulation
+        env:
+          # This forces PDK_ROOT to point to the active virtual machine workspace
+          # instead of collapsing into a blank value that hits the system root!
+          PDK_ROOT: ${{ github.workspace }}
         run: |
           # 1. Define the exact hardcoded path your Makefile expects
           OFFICIAL_DEST="$PDK_ROOT/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog"
