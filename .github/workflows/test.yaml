@@ -38,7 +38,7 @@ jobs:
           python3 -m pip install --upgrade volare
           
           # This command mounts the standard cell grid straight from cache!
-          python3 -m volare enable --pdk sg13g2 ttihp26b --include-libraries
+          python3 -m volare enable --pdk sg13g2 ttihp26b --include-libraries sg13g2_stdcell
           
           echo "[SUCCESS] Directory layout endpoints are live on the virtual machine!"
 
