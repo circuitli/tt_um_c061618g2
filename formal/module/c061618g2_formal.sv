@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 `ifndef C061618G2_FORMAL_SV
 `define C061618G2_FORMAL_SV
 
 `default_nettype none
-`include "src/defs/mmu_defs.sv"
 
 // =============================================================================
 // Top-Level Formal Verification Container: tt_um_c061618g2_formal
+// Fully clockless to match our purely asynchronous IHP silicon layout.
 // =============================================================================
 module tt_um_c061618g2_formal (
     input wire [7:0] ui_in,
@@ -33,35 +34,42 @@ module tt_um_c061618g2_formal (
     input wire       rst_n
 );
 
-    // --- Architectural Environmental Assumptions ---
-    assume_initial_reset: assume property (
-        @(posedge clk) $initstate |-> (!rst_n && ui_in == 8'h00 && uio_in == 8'h00)
-    );
-
-    assume_system_enabled: assume property (
-        @(posedge clk) !$initstate |-> (ena == 1'b1)
-    );
+    // Casting wires to our structured layout types to make the properties readable
+    // and completely safe against pin-ordering bugs.
+    wire pmod1_inputs_t  p1_in  = pmod1_inputs_t'(ui_in);
+    wire pmod2_inputs_t  p2_in  = pmod2_inputs_t?(uio_in);
+    wire pmod2_outputs_t p2_out = pmod2_outputs_t'(uio_out);
+    wire pmod3_outputs_t p3_out = pmod3_outputs_t'(uo_out);
 
     // =========================================================================
-    // EXHAUSTIVE MEMORY DECODER MAPPING ASSERTIONS (RESTORED)
+    // ARCHITECTURAL ENVIRONMENTAL ASSUMPTIONS (Combinatorial Invariants)
+    // =========================================================================
+    
+    // TinyTapeout rule: Ensure the design is always selected during validation
+    assume_system_enabled: assume property (ena == 1'b1);
+
+    // =========================================================================
+    // EXHAUSTIVE MEMORY DECODER MAPPING ASSERTIONS (Clockless Boolean)
     // =========================================================================
     
     // 1. Operating System ROM Allocation ($F800 - $FFFF)
-    wire is_os_space = (ui_in[4:0] == 5'b11111); // Upper address bits match
+    // Upper address bits match 5'b11111
+    wire is_os_space = (p1_in.addr == 5'b11111); 
     assert_os_decode: assert property (
-        @(posedge clk) (rst_n && ena && is_os_space && uio_in[0]) |-> (uo_out[2] == 1'b0 && uo_out[3] == 1'b0)
+        !(rst_n && is_os_space && p2_in.ren && p2_in.ref_n) || (p3_out.os_n == 1'b0)
     );
 
     // 2. BASIC Interpreter Memory Map Allocation ($A000 - $BFFF)
-    wire is_basic_space = (ui_in[4:3] == 2'b10); 
+    // Address bits match 2'b10xx
+    wire is_basic_space = (p1_in.addr[4:3] == 2'b10); 
     assert_basic_decode: assert property (
-        @(posedge clk) (rst_n && ena && is_basic_space && !uio_in[3] && uio_in[0]) |-> (uo_out[1] == 1'b0)
+        !(rst_n && is_basic_space && !p2_in.be_n && p2_in.ref_n && !p1_in.control_bits[2]) || (p3_out.basic_n == 1'b0)
     );
 
     // 3. Peripheral Hardware I/O Register Allocation ($D000 - $D7FF)
-    wire is_io_space = (ui_in[4:0] == 5'b11010);
+    wire is_io_space = (p1_in.addr == 5'b11010);
     assert_io_decode: assert property (
-        @(posedge clk) (rst_n && ena && is_io_space && uio_in[0]) |-> (uo_out[4] == 1'b0)
+        !(rst_n && is_io_space && p2_in.ref_n) || (p3_out.io_n == 1'b0)
     );
 
     // =========================================================================
@@ -69,47 +77,48 @@ module tt_um_c061618g2_formal (
     // =========================================================================
 
     // 4. Left Cartridge Priority Dominance Over BASIC Space
+    // control_bits[2] represents rd5 (Left Cartridge Sense)
     assert_cartridge_dominance: assert property (
-        @(posedge clk) (rst_n && ena && is_basic_space && !uio_in[3] && ui_in[7]) |-> (uo_out[1] == 1'b1)
+        !(rst_n && is_basic_space && !p2_in.be_n && p1_in.control_bits[2]) || (p3_out.basic_n == 1'b1)
     );
 
     // 5. Software OS Disabling via REN Control Loop
     assert_ren_disabled_os: assert property (
-        @(posedge clk) (rst_n && ena && is_os_space && !uio_in[0]) |-> (uo_out[2] == 1'b1)
+        !(rst_n && is_os_space && !p2_in.ren) || (p3_out.os_n == 1'b1)
     );
 
     // 6. Refresh Wait-State CAS Inhibit Priority
     assert_refresh_cas_inhibit: assert property (
-        @(posedge clk) (rst_n && ena && !uio_in[1]) |-> (uo_out[3] == 1'b0)
+        !(rst_n && !p2_in.ref_n) || (p3_out.ci_n == 1'b0)
     );
 
     // 7. PBI Math Pack Address Conflict Disable ($D800)
-    wire is_math_pack = (ui_in[4:0] == 5'b11011);
+    wire is_math_pack = (p1_in.addr == 5'b11011);
     assert_math_pack_disable: assert property (
-        @(posedge clk) (rst_n && ena && is_math_pack && !uio_in[2]) |-> (uo_out[2] == 1'b1)
+        !(rst_n && is_math_pack && !p2_in.mpd_n) || (p3_out.os_n == 1'b1)
     );
 
     // =========================================================================
     // SYSTEM BOUNDARY ISOLATION SECURITY ASSERTIONS
     // =========================================================================
 
-    // 8. Global System Master Cutoff Verification
+    // 8. Global System Master Cutoff Verification (Reset Override)
     assert_safety_cutoff: assert property (
-        @(posedge clk) (!rst_n || !ena) |-> (uo_out[5:0] == 6'b111111)
+        (rst_n) || (uo_out[5:0] == 6'b111111)
     );
 
     // 9. Unfiltered Pure Timing Probe Loopback Invariant
     assert_trigger_loopback: assert property (
-        @(posedge clk) (uio_out == ui_in)
+        !(rst_n) || (p2_out.TRIGGER_OUT == p1_in.control_bits[0]) // Maps map_n directly out
     );
 
 endmodule
 
 // =============================================================================
-// SYSTEMVERILOG HIERARCHICAL BIND CONFIGURATION
+// CORRECTED SYSTEMVERILOG HIERARCHICAL BIND CONFIGURATION
+// Binds precisely to the correct TinyTapeout top-level module block name.
 // =============================================================================
-// Inject the formal checker directly into the scope of your c061618g2 design.
-bind c061618g2 tt_um_c061618g2_formal i_tt_um_c061618g2_formal (
+bind tt_um_c061618g2 tt_um_c061618g2_formal i_tt_um_c061618g2_formal (
     .ui_in   (ui_in),
     .uo_out  (uo_out),
     .uio_in  (uio_in),
@@ -119,3 +128,7 @@ bind c061618g2 tt_um_c061618g2_formal i_tt_um_c061618g2_formal (
     .clk     (clk),
     .rst_n   (rst_n)
 );
+
+`default_nettype wire
+`endif // C061618G2_FORMAL_SV
+

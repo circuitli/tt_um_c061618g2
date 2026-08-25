@@ -13,82 +13,70 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 `ifndef MMU_DEFS_SVH
 `define MMU_DEFS_SVH
-
-// Tiny Tapeout dev kit main ports
-//package mmu_defs;
-
-// 1. Explicitly define a custom 5-bit vector type to bypass the struct bracket bug
-//typedef bit [4:0] addr_t;
+`default_nettype none
 
 // =========================================================================
 // PHYSICAL PMOD 1 INPUT STANDARD INTERFACE (ui_in)
 // =========================================================================
 typedef struct packed {
-    bit [2:0] control_bits; // Combines rd5, rd4, and map_n into a 3-bit vector
-    //bit rd5;      // Tracks ui_in[7] -> Cartridge Sense A000
-    //bit rd4;      // Tracks ui_in[6] -> Cartridge Sense 8000
-    //bit map_n;    // Tracks ui_in[5] -> /MAP Selftest
-    bit [4:0] addr; // Tracks ui_in[4:0] -> Address bus slice (A15, A14, A13, A12, A11)
-    //addr_t addr;     // Tracks ui_in[4:0] -> Address bus slice (A15, A14, A13, A12, A11)
-    //bit       a15;      // Bit 4
-    //bit       a14;      // Bit 3
-    //bit       a13;      // Bit 2
-    //bit       a12;      // Bit 1
-    //bit       a11;      // Bit 0
+    logic [2:0] control_bits; // Combines rd5, rd4, and map_n into a 3-bit vector
+    logic [4:0] addr;         // Tracks ui_in[4:0] -> Address bus slice (A15-A11)
 } pmod1_inputs_t;
 
 // =========================================================================
 // PHYSICAL PMOD 2 CONTROL INPUTS STANDARD INTERFACE (uio_in)
 // =========================================================================
-// Traces inputs in numerical pin progression directly from Pin 1 to Pin 6:
 typedef struct packed {
     /* verilator lint_off UNUSEDSIGNAL */
-    bit       unused_p2_b7; // Bit 7 -> Pmod 2, Pin 8 - Reserved
+    logic       unused_p2_b7; // Bit 7 -> Pmod 2, Pin 8 - Reserved
     /* verilator lint_on UNUSEDSIGNAL */
-    bit       FLG_IN_n;    // Bit 6 -> uio_in -> PMOD 2 Pin 7 (Active-Low System Disable Flag)
+    logic       FLG_IN_n;     // Bit 6 -> uio_in[6] -> PMOD 2 Pin 7 (Active-Low Disable Flag)
     /* verilator lint_off UNUSEDSIGNAL */
-    bit       uio5_pad;  // Bit 5 -> Pmod 2, Pin 6 (Exempted; Output Lane)
+    logic       uio5_pad;     // Bit 5 -> Pmod 2, Pin 6 (Exempted; Output Lane)
     /* verilator lint_on UNUSEDSIGNAL */
-    /* verilator lint_off UNUSEDSIGNAL */ // Combinatorial
-    bit       TESTMODE_n; // Bit 4 -> uio_in[4] -> PMOD 2 Pin 7 (Active-Low production test mode bypass) 
+    /* verilator lint_off UNUSEDSIGNAL */ 
+    logic       TESTMODE_n;   // Bit 4 -> uio_in[4] -> PMOD 2 Pin 5 (Active-Low test mode bypass) 
     /* verilator lint_on UNUSEDSIGNAL */
-    bit       be_n;     // Bit 3 -> uio_in -> PMOD 2 Pin 4 (/BE BASIC software enable)
-    bit       mpd_n;    // Bit 2 -> uio_in -> PMOD 2 Pin 3 (/MPD Math Pack Disable)
-    bit       ref_n;    // Bit 1 -> uio_in -> PMOD 2 Pin 2 (/REF DRAM Refresh)
-    bit       ren;      // Bit 0 -> uio_in -> PMOD 2 Pin 1 (REN OS ROM Hardware Enable)
+    logic       be_n;         // Bit 3 -> uio_in[3] -> PMOD 2 Pin 4 (/BE BASIC enable)
+    logic       mpd_n;        // Bit 2 -> uio_in[2] -> PMOD 2 Pin 3 (/MPD Math Pack Disable)
+    logic       ref_n;        // Bit 1 -> uio_in[1] -> PMOD 2 Pin 2 (/REF DRAM Refresh)
+    logic       ren;          // Bit 0 -> uio_in[0] -> PMOD 2 Pin 1 (REN OS ROM Enable)
 } pmod2_inputs_t;
 
-// Output Tracking Bundle:
+// =========================================================================
+// PHYSICAL PMOD 2 CONTROL OUTPUTS STANDARD INTERFACE (uio_out)
+// =========================================================================
 typedef struct packed {
     /* verilator lint_off UNUSEDSIGNAL */
-    bit       uio7_out; // Bit 7 -> Tied Low (Reserved)
-    bit       uio6_out; // Bit 6 -> Tied Low (Dedicated Input Pin Lane)
+    logic       uio7_out; // Bit 7 -> Tied Low (Reserved)
+    logic       uio6_out; // Bit 6 -> Tied Low (Dedicated Input Pin Lane)
     /* verilator lint_on UNUSEDSIGNAL */
-    bit       TRIGGER_OUT; // Bit 5 -> uio_out -> PMOD 2 Pin 5 ACTIVE TRIGGER DIG-TAP
+    logic       TRIGGER_OUT; // Bit 5 -> uio_out[5] -> PMOD 2 Pin 5 ACTIVE TRIGGER
     /* verilator lint_off UNUSEDSIGNAL */
-    bit       uio4_out; // Bit 4 -> Tied Low (Dedicated Input Pin Lane)
-    bit       uio3_out; // Bit 3 -> Tied Low (Dedicated Input Pin Lane)
-    bit       uio2_out; // Bit 2 -> Tied Low (Dedicated Input Pin Lane)
-    bit       uio1_out; // Bit 1 -> Tied Low (Dedicated Input Pin Lane)
-    bit       uio0_out; // Bit 0 -> Tied Low (Dedicated Input Pin Lane)
+    logic       uio4_out; // Bit 4 -> Tied Low (Dedicated Input Pin Lane)
+    logic       uio3_out; // Bit 3 -> Tied Low (Dedicated Input Pin Lane)
+    logic       uio2_out; // Bit 2 -> Tied Low (Dedicated Input Pin Lane)
+    logic       uio1_out; // Bit 1 -> Tied Low (Dedicated Input Pin Lane)
+    logic       uio0_out; // Bit 0 -> Tied Low (Dedicated Input Pin Lane)
     /* verilator lint_on UNUSEDSIGNAL */
 } pmod2_outputs_t;
 
-// SystemVerilog packs left-to-right (MSB to LSB).
+// =========================================================================
+// PHYSICAL PMOD 3 OUTPUT INTERFACE (uo_out)
+// =========================================================================
 typedef struct packed {
-    bit       unused_p3_b7;// Bit 7 -> Pmod 3, Pin 8 (Static 0 Ground Tie-off - Reserved)
-    bit       FLG_n;    // Bit 6 -> Pmod 3, Pin 7 (Active-Low chip fault)
-    bit       s4_n;     // Bit 5 -> /S4 Right Cartridge Select
-    bit       io_n;     // Bit 4 -> /IO Peripheral Select ($D000)
-    bit       ci_n;     // Bit 3 -> /CI CAS Inhibit (RAM bypass flag)
-    bit       os_n;     // Bit 2 -> /OS Operating System Select
-    bit       basic_n;  // Bit 1 -> /BASIC Internal ROM Select
-    bit       s5_n;     // Bit 0 -> /S5 Left Cartridge Select
+    logic       unused_p3_b7;// Bit 7 -> Pmod 3, Pin 8 (Static 0 Ground Tie-off)
+    logic       FLG_n;       // Bit 6 -> Pmod 3, Pin 7 (Active-Low chip fault)
+    logic       s4_n;        // Bit 5 -> /S4 Right Cartridge Select
+    logic       io_n;        // Bit 4 -> /IO Peripheral Select ($D000)
+    logic       ci_n;        // Bit 3 -> /CI CAS Inhibit (RAM bypass flag)
+    logic       os_n;        // Bit 2 -> /OS Operating System Select
+    logic       basic_n;     // Bit 1 -> /BASIC Internal ROM Select
+    logic       s5_n;        // Bit 0 -> /S5 Left Cartridge Select
 } pmod3_outputs_t;
 
-//endpackage
-
-`endif // Ensure this line is present at the very end to close the guard!
+`default_nettype wire
+`endif // MMU_DEFS_SVH

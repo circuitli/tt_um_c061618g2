@@ -42,4 +42,5 @@ primitive async_latch_udp (
     endtable
 endprimitive
 
+`default_nettype wire
 `endif

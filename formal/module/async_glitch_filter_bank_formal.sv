@@ -17,16 +17,18 @@
 `ifndef ASYNC_GLITCH_FILTER_BANK_FORMAL_SVH
 `define ASYNC_GLITCH_FILTER_BANK_FORMAL_SVH
 `default_nettype none
+
 // =============================================================================
 // Middle-Tier Bank Level Formal Checker: async_glitch_filter_bank_formal
+// Dynamically scales to match any instantiated width automatically.
 // =============================================================================
 module async_glitch_filter_bank_formal #(
     parameter int WIDTH  = 13,
     parameter int STAGES = 4
 )(
-    input wire               rst_n,      // Pure combinational reset input
-    input wire [WIDTH-1:0]   async_in,   // Raw multi-channel input vector
-    input wire [WIDTH-1:0]   async_out   // Glitch-filtered output vector
+    input wire               rst_n,      
+    input wire [WIDTH-1:0]   async_in,   
+    input wire [WIDTH-1:0]   async_out   
 );
 
     // --- Core Multi-Channel Matrix Invariants (Clockless Boolean Assertions) ---
@@ -34,21 +36,30 @@ module async_glitch_filter_bank_formal #(
         (rst_n) || (async_out == async_in)
     );
 
-    // Verify independent routing boundaries
+    // Verify independent routing boundaries per channel lane
     generate
         for (genvar i = 0; i < WIDTH; i++) begin : gen_bit_invariants
-            assert_channel_isolation: assert property (
-                !(rst_n && (async_in[i] == async_out[i])) || (async_out[i] == async_in[i])
+            // Corrected Invariant: Proves the channel updates matching its specific input slice
+            assert_channel_functional_match: assert property (
+                (async_out[i] == async_in[i])
             );
         end
     endgenerate
 
 endmodule
 
-bind async_glitch_filter_bank async_glitch_filter_bank_formal #(.WIDTH(13), .STAGES(4)) i_async_glitch_filter_bank_formal (
+// =============================================================================
+// PARAMETERIZED BIND DIRECTIVE
+// Uses dynamic parameters to prevent width-mismatch errors across variations.
+// =============================================================================
+bind async_glitch_filter_bank async_glitch_filter_bank_formal #(
+    .WIDTH(WIDTH),
+    .STAGES(STAGES)
+) i_async_glitch_filter_bank_formal (
     .rst_n     (rst_n),
     .async_in  (async_in),
     .async_out (async_out)
 );
 
-`endif
+`endif // ASYNC_GLITCH_FILTER_BANK_FORMAL_SVH
+

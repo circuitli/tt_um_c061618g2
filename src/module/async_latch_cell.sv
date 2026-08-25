@@ -45,11 +45,16 @@ module async_latch_cell (
     // Functional Truth:
     // When 'set' is active (high), we force the latch to sample 'hold'.
     // When 'set' is inactive (low), the latch samples its own 'feedback_loop'.
-    (* dont_touch = "true" *) sg13g2_mux2_1 u_latch_core (
-        .A0 (feedback_loop), // Selected when set == 0
-        .A1 (hold),          // Selected when set == 1
-        .S  (set),
-        .Y  (mux_out)
+    // Mapping the feedback network parameters to the safe async multiplexer:
+    // a0 -> feedback_loop (Selected when set == 0)
+    // a1 -> hold          (Selected when set == 1)
+    // s  -> set           (Toggle select line)
+    // y  -> mux_out       (Glitch-free result)
+    safe_async_mux u_latch_mux (
+        .a0 (feedback_loop),
+        .a1 (hold),
+        .s  (set),
+        .y  (mux_out)
     );
 
     // Synchronous or Asynchronous clear path hookup
@@ -57,4 +62,5 @@ module async_latch_cell (
 
 endmodule
 
+`default_nettype wire
 `endif

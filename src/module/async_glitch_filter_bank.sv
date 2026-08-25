@@ -18,7 +18,7 @@
 `define ASYNC_GLITCH_FILTER_BANK_SVH
 `default_nettype none
 
-`include "src/module/async_glitch_filter.sv"
+//`include "src/module/async_glitch_filter.sv"
 
 // Variable-width filter bank that instantiates the async_glitch_filter module
 module async_glitch_filter_bank #(
@@ -46,4 +46,5 @@ module async_glitch_filter_bank #(
 
 endmodule
 
+`default_nettype wire
 `endif

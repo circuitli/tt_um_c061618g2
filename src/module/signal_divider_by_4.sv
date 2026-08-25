@@ -49,4 +49,5 @@ module signal_divider_by_4 (
 
 endmodule
 
+`default_nettype wire
 `endif

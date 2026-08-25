@@ -56,3 +56,5 @@ module tt_um_c061618g2 (
         .rst_n(rst_n)    
 ); 
 endmodule
+
+`default_nettype wire

@@ -143,4 +143,5 @@ module c061618g2 (
 
 endmodule
 
+`default_nettype wire
 `endif

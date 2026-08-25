@@ -16,108 +16,94 @@
  
 `ifndef MMU_CORE_SVH
 `define MMU_CORE_SVH
-
 `default_nettype none
-`include "src/defs/mmu_defs.sv"
 
-// 1. Import everything from the package namespace
-//import mmu_defs::*;
-
-module mmu_core (
+module mmu_core #(
+    parameter int FILTER_STAGES = 4
+)(
     input  pmod1_inputs_t  core_in, 
-    input             ren,
-    input             ref_n,
-    input             mpd_n,
-    input             be_n,
-    output pmod3_outputs_t core_out  // Directly maps to the 8-bit output profile!
+    input                  ren, ref_n, mpd_n, be_n,
+    output pmod3_outputs_t core_out
 );
 
-    // =========================================================================
-    // LOCAL LOGIC HOOKS & VECTOR EXTRACTION
-    // =========================================================================
-    logic        a11;
-    logic        a12;
-    logic        a13;
-    logic        a14;
-    logic        a15;
-    logic        map_n;
-    logic        rd4;
-    logic        rd5;
+    // Single-line unpack preserves meaningful signal names perfectly
+    logic a11, a12, a13, a14, a15, map_n, rd4, rd5;
+    assign {rd5, rd4, map_n} = core_in.control_bits;
+    assign {a15, a14, a13, a12, a11} = core_in.addr;
 
-    // Direct slice mapping matching your MSB->LSB layout definitions
-    assign a11   = core_in.addr[0];
-    assign a12   = core_in.addr[1];
-    assign a13   = core_in.addr[2];
-    assign a14   = core_in.addr[3];
-    assign a15   = core_in.addr[4];
-    
-    assign rd5   = core_in.control_bits[2];
-    assign rd4   = core_in.control_bits[1];
-    assign map_n = core_in.control_bits[0];
+    // Compact vector structures
+    logic [6:0] raw_signals, clean_signals;
+    logic raw_flg_n, raw_s4_n, raw_s5_n, raw_basic_n, raw_io_n, raw_os_n, raw_ci_n, local_os_n;
 
-    // =========================================================================
-    // COMBINATORIAL DECODING ENGINE
-    // =========================================================================
+    assign raw_signals = {raw_flg_n, raw_s4_n, raw_io_n, raw_ci_n, raw_os_n, raw_basic_n, raw_s5_n};
+
     always_comb begin
-        // 1. PLACE ALL VARIABLE DECLARATIONS AT THE VERY TOP
-        logic local_os_n;
+        // Hard Core Pull-Up Defaults
+        raw_flg_n   = 1'b1;
+        raw_s4_n    = 1'b1;
+        raw_s5_n    = 1'b1;
+        raw_basic_n = 1'b1;
+        raw_io_n    = 1'b1;
+        raw_ci_n    = 1'b1;
+        local_os_n  = 1'b1;
 
-        // 1. Establish Hard Core Pull-Up Defaults (Active-Low Inactive Baseline)
-        core_out.unused_p3_b7 = 1'b0; // Static Ground Tie-off
-        core_out.FLG_n        = 1'b1;
-        core_out.s4_n         = 1'b1;
-        core_out.s5_n         = 1'b1;
-        core_out.basic_n      = 1'b1;
-        core_out.io_n         = 1'b1;
-        core_out.os_n         = 1'b1;
-        core_out.ci_n         = 1'b1;
-
-        // Extract the raw OS decoding state into a temporary 
-        // local tracking variable. This breaks the implicit loop on core_out.os_n.
-        local_os_n = 1'b1;
-
-        // 2. Evaluate /S4 Expansion Right Cartridge Select
+        // Evaluate /S4 Expansion Right Cartridge Select
         if (!a13 && !a14 && a15 && rd4 && ref_n) begin
-            core_out.s4_n = 1'b0;
+            raw_s4_n = 1'b0;
         end
 
-        // 3. Evaluate /S5 Expansion Left Cartridge Select
+        // Evaluate /S5 Expansion Left Cartridge Select
         if (a13 && !a14 && a15 && rd5 && ref_n) begin
-            core_out.s5_n = 1'b0;
+            raw_s5_n = 1'b0;
         end
 
-        // 4. Evaluate /BASIC CS Memory Space Decode
+        // Evaluate /BASIC CS Memory Space Decode
         if (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) begin
-            core_out.basic_n = 1'b0;
+            raw_basic_n = 1'b0;
         end
 
-        // 5. Evaluate /IO Peripheral Space Decode ($D000)
+        // Evaluate /IO Peripheral Space Decode ($D000)
         if (!a11 && a12 && !a13 && a14 && a15 && ref_n) begin
-            core_out.io_n = 1'b0;
+            raw_io_n = 1'b0;
         end
 
-        // 6. Evaluate /OS Operating System ROM Decode
+        // Evaluate /OS Operating System ROM Decode
         if ( (a13 && a14 && a15 && ren && ref_n) ||
              (!a12 && a14 && a15 && ren && ref_n) ||
              (a11 && a12 && !a13 && a14 && a15 && ren && mpd_n && ref_n) ||
              (!a11 && a12 && !a13 && a14 && !a15 && ren && !map_n && ref_n) ) begin
             local_os_n  = 1'b0;
         end
+        raw_os_n = local_os_n;
 
-         // Drive the clean output port net safely
-        core_out.os_n = local_os_n;
-
-        // 7. Evaluate /CI Clock Inhibit Generation
-        // Reference local_os_n instead of core_out.os_n to smash the loop trap
+        // Evaluate /CI Clock Inhibit Generation
         if ( (!a13 && !a14 && a15 && rd4 && ref_n) ||
              (a13 && !a14 && a15 && rd5 && ref_n) ||
              (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) ||
              (local_os_n == 1'b1) ||
              !(a11 && a12 && !a13 && a14 && a15 && ref_n) ||
              (!ref_n) ) begin
-            core_out.ci_n = 1'b0;
+            raw_ci_n = 1'b0;
         end
     end
 
+    // =========================================================================
+    // PHYSICAL GLITCH ISOLATION LAYER (BANK INTEGRATION)
+    // =========================================================================
+    async_glitch_filter_bank #(.WIDTH(7), 
+                               .STAGES(FILTER_STAGES)
+    ) u_mmu_filter_bank (
+        .rst_n    (1'b1), 
+        .async_in (raw_signals), 
+        .async_out(clean_signals)
+    );
+
+    // =========================================================================
+    // CLEAN TYPE-CAST OUTPUT MAPPING
+    // =========================================================================
+    assign core_out = pmod3_outputs_t'({1'b0, clean_signals});
+
 endmodule
-`endif
+
+`default_nettype wire
+`endif // MMU_CORE_SVH

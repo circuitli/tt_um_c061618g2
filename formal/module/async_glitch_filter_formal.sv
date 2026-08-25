@@ -21,12 +21,15 @@
 
 // =============================================================================
 // Sub-Module Level Formal Checker: async_glitch_filter_formal
+// Now parameterized to match any configuration under test dynamically.
 // =============================================================================
-module async_glitch_filter_formal (
+module async_glitch_filter_formal #(
+    parameter int STAGES = 4
+)(
     input wire rst_n,
     input wire async_in,
     input wire async_out,
-    input wire [3:0] delay_chain
+    input wire [STAGES:0] delay_chain // Dynamically scaled bit-width string
 );
 
     // Hooks directly into the clean latch sub-module output node terminal
@@ -38,24 +41,30 @@ module async_glitch_filter_formal (
     );
 
     // --- Exhaustive State Transition and Noise Invariant Properties ---
-    // Proves that when all stages settle high, the filter locks high
+    // Proves that when all physical delay stages settle high, the filter locks high
+    // (Slices [STAGES:1] to strip out the instantaneous raw input node)
     assert_high_stability: assert property (
-        !(rst_n && (&delay_chain)) || (async_out == 1'b1)
+        !(rst_n && (&delay_chain[STAGES:1])) || (async_out == 1'b1)
     );
 
-    // Proves that when all stages settle low, the filter drops low
+    // Proves that when all physical delay stages settle low, the filter drops low
     assert_low_stability: assert property (
-        !(rst_n && (~(|delay_chain))) || (async_out == 1'b0)
+        !(rst_n && (~(|delay_chain[STAGES:1]))) || (async_out == 1'b0)
     );
 
 endmodule
 
-// Bind this checker directly to the sub-module definition itself
-bind async_glitch_filter async_glitch_filter_formal i_async_glitch_filter_formal (
+// =============================================================================
+// THE PARAMETERIZED BIND DIRECTIVE
+// Passing .STAGES(STAGES) ensures perfect compiler connection alignment.
+// =============================================================================
+bind async_glitch_filter async_glitch_filter_formal #(
+    .STAGES(STAGES)
+) i_async_glitch_filter_formal (
     .rst_n       (rst_n),
     .async_in    (async_in),
     .async_out   (async_out),
     .delay_chain (delay_chain)
 );
 
-`endif
+`endif // ASYNC_GLITCH_FILTER_FORMAL_SV

@@ -7,6 +7,9 @@ FST ?= -fst # Use more efficient FST format
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
 PROJECT_SOURCES = tt_um_c061618g2.sv
+
+# Fallback to your local formal project copy if PDK_ROOT isn't defined on Windows
+PDK_ROOT ?= $(PWD)/formal
 RAW_PDK_CELLS = $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
 
 ifeq ($(SIM),verilator)
@@ -18,6 +21,7 @@ ifeq ($(SIM),verilator)
     COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2/verilog
     COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
     COMPILE_ARGS += -y /opt/pdk/ihp-sg13g2/libs.ref/sg13g2/verilog
+    COMPILE_ARGS += -v $(RAW_PDK_CELLS)
 
     # 3. CRITICAL FLAGS: Add -y to let Verilator discover your module dependencies,
     # and turn off MODDUP to ignore duplicate standard cell models if they overlap.

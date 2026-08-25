@@ -68,4 +68,5 @@ module clock_synchronizer #(
 
 endmodule
 
+`default_nettype wire
 `endif
