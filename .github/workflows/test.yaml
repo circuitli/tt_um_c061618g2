@@ -37,9 +37,9 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install --upgrade volare
           
-          # 2. Pass the design commit hash 'ttihp26b' as a static literal token string.
-          # This completely stops the FileNotFoundError crash!
-          python3 -m volare enable --pdk sg13g2 ttihp26b
+          # Adding '--include-aoi' tells volare to search the public open-source
+          # community foundry index trees instead of querying private repo tokens!
+          python3 -m volare enable --pdk sg13g2 ttihp26b --include-aoi
           
           echo "[SUCCESS] Directory layout endpoints are live on the virtual machine!"
 
