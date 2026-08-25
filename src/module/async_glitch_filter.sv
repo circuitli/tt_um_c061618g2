@@ -29,7 +29,7 @@ module async_glitch_filter #(
 );
 
     // Packed variable split to prevent flat evaluation dependencies
-    (* dont_touch = "true" *) wire [STAGES:0] delay_chain;
+    (* dont_touch = "true" *) wire [STAGES-1:0] delay_chain /*verilator split_var*/;
 
     // =========================================================================
     // CASCADED ASYNCHRONOUS BUFFER TREE (ONE-WAY BALANCED TIMELINE)
@@ -39,6 +39,7 @@ module async_glitch_filter #(
     generate
         if (STAGES > 1) begin : gen_delay_chain
             assign delay_chain[0] = async_in;
+
             for (genvar i = 1; i < STAGES; i = i + 1) begin : gen_stages
                 assign delay_chain[i] = delay_chain[i-1];
             end
