@@ -42,9 +42,15 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install --upgrade volare
           
-          # 2. Mount the local files cleanly into the simulation paths
-          python3 -m volare enable --pdk sg13g2 ttihp26b
-          
+          # 2. Explicitly pass the source repository index 
+          # along with the exact library family token 'sg13g2'.
+          # This connects volare directly to the  local cache workspace,
+          # completely bypassing the rate-limited network scrape loop!
+          python3 -m volare enable \
+            --pdk sg13g2 \
+            --include-libraries sg13g2_stdcell \
+            ttihp26b          
+
           echo "[SUCCESS] Asynchronous IHP standard cells are successfully mapped on disk!"
 
       # =========================================================================
