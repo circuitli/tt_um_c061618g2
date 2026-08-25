@@ -33,15 +33,16 @@ else ifeq ($(SIM),icarus)
 ifneq ($(GATES),yes)
 
 # RTL simulation:
-    SIM_BUILD				= sim_build/rtl
+    SIM_BUILD		= sim_build/rtl
     VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
     # 2. Instruct Icarus to append the .v suffix to search tokens 
     # when hunting down missing modules like sg13g2_decap_8.
     COMPILE_ARGS += -y $(PWD) -y $(PWD)/../src
+    COMPILE_ARGS += -v $(RAW_PDK_CELLS)
 else
 
 # Gate level simulation:
-SIM_BUILD				= sim_build/gl
+SIM_BUILD		= sim_build/gl
 COMPILE_ARGS    += -DGL_TEST
 #COMPILE_ARGS    += -gno-specify
 COMPILE_ARGS    += -DFUNCTIONAL

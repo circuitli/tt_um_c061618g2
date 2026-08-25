@@ -48,7 +48,7 @@ module async_glitch_filter #(
             // CONNECTED: Output drives functional_cap_sink_a instead of floating
             (* dont_touch = "true" *) sg13g2_buf_4 u_load_cap_a (
                 .A (internal_inv_node),
-                .Y (functional_cap_sink_a[i]) 
+                .X (functional_cap_sink_a[i]) 
             );
 
             // --- SECOND HALF STAGE ---
@@ -60,7 +60,7 @@ module async_glitch_filter #(
             // CONNECTED: Output drives functional_cap_sink_b instead of floating
             (* dont_touch = "true" *) sg13g2_buf_4 u_load_cap_b (
                 .A (delay_chain[i+1]),
-                .Y (functional_cap_sink_b[i]) 
+                .X (functional_cap_sink_b[i]) 
             );
         end
     endgenerate
