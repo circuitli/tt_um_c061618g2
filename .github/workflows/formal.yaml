@@ -39,7 +39,7 @@ jobs:
           
           # 2. CORRECTED: Changed '--pdk ihp-sg13g2' to the registered tag '--pdk sg13g2'
           # This enables Volare to instantly locate and link your cached files!
-          volare enable --pdk sg13g2 ttihp26b
+          volare enable --pdk ihp-sg13g2 ttihp26b
           
           echo "[SUCCESS] Asynchronous IHP PDK links are now live on the runner!"
 
