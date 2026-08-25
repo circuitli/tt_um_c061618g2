@@ -6,6 +6,13 @@ on:
     branches: none
   workflow_dispatch:
 
+# =========================================================================
+# CONCURRENCY MANAGER (Cancels excessive outdated runs)
+# =========================================================================
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   fpga:
     runs-on: ubuntu-24.04

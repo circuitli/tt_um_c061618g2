@@ -38,7 +38,9 @@ ifneq ($(GATES),yes)
     # 2. Instruct Icarus to append the .v suffix to search tokens 
     # when hunting down missing modules like sg13g2_decap_8.
     COMPILE_ARGS += -y $(PWD) -y $(PWD)/../src
-    COMPILE_ARGS += -v $(RAW_PDK_CELLS)
+    COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2/verilog
+    COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
+    COMPILE_ARGS += -y /opt/pdk/ihp-sg13g2/libs.ref/sg13g2/verilog
 else
 
 # Gate level simulation:
