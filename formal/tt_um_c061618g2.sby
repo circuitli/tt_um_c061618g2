@@ -29,6 +29,7 @@ read_verilog -lib /opt/pdk/ihp-sg13g2/libs.ref/sg13g2/verilog/sg13g2_stdcell.v
 # 1. Read standard design RTL files normally as SystemVerilog
 read -sv defs/mmu_defs.sv
 read -sv core/mmu_core.sv
+read -sv module/safe_async_mux.sv
 read -sv module/async_latch_cell.sv
 read -sv module/async_glitch_filter.sv
 read -sv module/async_glitch_filter_bank.sv
@@ -38,6 +39,7 @@ read -sv tt_um_c061618g2.sv
 # 2. Read all three exhaustive formal verification layers
 read -formal defs/mmu_defs_formal.sv
 read -formal core/mmu_core_formal.sv
+read -formal module/safe_async_mux_formal.sv
 read -formal module/async_latch_cell_formal.sv
 read -formal module/async_glitch_filter_formal.sv
 read -formal module/async_glitch_filter_bank_formal.sv
@@ -74,6 +76,7 @@ clk2fflogic
 # Target Destination Path              # Local Source Repository Path
 defs/mmu_defs.sv                       ../src/defs/mmu_defs.sv
 core/mmu_core.sv                       ../src/core/mmu_core.sv
+module/safe_async_mux.sv               ../src/module/safe_async_mux.sv
 module/async_latch_cell.sv             ../src/module/async_latch_cell.sv
 module/async_glitch_filter.sv          ../src/module/async_glitch_filter.sv
 module/async_glitch_filter_bank.sv     ../src/module/async_glitch_filter_bank.sv
@@ -81,12 +84,14 @@ module/c061618g2.sv                    ../src/module/c061618g2.sv
 tt_um_c061618g2.sv                     ../src/tt_um_c061618g2.sv
 src/defs/mmu_defs.sv                   ../src/defs/mmu_defs.sv
 src/core/mmu_core.sv                   ../src/core/mmu_core.sv
+src/module/safe_async_mux.sv           ../src/module/safe_async_mux.sv
 src/module/async_latch_cell.sv         ../src/module/async_latch_cell.sv
 src/module/async_glitch_filter.sv      ../src/module/async_glitch_filter.sv
 src/module/async_glitch_filter_bank.sv ../src/module/async_glitch_filter_bank.sv
 src/module/c061618g2.sv                ../src/module/c061618g2.sv
 defs/mmu_defs_formal.sv                    defs/mmu_defs_formal.sv
 core/mmu_core_formal.sv                    core/mmu_core_formal.sv
+module/safe_async_mux_formal.sv            module/safe_async_mux_formal.sv
 module/async_latch_cell_formal.sv          module/async_latch_cell_formal.sv
 module/async_glitch_filter_formal.sv       module/async_glitch_filter_formal.sv
 module/async_glitch_filter_bank_formal.sv  module/async_glitch_filter_bank_formal.sv

@@ -21,7 +21,6 @@
 // ==============================================================================
 // MMU MODULE
 // ==============================================================================
-`include "src/defs/mmu_defs.sv"
 `include "src/core/mmu_core.sv"
 `include "src/module/async_glitch_filter_bank.sv"
 

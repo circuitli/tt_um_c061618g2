@@ -19,6 +19,8 @@
  
 `default_nettype none
 
+`include "src/module/safe_async_mux.sv"
+
 module async_latch_cell (
     input  logic rst_n,
     input  logic set,

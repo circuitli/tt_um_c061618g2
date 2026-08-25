@@ -18,6 +18,8 @@
 `define MMU_CORE_SVH
 `default_nettype none
 
+`include "src/defs/mmu_defs.sv"
+
 module mmu_core #(
     parameter int FILTER_STAGES = 4
 )(
