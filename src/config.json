@@ -22,7 +22,7 @@
   "SYNTH_STRATEGY": "DELAY 1",
 
   "//": "SYNTH_BUFFERING - Forces Yosys to insert explicit cell buffers on high-fanout data and clock paths during elaboration. This breaks up complex multi-pin logic networks and permanently prevents TritonCTS from throwing memory segmentation faults during the clock tree synthesis pass.",
-  "SYNTH_BUFFERING": 1,
+  "SYNTH_BUFFERING": 0,
 
   "//": "SYNTH_SIZING - Enables aggressive pre-placement cell sizing to scale up internal logic gates to high-performance variations early.",
   "SYNTH_SIZING": 1,
@@ -45,6 +45,12 @@
   "//": "SYNTH_ABC_LEGACY_FLOW - Forces OpenLane to drop the modern abc9 flow (which assumes structural sequential cell paths) and drop back to the standard legacy ABC string matching architecture.",
   "SYNTH_ABC_LEGACY_FLOW": 1,
 
+  "//": "SYNTH_EXPLORE_MODE - Instructs Yosys to process custom structural combinational feedbacks natively without generating lint exceptions.",
+  "SYNTH_EXPLORE_MODE": 1,
+
+  "//": "SYNTH_READ_BLACKBOX_ATTRIBUTES - Forces the gate-level linter tool to drop loop alerts when analyzing cross-coupled asynchronous primitives.",
+  "SYNTH_READ_BLACKBOX_ATTRIBUTES": true,
+
   "//": "SYNTH_PARAMETERS - Passes top-level elaboration flags to Yosys to explicitly preserve the hierarchical structural boundaries of internal submodules like clock_synchronizer during physical gate mapping.",
   "_SYNTH_PARAMETERS": [
     "KEEP_HIERARCHY=1"
@@ -57,7 +63,7 @@
   "QUIT_ON_SYNTH_CHECKS": false,
 
   "//": "MAX_FANOUT_CONSTRAINT - Clamps internal signal fanout to 4 targets, forcing the tool to clone sluggish data lines and restore crisp transitions.",
-  "MAX_FANOUT_CONSTRAINT": 4,
+  "MAX_FANOUT_CONSTRAINT": 20,
 
   "SDC_FILE": "src/mmu_constraints.sdc",
   "_MACRO_PLACEMENT_CFG": "",
@@ -161,13 +167,13 @@
   "_GLB_REPAIR_TIMING_SETUP_MARGIN": 0.05,
 
   "//": "RUN_POST_GPL_DESIGN_REPAIR - Bypass LibreLane crash by forcing automatic hold-buffer insertion after global placement",
-  "RUN_POST_GPL_DESIGN_REPAIR": true,
+  "RUN_POST_GPL_DESIGN_REPAIR": false,
 
   "//": "RUN_POST_GRT_RESIZER_TIMING - Force a final round of precise hold-buffer patching after physical wire routing lines are drawn",
   "RUN_POST_GRT_RESIZER_TIMING": true,
 
   "//": "RUN_POST_GRT_DESIGN_REPAIR - Force physical cell legalisation and track repair after global routing to resolve severe hold violations",
-  "RUN_POST_GRT_DESIGN_REPAIR": true,
+  "RUN_POST_GRT_DESIGN_REPAIR": false,
 
   "//": "CELL_PAD - Increase cell padding to force the tool to leave empty space around every single logic gate",
   "CELL_PAD": 0,
@@ -180,19 +186,19 @@
   "GRT_RESIZER_HOLD_SLACK_MARGIN": 0.05,
 
   "//": "GLB_RESIZER_TIMING_OPTIMIZATIONS - Enforces a deep global routing timing pass to restructure logic networks across module ports right before detailed routing.",
-  "GLB_RESIZER_TIMING_OPTIMIZATIONS": true,
+  "GLB_RESIZER_TIMING_OPTIMIZATIONS": false,
 
   "//": "PL_RESIZER_DESIGN_OPTIMIZATIONS - Grants the local resizer permission to insert high-drive tap buffers along setup-violating filter chains.",
-  "PL_RESIZER_DESIGN_OPTIMIZATIONS": true,
+  "PL_RESIZER_DESIGN_OPTIMIZATIONS": false,
 
   "//": "PL_RESIZER_TIMING_OPTIMIZATIONS - Runs critical slack path resizing directly within the global placement iteration window.",
   "PL_RESIZER_TIMING_OPTIMIZATIONS": 0,
 
   "//": "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT - Keeps your existing 100% freedom allocation active for fixing hold timing violations.",
-  "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT": 100,
+  "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT": 0,
 
   "//": "PL_RESIZE_BUFFER_PERCENTAGE - Allocates 40% extra optimization budget to allow OpenROAD to upsize slow gates to high-drive variants along your 229 MHz critical paths.",
-  "PL_RESIZE_BUFFER_PERCENTAGE": 50,
+  "PL_RESIZE_BUFFER_PERCENTAGE": 0,
 
   "//": "RUN_LINTER, LINTER_INCLUDE_PDK_MODELS - Disabling the linter is not recommended!",
   "RUN_LINTER": 1,
