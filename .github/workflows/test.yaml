@@ -18,29 +18,29 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Set up PDK Cache
+      # =========================================================================
+      # 1. CORRECTED CACHE SCHEMA (NO DUPLICATE KEYS)
+      # =========================================================================
+      - name: Fetch and Restore Unpacked PDK Cache Profile
         uses: actions/cache@v4
         with:
           path: ~/.volare
-          # Dynamically keys the cache directly off the repository's tracked 
-          # OpenLane tool_metadata.yml file configuration block, preventing typos!
+          # This key is uniquely dynamic to ensure fresh caching updates
           key: ${{ runner.os }}-volare-sg13g2-${{ hashFiles('info.yaml') }}
+          # The fallback prefix must never match the key above exactly
           restore-keys: |
-            ${{ runner.os }}-volare-sg13g2-
+            ${{ runner.os }}-volare-sg13g2-fallback-
 
       # =========================================================================
-      # This actually builds the folder paths on the drive
+      # 2. STANDARD VOLARE DEPLOYMENT
       # =========================================================================
       - name: Mount and Enable Cached Volare PDK Folder
-        env:
-          # Forces volare to resolve the family manifests against the 
-          # community index rather than hitting a locked default API scraping channel.
-          VOLARE_REPO_URL: "https://github.com"
         run: |
+          # 1. Update machine interpretation dependencies
           python3 -m pip install --upgrade pip
           python3 -m pip install --upgrade volare
           
-          # This execution line now compiles cleanly with zero syntax errors!
+          # 2. Mount the local files cleanly into the simulation paths
           python3 -m volare enable --pdk sg13g2 ttihp26b
           
           echo "[SUCCESS] Asynchronous IHP standard cells are successfully mapped on disk!"
