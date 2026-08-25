@@ -26,6 +26,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-volare-ihp-sg13g2-
 
+      # =========================================================================
+      # This actually builds the folder paths on the drive
+      # =========================================================================
+      - name: Mount and Enable Cached Volare PDK Folder
+        run: |
+          # 1. Force the volare tool to initialize and link the cached files
+          # (Replace 'ttihp26b' with your exact target commit version if different)
+          pip install volare
+          volare enable --pdk ihp-sg13g2 ttihp26b
+          
+          echo "[SUCCESS] Volare directory paths are now live on the host runner!"
+
       - name: Install iverilog
         shell: bash
         run: sudo apt-get update && sudo apt-get install -y iverilog

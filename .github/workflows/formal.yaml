@@ -28,6 +28,35 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-volare-ihp-sg13g2-
 
+      # =========================================================================
+      # This actually builds the folder paths on the drive
+      # =========================================================================
+      - name: Mount and Enable Cached Volare PDK Folder
+        run: |
+          # 1. Force the volare tool to initialize and link the cached files
+          # (Replace 'ttihp26b' with your exact target commit version if different)
+          pip install volare
+          volare enable --pdk ihp-sg13g2 ttihp26b
+          
+          echo "[SUCCESS] Volare directory paths are now live on the host runner!"
+
+      # =========================================================================
+      # LINK VOLARE CACHE DIRECTLY TO THE FORMAL DIRECTORY
+      # =========================================================================
+      - name: Link PDK Library for Formal Verification
+        run: |
+          # 1. Locate the exact standard cell file inside the Volare cache directory tree
+          VOLARE_PDK_FILE=$(find ~/.volare -name "sg13g2_stdcell.v" | head -n 1)
+          
+          # 2. Safety Check: If Volare hasn't built it yet, fallback to pulling a direct raw copy
+          if [ -z "$VOLARE_PDK_FILE" ]; then
+            echo "[WARNING] PDK not found in cache. Fetching direct repository fallback..."
+            curl -o formal/sg13g2_stdcell.v https://githubusercontent.com
+          else
+            echo "[SUCCESS] Found cached PDK cell at: $VOLARE_PDK_FILE"
+            cp "$VOLARE_PDK_FILE" formal/sg13g2_stdcell.v
+          fi
+
       - name: Install OSS CAD Suite
         uses: YosysHQ/setup-oss-cad-suite@v4
         with:
