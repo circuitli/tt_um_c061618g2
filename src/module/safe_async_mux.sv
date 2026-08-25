@@ -25,8 +25,14 @@ module safe_async_mux (
     output wire  y   // Glitch-free output
 );
 
-    // Single-line glitch-free asynchronous MUX equation with cover term
-    (* dont_touch = "true" *) assign y = (a0 & ~s) | (a1 & s) | (a0 & a1);
+    // 1. Declare the output wire separately and attach the pragmas directly to it
+    (* keep = 1, dont_touch = "true" *) wire glitch_free_y;
+
+    // 2. Perform a standard continuous assignment to that protected wire
+    assign glitch_free_y = (a0 & ~s) | (a1 & s) | (a0 & a1);
+
+    // 3. Connect it cleanly to the module's output port
+    assign y = glitch_free_y;
 
 endmodule
 
