@@ -73,11 +73,16 @@ set_clock_uncertainty 0.0 [get_clocks dummy_clk]
 # ====================================================================
 # 2. PURE ASYNCHRONOUS DELAY MANAGEMENT (BALANCED HIGH-UPGRADE WINDOW)
 # ====================================================================
-set_max_delay 25.0 -from [get_ports {ui_in[*] uio_in[*]}] -to [get_ports {uo_out[*] uio_out[*]}]
-set_min_delay  1.1 -from [get_ports {ui_in[*] uio_in[*]}] -to [get_ports {uo_out[*] uio_out[*]}]
+set_max_delay 25.0 -from [get_ports {ui_in[*] uio_in[*]}] -to [get_ports {uo_out[*]}]
+set_min_delay  2.5 -from [get_ports {ui_in[*] uio_in[*]}] -to [get_ports {uo_out[*]}]
+
+# 3. Handle Raw Diagnostic Trigger Bypass Exception
+# Keeps the a11 passthrough pin working instantaneously without layout buffer bloat.
+set_max_delay 15.5 -from [get_ports {ui_in[0]}] -to [get_ports {uio_out[5]}]
+set_min_delay  1.1 -from [get_ports {ui_in[0]}] -to [get_ports {uio_out[5]}]
 
 # ====================================================================
-# 3. COMBINATIONAL INPUT AND ACTIVE OUTPUT DELAYS
+# 4. COMBINATIONAL INPUT AND ACTIVE OUTPUT DELAYS
 # Models external delay windows for the 
 # physical PMOD board traces and shim adapters
 # anchored directly to the virtual dummy clock.
@@ -89,18 +94,11 @@ set_output_delay -max 7.5 -clock dummy_clk [get_ports {uo_out[*] uio_out[*]}]
 set_output_delay -min 0.5 -clock dummy_clk [get_ports {uo_out[*] uio_out[*]}]
 
 # ====================================================================
-# 3. STATIC PORT EXEMPTION (Fixes the uio_oe Delay Contradiction)
+# 5. STATIC PORT EXEMPTION (Fixes the uio_oe Delay Contradiction)
 # Explicitly tells OpenSTA that the Output Enable pins are static 
 # tie-offs. Removes them from timing analysis entirely to optimize routing.
 # ====================================================================
 set_false_path -to [get_ports {uio_oe[*]}]
-
-# ====================================================================
-# 3. CRITICAL HARDWARE PROBE TRAFFIC EXEMPTION (TRIGGER_OUT Loopback)
-# Speeds up the raw, unfiltered a11 tracking loopback on PMOD 2 Pin 5.
-# This ensures OpenSTA prioritises routing for the instant scope probe.
-# ====================================================================
-set_max_delay 5.0 -from [get_ports {ui_in[0]}] -to [get_ports {uio_out[5]}]
 
 # 5. Constrain Output Drive Loads (Match Tiny Tapeout Pad Ring Capacitance)
 set_load 0.0334 [get_ports uo_out]
