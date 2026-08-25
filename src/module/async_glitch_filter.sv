@@ -28,43 +28,35 @@ module async_glitch_filter #(
     output wire  async_out
 );
 
-    // Parameterized clockless directional delay wire network
-    wire [STAGES-1:0] delay_chain;
+    // Packed variable split to prevent flat evaluation dependencies
+    wire [STAGES-1:0] delay_chain /*verilator split_var*/;
 
     // =========================================================================
     // CASCADED ASYNCHRONOUS BUFFER TREE (ONE-WAY BALANCED TIMELINE)
-    // By separating each stage into independent wire assignments with an inline
-    // simulation delay, we force Icarus Verilog to unroll the shift chain along 
-    // the physical timeline graph, destroying zero-delay delta-cycle loops.
+    // Direct wire synthesis assignments. The #1 simulation hacks are removed
+    // since our synchronized SDC templates handle physical gate-balancing.
     // =========================================================================
     generate
         if (STAGES > 1) begin : gen_delay_chain
-            `ifdef COCOTB_SIM
-                assign #1 delay_chain[0] = async_in;
-                for (genvar i = 1; i < STAGES; i = i + 1) begin : gen_stages
-                    assign #1 delay_chain[i] = delay_chain[i-1];
-                end
-            `else
-                assign delay_chain[0] = async_in;
-                for (genvar i = 1; i < STAGES; i = i + 1) begin : gen_stages
-                    assign delay_chain[i] = delay_chain[i-1];
-                end
-            `endif
+            assign delay_chain[0] = async_in;
+            for (genvar i = 1; i < STAGES; i = i + 1) begin : gen_stages
+                assign delay_chain[i] = delay_chain[i-1];
+            end
         end else begin : gen_single_stage
-            `ifdef COCOTB_SIM
-                assign #1 delay_chain[0] = async_in;
-            `else
-                assign delay_chain[0] = async_in;
-            `endif
+            assign delay_chain[0] = async_in;
         end
     endgenerate
 
     wire filter_set  = &delay_chain;
     wire filter_hold = |delay_chain;
 
+    // =========================================================================
+    // LATCH LOOP EXEMPTION BLOCK
+    // =========================================================================
+    /* verilator lint_off UNOPTFLAT */
     wire latch_raw_out;
+    /* verilator lint_on UNOPTFLAT */
 
-    // Instantiated as a clean 1-bit component with no stage parameters
     async_latch_cell u_latch_inst (
         .rst_n (rst_n),
         .set   (filter_set),
@@ -72,12 +64,8 @@ module async_glitch_filter #(
         .q     (latch_raw_out)
     );
 
-    // Final multiplexer output stage routing
-    `ifdef COCOTB_SIM
-        assign #1 async_out = rst_n ? latch_raw_out : async_in;
-    `else
-        assign async_out = rst_n ? latch_raw_out : async_in;
-    `endif
+    // Clean, direct passthrough routing multiplexer stage
+    assign async_out = rst_n ? latch_raw_out : async_in;
 
 endmodule
 

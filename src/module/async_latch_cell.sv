@@ -23,23 +23,23 @@ module async_latch_cell (
     input  logic rst_n,
     input  logic set,
     input  logic hold,
-    // Forces Icarus to treat the output net structurally
     output wire  q
 );
 
     // =========================================================================
-    // STRUCTURAL READ-WRITE WIRE NETWORK
-    // Under FORMAL & OpenLane ASIC: Maps directly to immediate hardware gates.
-    // Under COCOTB (Icarus): Uses an explicit #1 delay on structural wire loops
-    // to step the simulator timeline wheel forward and prevent Time-0 stalls.
+    // STRUCTURAL RECURSIVE FEEDBACK LOOP
+    // Keep attributes protect the combinatorial latch from being flattened 
+    // or optimized away during the OpenLane gs130g2 synthesis pass.
     // =========================================================================
-    wire latch_gated_fb;
-    wire latch_forward;
+    (* keep = 1 *) wire latch_gated_fb;
+    (* keep = 1 *) wire latch_forward;
 
     `ifdef COCOTB_SIM
-        // Structural wire delay forces Icarus to yield and advance the time wheel
+        // MANDATORY: Forces Icarus Verilog to advance its delta time wheel
+        // and prevents simulator lockups during clockless evaluation loops.
         assign #1 latch_gated_fb = q & hold;
     `else
+        // NATIVE SILICON: Maps to a clean standard cell gate network.
         assign latch_gated_fb = q & hold;
     `endif
 

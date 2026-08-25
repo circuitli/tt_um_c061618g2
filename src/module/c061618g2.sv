@@ -67,7 +67,7 @@ module c061618g2 (
     // =========================================================================
     
     // 1. Change filtered_raw to a wire type bus
-    (* loop_break *) wire [12:0] filtered_raw;
+    wire [12:0] filtered;
     
     async_glitch_filter_bank #(
         .WIDTH(13),
@@ -75,17 +75,8 @@ module c061618g2 (
     ) u_mmu_filter_bank (
         .rst_n(rst_n), 
         .async_in  (functional_unfiltered),
-        .async_out (filtered_raw)
+        .async_out (filtered)
     );
-
-    // 2. Change filtered to a wire type bus
-    wire [12:0] filtered;
-    
-    `ifdef COCOTB_SIM
-        assign #1 filtered = filtered_raw;
-    `else
-        assign filtered = filtered_raw;
-    `endif
 
     // Slicing bits 11 down to 8 from the 'filtered' bus maps exactly 
     // to the order they were packed into the concatenation vector above.
