@@ -41,6 +41,8 @@ ifneq ($(GATES),yes)
     COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2/verilog
     COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
     COMPILE_ARGS += -y /opt/pdk/ihp-sg13g2/libs.ref/sg13g2/verilog
+    COMPILE_ARGS += -v $(RAW_PDK_CELLS)
+
 else
 
 # Gate level simulation:

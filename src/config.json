@@ -21,9 +21,6 @@
   "//": "SYNTH_STRATEGY - Restores the stable balanced logic restructuring formula to keep sequential steering paths clean and routable at high speeds.",
   "SYNTH_STRATEGY": "DELAY 1",
 
-  "//": "SYNTH_BUFFERING - Forces Yosys to insert explicit cell buffers on high-fanout data and clock paths during elaboration. This breaks up complex multi-pin logic networks and permanently prevents TritonCTS from throwing memory segmentation faults during the clock tree synthesis pass.",
-  "SYNTH_BUFFERING": 0,
-
   "//": "SYNTH_SIZING - Enables aggressive pre-placement cell sizing to scale up internal logic gates to high-performance variations early.",
   "SYNTH_SIZING": 1,
 
@@ -38,6 +35,19 @@
 
   "//": "SYNTH_NO_FLIP_FLOPS - Explicitly tells Yosys that the design does not contain structural sequential memory elements. This halts structural latched-path mapping loops.",
   "SYNTH_NO_FLIP_FLOPS": 1,
+
+  "//": "=========================================================================",
+  "//": "ASYNCHRONOUS LOOP & GATES PROTECTION (RESTORED UPPERCASE)",
+  "//": "=========================================================================",
+
+  "//": "SYNTH_DONT_CHOP_FLOATING - Disables OpenLane from deleting floating wires. Keeps dummy_cap lines alive.",
+  "SYNTH_DONT_CHOP_FLOATING": true,
+
+  "//": "SYNTH_GATES_REMAP - Stops Yosys from altering explicit cell layouts. Protects safe_async_mux cover terms.",
+  "SYNTH_GATES_REMAP": false,
+
+  "//": "SYNTH_BUFFERING - Forces Yosys to maintain sub-module hierarchies and prevents flattening.",
+  "SYNTH_BUFFERING": false,
 
   "//": "SYNTH_TIMING_DERATING - Controls whether synchronous design flows calculation margin offsets for clock boundaries. Setting this to 0 prevents clock-skew analysis tools from complaining about your clockless layout.",
   "SYNTH_TIMING_DERATING": 0,
@@ -162,6 +172,16 @@
 
   "//2": "Forces the placement-stage timing repair tool to treat your target clock window as 60 picoseconds tighter, driving it to upgrade your output path buffers to clear the remaining 25ps deficit legally under the Tiny Tapeout hardware specifications.",
   "_PL_REPAIR_TIMING_SETUP_MARGIN": 0.06,
+
+  "//": "=========================================================================",
+  "//": "PHYSICAL ROUTER & REPAIR BYPASSES (CRITICAL FOR CAPACITIVE LOADS)",
+  "//": "=========================================================================",
+
+  "//": "PL_REPAIR_BUFFER_OUTPUTS - Blocks OpenROAD from injecting repeaters to fix your slow 100ps capacitive filter ramps.",
+  "PL_REPAIR_BUFFER_OUTPUTS": false,
+
+  "//": "GLB_REPAIR_REPEATER_INPUTS - Disables global routing buffer injection on input lines.",
+  "GLB_REPAIR_REPEATER_INPUTS": false,
 
   "//1": "Enables the late-stage global routing optimization loop, allowing OpenLane to drop heavy repeater buffers outside your frozen hierarchy boxes to patch the remaining 25ps deficit.",
   "_GLB_REPAIR_TIMING": true,
