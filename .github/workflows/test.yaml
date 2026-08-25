@@ -32,24 +32,28 @@ jobs:
             ${{ runner.os }}-volare-sg13g2-fallback-
 
       # =========================================================================
-      # 2. STANDARD VOLARE DEPLOYMENT
+      # 2. COPY DIRECTLY INTO THE OFFICIAL MAKEFILE TARGET PATH
       # =========================================================================
-      - name: Mount and Enable Cached Volare PDK Folder
+      - name: Copy PDK to Official Location for Simulation
         run: |
-          # 1. Update machine interpretation dependencies
-          python3 -m pip install --upgrade pip
-          python3 -m pip install --upgrade volare
+          # 1. Define the exact hardcoded path your Makefile expects
+          OFFICIAL_DEST="$PDK_ROOT/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog"
+          mkdir -p "$OFFICIAL_DEST"
           
-          # 2. Explicitly pass the source repository index 
-          # along with the exact library family token 'sg13g2'.
-          # This connects volare directly to the  local cache workspace,
-          # completely bypassing the rate-limited network scrape loop!
-          python3 -m volare enable \
-            --pdk sg13g2 \
-            --include-libraries sg13g2_stdcell \
-            ttihp26b          
+          # 2. Locate where volare unzipped the raw file in the cache directory
+          CACHED_FILE=$(find ~/.volare -name "sg13g2_stdcell.v" | head -n 1)
           
-          echo "[SUCCESS] Asynchronous IHP standard cells are successfully mapped on disk!"
+          if [ -n "$CACHED_FILE" ]; then
+            echo "[SUCCESS] Found cached cells. Copying straight to official target..."
+            cp "$CACHED_FILE" "$OFFICIAL_DEST/sg13g2_stdcell.v"
+          else
+            echo "[CACHE MISS] Fetching fresh cells directly into the official target layout..."
+            curl -sSfL -o "$OFFICIAL_DEST/sg13g2_stdcell.v" \
+              https://githubusercontent.com
+          fi
+          
+          # 3. Sanity check to confirm the file is physically where the Makefile wants it
+          ls -lh "$OFFICIAL_DEST/sg13g2_stdcell.v"
 
       - name: Install iverilog
         shell: bash
