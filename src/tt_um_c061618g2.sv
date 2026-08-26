@@ -78,8 +78,8 @@ module tt_um_c061618g2 (
     // The rebuilt arrays are now verified 2-state nets, completely immune to 
     // tristate propagation errors when passed across module boundaries.
     // =========================================================================
-    wire [7:0] clean_ui  = {s_ui7,  s_ui6,  s_ui5,  s_ui4,  s_ui3,  s_ui2,  s_ui1,  s_ui0};
-    wire [7:0] clean_uio = {s_uio7, s_uio6, s_uio5, s_uio4, s_uio3, s_uio2, s_uio1, s_uio0};
+    logic [7:0] clean_ui  = {s_ui7,  s_ui6,  s_ui5,  s_ui4,  s_ui3,  s_ui2,  s_ui1,  s_ui0};
+    logic [7:0] clean_uio = {s_uio7, s_uio6, s_uio5, s_uio4, s_uio3, s_uio2, s_uio1, s_uio0};
 
     // =========================================================================
     // 3. CORE SUBMODULE INSTANTIATION
