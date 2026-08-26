@@ -60,8 +60,8 @@ module tt_um_c061618g2 (
     // Connects the raw implicit-wire top ports to the variable logic trackers.
     // =========================================================================
     c061618g2_input_shield u_c061618g2_input_shield (
-        .raw_ui   (ui_in),          // Connected directly to raw top-level input vector
-        .raw_uio  (uio_in),         // Connected directly to raw top-level bidirectional vector
+        .ui_in   (ui_in),          // Connected directly to raw top-level input vector
+        .uio_in  (uio_in),         // Connected directly to raw top-level bidirectional vector
         .safe_ui  (clean_ui),   // Outputs clean, type-decoupled, safe 2-state logic lines
         .safe_uio (clean_uio)   // Outputs clean, type-decoupled, safe 2-state logic lines
     );
@@ -75,35 +75,35 @@ module tt_um_c061618g2 (
     always_comb begin
         // --- ui_in Channel Masking (Address Matrix & Map Controls) ---
         // Address lines A11-A15 default high (1'b1) via motherboard pull-ups
-        safe_ui[0] = (raw_ui[0] === 1'bx || raw_ui[0] === 1'bz) ? 1'b1 : (raw_ui[0] == 1'b1); // A11
-        safe_ui[1] = (raw_ui[1] === 1'bx || raw_ui[1] === 1'bz) ? 1'b1 : (raw_ui[1] == 1'b1); // A12
-        safe_ui[2] = (raw_ui[2] === 1'bx || raw_ui[2] === 1'bz) ? 1'b1 : (raw_ui[2] == 1'b1); // A13
-        safe_ui[3] = (raw_ui[3] === 1'bx || raw_ui[3] === 1'bz) ? 1'b1 : (raw_ui[3] == 1'b1); // A14
-        safe_ui[4] = (raw_ui[4] === 1'bx || raw_ui[4] === 1'bz) ? 1'b1 : (raw_ui[4] == 1'b1); // A15
+        safe_ui[0] = (ui_in[0] === 1'bx || ui_in[0] === 1'bz) ? 1'b1 : (ui_in[0] == 1'b1); // A11
+        safe_ui[1] = (ui_in[1] === 1'bx || ui_in[1] === 1'bz) ? 1'b1 : (ui_in[1] == 1'b1); // A12
+        safe_ui[2] = (ui_in[2] === 1'bx || ui_in[2] === 1'bz) ? 1'b1 : (ui_in[2] == 1'b1); // A13
+        safe_ui[3] = (ui_in[3] === 1'bx || ui_in[3] === 1'bz) ? 1'b1 : (ui_in[3] == 1'b1); // A14
+        safe_ui[4] = (ui_in[4] === 1'bx || ui_in[4] === 1'bz) ? 1'b1 : (ui_in[4] == 1'b1); // A15
     
         // Active-low MMU map control defaults high (1'b1) to remain unasserted/idle
-        safe_ui[5] = (raw_ui[5] === 1'bx || raw_ui[5] === 1'bz) ? 1'b1 : (raw_ui[5] == 1'b1); // map_n
+        safe_ui[5] = (ui_in[5] === 1'bx || ui_in[5] === 1'bz) ? 1'b1 : (ui_in[5] == 1'b1); // map_n
     
         // Active-high cartridge lines default low (1'b0) via motherboard pull-downs
-        safe_ui[6] = (raw_ui[6] === 1'bx || raw_ui[6] === 1'bz) ? 1'b0 : (raw_ui[6] == 1'b1); // rd4
-        safe_ui[7] = (raw_ui[7] === 1'bx || raw_ui[7] === 1'bz) ? 1'b0 : (raw_ui[7] == 1'b1); // rd5
+        safe_ui[6] = (ui_in[6] === 1'bx || ui_in[6] === 1'bz) ? 1'b0 : (ui_in[6] == 1'b1); // rd4
+        safe_ui[7] = (ui_in[7] === 1'bx || ui_in[7] === 1'bz) ? 1'b0 : (ui_in[7] == 1'b1); // rd5
 
 
         // --- uio_in Channel Masking (Control Channels) ---
         // ren is active-high, so its safe boot baseline defaults low (1'b0)
-        safe_uio[0] = (raw_uio[0] === 1'bx || raw_uio[0] === 1'bz) ? 1'b0 : (raw_uio[0] == 1'b1); // ren
+        safe_uio[0] = (uio_in[0] === 1'bx || uio_in[0] === 1'bz) ? 1'b0 : (uio_in[0] == 1'b1); // ren
     
         // Active-low control channels default high (1'b1) to remain unasserted/idle
-        safe_uio[1] = (raw_uio[1] === 1'bx || raw_uio[1] === 1'bz) ? 1'b1 : (raw_uio[1] == 1'b1); // ref_n 
-        safe_uio[2] = (raw_uio[2] === 1'bx || raw_uio[2] === 1'bz) ? 1'b1 : (raw_uio[2] == 1'b1); // mpd_n 
-        safe_uio[3] = (raw_uio[3] === 1'bx || raw_uio[3] === 1'bz) ? 1'b1 : (raw_uio[3] == 1'b1); // be_n  
-        safe_uio[6] = (raw_uio[6] === 1'bx || raw_uio[6] === 1'bz) ? 1'b1 : (raw_uio[6] == 1'b1); // FLG_IN_n
+        safe_uio[1] = (uio_in[1] === 1'bx || uio_in[1] === 1'bz) ? 1'b1 : (uio_in[1] == 1'b1); // ref_n 
+        safe_uio[2] = (uio_in[2] === 1'bx || uio_in[2] === 1'bz) ? 1'b1 : (uio_in[2] == 1'b1); // mpd_n 
+        safe_uio[3] = (uio_in[3] === 1'bx || uio_in[3] === 1'bz) ? 1'b1 : (uio_in[3] == 1'b1); // be_n  
+        safe_uio[6] = (uio_in[6] === 1'bx || uio_in[6] === 1'bz) ? 1'b1 : (uio_in[6] == 1'b1); // FLG_IN_n
 
 
         // --- Unreferenced Padding Channels (Strips UNUSEDSIGNAL warnings completely) ---
-        safe_uio[4] = (raw_uio[4] == 1'b1);
-        safe_uio[5] = (raw_uio[5] == 1'b1);
-        safe_uio[7] = (raw_uio[7] == 1'b1);
+        safe_uio[4] = (uio_in[4] == 1'b1);
+        safe_uio[5] = (uio_in[5] == 1'b1);
+        safe_uio[7] = (uio_in[7] == 1'b1);
     end
 
     // =========================================================================
