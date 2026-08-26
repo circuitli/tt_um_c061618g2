@@ -28,7 +28,7 @@ module mmu_core #(
 )(
     input  wire  pmod1_inputs_t  core_in, 
     input  wire                 ren, ref_n, mpd_n, be_n,
-    output logic pmod3_outputs_t core_out
+    output pmod3_outputs_t core_out
 );
 
     // 1. Unpack raw incoming inputs from the top-level wrapper interface
