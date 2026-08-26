@@ -41,55 +41,19 @@ module c061618g2 (
     input  rst_n     // Part of the strict wrapper standard!
 );
     /* verilator lint_off UNUSEDSIGNAL */
-    bit unused_p2_b7 = uio_in[7] & 1'b1; // Breaks tracking graph at Time 0
-    bit uio5_pad     = uio_in[5] & 1'b1; // Breaks tracking graph at Time 0
-    bit TESTMODE_n   = uio_in[4] & 1'b1; // Breaks tracking graph at Time 0
+    bit unused_p2_b7 = uio_in[7]; // Breaks tracking graph at Time 0
+    bit uio5_pad     = uio_in[5]; // Breaks tracking graph at Time 0
+    bit TESTMODE_n   = uio_in[4]; // Breaks tracking graph at Time 0
     /* verilator lint_on UNUSEDSIGNAL */
-
-    // =========================================================================
-    // 1. SCALAR TRISTATE SHATTER LAYER (PRESERVES TRUE STARTUP POLARITIES)
-    // Declaring explicit, separate 1-bit wires forces Verilator to drop the 
-    // bidirectional vector dependency graph right at the chip's edge.
-    // =========================================================================
-    
-    // --- Unpacked ui_in Scalar Wires ---
-    wire s_ui0 = (ui_in[0] === 1'bx || ui_in[0] === 1'bz) ? 1'b1 : (ui_in[0] == 1'b1); // A11
-    wire s_ui1 = (ui_in[1] === 1'bx || ui_in[1] === 1'bz) ? 1'b1 : (ui_in[1] == 1'b1); // A12
-    wire s_ui2 = (ui_in[2] === 1'bx || ui_in[2] === 1'bz) ? 1'b1 : (ui_in[2] == 1'b1); // A13
-    wire s_ui3 = (ui_in[3] === 1'bx || ui_in[3] === 1'bz) ? 1'b1 : (ui_in[3] == 1'b1); // A14
-    wire s_ui4 = (ui_in[4] === 1'bx || ui_in[4] === 1'bz) ? 1'b1 : (ui_in[4] == 1'b1); // A15
-    wire s_ui5 = (ui_in[5] === 1'bx || ui_in[5] === 1'bz) ? 1'b1 : (ui_in[5] == 1'b1); // map_n
-    wire s_ui6 = (ui_in[6] === 1'bx || ui_in[6] === 1'bz) ? 1'b0 : (ui_in[6] == 1'b1); // rd4 -> 0
-    wire s_ui7 = (ui_in[7] === 1'bx || ui_in[7] === 1'bz) ? 1'b0 : (ui_in[7] == 1'b1); // rd5 -> 0
-
-    // --- Unpacked uio_in Scalar Wires ---
-    wire s_uio0 = (uio_in[0] === 1'bx || uio_in[0] === 1'bz) ? 1'b0 : (uio_in[0] == 1'b1); // ren -> 0
-    wire s_uio1 = (uio_in[1] === 1'bx || uio_in[1] === 1'bz) ? 1'b1 : (uio_in[1] == 1'b1); // ref_n 
-    wire s_uio2 = (uio_in[2] === 1'bx || uio_in[2] === 1'bz) ? 1'b1 : (uio_in[2] == 1'b1); // mpd_n 
-    wire s_uio3 = (uio_in[3] === 1'bx || uio_in[3] === 1'bz) ? 1'b1 : (uio_in[3] == 1'b1); // be_n  
-    wire s_uio6 = (uio_in[6] === 1'bx || uio_in[6] === 1'bz) ? 1'b1 : (uio_in[6] == 1'b1); // FLG_IN_n
-
-    // --- Unpacked Padding Scalar Wires ---
-    wire s_uio4 = (uio_in[4] == 1'b1);
-    wire s_uio5 = (uio_in[5] == 1'b1);
-    wire s_uio7 = (uio_in[7] == 1'b1);
-
-    // =========================================================================
-    // 2. SAFE MULTI-BIT VECTOR RECONSTRUCTION
-    // The rebuilt arrays are now verified 2-state nets, completely immune to 
-    // tristate propagation errors when passed across module boundaries.
-    // =========================================================================
-    wire [7:0] clean_ui  = {s_ui7,  s_ui6,  s_ui5,  s_ui4,  s_ui3,  s_ui2,  s_ui1,  s_ui0};
-    wire [7:0] clean_uio = {s_uio7, s_uio6, s_uio5, s_uio4, s_uio3, s_uio2, s_uio1, s_uio0};
 
     // =========================================================================
     // 3. HARDWARE BUS CONCATENATION (USING SAFE LAYER VALUES)
     // =========================================================================
     wire [12:0] functional_unfiltered;    
     assign functional_unfiltered = {
-        clean_uio[6],     // Bit 12 (MSB) -> FLG_IN_n
-        clean_uio[3:0],   // Bits 11:8    -> be_n, mpd_n, ref_n, ren
-        clean_ui[7:0]     // Bits 7:0     -> rd5, rd4, map_n, A15, A14, A13, A12, A11 (LSB)
+        uio_in[6],     // Bit 12 (MSB) -> FLG_IN_n
+        uio_in[3:0],   // Bits 11:8    -> be_n, mpd_n, ref_n, ren
+        ui_in[7:0]     // Bits 7:0     -> rd5, rd4, map_n, A15, A14, A13, A12, A11 (LSB)
     };
 
     // =========================================================================

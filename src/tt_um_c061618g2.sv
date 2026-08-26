@@ -19,6 +19,7 @@
 // ==============================================================================
 `default_nettype none
 
+`include "src/module/c061618g2_input_shield.sv"
 `include "src/module/c061618g2.sv"
 
 module tt_um_c061618g2 (
@@ -53,20 +54,16 @@ module tt_um_c061618g2 (
     logic [7:0] clean_ui;
     logic [7:0] clean_uio;
     
-    always_comb begin
-        // Forcing a bitwise reduction (conditional bit extraction) shatters the graph
-        for (int i = 0; i < 8; i = i + 1) begin
-            clean_ui[i]  = (ui_in[i]  === 1'bx || ui_in[i]  === 1'bz) ? 1'b1 : (ui_in[i]  == 1'b1);
-            clean_uio[i] = (uio_in[i] === 1'bx || uio_in[i] === 1'bz) ? 1'b1 : (uio_in[i] == 1'b1);
-        end
-        
-        // Enforce your precise startup polarities explicitly on the 2-state logic variables
-        if (rst_n === 1'b0) begin
-            clean_uio[0] = 1'b0; // ren defaults to 0 (disabled)
-            clean_ui[6]  = 1'b0; // rd4 defaults to 0 (pulled down)
-            clean_ui[7]  = 1'b0; // rd5 defaults to 0 (pulled down)
-        end
-    end
+    // =========================================================================
+    // CUSTOM ASYNCHRONOUS COUPLER INTERFACE BOUNDARY
+    // Connects the raw implicit-wire top ports to the variable logic trackers.
+    // =========================================================================
+    c061618g2_input_shield u_c061618g2_input_shield (
+        .raw_ui   (ui_in),          // Connected directly to raw top-level input vector
+        .raw_uio  (uio_in),         // Connected directly to raw top-level bidirectional vector
+        .safe_ui  (clean_ui),   // Outputs clean, type-decoupled, safe 2-state logic lines
+        .safe_uio (clean_uio)   // Outputs clean, type-decoupled, safe 2-state logic lines
+    );
 
     // =========================================================================
     // 3. CORE SUBMODULE INSTANTIATION

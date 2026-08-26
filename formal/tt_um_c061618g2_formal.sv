@@ -100,4 +100,5 @@ bind tt_um_c061618g2 tt_um_c061618g2_formal i_tt_um_c061618g2_formal (
     .clk       (clk),
     .rst_n     (rst_n)
 );
+
 //`endif
