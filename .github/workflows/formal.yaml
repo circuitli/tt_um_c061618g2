@@ -21,17 +21,17 @@ jobs:
         uses: actions/checkout@v4
 
       # =========================================================================
-      # 1. EXTRACT PINNED VERSION FROM THE INTERNAL TOOLCHAIN METADATA
+      # 1. DETERMINING PINNED VOLARE HASH
       # =========================================================================
       - name: Determine Pinned Volare Hash
         id: extract-hash
         run: |
-          # Install volare temporarily to check its version mapping database
+          # Force install the core utility layer
           pip install --upgrade volare
     
-          # Query volare's built-in backend database to extract the absolute 
-          # default pinned commit hash token string for the sg13g2 process
-          LATEST_HASH=$(python3 -c "import volare; print(volare.get_default_version('sg13g2'))")
+          # FIXED LOGIC: Uses native binary parsing via bash to completely 
+          # eliminate unhandled Python library module AttributeErrors
+          LATEST_HASH=$(volare family sg13g2 | grep -i "default" | awk '{print $NF}')
           echo "PDK_HASH=$LATEST_HASH" >> $GITHUB_OUTPUT
 
       # =========================================================================

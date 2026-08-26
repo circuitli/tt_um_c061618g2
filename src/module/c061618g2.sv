@@ -25,13 +25,16 @@
 `include "src/module/async_glitch_filter_bank.sv"
 
 (* keep_hierarchy = 1 *)
+// =========================================================================
+// CUSTOM ATARI 800XL MMU (CO61618 REPRODUCTION CORE) - TINY TAPEOUT COMPLIANT
+// =========================================================================
 module c061618g2 (
     input  [7:0] ui_in,    // Dedicated hardware inputs
     output [7:0] uo_out,   // Dedicated hardware outputs
     input  [7:0] uio_in,   // Bidirectional bus input network
     output [7:0] uio_out,  // Bidirectional bus output network
-    output wire [7:0] uio_oe,   // <-- MUST BE DECLARED AS AN OUTPUT PORT WIRE HERE! [2]
-    input  ena,      // Leave this here! The compiler requires it.
+    output wire [7:0] uio_oe,   // Safe output enablement bus mapping
+    input  ena,      // Tiny Tapeout macro environment block enable signal
     /* verilator lint_off UNUSEDSIGNAL */
     input  clk,      // Part of the strict wrapper standard!
     /* verilator lint_on UNUSEDSIGNAL */
@@ -44,97 +47,121 @@ module c061618g2 (
     bit TESTMODE_n   = uio_in[4]; // Industrial test platforms
     /* verilator lint_on UNUSEDSIGNAL */
 
-    // 2. Continuous 13-bit concatenation (MSB to LSB)
-    //    ui_in[0] (A11) naturally lands at index 0 (LSB) of the bus!
     // =========================================================================
-    // THE DEFINITIVE WIRE TYPE CONVERSION (NO IFDEF)
-    // By changing functional_unfiltered from 'logic' to 'wire', Icarus Verilog 
-    // preserves the structural timing boundaries across the bidirectional pad traces.
+    // 1. INPUT CLEANSER LAYER (X/Z CASE-EQUALITY HARDWARE MASK)
+    // Converts floating/uninitialized pins into safe, deterministic defaults.
     // =========================================================================
-    wire [12:0] functional_unfiltered;    assign functional_unfiltered = {
-        uio_in[6],    // Bit 12 (MSB) -> FLG_IN_n
-        uio_in[3:0],  // Bits 11:8    -> be_n, mpd_n, ref_n, ren
-        ui_in[7:0]    // Bits 7:0     -> rd5, rd4, map_n, A15, A14, A13, A12, A11 (LSB)
+    logic [7:0] safe_ui, safe_uio;
+
+        always_comb begin
+        // 1. ADDRESS LINES DEFAULT TO 1 (Motherboard Pull-Up Resistors)
+        safe_ui[0] = (ui_in[0] === 1'bx || ui_in[0] === 1'bz) ? 1'b1 : ui_in[0]; // A11
+        safe_ui[1] = (ui_in[1] === 1'bx || ui_in[1] === 1'bz) ? 1'b1 : ui_in[1]; // A12
+        safe_ui[2] = (ui_in[2] === 1'bx || ui_in[2] === 1'bz) ? 1'b1 : ui_in[2]; // A13
+        safe_ui[3] = (ui_in[3] === 1'bx || ui_in[3] === 1'bz) ? 1'b1 : ui_in[3]; // A14
+        safe_ui[4] = (ui_in[4] === 1'bx || ui_in[4] === 1'bz) ? 1'b1 : ui_in[4]; // A15
+        
+        // 2. ACTIVE-LOW CONTROL LINE DEFAULTS TO 1 (Motherboard Pull-Up)
+        safe_ui[5] = (ui_in[5] === 1'bx || ui_in[5] === 1'bz) ? 1'b1 : ui_in[5]; // map_n
+        
+        // 3. CARTRIDGE DETECTION LINES DEFAULT TO 0 (Motherboard Pull-Down Resistors)
+        // If uninitialized or floating, we simulate NO cartridge inserted.
+        safe_ui[6] = (ui_in[6] === 1'bx || ui_in[6] === 1'bz) ? 1'b0 : ui_in[6]; // rd4 -> 0
+        safe_ui[7] = (ui_in[7] === 1'bx || ui_in[7] === 1'bz) ? 1'b0 : ui_in[7]; // rd5 -> 0
+
+        // 4. CPU INTERFACE LINE DEFAULTS TO 1 (Read Mode)
+        safe_uio[0] = (uio_in[0] === 1'bx || uio_in[0] === 1'bz) ? 1'b1 : uio_in[0]; // ren (R/W Line)
+        
+        // 5. REMAINING ACTIVE-LOW CONTROL STREAMS DEFAULT TO 1 (Idle/Deasserted)
+        safe_uio[1] = (uio_in[1] === 1'bx || uio_in[1] === 1'bz) ? 1'b1 : uio_in[1]; // ref_n 
+        safe_uio[2] = (uio_in[2] === 1'bx || uio_in[2] === 1'bz) ? 1'b1 : uio_in[2]; // mpd_n 
+        safe_uio[3] = (uio_in[3] === 1'bx || uio_in[3] === 1'bz) ? 1'b1 : uio_in[3]; // be_n  
+        safe_uio[4] = (uio_in[4] === 1'bx || uio_in[4] === 1'bz) ? 1'b1 : uio_in[4]; // FLG_IN_n
+
+        // Ground remaining structural bits safely
+        safe_uio[7:5] = uio_in[7:5];
+    end
+
+    // =========================================================================
+    // 2. HARDWARE BUS CONCATENATION (USING SAFE LAYER VALUES)
+    // =========================================================================
+    wire [12:0] functional_unfiltered;    
+    assign functional_unfiltered = {
+        safe_uio[6],     // Bit 12 (MSB) -> FLG_IN_n
+        safe_uio[3:0],   // Bits 11:8    -> be_n, mpd_n, ref_n, ren
+        safe_ui[7:0]     // Bits 7:0     -> rd5, rd4, map_n, A15, A14, A13, A12, A11 (LSB)
     };
 
-    // 3. Instantiate the 13-channel variable-width filter bank
     // =========================================================================
-    // CONVERT LOGIC TO WIRE TYPE BUSES
-    // By explicitly declaring these tracking nets as 'wire' instead of 'logic',
-    // we force Icarus Verilog to respect the structural #1 delay parameter.
-    // This breaks the zero-delay loop graph and unblocks the 120.00 ns freeze.
+    // 3. CLOCKLESS ASYNCHRONOUS GLITCH FILTER MATRIX
     // =========================================================================
-    
-    // 1. Change filtered_raw to a wire type bus
     wire [12:0] filtered;
     
     async_glitch_filter_bank #(
         .WIDTH(13),
         .STAGES(4)
     ) u_mmu_filter_bank (
-        .rst_n(rst_n), 
-        .async_in  (functional_unfiltered),
-        .async_out (filtered)
+        .rst_n    (rst_n), 
+        .async_in (functional_unfiltered),
+        .async_out(filtered)
     );
 
-    // Slicing bits 11 down to 8 from the 'filtered' bus maps exactly 
-    // to the order they were packed into the concatenation vector above.
+    // =========================================================================
+    // 4. VERILATOR TRISTATE ISOLATION LAYER
+    // =========================================================================
     logic clean_be_n;
     logic clean_mpd_n;
     logic clean_ref_n;
     logic clean_ren;
 
-    assign {clean_be_n, clean_mpd_n, clean_ref_n, clean_ren} = filtered[11:8];
+    assign clean_be_n  = filtered[11];
+    assign clean_mpd_n = filtered[10];
+    assign clean_ref_n = filtered[9];
+    assign clean_ren   = filtered[8];
     
     // ---- BUS DIRECTION HARDCODING ----
     assign uio_oe = 8'b00100000; 
 
     // =========================================================================
-    // CORE SELECTIONS & DECODING PASS
+    // 5. MEMORY MANAGEMENT DECODING INSTANTIATION (MMU CORE)
     // =========================================================================
     pmod3_outputs_t core_signals;
 
-    // 1. Process Core Decoding Matrix
+    // Package the filtered 8-bit bus into the struct format
+    pmod1_inputs_t mmu_core_in;
+    assign mmu_core_in.control_bits = filtered[7:5]; // rd5, rd4, map_n
+    assign mmu_core_in.addr         = filtered[4:0]; // A15, A14, A13, A12, A11
+
     mmu_core core_inst (
-        .core_in  (filtered[7:0]),     // Direct flat 8-bit bus copy
-        .ren      (clean_ren), // Bypass structure parsing via direct raw bit indexing
-        .ref_n    (clean_ref_n),
-        .mpd_n    (clean_mpd_n),
-        .be_n     (clean_be_n), 
+        .core_in  (mmu_core_in), 
+        .ren      (clean_ren),   
+        .ref_n    (clean_ref_n), 
+        .mpd_n    (clean_mpd_n), 
+        .be_n     (clean_be_n),  
         .core_out (core_signals)
     );
 
-    wire FLG_IN_n = filtered[12];
+    wire FLG_IN_n_top = filtered[12];
 
     // Evaluate master system override control flags
-    // SYSTEM DISABLED DEFAULT = 0
-    // Only disables operations if a signal is explicitly confirmed low (1'b0).
-    // If any signal is uninitialized (X/Z), it is ignored, defaulting to 1'b0.
-    wire system_disabled = (FLG_IN_n === 1'b0) || (ena === 1'b0) || (rst_n === 1'b0);
-    
-    // FLG_n DEFAULT = 1
+    wire system_disabled = (FLG_IN_n_top === 1'b0) || (ena === 1'b0) || (rst_n === 1'b0);
     wire FLG_n = system_disabled ? 1'b0 : 1'b1;
 
-    // Move the selection outside into a continuous assignment
-    wire a11 = filtered[0]; 
+    wire a11_top = filtered[0]; 
 
     /* verilator lint_off UNUSED */
     wire unused_p3_b7 = core_signals.unused_p3_b7;
     wire FLG_n_p3 = core_signals.FLG_n;
     /* verilator lint_on UNUSED */
 
-        // =========================================================================
-    // PHYSICAL ROUTING MATRIX (Instantaneous Pure Combinational Outputs)
+    // =========================================================================
+    // 6. PHYSICAL ROUTING MATRIX (PURE ASYNCHRONOUS PADS)
     // =========================================================================
     
     // --- Pmod 2 Outputs Mapping ---
-    // TRIGGER_OUT maps explicitly to Bit 5.
-    assign uio_out = {2'b00, a11, 5'b00000};
+    assign uio_out = {2'b00, a11_top, 5'b00000};
 
     // --- Pmod 3 Outputs Mapping (uo_out) ---
-    // All output registers are removed. Core decoded signals flow instantly to the pads.
-    // When system_disabled is active, all active-low chips selects are forced high (deasserted).
-    
     assign uo_out[7] = 1'b0;                                                // Static ground tie-off
     assign uo_out[6] = FLG_n;                                               // Instant, filtered safety status 
     assign uo_out[5] = system_disabled ? 1'b1 : core_signals.s4_n;          // S4 Expansion Select Lane
@@ -145,6 +172,7 @@ module c061618g2 (
     assign uo_out[0] = system_disabled ? 1'b1 : core_signals.s5_n;          // S5 Expansion Select Lane
 
 endmodule
+
 
 `default_nettype wire
 `endif
