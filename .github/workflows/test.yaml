@@ -16,39 +16,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v6
         with:
-          submodules: recursive
-
-      # =========================================================================
-      # 1. EXTRACT PINNED HASH VIA BASH CLI WITH IMPLICIT OAUTH AUTHENTICATION
-      # =========================================================================
-      - name: Determine Pinned Volare Hash
-        id: extract-hash
-        env:
-          # CRITICAL AUTOMATED LINK: Provides volare with an authentic API session,
-          # solving the "no oauth token found" crash and letting it parse 'sg13g2'.
-          GITHUB_TOKEN: ${{ github.token }}
-        run: |
-          # Force pull and refresh the utility binary engine
-          pip install --upgrade volare
-    
-          # Read out the verified family taxonomy using authenticated tokens
-          LATEST_HASH=$(volare family sg13g2 | grep -i "default" | awk '{print $NF}')
-          echo "PDK_HASH=$LATEST_HASH" >> $GITHUB_OUTPUT
-
-      # =========================================================================
-      # 2. INVOKE THE TINY TAPEOUT ACTION WITH EXACT VERIFIED INPUTS
-      # =========================================================================
-      - name: Install and Map IHP SG13G2 PDK via Volare Action
-        uses: TinyTapeout/volare-action@v2
-        with:
-          # 1. THE FAMILY PARAMETER: Must be exactly sg13g2
-          pdk_name: sg13g2
-    
-          # 2. THE VERSION PARAMETER: Ingests the literal hash string found above
-          pdk_version: ${{ steps.extract-hash.outputs.PDK_HASH }}
-    
-          # 3. THE PATH PARAMETER: Creates your project's .volare workspace layout folder
-          pdk_root: ${{ github.workspace }}/.volare
+          submodules: recursive    
 
       - name: Install iverilog
         shell: bash
@@ -65,6 +33,9 @@ jobs:
         run: pip install -r test/requirements.txt
 
       - name: Run tests
+        uses: TinyTapeout/tt-gds-action@ttihp26b
+        with:
+          pdk: ihp-sg13g2
         run: |
           cd test
           make clean
