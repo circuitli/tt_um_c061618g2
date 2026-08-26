@@ -33,10 +33,34 @@ jobs:
         run: pip install -r test/requirements.txt
   
       # Install PDK
-      - name: Setup PDK
-        uses: TinyTapeout/tt-gds-action@ttihp26b
-        with:
-          pdk: ihp-sg13g2
+      #- name: Setup PDK
+      #  uses: TinyTapeout/tt-gds-action@ttihp26b
+      #  with:
+      #    pdk: ihp-sg13g2
+
+      # 3. USE TT_TOOL TO INSTALL THE PDK & GENERATE THE CONFIGS
+      - name: Install IHP PDK and Generate Tech Config
+        run: |
+          # Install dependencies required by the tiny tapeout tool scripts
+          python3 -m pip install volare librelane
+          
+          # Run tt_tool to dynamically fetch the PDK and generate "ihp-sg13g2.yaml"
+          python3 ./tt/tt_tool.py --create-user-config
+          
+          # Force Volare to download the locked IHP-SG13G2 cell assets
+          volare download --pdk ihp-sg13g2
+
+      # 4. FIX PATH MISMATCH (Forces the flat path your tests expect to exist)
+      - name: Map Volare Cache to Flat Path
+        run: |
+          mkdir -p /home/runner/pdk
+          # Find where volare hid the ihp directory and link it directly to the flat layout
+          VOLARE_PDK_PATH=$(find /home/runner/.volare/volare/ihp-sg13g2/versions/ -maxdepth 2 -name "ihp-sg13g2" | head -n 1)
+          ln -s "$VOLARE_PDK_PATH" /home/runner/pdk/ihp-sg13g2
+          
+          # Inject clean, global environment strings for sub-test scripts
+          echo "PDK_ROOT=/home/runner/pdk" >> $GITHUB_ENV
+          echo "PDK=ihp-sg13g2" >> $GITHUB_ENV
 
       - name: Run tests
         run: |
