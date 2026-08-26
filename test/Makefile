@@ -9,7 +9,7 @@ SRC_DIR = $(PWD)/../src
 PROJECT_SOURCES = tt_um_c061618g2.sv
 
 # Fallback to your local formal project copy if PDK_ROOT isn't defined on Windows
-PDK_ROOT ?= $(PWD)/formal
+#PDK_ROOT ?= $(PWD)/formal
 RAW_PDK_CELLS = $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
 
 ifeq ($(SIM),verilator)
