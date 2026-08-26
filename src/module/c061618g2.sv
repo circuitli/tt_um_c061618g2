@@ -52,10 +52,10 @@ module c061618g2 (
     assign local_ui_in  = ui_in;
     assign local_uio_in = uio_in;
 
-    /* verilator lint_off UNUSEDSIGNAL */
-    bit unused_p2_b7 = local_uio_in[7]; // Bit 7 -> Pmod 2, Pin 8 - Reserved
-    bit uio5_pad     = local_uio_in[5]; // Bit 5 -> Pmod 2, Pin 6 (Exempted; Output Lane)
-    bit TESTMODE_n   = local_uio_in[4]; // Industrial test platforms
+     /* verilator lint_off UNUSEDSIGNAL */
+    bit unused_p2_b7 = local_uio_in[7] & 1'b1; // Breaks tracking graph at Time 0
+    bit uio5_pad     = local_uio_in[5] & 1'b1; // Breaks tracking graph at Time 0
+    bit TESTMODE_n   = local_uio_in[4] & 1'b1; // Breaks tracking graph at Time 0
     /* verilator lint_on UNUSEDSIGNAL */
 
     // =========================================================================
@@ -85,10 +85,10 @@ module c061618g2 (
         safe_uio[3] = (local_uio_in[3] === 1'bx || local_uio_in[3] === 1'bz) ? 1'b1 : (local_uio_in[3] == 1'b1); // be_n  
         safe_uio[6] = (local_uio_in[6] === 1'bx || local_uio_in[6] === 1'bz) ? 1'b1 : (local_uio_in[6] == 1'b1); // FLG_IN_n
 
-        // Route remaining unreferenced bits to prevent UNUSEDSIGNAL warnings cleanly
-        safe_uio[4] = local_uio_in[4];
-        safe_uio[5] = local_uio_in[5];
-        safe_uio[7] = local_uio_in[7];
+        // Route remaining unreferenced bits cleanly using boolean reductions
+        safe_uio[4] = (local_uio_in[4] == 1'b1);
+        safe_uio[5] = (local_uio_in[5] == 1'b1);
+        safe_uio[7] = (local_uio_in[7] == 1'b1);
     end
 
     // =========================================================================
