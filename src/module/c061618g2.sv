@@ -40,22 +40,10 @@ module c061618g2 (
     /* verilator lint_on UNUSEDSIGNAL */
     input  rst_n     // Part of the strict wrapper standard!
 );
-
-    // =========================================================================
-    // 1. VERILATOR LINT FIX: LOCAL PORTS TO STRIP TRISTATE PROPERTY
-    // Creating standard, non-tristate logic vectors forces Verilator to drop
-    // the top-level 'inout' tracking graph before entering any logic lines.
-    // =========================================================================
-    logic [7:0] local_ui_in;
-    logic [7:0] local_uio_in;
-    
-    assign local_ui_in  = ui_in;
-    assign local_uio_in = uio_in;
-
-     /* verilator lint_off UNUSEDSIGNAL */
-    bit unused_p2_b7 = local_uio_in[7] & 1'b1; // Breaks tracking graph at Time 0
-    bit uio5_pad     = local_uio_in[5] & 1'b1; // Breaks tracking graph at Time 0
-    bit TESTMODE_n   = local_uio_in[4] & 1'b1; // Breaks tracking graph at Time 0
+    /* verilator lint_off UNUSEDSIGNAL */
+    bit unused_p2_b7 = uio_in[7] & 1'b1; // Breaks tracking graph at Time 0
+    bit uio5_pad     = uio_in[5] & 1'b1; // Breaks tracking graph at Time 0
+    bit TESTMODE_n   = uio_in[4] & 1'b1; // Breaks tracking graph at Time 0
     /* verilator lint_on UNUSEDSIGNAL */
 
     // =========================================================================
@@ -64,31 +52,31 @@ module c061618g2 (
     // =========================================================================
     logic [7:0] safe_ui, safe_uio;
 
-     always_comb begin
+    always_comb begin
         // --- ui_in Mapping (Address Bus and Control Signals) ---
-        safe_ui[0] = (local_ui_in[0] === 1'bx || local_ui_in[0] === 1'bz) ? 1'b1 : (local_ui_in[0] == 1'b1); // A11
-        safe_ui[1] = (local_ui_in[1] === 1'bx || local_ui_in[1] === 1'bz) ? 1'b1 : (local_ui_in[1] == 1'b1); // A12
-        safe_ui[2] = (local_ui_in[2] === 1'bx || local_ui_in[2] === 1'bz) ? 1'b1 : (local_ui_in[2] == 1'b1); // A13
-        safe_ui[3] = (local_ui_in[3] === 1'bx || local_ui_in[3] === 1'bz) ? 1'b1 : (local_ui_in[3] == 1'b1); // A14
-        safe_ui[4] = (local_ui_in[4] === 1'bx || local_ui_in[4] === 1'bz) ? 1'b1 : (local_ui_in[4] == 1'b1); // A15
-        safe_ui[5] = (local_ui_in[5] === 1'bx || local_ui_in[5] === 1'bz) ? 1'b1 : (local_ui_in[5] == 1'b1); // map_n
-        safe_ui[6] = (local_ui_in[6] === 1'bx || local_ui_in[6] === 1'bz) ? 1'b0 : (local_ui_in[6] == 1'b1); // rd4
-        safe_ui[7] = (local_ui_in[7] === 1'bx || local_ui_in[7] === 1'bz) ? 1'b0 : (local_ui_in[7] == 1'b1); // rd5
+        safe_ui[0] = (ui_in[0] === 1'bx || ui_in[0] === 1'bz) ? 1'b1 : (ui_in[0] == 1'b1); // A11
+        safe_ui[1] = (ui_in[1] === 1'bx || ui_in[1] === 1'bz) ? 1'b1 : (ui_in[1] == 1'b1); // A12
+        safe_ui[2] = (ui_in[2] === 1'bx || ui_in[2] === 1'bz) ? 1'b1 : (ui_in[2] == 1'b1); // A13
+        safe_ui[3] = (ui_in[3] === 1'bx || ui_in[3] === 1'bz) ? 1'b1 : (ui_in[3] == 1'b1); // A14
+        safe_ui[4] = (ui_in[4] === 1'bx || ui_in[4] === 1'bz) ? 1'b1 : (ui_in[4] == 1'b1); // A15
+        safe_ui[5] = (ui_in[5] === 1'bx || ui_in[5] === 1'bz) ? 1'b1 : (ui_in[5] == 1'b1); // map_n
+        safe_ui[6] = (ui_in[6] === 1'bx || ui_in[6] === 1'bz) ? 1'b0 : (ui_in[6] == 1'b1); // rd4
+        safe_ui[7] = (ui_in[7] === 1'bx || ui_in[7] === 1'bz) ? 1'b0 : (ui_in[7] == 1'b1); // rd5
 
         // --- uio_in Mapping (Pmod 2 Control Channels) ---
         // FIXED FOR POLARITY: ren is active-high, so its fallback must default to 1'b0!
-        safe_uio[0] = (local_uio_in[0] === 1'bx || local_uio_in[0] === 1'bz) ? 1'b0 : (local_uio_in[0] == 1'b1); // ren -> 0
+        safe_uio[0] = (uio_in[0] === 1'bx || uio_in[0] === 1'bz) ? 1'b0 : (uio_in[0] == 1'b1); // ren -> 0
         
         // Active-low control channels default high (1'b1)
-        safe_uio[1] = (local_uio_in[1] === 1'bx || local_uio_in[1] === 1'bz) ? 1'b1 : (local_uio_in[1] == 1'b1); // ref_n 
-        safe_uio[2] = (local_uio_in[2] === 1'bx || local_uio_in[2] === 1'bz) ? 1'b1 : (local_uio_in[2] == 1'b1); // mpd_n 
-        safe_uio[3] = (local_uio_in[3] === 1'bx || local_uio_in[3] === 1'bz) ? 1'b1 : (local_uio_in[3] == 1'b1); // be_n  
-        safe_uio[6] = (local_uio_in[6] === 1'bx || local_uio_in[6] === 1'bz) ? 1'b1 : (local_uio_in[6] == 1'b1); // FLG_IN_n
+        safe_uio[1] = (uio_in[1] === 1'bx || uio_in[1] === 1'bz) ? 1'b1 : (uio_in[1] == 1'b1); // ref_n 
+        safe_uio[2] = (uio_in[2] === 1'bx || uio_in[2] === 1'bz) ? 1'b1 : (uio_in[2] == 1'b1); // mpd_n 
+        safe_uio[3] = (uio_in[3] === 1'bx || uio_in[3] === 1'bz) ? 1'b1 : (uio_in[3] == 1'b1); // be_n  
+        safe_uio[6] = (uio_in[6] === 1'bx || uio_in[6] === 1'bz) ? 1'b1 : (uio_in[6] == 1'b1); // FLG_IN_n
 
         // Route remaining unreferenced bits cleanly using boolean reductions
-        safe_uio[4] = (local_uio_in[4] == 1'b1);
-        safe_uio[5] = (local_uio_in[5] == 1'b1);
-        safe_uio[7] = (local_uio_in[7] == 1'b1);
+        safe_uio[4] = (uio_in[4] == 1'b1);
+        safe_uio[5] = (uio_in[5] == 1'b1);
+        safe_uio[7] = (uio_in[7] == 1'b1);
     end
 
     // =========================================================================
