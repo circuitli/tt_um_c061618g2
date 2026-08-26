@@ -26,8 +26,8 @@
 module mmu_core #(
     parameter int FILTER_STAGES = 4
 )(
-    input  pmod1_inputs_t  core_in, 
-    input                  ren, ref_n, mpd_n, be_n,
+    input  wire pmod1_inputs_t  core_in, 
+    input  wire                 ren, ref_n, mpd_n, be_n,
     output wire pmod3_outputs_t core_out
 );
 
