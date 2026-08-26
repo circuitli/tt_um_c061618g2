@@ -132,10 +132,10 @@ module c061618g2 (
 
     always_comb begin
         // Straight, non-inverting 1-to-1 data pass-through to satisfy the Verilator compiler
-        clean_ren   = (filtered[8]  == 1'b1) ? 1'b1 : 1'b0; // ren   (active-high)
-        clean_ref_n = (filtered[9]  == 1'b1) ? 1'b1 : 1'b1; // ref_n (active-low)
-        clean_mpd_n = (filtered[10] == 1'b1) ? 1'b1 : 1'b1; // mpd_n (active-low)
-        clean_be_n  = (filtered[11] == 1'b1) ? 1'b1 : 1'b1; // be_n  (active-low)
+        clean_ren   = filtered[8];  // ren   (active-high)
+        clean_ref_n = filtered[9];  // ref_n (active-low)
+        clean_mpd_n = filtered[10]; // mpd_n (active-low)
+        clean_be_n  = filtered[11]; // be_n  (active-low)
         
         mmu_core_in.control_bits = filtered[7:5]; // rd5, rd4, map_n
         mmu_core_in.addr         = filtered[4:0]; // A15, A14, A13, A12, A11
