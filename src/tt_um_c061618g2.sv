@@ -46,40 +46,27 @@ module tt_um_c061618g2 (
 */
 
     // =========================================================================
-    // 1. SCALAR TRISTATE SHATTER LAYER (PRESERVES TRUE STARTUP POLARITIES)
-    // Declaring explicit, separate 1-bit wires forces Verilator to drop the 
-    // bidirectional vector dependency graph right at the chip's edge.
+    // 1. PURE 2-STATE VARIABLE FIREWALL (BREAKS FORWARD PROPAGATION)
+    // Declaring these as logic arrays and forcing a 2-state boolean reduction
+    // clears Verilator's bidirectional look-ahead engine at the front door.
     // =========================================================================
+    logic [7:0] clean_ui;
+    logic [7:0] clean_uio;
     
-    // --- Unpacked ui_in Scalar Wires ---
-    wire s_ui0 = (ui_in[0] === 1'bx || ui_in[0] === 1'bz) ? 1'b1 : (ui_in[0] == 1'b1); // A11
-    wire s_ui1 = (ui_in[1] === 1'bx || ui_in[1] === 1'bz) ? 1'b1 : (ui_in[1] == 1'b1); // A12
-    wire s_ui2 = (ui_in[2] === 1'bx || ui_in[2] === 1'bz) ? 1'b1 : (ui_in[2] == 1'b1); // A13
-    wire s_ui3 = (ui_in[3] === 1'bx || ui_in[3] === 1'bz) ? 1'b1 : (ui_in[3] == 1'b1); // A14
-    wire s_ui4 = (ui_in[4] === 1'bx || ui_in[4] === 1'bz) ? 1'b1 : (ui_in[4] == 1'b1); // A15
-    wire s_ui5 = (ui_in[5] === 1'bx || ui_in[5] === 1'bz) ? 1'b1 : (ui_in[5] == 1'b1); // map_n
-    wire s_ui6 = (ui_in[6] === 1'bx || ui_in[6] === 1'bz) ? 1'b0 : (ui_in[6] == 1'b1); // rd4 -> 0
-    wire s_ui7 = (ui_in[7] === 1'bx || ui_in[7] === 1'bz) ? 1'b0 : (ui_in[7] == 1'b1); // rd5 -> 0
-
-    // --- Unpacked uio_in Scalar Wires ---
-    wire s_uio0 = (uio_in[0] === 1'bx || uio_in[0] === 1'bz) ? 1'b0 : (uio_in[0] == 1'b1); // ren -> 0
-    wire s_uio1 = (uio_in[1] === 1'bx || uio_in[1] === 1'bz) ? 1'b1 : (uio_in[1] == 1'b1); // ref_n 
-    wire s_uio2 = (uio_in[2] === 1'bx || uio_in[2] === 1'bz) ? 1'b1 : (uio_in[2] == 1'b1); // mpd_n 
-    wire s_uio3 = (uio_in[3] === 1'bx || uio_in[3] === 1'bz) ? 1'b1 : (uio_in[3] == 1'b1); // be_n  
-    wire s_uio6 = (uio_in[6] === 1'bx || uio_in[6] === 1'bz) ? 1'b1 : (uio_in[6] == 1'b1); // FLG_IN_n
-
-    // --- Unpacked Padding Scalar Wires ---
-    wire s_uio4 = (uio_in[4] == 1'b1);
-    wire s_uio5 = (uio_in[5] == 1'b1);
-    wire s_uio7 = (uio_in[7] == 1'b1);
-
-    // =========================================================================
-    // 2. SAFE MULTI-BIT VECTOR RECONSTRUCTION
-    // The rebuilt arrays are now verified 2-state nets, completely immune to 
-    // tristate propagation errors when passed across module boundaries.
-    // =========================================================================
-    logic [7:0] clean_ui  = {s_ui7,  s_ui6,  s_ui5,  s_ui4,  s_ui3,  s_ui2,  s_ui1,  s_ui0};
-    logic [7:0] clean_uio = {s_uio7, s_uio6, s_uio5, s_uio4, s_uio3, s_uio2, s_uio1, s_uio0};
+    always_comb begin
+        // Forcing a bitwise reduction (conditional bit extraction) shatters the graph
+        for (int i = 0; i < 8; i = i + 1) begin
+            clean_ui[i]  = (ui_in[i]  === 1'bx || ui_in[i]  === 1'bz) ? 1'b1 : (ui_in[i]  == 1'b1);
+            clean_uio[i] = (uio_in[i] === 1'bx || uio_in[i] === 1'bz) ? 1'b1 : (uio_in[i] == 1'b1);
+        end
+        
+        // Enforce your precise startup polarities explicitly on the 2-state logic variables
+        if (rst_n === 1'b0) begin
+            clean_uio[0] = 1'b0; // ren defaults to 0 (disabled)
+            clean_ui[6]  = 1'b0; // rd4 defaults to 0 (pulled down)
+            clean_ui[7]  = 1'b0; // rd5 defaults to 0 (pulled down)
+        end
+    end
 
     // =========================================================================
     // 3. CORE SUBMODULE INSTANTIATION
