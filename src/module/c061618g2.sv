@@ -122,8 +122,6 @@ module c061618g2 (
 
     // =========================================================================
     // 5. UNIDIRECTIONAL MODULE PORT PASS-THROUGH
-    // By passing specific sliced indices directly into the port connections,
-    // Verilator successfully views them as pure inputs, solving the 'ren' crash.
     // =========================================================================
     pmod3_outputs_t core_signals;
     pmod1_inputs_t mmu_core_in;

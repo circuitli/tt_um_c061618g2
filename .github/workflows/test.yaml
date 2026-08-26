@@ -26,8 +26,8 @@ jobs:
         env:
           # CRITICAL AUTOMATED LINK: Provides volare with an authentic API session,
           # solving the "no oauth token found" crash and letting it parse 'sg13g2'.
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
+          GITHUB_TOKEN: ${{ github.token }}
+    run: |
           # Force pull and refresh the utility binary engine
           pip install --upgrade volare
     
