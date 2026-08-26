@@ -50,8 +50,8 @@ module tt_um_c061618g2 (
     // Running case-equality selections right here breaks the tristate graph
     // while shielding the design from uninitialized simulation leaks.
     // =========================================================================
-    logic [7:0] safe_top_ui;
-    logic [7:0] safe_top_uio;
+    wire [7:0] safe_top_ui;
+    wire [7:0] safe_top_uio;
 
     always_comb begin
         // --- ui_in Channel Masking ---

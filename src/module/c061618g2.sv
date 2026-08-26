@@ -50,7 +50,7 @@ module c061618g2 (
     // 2. INPUT CLEANSER LAYER (X/Z CASE-EQUALITY HARDWARE MASK)
     // Converts floating/uninitialized pins into safe, deterministic defaults.
     // =========================================================================
-    logic [7:0] safe_ui, safe_uio;
+    wire [7:0] safe_ui, safe_uio;
 
     always_comb begin
         // --- ui_in Mapping (Address Bus and Control Signals) ---
@@ -106,10 +106,10 @@ module c061618g2 (
     // =========================================================================
     // 5. UNIDIRECTIONAL DECOUPLING LAYER (EXPLICIT DATA PASS-THROUGH)
     // =========================================================================
-    logic clean_ren;
-    logic clean_ref_n;
-    logic clean_mpd_n;
-    logic clean_be_n;
+    wire clean_ren;
+    wire clean_ref_n;
+    wire clean_mpd_n;
+    wire clean_be_n;
     pmod1_inputs_t mmu_core_in;
 
     always_comb begin
