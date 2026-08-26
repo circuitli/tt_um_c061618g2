@@ -29,9 +29,9 @@
 // CUSTOM MMU - TINY TAPEOUT COMPLIANT
 // =========================================================================
 module c061618g2 (
-    input  [7:0] ui_in,    // Dedicated hardware inputs
+    input  logic [7:0] ui_in,    // Dedicated hardware inputs
     output [7:0] uo_out,   // Dedicated hardware outputs
-    input  [7:0] uio_in,   // Bidirectional bus input network
+    input  loggic [7:0] uio_in,   // Bidirectional bus input network
     output [7:0] uio_out,  // Bidirectional bus output network
     output wire [7:0] uio_oe,   // Safe output enablement bus mapping
     input  ena,      // Tiny Tapeout macro environment block enable signal
