@@ -23,9 +23,9 @@
 `include "src/module/c061618g2.sv"
 
 module tt_um_c061618g2 (
-    input  [7:0] ui_in,    // Dedicated hardware inputs
+    input  wire [7:0] ui_in,    // Dedicated hardware inputs
     output [7:0] uo_out,   // Dedicated hardware outputs
-    input  [7:0] uio_in,   // Bidirectional bus input network
+    input  wire [7:0] uio_in,   // Bidirectional bus input network
     output [7:0] uio_out,  // Bidirectional bus output network
     output wire [7:0] uio_oe,   // <-- MUST BE DECLARED AS AN OUTPUT PORT WIRE HERE! [2]
     input  [0:0] ena,      // Leave this here! The compiler requires it.
