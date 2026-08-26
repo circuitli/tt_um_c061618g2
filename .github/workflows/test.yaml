@@ -33,9 +33,14 @@ jobs:
         run: pip install -r test/requirements.txt
 
       - name: Run tests
+  
+      # Install PDK
+      - name: Setup PDK
         uses: TinyTapeout/tt-gds-action@ttihp26b
         with:
           pdk: ihp-sg13g2
+
+      - name: Run tests
         run: |
           cd test
           make clean
