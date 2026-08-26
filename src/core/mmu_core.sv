@@ -34,19 +34,19 @@ module mmu_core #(
     assign {a15, a14, a13, a12, a11} = core_in.addr;
 
     // Compact vector structures
-    logic [6:0] raw_signals, clean_signals;
+    logic [5:0] raw_signals, clean_signals;
     logic raw_flg_n, raw_s4_n, raw_s5_n, raw_basic_n, raw_io_n, raw_os_n, raw_ci_n, local_os_n;
 
-    assign raw_signals = {raw_flg_n, raw_s4_n, raw_io_n, raw_ci_n, raw_os_n, raw_basic_n, raw_s5_n};
+    assign raw_signals = {raw_s4_n, raw_io_n, raw_ci_n, raw_os_n, raw_basic_n, raw_s5_n};
 
     always_comb begin
         // Hard Core Pull-Up Defaults
-        raw_flg_n   = 1'b1;
         raw_s4_n    = 1'b1;
         raw_s5_n    = 1'b1;
         raw_basic_n = 1'b1;
         raw_io_n    = 1'b1;
-        raw_ci_n    = 1'b1;
+        raw_os_n    = 1'b1; // Direct assignment bypasses local tracking bugs
+        raw_ci_n    = 1'b1; // Set /CI default state to high (Pull-up baseline)
         local_os_n  = 1'b1;
 
         // Evaluate /S4 Expansion Right Cartridge Select
@@ -92,7 +92,7 @@ module mmu_core #(
     // =========================================================================
     // PHYSICAL GLITCH ISOLATION LAYER (BANK INTEGRATION)
     // =========================================================================
-    async_glitch_filter_bank #(.WIDTH(7), 
+    async_glitch_filter_bank #(.WIDTH(6), 
                                .STAGES(FILTER_STAGES)
     ) u_mmu_filter_bank (
         .rst_n    (1'b1), 
@@ -103,7 +103,7 @@ module mmu_core #(
     // =========================================================================
     // CLEAN TYPE-CAST OUTPUT MAPPING
     // =========================================================================
-    assign core_out = pmod3_outputs_t'({1'b0, clean_signals});
+    assign core_out = pmod3_outputs_t'({1'b0, 1'b1, clean_signals});
 
 endmodule
 

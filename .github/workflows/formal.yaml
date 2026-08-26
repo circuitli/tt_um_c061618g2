@@ -27,11 +27,11 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.volare
-          # This key is uniquely dynamic to ensure fresh caching updates
-          key: ${{ runner.os }}-volare-sg13g2-${{ hashFiles('info.yaml') }}
-          # The fallback prefix must never match the key above exactly
+          # Uniquely dynamic key tracking both environment configuration files
+          key: ${{ runner.os }}-volare-sg13g2-${{ hashFiles('info.yaml', 'requirements.txt') }}
+          # Fallback to the most recent matching prefix cache if an exact match is missing
           restore-keys: |
-            ${{ runner.os }}-volare-sg13g2-fallback-
+            ${{ runner.os }}-volare-sg13g2
 
       # =========================================================================
       # 2. COPY DIRECTLY INTO THE OFFICIAL MAKEFILE TARGET PATH
@@ -55,7 +55,7 @@ jobs:
           else
             echo "[CACHE MISS] Fetching fresh cells directly into the official target layout..."
             curl -sSfL -o "$OFFICIAL_DEST/sg13g2_stdcell.v" \
-              https://githubusercontent.com
+              https://raw.githubusercontent.com
           fi
           
           # 3. Sanity check to confirm the file is physically where the Makefile wants it
