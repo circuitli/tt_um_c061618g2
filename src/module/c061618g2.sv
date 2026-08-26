@@ -66,30 +66,24 @@ module c061618g2 (
 
      always_comb begin
         // --- ui_in Mapping (Address Bus and Control Signals) ---
-        // ADDRESS LINES DEFAULT TO 1 (Motherboard Pull-Up Emulation)
-        safe_ui[0] = (local_ui_in[0] === 1'bx || local_ui_in[0] === 1'bz) ? 1'b1 : local_ui_in[0]; // A11
-        safe_ui[1] = (local_ui_in[1] === 1'bx || local_ui_in[1] === 1'bz) ? 1'b1 : local_ui_in[1]; // A12
-        safe_ui[2] = (local_ui_in[2] === 1'bx || local_ui_in[2] === 1'bz) ? 1'b1 : local_ui_in[2]; // A13
-        safe_ui[3] = (local_ui_in[3] === 1'bx || local_ui_in[3] === 1'bz) ? 1'b1 : local_ui_in[3]; // A14
-        safe_ui[4] = (local_ui_in[4] === 1'bx || local_ui_in[4] === 1'bz) ? 1'b1 : local_ui_in[4]; // A15
-        
-        // Active-low MMU map control defaults to 1 (deasserted/idle)
-        safe_ui[5] = (local_ui_in[5] === 1'bx || local_ui_in[5] === 1'bz) ? 1'b1 : local_ui_in[5]; // map_n
-        
-        // Active-high cartridge detection signals (NO _n suffix) default to 0 (idle/pulled down)
-        safe_ui[6] = (local_ui_in[6] === 1'bx || local_ui_in[6] === 1'bz) ? 1'b0 : local_ui_in[6]; // rd4 -> 0
-        safe_ui[7] = (local_ui_in[7] === 1'bx || local_ui_in[7] === 1'bz) ? 1'b0 : local_ui_in[7]; // rd5 -> 0
+        safe_ui[0] = (local_ui_in[0] === 1'bx || local_ui_in[0] === 1'bz) ? 1'b1 : (local_ui_in[0] == 1'b1); // A11
+        safe_ui[1] = (local_ui_in[1] === 1'bx || local_ui_in[1] === 1'bz) ? 1'b1 : (local_ui_in[1] == 1'b1); // A12
+        safe_ui[2] = (local_ui_in[2] === 1'bx || local_ui_in[2] === 1'bz) ? 1'b1 : (local_ui_in[2] == 1'b1); // A13
+        safe_ui[3] = (local_ui_in[3] === 1'bx || local_ui_in[3] === 1'bz) ? 1'b1 : (local_ui_in[3] == 1'b1); // A14
+        safe_ui[4] = (local_ui_in[4] === 1'bx || local_ui_in[4] === 1'bz) ? 1'b1 : (local_ui_in[4] == 1'b1); // A15
+        safe_ui[5] = (local_ui_in[5] === 1'bx || local_ui_in[5] === 1'bz) ? 1'b1 : (local_ui_in[5] == 1'b1); // map_n
+        safe_ui[6] = (local_ui_in[6] === 1'bx || local_ui_in[6] === 1'bz) ? 1'b0 : (local_ui_in[6] == 1'b1); // rd4
+        safe_ui[7] = (local_ui_in[7] === 1'bx || local_ui_in[7] === 1'bz) ? 1'b0 : (local_ui_in[7] == 1'b1); // rd5
 
         // --- uio_in Mapping (Pmod 2 Control Channels) ---
-        // AUTHENTIC POLARITY: ren is active-high, so its safe boot default is 1'b0 
-        // to keep the processor in Read Mode right out of system reset!
-        safe_uio[0] = (local_uio_in[0] === 1'bx || local_uio_in[0] === 1'bz) ? 1'b0 : local_uio_in[0]; // ren -> 0
+        // FIXED FOR POLARITY: ren is active-high, so its fallback must default to 1'b0!
+        safe_uio[0] = (local_uio_in[0] === 1'bx || local_uio_in[0] === 1'bz) ? 1'b0 : (local_uio_in[0] == 1'b1); // ren -> 0
         
-        // Active-low controls default to 1 (deasserted/idle)
-        safe_uio[1] = (local_uio_in[1] === 1'bx || local_uio_in[1] === 1'bz) ? 1'b1 : local_uio_in[1]; // ref_n 
-        safe_uio[2] = (local_uio_in[2] === 1'bx || local_uio_in[2] === 1'bz) ? 1'b1 : local_uio_in[2]; // mpd_n 
-        safe_uio[3] = (local_uio_in[3] === 1'bx || local_uio_in[3] === 1'bz) ? 1'b1 : local_uio_in[3]; // be_n  
-        safe_uio[6] = (local_uio_in[6] === 1'bx || local_uio_in[6] === 1'bz) ? 1'b1 : local_uio_in[6]; // FLG_IN_n
+        // Active-low control channels default high (1'b1)
+        safe_uio[1] = (local_uio_in[1] === 1'bx || local_uio_in[1] === 1'bz) ? 1'b1 : (local_uio_in[1] == 1'b1); // ref_n 
+        safe_uio[2] = (local_uio_in[2] === 1'bx || local_uio_in[2] === 1'bz) ? 1'b1 : (local_uio_in[2] == 1'b1); // mpd_n 
+        safe_uio[3] = (local_uio_in[3] === 1'bx || local_uio_in[3] === 1'bz) ? 1'b1 : (local_uio_in[3] == 1'b1); // be_n  
+        safe_uio[6] = (local_uio_in[6] === 1'bx || local_uio_in[6] === 1'bz) ? 1'b1 : (local_uio_in[6] == 1'b1); // FLG_IN_n
 
         // Route remaining unreferenced bits to prevent UNUSEDSIGNAL warnings cleanly
         safe_uio[4] = local_uio_in[4];
