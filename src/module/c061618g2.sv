@@ -106,10 +106,10 @@ module c061618g2 (
     // =========================================================================
     // 5. UNIDIRECTIONAL DECOUPLING LAYER (EXPLICIT DATA PASS-THROUGH)
     // =========================================================================
-    wire clean_ren;
-    wire clean_ref_n;
-    wire clean_mpd_n;
-    wire clean_be_n;
+    logic clean_ren;
+    logic clean_ref_n;
+    logic clean_mpd_n;
+    logic clean_be_n;
     pmod1_inputs_t mmu_core_in;
 
     always_comb begin
