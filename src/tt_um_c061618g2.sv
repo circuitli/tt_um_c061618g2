@@ -51,9 +51,10 @@ module tt_um_c061618g2 (
     // Declaring these as logic arrays and forcing a 2-state boolean reduction
     // clears Verilator's bidirectional look-ahead engine at the front door.
     // =========================================================================
-    logic [7:0] clean_ui;
-    logic [7:0] clean_uio;
+    logic [7:0] safe_ui;
+    logic [7:0] safe_uio;
     
+    /*
     // =========================================================================
     // CUSTOM ASYNCHRONOUS COUPLER INTERFACE BOUNDARY
     // Connects the raw implicit-wire top ports to the variable logic trackers.
@@ -64,15 +65,55 @@ module tt_um_c061618g2 (
         .safe_ui  (clean_ui),   // Outputs clean, type-decoupled, safe 2-state logic lines
         .safe_uio (clean_uio)   // Outputs clean, type-decoupled, safe 2-state logic lines
     );
+    */
+
+    // =========================================================================
+    // PROCEDURAL ISOLATION BOUNDARY
+    // Placing these bit-by-bit inside an always_comb block forces Verilator
+    // to drop the structural wire tracking graph, rendering them as clean variables.
+    // =========================================================================
+    always_comb begin
+        // --- ui_in Channel Masking (Address Matrix & Map Controls) ---
+        // Address lines A11-A15 default high (1'b1) via motherboard pull-ups
+        safe_ui[0] = (raw_ui[0] === 1'bx || raw_ui[0] === 1'bz) ? 1'b1 : (raw_ui[0] == 1'b1); // A11
+        safe_ui[1] = (raw_ui[1] === 1'bx || raw_ui[1] === 1'bz) ? 1'b1 : (raw_ui[1] == 1'b1); // A12
+        safe_ui[2] = (raw_ui[2] === 1'bx || raw_ui[2] === 1'bz) ? 1'b1 : (raw_ui[2] == 1'b1); // A13
+        safe_ui[3] = (raw_ui[3] === 1'bx || raw_ui[3] === 1'bz) ? 1'b1 : (raw_ui[3] == 1'b1); // A14
+        safe_ui[4] = (raw_ui[4] === 1'bx || raw_ui[4] === 1'bz) ? 1'b1 : (raw_ui[4] == 1'b1); // A15
+    
+        // Active-low MMU map control defaults high (1'b1) to remain unasserted/idle
+        safe_ui[5] = (raw_ui[5] === 1'bx || raw_ui[5] === 1'bz) ? 1'b1 : (raw_ui[5] == 1'b1); // map_n
+    
+        // Active-high cartridge lines default low (1'b0) via motherboard pull-downs
+        safe_ui[6] = (raw_ui[6] === 1'bx || raw_ui[6] === 1'bz) ? 1'b0 : (raw_ui[6] == 1'b1); // rd4
+        safe_ui[7] = (raw_ui[7] === 1'bx || raw_ui[7] === 1'bz) ? 1'b0 : (raw_ui[7] == 1'b1); // rd5
+
+
+        // --- uio_in Channel Masking (Control Channels) ---
+        // ren is active-high, so its safe boot baseline defaults low (1'b0)
+        safe_uio[0] = (raw_uio[0] === 1'bx || raw_uio[0] === 1'bz) ? 1'b0 : (raw_uio[0] == 1'b1); // ren
+    
+        // Active-low control channels default high (1'b1) to remain unasserted/idle
+        safe_uio[1] = (raw_uio[1] === 1'bx || raw_uio[1] === 1'bz) ? 1'b1 : (raw_uio[1] == 1'b1); // ref_n 
+        safe_uio[2] = (raw_uio[2] === 1'bx || raw_uio[2] === 1'bz) ? 1'b1 : (raw_uio[2] == 1'b1); // mpd_n 
+        safe_uio[3] = (raw_uio[3] === 1'bx || raw_uio[3] === 1'bz) ? 1'b1 : (raw_uio[3] == 1'b1); // be_n  
+        safe_uio[6] = (raw_uio[6] === 1'bx || raw_uio[6] === 1'bz) ? 1'b1 : (raw_uio[6] == 1'b1); // FLG_IN_n
+
+
+        // --- Unreferenced Padding Channels (Strips UNUSEDSIGNAL warnings completely) ---
+        safe_uio[4] = (raw_uio[4] == 1'b1);
+        safe_uio[5] = (raw_uio[5] == 1'b1);
+        safe_uio[7] = (raw_uio[7] == 1'b1);
+    end
 
     // =========================================================================
     // 3. CORE SUBMODULE INSTANTIATION
     // =========================================================================
     (* keep_hierarchy = 1 *)   
     c061618g2 u_c061618g2 (
-        .ui_in    (clean_ui),   // Completely clean unidirectional data bus
+        .ui_in    (safe_ui),   // Completely clean unidirectional data bus
         .uo_out   (uo_out),       
-        .uio_in   (clean_uio),  // Completely clean unidirectional control bus
+        .uio_in   (safe_uio),  // Completely clean unidirectional control bus
         .uio_out  (uio_out),  
         .uio_oe   (uio_oe),  
         .ena      (ena),      
