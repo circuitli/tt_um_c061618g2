@@ -21,7 +21,7 @@ jobs:
       - name: Install and Map IHP SG13G2 PDK via Volare
         uses: TinyTapeout/volare-action@v2
         with:
-          pdk_name: sg13g2
+          pdk_name: ihp-sg13g2
           pdk_version: current
           pdk_root: ${{ github.workspace }}/.volare 
 
