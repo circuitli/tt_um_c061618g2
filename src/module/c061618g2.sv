@@ -93,7 +93,7 @@ module c061618g2 (
         mmu_core_in.addr         = filtered[4:0]; // A15, A14, A13, A12, A11
     end
 
-    wire pmod3_outputs_t core_signals;
+    pmod3_outputs_t core_signals;
 
     mmu_core core_inst (
         .core_in  (mmu_core_in), 
