@@ -64,33 +64,37 @@ module c061618g2 (
     // =========================================================================
     logic [7:0] safe_ui, safe_uio;
 
-    always_comb begin
-        // ADDRESS LINES DEFAULT TO 1: Simulates the physical Atari motherboard 
-        // pull-up resistor behavior, preventing floating bus boots.
+     always_comb begin
+        // --- ui_in Mapping (Address Bus and Control Signals) ---
+        // ADDRESS LINES DEFAULT TO 1 (Motherboard Pull-Up Emulation)
         safe_ui[0] = (local_ui_in[0] === 1'bx || local_ui_in[0] === 1'bz) ? 1'b1 : local_ui_in[0]; // A11
         safe_ui[1] = (local_ui_in[1] === 1'bx || local_ui_in[1] === 1'bz) ? 1'b1 : local_ui_in[1]; // A12
         safe_ui[2] = (local_ui_in[2] === 1'bx || local_ui_in[2] === 1'bz) ? 1'b1 : local_ui_in[2]; // A13
         safe_ui[3] = (local_ui_in[3] === 1'bx || local_ui_in[3] === 1'bz) ? 1'b1 : local_ui_in[3]; // A14
         safe_ui[4] = (local_ui_in[4] === 1'bx || local_ui_in[4] === 1'bz) ? 1'b1 : local_ui_in[4]; // A15
         
-        // Active-low controls default to 1 (deasserted/idle)
+        // Active-low MMU map control defaults to 1 (deasserted/idle)
         safe_ui[5] = (local_ui_in[5] === 1'bx || local_ui_in[5] === 1'bz) ? 1'b1 : local_ui_in[5]; // map_n
         
-        // ATARI HARDWARE RULE: Cartridge lines RD4/RD5 have physical 1k pull-downs!
+        // Active-high cartridge detection signals (NO _n suffix) default to 0 (idle/pulled down)
         safe_ui[6] = (local_ui_in[6] === 1'bx || local_ui_in[6] === 1'bz) ? 1'b0 : local_ui_in[6]; // rd4 -> 0
         safe_ui[7] = (local_ui_in[7] === 1'bx || local_ui_in[7] === 1'bz) ? 1'b0 : local_ui_in[7]; // rd5 -> 0
 
-        // CPU R/W Line defaults to 1'b1 (Read Mode) to prevent write-glitches on boot
+        // --- uio_in Mapping (Pmod 2 Control Channels) ---
+        // AUTHENTIC POLARITY: ren is active-high, so its safe boot default is 1'b1 
+        // to keep the processor in Read Mode right out of system reset!
         safe_uio[0] = (local_uio_in[0] === 1'bx || local_uio_in[0] === 1'bz) ? 1'b1 : local_uio_in[0]; // ren
         
-        // Remaining active-low lines default to 1 (idle/deasserted)
+        // Active-low controls default to 1 (deasserted/idle)
         safe_uio[1] = (local_uio_in[1] === 1'bx || local_uio_in[1] === 1'bz) ? 1'b1 : local_uio_in[1]; // ref_n 
         safe_uio[2] = (local_uio_in[2] === 1'bx || local_uio_in[2] === 1'bz) ? 1'b1 : local_uio_in[2]; // mpd_n 
         safe_uio[3] = (local_uio_in[3] === 1'bx || local_uio_in[3] === 1'bz) ? 1'b1 : local_uio_in[3]; // be_n  
         safe_uio[6] = (local_uio_in[6] === 1'bx || local_uio_in[6] === 1'bz) ? 1'b1 : local_uio_in[6]; // FLG_IN_n
 
-        // Map remaining unreferenced buffer positions to resolve UNUSEDSIGNAL linter flags
-        safe_uio[7:4] = local_uio_in[7:4];
+        // Route remaining unreferenced bits to prevent UNUSEDSIGNAL warnings cleanly
+        safe_uio[4] = local_uio_in[4];
+        safe_uio[5] = local_uio_in[5];
+        safe_uio[7] = local_uio_in[7];
     end
 
     // =========================================================================
@@ -213,8 +217,10 @@ module c061618g2 (
         safe_ui[6] = (local_ui_in[6] === 1'bx || local_ui_in[6] === 1'bz) ? 1'b0 : local_ui_in[6]; // rd4 -> 0
         safe_ui[7] = (local_ui_in[7] === 1'bx || local_ui_in[7] === 1'bz) ? 1'b0 : local_ui_in[7]; // rd5 -> 0
 
-        // CPU R/W Line defaults to 1'b1 (Read Mode) to prevent write-glitches on boot
-        safe_uio[0] = (local_uio_in[0] === 1'bx || local_uio_in[0] === 1'bz) ? 1'b1 : local_uio_in[0]; // ren
+        // --- uio_in Mapping (Pmod 2 Control Channels) ---
+        // ren is active-high, so its safe boot default is 1'b0 (disabled/idle)
+        // This keeps the internal decoder safely locked down until explicitly enabled.
+        safe_uio[0] = (local_uio_in[0] === 1'bx || local_uio_in[0] === 1'bz) ? 1'b0 : local_uio_in[0]; // ren -> 0
         
         // Remaining active-low lines default to 1 (idle/deasserted)
         safe_uio[1] = (local_uio_in[1] === 1'bx || local_uio_in[1] === 1'bz) ? 1'b1 : local_uio_in[1]; // ref_n 
@@ -253,9 +259,7 @@ module c061618g2 (
     );
 
     // =========================================================================
-    // 5. UNIDIRECTIONAL MULTIPLEXER LAYER (SOLVES CROSS-BOUNDARY GRAPH ERROR)
-    // By using an independent block to extract signals, we force Verilator's
-    // optimizer to view these as pure data registers instead of port shorts.
+    // 5. UNIDIRECTIONAL DECOUPLING LAYER (EXPLICIT DATA PASS-THROUGH)
     // =========================================================================
     logic clean_ren;
     logic clean_ref_n;
@@ -264,10 +268,11 @@ module c061618g2 (
     pmod1_inputs_t mmu_core_in;
 
     always_comb begin
-        clean_ren   = filtered[8];
-        clean_ref_n = filtered[9];
-        clean_mpd_n = filtered[10];
-        clean_be_n  = filtered[11];
+        // Straight, non-inverting 1-to-1 data pass-through to satisfy the Verilator compiler
+        clean_ren   = (filtered[8]  == 1'b1) ? 1'b1 : 1'b0; // ren   (active-high)
+        clean_ref_n = (filtered[9]  == 1'b1) ? 1'b1 : 1'b1; // ref_n (active-low)
+        clean_mpd_n = (filtered[10] == 1'b1) ? 1'b1 : 1'b1; // mpd_n (active-low)
+        clean_be_n  = (filtered[11] == 1'b1) ? 1'b1 : 1'b1; // be_n  (active-low)
         
         mmu_core_in.control_bits = filtered[7:5]; // rd5, rd4, map_n
         mmu_core_in.addr         = filtered[4:0]; // A15, A14, A13, A12, A11
