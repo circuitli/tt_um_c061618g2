@@ -107,9 +107,13 @@ module c061618g2 (
     wire FLG_IN_n = filtered[12];
 
     // Evaluate master system override control flags
-    // If any of them drop to 0, functional operations are disabled.
-    wire system_disabled = (FLG_IN_n == 1'b0) || (ena == 1'b0) || (rst_n == 1'b0);
-    wire FLG_n = !system_disabled;
+    // SYSTEM DISABLED DEFAULT = 0
+    // Only disables operations if a signal is explicitly confirmed low (1'b0).
+    // If any signal is uninitialized (X/Z), it is ignored, defaulting to 1'b0.
+    wire system_disabled = (FLG_IN_n === 1'b0) || (ena === 1'b0) || (rst_n === 1'b0);
+    
+    // FLG_n DEFAULT = 1
+    wire FLG_n = system_disabled ? 1'b0 : 1'b1;
 
     // Move the selection outside into a continuous assignment
     wire a11 = filtered[0]; 
