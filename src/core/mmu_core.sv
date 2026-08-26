@@ -37,8 +37,6 @@ module mmu_core #(
     logic [5:0] raw_signals, clean_signals;
     logic raw_flg_n, raw_s4_n, raw_s5_n, raw_basic_n, raw_io_n, raw_os_n, raw_ci_n, local_os_n;
 
-    assign raw_signals = {raw_s4_n, raw_io_n, raw_ci_n, raw_os_n, raw_basic_n, raw_s5_n};
-
     always_comb begin
         // Hard Core Pull-Up Defaults
         raw_s4_n    = 1'b1;
@@ -87,6 +85,8 @@ module mmu_core #(
              (!ref_n) ) begin
             raw_ci_n = 1'b0;
         end
+
+        assign raw_signals = {raw_s4_n, raw_io_n, raw_ci_n, raw_os_n, raw_basic_n, raw_s5_n};
     end
 
     // =========================================================================

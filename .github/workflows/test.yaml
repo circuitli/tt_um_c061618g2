@@ -18,10 +18,8 @@ jobs:
         with:
           submodules: recursive
 
-      # =========================================================================
-      # 1. CORRECTED CACHE SCHEMA (NO DUPLICATE KEYS)
-      # =========================================================================
       - name: Fetch and Restore Unpacked PDK Cache Profile
+        id: pdk-cache
         uses: actions/cache@v4
         with:
           path: ~/.volare
@@ -29,11 +27,21 @@ jobs:
           key: ${{ runner.os }}-volare-sg13g2-${{ hashFiles('info.yaml', 'requirements.txt') }}
           # Fallback to the most recent matching prefix cache if an exact match is missing
           restore-keys: |
-            ${{ runner.os }}-volare-sg13g2
+            ${{ runner.os }}-volare-sg13g2-
 
-      # =========================================================================
-      # 2. COPY DIRECTLY INTO THE OFFICIAL MAKEFILE TARGET PATH
-      # =========================================================================
+      - name: Initialize Volare and Install PDK on Cache Miss
+        # This condition will now successfully trigger if the cache has a complete miss
+        if: steps.pdk-cache.outputs.cache-hit != 'true'
+        run: |
+          # Force create the directory so downstream 'find' tools do not throw a 404 crash
+          mkdir -p ~/.volare
+    
+          # Refresh tools layer
+          pip install --upgrade volare
+    
+          # Pull PDK binaries into the folder layout
+          volare update --pdk sg13g2
+
       - name: Copy PDK to Official Location for Simulation
         env:
           # This forces PDK_ROOT to point to the active virtual machine workspace
@@ -49,11 +57,7 @@ jobs:
           
           if [ -n "$CACHED_FILE" ]; then
             echo "[SUCCESS] Found cached cells. Copying straight to official target..."
-            cp "$CACHED_FILE" "$OFFICIAL_DEST/sg13g2_stdcell.v"
-          else
-            echo "[CACHE MISS] Fetching fresh cells directly into the official target layout..."
-            curl -sSfL -o "$OFFICIAL_DEST/sg13g2_stdcell.v" \
-              https://raw.githubusercontent.com
+            cp "$CACHED_FILE" "$OFFICIAL_DEST/sg13g2_stdcell.v
           fi
           
           # 3. Sanity check to confirm the file is physically where the Makefile wants it
