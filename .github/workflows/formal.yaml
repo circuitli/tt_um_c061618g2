@@ -20,12 +20,34 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install and Map IHP SG13G2 PDK via Volare
+      # =========================================================================
+      # 1. EXTRACT PINNED VERSION FROM THE INTERNAL TOOLCHAIN METADATA
+      # =========================================================================
+      - name: Determine Pinned Volare Hash
+        id: extract-hash
+        run: |
+          # Install volare temporarily to check its version mapping database
+          pip install --upgrade volare
+    
+          # Query volare's built-in backend database to extract the absolute 
+          # default pinned commit hash token string for the sg13g2 process
+          LATEST_HASH=$(python3 -c "import volare; print(volare.get_default_version('sg13g2'))")
+          echo "PDK_HASH=$LATEST_HASH" >> $GITHUB_OUTPUT
+
+      # =========================================================================
+      # 2. INVOKE THE TINY TAPEOUT ACTION WITH EXACT VERIFIED INPUTS
+      # =========================================================================
+      - name: Install and Map IHP SG13G2 PDK via Volare Action
         uses: TinyTapeout/volare-action@v2
         with:
-          pdk_name: ihp-sg13g2
-          pdk_version: current
-          pdk_root: ${{ github.workspace }}/.volare 
+          # 1. THE FAMILY PARAMETER: Must be exactly sg13g2
+          pdk_name: sg13g2
+    
+          # 2. THE VERSION PARAMETER: Ingests the literal hash string found above
+          pdk_version: ${{ steps.extract-hash.outputs.PDK_HASH }}
+    
+          # 3. THE PATH PARAMETER: Creates your project's .volare workspace layout folder
+          pdk_root: ${{ github.workspace }}/.volare
 
       # =========================================================================
       # LINK VOLARE CACHE DIRECTLY TO THE FORMAL DIRECTORY
