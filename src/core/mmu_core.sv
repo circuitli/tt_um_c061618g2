@@ -28,7 +28,7 @@ module mmu_core #(
 )(
     input  pmod1_inputs_t  core_in, 
     input                  ren, ref_n, mpd_n, be_n,
-    output pmod3_outputs_t core_out
+    output wire pmod3_outputs_t core_out
 );
 
     // 1. Unpack raw incoming inputs from the top-level wrapper interface
@@ -62,7 +62,8 @@ module mmu_core #(
     end
 
     // 3. Compact vector structures and tracking nets
-    logic [5:0] raw_signals, clean_signals;
+    wire  [5:0] clean_signals;
+    logic [5:0] raw_signals;
     logic raw_s4_n, raw_s5_n, raw_basic_n, raw_io_n, raw_os_n, raw_ci_n, local_os_n;
 
     // =========================================================================

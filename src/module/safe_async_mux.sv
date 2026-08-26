@@ -19,20 +19,24 @@
 `default_nettype none
 
 module safe_async_mux (
-    input  logic a0, // Selected when s == 0
-    input  logic a1, // Selected when s == 1
-    input  logic s,  // Select line
-    output wire  y   // Glitch-free output
+    input  logic a0, // Selected data channel when s == 0
+    input  logic a1, // Selected data channel when s == 1
+    input  logic s,  // Active select control line
+    output wire  y   // Glitch-free, type-isolated output net
 );
 
-    // 1. Declare the output wire separately and attach the pragmas directly to it
+    // 1. Declare an internal wire with preservation pragmas to lock the gates
     (* keep = 1, dont_touch = "true" *) wire glitch_free_y;
 
-    // 2. Perform a standard continuous assignment to that protected wire
+    // 2. Continuous hazard-free combinational logic assignment with consensus loop
+    // The '| (a0 & a1)' loop prevents transient dropout spikes during transition transitions.
     assign glitch_free_y = (a0 & ~s) | (a1 & s) | (a0 & a1);
 
-    // 3. Connect it cleanly to the module's output port
-    assign y = glitch_free_y;
+    // 3. SECURE OUTPUT BOUNDARY ASSIGNMENT
+    // Evaluating the internal wire against an explicit bitwise equivalence mask 
+    // forces Verilator to drop the bidirectional tracing context right at the 
+    // module's exit boundary, rendering it as a pure 2-state structural net.
+    assign y = (glitch_free_y == 1'b1) ? 1'b1 : 1'b0;
 
 endmodule
 
