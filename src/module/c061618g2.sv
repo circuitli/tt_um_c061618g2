@@ -47,46 +47,49 @@ module c061618g2 (
     /* verilator lint_on UNUSEDSIGNAL */
 
     // =========================================================================
-    // 2. INPUT CLEANSER LAYER (X/Z CASE-EQUALITY HARDWARE MASK)
-    // Converts floating/uninitialized pins into safe, deterministic defaults.
+    // 1. SCALAR TRISTATE SHATTER LAYER (PRESERVES TRUE STARTUP POLARITIES)
+    // Declaring explicit, separate 1-bit wires forces Verilator to drop the 
+    // bidirectional vector dependency graph right at the chip's edge.
     // =========================================================================
-    wire [7:0] safe_ui, safe_uio;
+    
+    // --- Unpacked ui_in Scalar Wires ---
+    wire s_ui0 = (ui_in[0] === 1'bx || ui_in[0] === 1'bz) ? 1'b1 : (ui_in[0] == 1'b1); // A11
+    wire s_ui1 = (ui_in[1] === 1'bx || ui_in[1] === 1'bz) ? 1'b1 : (ui_in[1] == 1'b1); // A12
+    wire s_ui2 = (ui_in[2] === 1'bx || ui_in[2] === 1'bz) ? 1'b1 : (ui_in[2] == 1'b1); // A13
+    wire s_ui3 = (ui_in[3] === 1'bx || ui_in[3] === 1'bz) ? 1'b1 : (ui_in[3] == 1'b1); // A14
+    wire s_ui4 = (ui_in[4] === 1'bx || ui_in[4] === 1'bz) ? 1'b1 : (ui_in[4] == 1'b1); // A15
+    wire s_ui5 = (ui_in[5] === 1'bx || ui_in[5] === 1'bz) ? 1'b1 : (ui_in[5] == 1'b1); // map_n
+    wire s_ui6 = (ui_in[6] === 1'bx || ui_in[6] === 1'bz) ? 1'b0 : (ui_in[6] == 1'b1); // rd4 -> 0
+    wire s_ui7 = (ui_in[7] === 1'bx || ui_in[7] === 1'bz) ? 1'b0 : (ui_in[7] == 1'b1); // rd5 -> 0
 
-    always_comb begin
-        // --- ui_in Mapping (Address Bus and Control Signals) ---
-        safe_ui[0] = (ui_in[0] === 1'bx || ui_in[0] === 1'bz) ? 1'b1 : (ui_in[0] == 1'b1); // A11
-        safe_ui[1] = (ui_in[1] === 1'bx || ui_in[1] === 1'bz) ? 1'b1 : (ui_in[1] == 1'b1); // A12
-        safe_ui[2] = (ui_in[2] === 1'bx || ui_in[2] === 1'bz) ? 1'b1 : (ui_in[2] == 1'b1); // A13
-        safe_ui[3] = (ui_in[3] === 1'bx || ui_in[3] === 1'bz) ? 1'b1 : (ui_in[3] == 1'b1); // A14
-        safe_ui[4] = (ui_in[4] === 1'bx || ui_in[4] === 1'bz) ? 1'b1 : (ui_in[4] == 1'b1); // A15
-        safe_ui[5] = (ui_in[5] === 1'bx || ui_in[5] === 1'bz) ? 1'b1 : (ui_in[5] == 1'b1); // map_n
-        safe_ui[6] = (ui_in[6] === 1'bx || ui_in[6] === 1'bz) ? 1'b0 : (ui_in[6] == 1'b1); // rd4
-        safe_ui[7] = (ui_in[7] === 1'bx || ui_in[7] === 1'bz) ? 1'b0 : (ui_in[7] == 1'b1); // rd5
+    // --- Unpacked uio_in Scalar Wires ---
+    wire s_uio0 = (uio_in[0] === 1'bx || uio_in[0] === 1'bz) ? 1'b0 : (uio_in[0] == 1'b1); // ren -> 0
+    wire s_uio1 = (uio_in[1] === 1'bx || uio_in[1] === 1'bz) ? 1'b1 : (uio_in[1] == 1'b1); // ref_n 
+    wire s_uio2 = (uio_in[2] === 1'bx || uio_in[2] === 1'bz) ? 1'b1 : (uio_in[2] == 1'b1); // mpd_n 
+    wire s_uio3 = (uio_in[3] === 1'bx || uio_in[3] === 1'bz) ? 1'b1 : (uio_in[3] == 1'b1); // be_n  
+    wire s_uio6 = (uio_in[6] === 1'bx || uio_in[6] === 1'bz) ? 1'b1 : (uio_in[6] == 1'b1); // FLG_IN_n
 
-        // --- uio_in Mapping (Pmod 2 Control Channels) ---
-        // FIXED FOR POLARITY: ren is active-high, so its fallback must default to 1'b0!
-        safe_uio[0] = (uio_in[0] === 1'bx || uio_in[0] === 1'bz) ? 1'b0 : (uio_in[0] == 1'b1); // ren -> 0
-        
-        // Active-low control channels default high (1'b1)
-        safe_uio[1] = (uio_in[1] === 1'bx || uio_in[1] === 1'bz) ? 1'b1 : (uio_in[1] == 1'b1); // ref_n 
-        safe_uio[2] = (uio_in[2] === 1'bx || uio_in[2] === 1'bz) ? 1'b1 : (uio_in[2] == 1'b1); // mpd_n 
-        safe_uio[3] = (uio_in[3] === 1'bx || uio_in[3] === 1'bz) ? 1'b1 : (uio_in[3] == 1'b1); // be_n  
-        safe_uio[6] = (uio_in[6] === 1'bx || uio_in[6] === 1'bz) ? 1'b1 : (uio_in[6] == 1'b1); // FLG_IN_n
+    // --- Unpacked Padding Scalar Wires ---
+    wire s_uio4 = (uio_in[4] == 1'b1);
+    wire s_uio5 = (uio_in[5] == 1'b1);
+    wire s_uio7 = (uio_in[7] == 1'b1);
 
-        // Route remaining unreferenced bits cleanly using boolean reductions
-        safe_uio[4] = (uio_in[4] == 1'b1);
-        safe_uio[5] = (uio_in[5] == 1'b1);
-        safe_uio[7] = (uio_in[7] == 1'b1);
-    end
+    // =========================================================================
+    // 2. SAFE MULTI-BIT VECTOR RECONSTRUCTION
+    // The rebuilt arrays are now verified 2-state nets, completely immune to 
+    // tristate propagation errors when passed across module boundaries.
+    // =========================================================================
+    wire [7:0] clean_ui  = {s_ui7,  s_ui6,  s_ui5,  s_ui4,  s_ui3,  s_ui2,  s_ui1,  s_ui0};
+    wire [7:0] clean_uio = {s_uio7, s_uio6, s_uio5, s_uio4, s_uio3, s_uio2, s_uio1, s_uio0};
 
     // =========================================================================
     // 3. HARDWARE BUS CONCATENATION (USING SAFE LAYER VALUES)
     // =========================================================================
     wire [12:0] functional_unfiltered;    
     assign functional_unfiltered = {
-        safe_uio[6],     // Bit 12 (MSB) -> FLG_IN_n
-        safe_uio[3:0],   // Bits 11:8    -> be_n, mpd_n, ref_n, ren
-        safe_ui[7:0]     // Bits 7:0     -> rd5, rd4, map_n, A15, A14, A13, A12, A11 (LSB)
+        clean_uio[6],     // Bit 12 (MSB) -> FLG_IN_n
+        clean_uio[3:0],   // Bits 11:8    -> be_n, mpd_n, ref_n, ren
+        clean_ui[7:0]     // Bits 7:0     -> rd5, rd4, map_n, A15, A14, A13, A12, A11 (LSB)
     };
 
     // =========================================================================
