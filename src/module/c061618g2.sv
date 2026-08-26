@@ -33,7 +33,7 @@ module c061618g2 (
     output logic [7:0] uo_out,   // Dedicated hardware outputs
     input  wire  [7:0] uio_in,   // Bidirectional bus input network
     output logic [7:0] uio_out,  // Bidirectional bus output network
-    output lofic [7:0] uio_oe,   // Safe output enablement bus mapping
+    output logic [7:0] uio_oe,   // Safe output enablement bus mapping
     input  ena,      // Tiny Tapeout macro environment block enable signal
     /* verilator lint_off UNUSEDSIGNAL */
     input  clk,      // Part of the strict wrapper standard!
