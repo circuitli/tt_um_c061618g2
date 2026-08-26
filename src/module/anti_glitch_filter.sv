@@ -22,8 +22,8 @@
 module async_glitch_filter #(
     parameter int STAGES = 4  // Filter depth
 )(
-    input  logic rst_n,       // Pure combinational reset line
-    input  logic async_in,    // Raw asynchronous input signal
+    input  wire rst_n,       // Pure combinational reset line
+    input  wire async_in,    // Raw asynchronous input signal
     output logic async_out    // Glitch-filtered asynchronous output
 );
 

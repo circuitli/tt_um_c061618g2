@@ -25,10 +25,10 @@ module async_glitch_filter_bank #(
     parameter int WIDTH = 13,
     parameter int STAGES = 4
 )(
-    input  logic             rst_n,
-    input  logic [WIDTH-1:0] async_in,
+    input  wire             rst_n,
+    input  wire [WIDTH-1:0] async_in,
     // Changes the output port bus to an explicit net type
-    output wire  [WIDTH-1:0] async_out
+    output logic [WIDTH-1:0] async_out
 );
 
     // Unroll the channels using standard hierarchical structural net mappings

@@ -26,9 +26,9 @@ module async_glitch_filter_bank_formal #(
     parameter int WIDTH  = 13,
     parameter int STAGES = 4
 )(
-    input wire               rst_n,      
-    input wire [WIDTH-1:0]   async_in,   
-    input wire [WIDTH-1:0]   async_out   
+    input wire                rst_n,      
+    input wire  [WIDTH-1:0]   async_in,   
+    input logic [WIDTH-1:0]   async_out   
 );
 
     // --- Core Multi-Channel Matrix Invariants (Clockless Boolean Assertions) ---

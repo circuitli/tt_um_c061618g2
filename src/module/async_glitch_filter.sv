@@ -23,9 +23,9 @@
 module async_glitch_filter #(
     parameter int STAGES = 2 // Number of double-inverter delay blocks
 )(
-    input  logic rst_n,
-    input  logic async_in,
-    output wire  async_out
+    input  wire  rst_n,
+    input  wire  async_in,
+    output logic async_out
 );
 
     (* keep = 1 *) wire [STAGES:0] delay_chain /*verilator split_var*/;
@@ -84,7 +84,7 @@ module async_glitch_filter #(
     // LATCH LOOP BOUNDARY
     // =========================================================================
     /* verilator lint_off UNOPTFLAT */
-    wire latch_raw_out;
+    logic  latch_raw_out;
     /* verilator lint_on UNOPTFLAT */
 
     async_latch_cell u_latch_inst (

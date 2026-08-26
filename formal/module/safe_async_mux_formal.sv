@@ -22,7 +22,7 @@ module safe_async_mux_formal (
     input wire a0,
     input wire a1,
     input wire s,
-    input wire y // Monitored directly from the physical module output
+    input logic y // Monitored directly from the physical module output
 );
 
     // =========================================================================

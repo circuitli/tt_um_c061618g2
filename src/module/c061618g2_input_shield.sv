@@ -24,10 +24,10 @@
 // Outputs: Explicit structural 'wire' types to unlink the tracking graph.
 // =========================================================================
 module c061618g2_input_shield (
-    input  logic [7:0] raw_ui,    // Raw incoming ui_in pad frame vector
-    input  logic [7:0] raw_uio,   // Raw incoming uio_in pad frame vector
-    output wire  [7:0] safe_ui,   // Shielded, pure 2-state output wire bus
-    output wire  [7:0] safe_uio   // Shielded, pure 2-state output wire bus
+    input  wire  [7:0] raw_ui,    // Raw incoming ui_in pad frame vector
+    input  wire  [7:0] raw_uio,   // Raw incoming uio_in pad frame vector
+    output logic [7:0] safe_ui,   // Shielded, pure 2-state output wire bus
+    output logic [7:0] safe_uio   // Shielded, pure 2-state output wire bus
 );
 
     // =========================================================================

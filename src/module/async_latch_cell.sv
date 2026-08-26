@@ -22,10 +22,10 @@
 `include "src/module/safe_async_mux.sv"
 
 module async_latch_cell (
-    input  logic rst_n,
-    input  logic set,
-    input  logic hold,
-    output wire  q
+    input  wire  rst_n,
+    input  wire  set,
+    input  wire  hold,
+    output logic q
 );
 
     // =========================================================================

@@ -20,10 +20,10 @@
 `default_nettype none
 
 module async_latch_cell_formal (
-    input wire q,
-    input wire rst_n,
-    input wire set,
-    input wire hold
+    input  wire  rst_n,
+    input  wire  set,
+    input  wire  hold,
+    input logic q
 );
 
     assert_primitive_reset_override: assert property (
@@ -46,10 +46,10 @@ endmodule
 
 // Injects the properties directly around the outer cell instance interface
 bind async_latch_cell async_latch_cell_formal i_async_latch_cell_formal (
-    .q     (q),
     .rst_n (rst_n),
     .set   (set),
-    .hold  (hold)
+    .hold  (hold),
+    .q     (q)
 );
 
 `endif

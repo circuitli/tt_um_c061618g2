@@ -26,9 +26,9 @@
 module async_glitch_filter_formal #(
     parameter int STAGES = 4
 )(
-    input wire rst_n,
-    input wire async_in,
-    input wire async_out,
+    input wire  rst_n,
+    input wire  async_in,
+    input logic async_out,
     input wire [STAGES:0] delay_chain // Dynamically scaled bit-width string
 );
 

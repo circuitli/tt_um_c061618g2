@@ -26,7 +26,7 @@ module mmu_core_formal (
     input                  ref_n,
     input                  mpd_n,
     input                  be_n,
-    input  pmod3_outputs_t core_out
+    output logic pmod3_outputs_t core_out
 );
     // =========================================================================
     // LOCAL WIRE ALIAS EXTRACTIONS
