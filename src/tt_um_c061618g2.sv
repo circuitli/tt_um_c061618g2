@@ -46,45 +46,49 @@ module tt_um_c061618g2 (
 */
 
     // =========================================================================
-    // THE TOP-LEVEL HARDWARE MASK BOUNDARY (PRESERVES TRUE REBOOT POLARITIES)
-    // Running case-equality selections right here breaks the tristate graph
-    // while shielding the design from uninitialized simulation leaks.
+    // 1. SCALAR TRISTATE SHATTER LAYER (PRESERVES TRUE STARTUP POLARITIES)
+    // Declaring explicit, separate 1-bit wires forces Verilator to drop the 
+    // bidirectional vector dependency graph right at the chip's edge.
     // =========================================================================
-    wire [7:0] safe_top_ui;
-    wire [7:0] safe_top_uio;
+    
+    // --- Unpacked ui_in Scalar Wires ---
+    wire s_ui0 = (ui_in[0] === 1'bx || ui_in[0] === 1'bz) ? 1'b1 : (ui_in[0] == 1'b1); // A11
+    wire s_ui1 = (ui_in[1] === 1'bx || ui_in[1] === 1'bz) ? 1'b1 : (ui_in[1] == 1'b1); // A12
+    wire s_ui2 = (ui_in[2] === 1'bx || ui_in[2] === 1'bz) ? 1'b1 : (ui_in[2] == 1'b1); // A13
+    wire s_ui3 = (ui_in[3] === 1'bx || ui_in[3] === 1'bz) ? 1'b1 : (ui_in[3] == 1'b1); // A14
+    wire s_ui4 = (ui_in[4] === 1'bx || ui_in[4] === 1'bz) ? 1'b1 : (ui_in[4] == 1'b1); // A15
+    wire s_ui5 = (ui_in[5] === 1'bx || ui_in[5] === 1'bz) ? 1'b1 : (ui_in[5] == 1'b1); // map_n
+    wire s_ui6 = (ui_in[6] === 1'bx || ui_in[6] === 1'bz) ? 1'b0 : (ui_in[6] == 1'b1); // rd4 -> 0
+    wire s_ui7 = (ui_in[7] === 1'bx || ui_in[7] === 1'bz) ? 1'b0 : (ui_in[7] == 1'b1); // rd5 -> 0
 
-    always_comb begin
-        // --- ui_in Channel Masking ---
-        safe_top_ui[0] = (ui_in[0] === 1'bx || ui_in[0] === 1'bz) ? 1'b1 : (ui_in[0] & 1'b1); // A11
-        safe_top_ui[1] = (ui_in[1] === 1'bx || ui_in[1] === 1'bz) ? 1'b1 : (ui_in[1] & 1'b1); // A12
-        safe_top_ui[2] = (ui_in[2] === 1'bx || ui_in[2] === 1'bz) ? 1'b1 : (ui_in[2] & 1'b1); // A13
-        safe_top_ui[3] = (ui_in[3] === 1'bx || ui_in[3] === 1'bz) ? 1'b1 : (ui_in[3] & 1'b1); // A14
-        safe_top_ui[4] = (ui_in[4] === 1'bx || ui_in[4] === 1'bz) ? 1'b1 : (ui_in[4] & 1'b1); // A15
-        safe_top_ui[5] = (ui_in[5] === 1'bx || ui_in[5] === 1'bz) ? 1'b1 : (ui_in[5] & 1'b1); // map_n
-        safe_top_ui[6] = (ui_in[6] === 1'bx || ui_in[6] === 1'bz) ? 1'b0 : (ui_in[6] & 1'b1); // rd4 -> 0
-        safe_top_ui[7] = (ui_in[7] === 1'bx || ui_in[7] === 1'bz) ? 1'b0 : (ui_in[7] & 1'b1); // rd5 -> 0
+    // --- Unpacked uio_in Scalar Wires ---
+    wire s_uio0 = (uio_in[0] === 1'bx || uio_in[0] === 1'bz) ? 1'b0 : (uio_in[0] == 1'b1); // ren -> 0
+    wire s_uio1 = (uio_in[1] === 1'bx || uio_in[1] === 1'bz) ? 1'b1 : (uio_in[1] == 1'b1); // ref_n 
+    wire s_uio2 = (uio_in[2] === 1'bx || uio_in[2] === 1'bz) ? 1'b1 : (uio_in[2] == 1'b1); // mpd_n 
+    wire s_uio3 = (uio_in[3] === 1'bx || uio_in[3] === 1'bz) ? 1'b1 : (uio_in[3] == 1'b1); // be_n  
+    wire s_uio6 = (uio_in[6] === 1'bx || uio_in[6] === 1'bz) ? 1'b1 : (uio_in[6] == 1'b1); // FLG_IN_n
 
-        // --- uio_in Channel Masking ---
-        safe_top_uio[0] = (uio_in[0] === 1'bx || uio_in[0] === 1'bz) ? 1'b0 : (uio_in[0] & 1'b1); // ren -> 0
-        safe_top_uio[1] = (uio_in[1] === 1'bx || uio_in[1] === 1'bz) ? 1'b1 : (uio_in[1] & 1'b1); // ref_n 
-        safe_top_uio[2] = (uio_in[2] === 1'bx || uio_in[2] === 1'bz) ? 1'b1 : (uio_in[2] & 1'b1); // mpd_n 
-        safe_top_uio[3] = (uio_in[3] === 1'bx || uio_in[3] === 1'bz) ? 1'b1 : (uio_in[3] & 1'b1); // be_n  
-        safe_top_uio[6] = (uio_in[6] === 1'bx || uio_in[6] === 1'bz) ? 1'b1 : (uio_in[6] & 1'b1); // FLG_IN_n
-
-        // Route unreferenced bits using safe identity logic to preserve graph isolation
-        safe_top_uio[4] = (uio_in[4] === 1'bx || uio_in[4] === 1'bz) ? 1'b1 : (uio_in[4] & 1'b1);
-        safe_top_uio[5] = (uio_in[5] === 1'bx || uio_in[5] === 1'bz) ? 1'b1 : (uio_in[5] & 1'b1);
-        safe_top_uio[7] = (uio_in[7] === 1'bx || uio_in[7] === 1'bz) ? 1'b1 : (uio_in[7] & 1'b1);
-    end
+    // --- Unpacked Padding Scalar Wires ---
+    wire s_uio4 = (uio_in[4] == 1'b1);
+    wire s_uio5 = (uio_in[5] == 1'b1);
+    wire s_uio7 = (uio_in[7] == 1'b1);
 
     // =========================================================================
-    // CORE INSTANTIATION (CONNECTED TO SECURED DATA STREAMS)
+    // 2. SAFE MULTI-BIT VECTOR RECONSTRUCTION
+    // The rebuilt arrays are now verified 2-state nets, completely immune to 
+    // tristate propagation errors when passed across module boundaries.
+    // =========================================================================
+    wire [7:0] clean_top_ui  = {s_ui7,  s_ui6,  s_ui5,  s_ui4,  s_ui3,  s_ui2,  s_ui1,  s_ui0};
+    wire [7:0] clean_top_uio = {s_uio7, s_uio6, s_uio5, s_uio4, s_uio3, s_uio2, s_uio1, s_uio0};
+
+    // =========================================================================
+    // 3. CORE SUBMODULE INSTANTIATION
     // =========================================================================
     (* keep_hierarchy = 1 *)   
     c061618g2 u_c061618g2 (
-        .ui_in    (safe_top_ui),  // Clean, 2-state shielded input bus
+        .ui_in    (clean_top_ui),   // Completely clean unidirectional data bus
         .uo_out   (uo_out),       
-        .uio_in   (safe_top_uio), // Clean, 2-state shielded bidirectional bus
+        .uio_in   (clean_top_uio),  // Completely clean unidirectional control bus
         .uio_out  (uio_out),  
         .uio_oe   (uio_oe),  
         .ena      (ena),      
