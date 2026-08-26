@@ -44,17 +44,54 @@ module tt_um_c061618g2 (
     end
 `endif
 */
+
+    // =========================================================================
+    // THE TOP-LEVEL HARDWARE MASK BOUNDARY (PRESERVES TRUE REBOOT POLARITIES)
+    // Running case-equality selections right here breaks the tristate graph
+    // while shielding the design from uninitialized simulation leaks.
+    // =========================================================================
+    logic [7:0] safe_top_ui;
+    logic [7:0] safe_top_uio;
+
+    always_comb begin
+        // --- ui_in Channel Masking ---
+        safe_top_ui[0] = (ui_in[0] === 1'bx || ui_in[0] === 1'bz) ? 1'b1 : (ui_in[0] & 1'b1); // A11
+        safe_top_ui[1] = (ui_in[1] === 1'bx || ui_in[1] === 1'bz) ? 1'b1 : (ui_in[1] & 1'b1); // A12
+        safe_top_ui[2] = (ui_in[2] === 1'bx || ui_in[2] === 1'bz) ? 1'b1 : (ui_in[2] & 1'b1); // A13
+        safe_top_ui[3] = (ui_in[3] === 1'bx || ui_in[3] === 1'bz) ? 1'b1 : (ui_in[3] & 1'b1); // A14
+        safe_top_ui[4] = (ui_in[4] === 1'bx || ui_in[4] === 1'bz) ? 1'b1 : (ui_in[4] & 1'b1); // A15
+        safe_top_ui[5] = (ui_in[5] === 1'bx || ui_in[5] === 1'bz) ? 1'b1 : (ui_in[5] & 1'b1); // map_n
+        safe_top_ui[6] = (ui_in[6] === 1'bx || ui_in[6] === 1'bz) ? 1'b0 : (ui_in[6] & 1'b1); // rd4 -> 0
+        safe_top_ui[7] = (ui_in[7] === 1'bx || ui_in[7] === 1'bz) ? 1'b0 : (ui_in[7] & 1'b1); // rd5 -> 0
+
+        // --- uio_in Channel Masking ---
+        safe_top_uio[0] = (uio_in[0] === 1'bx || uio_in[0] === 1'bz) ? 1'b0 : (uio_in[0] & 1'b1); // ren -> 0
+        safe_top_uio[1] = (uio_in[1] === 1'bx || uio_in[1] === 1'bz) ? 1'b1 : (uio_in[1] & 1'b1); // ref_n 
+        safe_top_uio[2] = (uio_in[2] === 1'bx || uio_in[2] === 1'bz) ? 1'b1 : (uio_in[2] & 1'b1); // mpd_n 
+        safe_top_uio[3] = (uio_in[3] === 1'bx || uio_in[3] === 1'bz) ? 1'b1 : (uio_in[3] & 1'b1); // be_n  
+        safe_top_uio[6] = (uio_in[6] === 1'bx || uio_in[6] === 1'bz) ? 1'b1 : (uio_in[6] & 1'b1); // FLG_IN_n
+
+        // Route unreferenced bits using safe identity logic to preserve graph isolation
+        safe_top_uio[4] = (uio_in[4] === 1'bx || uio_in[4] === 1'bz) ? 1'b1 : (uio_in[4] & 1'b1);
+        safe_top_uio[5] = (uio_in[5] === 1'bx || uio_in[5] === 1'bz) ? 1'b1 : (uio_in[5] & 1'b1);
+        safe_top_uio[7] = (uio_in[7] === 1'bx || uio_in[7] === 1'bz) ? 1'b1 : (uio_in[7] & 1'b1);
+    end
+
+    // =========================================================================
+    // CORE INSTANTIATION (CONNECTED TO SECURED DATA STREAMS)
+    // =========================================================================
     (* keep_hierarchy = 1 *)   
     c061618g2 u_c061618g2 (
-        .ui_in(ui_in),    
-        .uo_out(uo_out),  
-        .uio_in(uio_in),   
-        .uio_out(uio_out),  
-        .uio_oe(uio_oe),  
-        .ena(ena),      
-        .clk(clk),     
-        .rst_n(rst_n)    
-); 
+        .ui_in    (safe_top_ui),  // Clean, 2-state shielded input bus
+        .uo_out   (uo_out),       
+        .uio_in   (safe_top_uio), // Clean, 2-state shielded bidirectional bus
+        .uio_out  (uio_out),  
+        .uio_oe   (uio_oe),  
+        .ena      (ena),      
+        .clk      (clk),     
+        .rst_n    (rst_n)    
+    ); 
+
 endmodule
 
 `default_nettype wire
