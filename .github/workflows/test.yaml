@@ -40,7 +40,7 @@ jobs:
           pip install --upgrade volare
     
           # Pull PDK binaries into the folder layout
-          volare update --pdk sg13g2
+          volare download --pdk sg13g2
 
       - name: Copy PDK to Official Location for Simulation
         env:

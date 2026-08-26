@@ -86,7 +86,7 @@ module mmu_core #(
             raw_ci_n = 1'b0;
         end
 
-        assign raw_signals = {raw_s4_n, raw_io_n, raw_ci_n, raw_os_n, raw_basic_n, raw_s5_n};
+        raw_signals = {raw_s4_n, raw_io_n, raw_ci_n, raw_os_n, raw_basic_n, raw_s5_n};
     end
 
     // =========================================================================
