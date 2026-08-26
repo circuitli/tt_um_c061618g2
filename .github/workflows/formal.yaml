@@ -21,16 +21,19 @@ jobs:
         uses: actions/checkout@v4
 
       # =========================================================================
-      # 1. DETERMINING PINNED VOLARE HASH
+      # 1. EXTRACT PINNED HASH VIA BASH CLI WITH IMPLICIT OAUTH AUTHENTICATION
       # =========================================================================
       - name: Determine Pinned Volare Hash
         id: extract-hash
+        env:
+          # CRITICAL AUTOMATED LINK: Provides volare with an authentic API session,
+          # solving the "no oauth token found" crash and letting it parse 'sg13g2'.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Force install the core utility layer
+          # Force pull and refresh the utility binary engine
           pip install --upgrade volare
     
-          # FIXED LOGIC: Uses native binary parsing via bash to completely 
-          # eliminate unhandled Python library module AttributeErrors
+          # Read out the verified family taxonomy using authenticated tokens
           LATEST_HASH=$(volare family sg13g2 | grep -i "default" | awk '{print $NF}')
           echo "PDK_HASH=$LATEST_HASH" >> $GITHUB_OUTPUT
 

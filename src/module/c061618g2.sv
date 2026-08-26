@@ -28,6 +28,9 @@
 // =========================================================================
 // CUSTOM ATARI 800XL MMU (CO61618 REPRODUCTION CORE) - TINY TAPEOUT COMPLIANT
 // =========================================================================
+// =========================================================================
+// CUSTOM ATARI 800XL MMU (CO61618 REPRODUCTION CORE) - TINY TAPEOUT COMPLIANT
+// =========================================================================
 module c061618g2 (
     input  [7:0] ui_in,    // Dedicated hardware inputs
     output [7:0] uo_out,   // Dedicated hardware outputs
@@ -41,49 +44,60 @@ module c061618g2 (
     input  rst_n     // Part of the strict wrapper standard!
 );
 
+    // =========================================================================
+    // 1. VERILATOR LINT FIX: LOCAL PORTS TO STRIP TRISTATE PROPERTY
+    // Creating standard, non-tristate logic vectors forces Verilator to drop
+    // the top-level 'inout' tracking graph before entering any logic lines.
+    // =========================================================================
+    logic [7:0] local_ui_in;
+    logic [7:0] local_uio_in;
+    
+    assign local_ui_in  = ui_in;
+    assign local_uio_in = uio_in;
+
     /* verilator lint_off UNUSEDSIGNAL */
-    bit unused_p2_b7 = uio_in[7]; // Bit 7 -> Pmod 2, Pin 8 - Reserved
-    bit uio5_pad     = uio_in[5]; // Bit 5 -> Pmod 2, Pin 6 (Exempted; Output Lane)
-    bit TESTMODE_n   = uio_in[4]; // Industrial test platforms
+    bit unused_p2_b7 = local_uio_in[7]; // Bit 7 -> Pmod 2, Pin 8 - Reserved
+    bit uio5_pad     = local_uio_in[5]; // Bit 5 -> Pmod 2, Pin 6 (Exempted; Output Lane)
+    bit TESTMODE_n   = local_uio_in[4]; // Industrial test platforms
     /* verilator lint_on UNUSEDSIGNAL */
 
     // =========================================================================
-    // 1. INPUT CLEANSER LAYER (X/Z CASE-EQUALITY HARDWARE MASK)
+    // 2. INPUT CLEANSER LAYER (X/Z CASE-EQUALITY HARDWARE MASK)
     // Converts floating/uninitialized pins into safe, deterministic defaults.
     // =========================================================================
     logic [7:0] safe_ui, safe_uio;
 
-        always_comb begin
-        // 1. ADDRESS LINES DEFAULT TO 1 (Motherboard Pull-Up Resistors)
-        safe_ui[0] = (ui_in[0] === 1'bx || ui_in[0] === 1'bz) ? 1'b1 : ui_in[0]; // A11
-        safe_ui[1] = (ui_in[1] === 1'bx || ui_in[1] === 1'bz) ? 1'b1 : ui_in[1]; // A12
-        safe_ui[2] = (ui_in[2] === 1'bx || ui_in[2] === 1'bz) ? 1'b1 : ui_in[2]; // A13
-        safe_ui[3] = (ui_in[3] === 1'bx || ui_in[3] === 1'bz) ? 1'b1 : ui_in[3]; // A14
-        safe_ui[4] = (ui_in[4] === 1'bx || ui_in[4] === 1'bz) ? 1'b1 : ui_in[4]; // A15
+    always_comb begin
+        // ADDRESS LINES DEFAULT TO 1: Simulates the physical Atari motherboard 
+        // pull-up resistor behavior, preventing floating bus boots.
+        safe_ui[0] = (local_ui_in[0] === 1'bx || local_ui_in[0] === 1'bz) ? 1'b1 : local_ui_in[0]; // A11
+        safe_ui[1] = (local_ui_in[1] === 1'bx || local_ui_in[1] === 1'bz) ? 1'b1 : local_ui_in[1]; // A12
+        safe_ui[2] = (local_ui_in[2] === 1'bx || local_ui_in[2] === 1'bz) ? 1'b1 : local_ui_in[2]; // A13
+        safe_ui[3] = (local_ui_in[3] === 1'bx || local_ui_in[3] === 1'bz) ? 1'b1 : local_ui_in[3]; // A14
+        safe_ui[4] = (local_ui_in[4] === 1'bx || local_ui_in[4] === 1'bz) ? 1'b1 : local_ui_in[4]; // A15
         
-        // 2. ACTIVE-LOW CONTROL LINE DEFAULTS TO 1 (Motherboard Pull-Up)
-        safe_ui[5] = (ui_in[5] === 1'bx || ui_in[5] === 1'bz) ? 1'b1 : ui_in[5]; // map_n
+        // Active-low controls default to 1 (deasserted/idle)
+        safe_ui[5] = (local_ui_in[5] === 1'bx || local_ui_in[5] === 1'bz) ? 1'b1 : local_ui_in[5]; // map_n
         
-        // 3. CARTRIDGE DETECTION LINES DEFAULT TO 0 (Motherboard Pull-Down Resistors)
-        // If uninitialized or floating, we simulate NO cartridge inserted.
-        safe_ui[6] = (ui_in[6] === 1'bx || ui_in[6] === 1'bz) ? 1'b0 : ui_in[6]; // rd4 -> 0
-        safe_ui[7] = (ui_in[7] === 1'bx || ui_in[7] === 1'bz) ? 1'b0 : ui_in[7]; // rd5 -> 0
+        // ATARI HARDWARE RULE: Cartridge lines RD4/RD5 have physical 1k pull-downs!
+        safe_ui[6] = (local_ui_in[6] === 1'bx || local_ui_in[6] === 1'bz) ? 1'b0 : local_ui_in[6]; // rd4 -> 0
+        safe_ui[7] = (local_ui_in[7] === 1'bx || local_ui_in[7] === 1'bz) ? 1'b0 : local_ui_in[7]; // rd5 -> 0
 
-        // 4. CPU INTERFACE LINE DEFAULTS TO 1 (Read Mode)
-        safe_uio[0] = (uio_in[0] === 1'bx || uio_in[0] === 1'bz) ? 1'b1 : uio_in[0]; // ren (R/W Line)
+        // CPU R/W Line defaults to 1'b1 (Read Mode) to prevent write-glitches on boot
+        safe_uio[0] = (local_uio_in[0] === 1'bx || local_uio_in[0] === 1'bz) ? 1'b1 : local_uio_in[0]; // ren
         
-        // 5. REMAINING ACTIVE-LOW CONTROL STREAMS DEFAULT TO 1 (Idle/Deasserted)
-        safe_uio[1] = (uio_in[1] === 1'bx || uio_in[1] === 1'bz) ? 1'b1 : uio_in[1]; // ref_n 
-        safe_uio[2] = (uio_in[2] === 1'bx || uio_in[2] === 1'bz) ? 1'b1 : uio_in[2]; // mpd_n 
-        safe_uio[3] = (uio_in[3] === 1'bx || uio_in[3] === 1'bz) ? 1'b1 : uio_in[3]; // be_n  
-        safe_uio[4] = (uio_in[4] === 1'bx || uio_in[4] === 1'bz) ? 1'b1 : uio_in[4]; // FLG_IN_n
+        // Remaining active-low lines default to 1 (idle/deasserted)
+        safe_uio[1] = (local_uio_in[1] === 1'bx || local_uio_in[1] === 1'bz) ? 1'b1 : local_uio_in[1]; // ref_n 
+        safe_uio[2] = (local_uio_in[2] === 1'bx || local_uio_in[2] === 1'bz) ? 1'b1 : local_uio_in[2]; // mpd_n 
+        safe_uio[3] = (local_uio_in[3] === 1'bx || local_uio_in[3] === 1'bz) ? 1'b1 : local_uio_in[3]; // be_n  
+        safe_uio[6] = (local_uio_in[6] === 1'bx || local_uio_in[6] === 1'bz) ? 1'b1 : local_uio_in[6]; // FLG_IN_n
 
-        // Ground remaining structural bits safely
-        safe_uio[7:5] = uio_in[7:5];
+        // Map remaining unreferenced buffer positions to resolve UNUSEDSIGNAL linter flags
+        safe_uio[7:4] = local_uio_in[7:4];
     end
 
     // =========================================================================
-    // 2. HARDWARE BUS CONCATENATION (USING SAFE LAYER VALUES)
+    // 3. HARDWARE BUS CONCATENATION (USING SAFE LAYER VALUES)
     // =========================================================================
     wire [12:0] functional_unfiltered;    
     assign functional_unfiltered = {
@@ -93,7 +107,7 @@ module c061618g2 (
     };
 
     // =========================================================================
-    // 3. CLOCKLESS ASYNCHRONOUS GLITCH FILTER MATRIX
+    // 4. CLOCKLESS ASYNCHRONOUS GLITCH FILTER MATRIX
     // =========================================================================
     wire [12:0] filtered;
     
@@ -107,46 +121,31 @@ module c061618g2 (
     );
 
     // =========================================================================
-    // 4. VERILATOR TRISTATE ISOLATION LAYER
-    // =========================================================================
-    logic clean_be_n;
-    logic clean_mpd_n;
-    logic clean_ref_n;
-    logic clean_ren;
-
-    assign clean_be_n  = filtered[11];
-    assign clean_mpd_n = filtered[10];
-    assign clean_ref_n = filtered[9];
-    assign clean_ren   = filtered[8];
-    
-    // ---- BUS DIRECTION HARDCODING ----
-    assign uio_oe = 8'b00100000; 
-
-    // =========================================================================
-    // 5. MEMORY MANAGEMENT DECODING INSTANTIATION (MMU CORE)
+    // 5. UNIDIRECTIONAL MODULE PORT PASS-THROUGH
+    // By passing specific sliced indices directly into the port connections,
+    // Verilator successfully views them as pure inputs, solving the 'ren' crash.
     // =========================================================================
     pmod3_outputs_t core_signals;
-
-    // Package the filtered 8-bit bus into the struct format
     pmod1_inputs_t mmu_core_in;
+    
     assign mmu_core_in.control_bits = filtered[7:5]; // rd5, rd4, map_n
     assign mmu_core_in.addr         = filtered[4:0]; // A15, A14, A13, A12, A11
 
     mmu_core core_inst (
         .core_in  (mmu_core_in), 
-        .ren      (clean_ren),   
-        .ref_n    (clean_ref_n), 
-        .mpd_n    (clean_mpd_n), 
-        .be_n     (clean_be_n),  
+        .ren      (filtered[8]),   
+        .ref_n    (filtered[9]), 
+        .mpd_n    (filtered[10]), 
+        .be_n     (filtered[11]),  
         .core_out (core_signals)
     );
 
-    wire FLG_IN_n_top = filtered[12];
+    // ---- BUS DIRECTION HARDCODING ----
+    assign uio_oe = 8'b00100000; 
 
-    // Evaluate master system override control flags
+    wire FLG_IN_n_top = filtered[12];
     wire system_disabled = (FLG_IN_n_top === 1'b0) || (ena === 1'b0) || (rst_n === 1'b0);
     wire FLG_n = system_disabled ? 1'b0 : 1'b1;
-
     wire a11_top = filtered[0]; 
 
     /* verilator lint_off UNUSED */
@@ -157,11 +156,8 @@ module c061618g2 (
     // =========================================================================
     // 6. PHYSICAL ROUTING MATRIX (PURE ASYNCHRONOUS PADS)
     // =========================================================================
-    
-    // --- Pmod 2 Outputs Mapping ---
     assign uio_out = {2'b00, a11_top, 5'b00000};
 
-    // --- Pmod 3 Outputs Mapping (uo_out) ---
     assign uo_out[7] = 1'b0;                                                // Static ground tie-off
     assign uo_out[6] = FLG_n;                                               // Instant, filtered safety status 
     assign uo_out[5] = system_disabled ? 1'b1 : core_signals.s4_n;          // S4 Expansion Select Lane
@@ -172,7 +168,6 @@ module c061618g2 (
     assign uo_out[0] = system_disabled ? 1'b1 : core_signals.s5_n;          // S5 Expansion Select Lane
 
 endmodule
-
 
 `default_nettype wire
 `endif
