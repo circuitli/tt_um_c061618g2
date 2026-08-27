@@ -18,7 +18,7 @@
 `define C061618G2_SV
 `default_nettype none
 
-`include "src/core/mmu_coresv"
+`include "src/core/mmu_core.sv"
 
 module c061618g2 (
     input  wire  [7:0] ui_in,    // Dedicated hardware inputs
