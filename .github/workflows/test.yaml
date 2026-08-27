@@ -32,12 +32,6 @@ jobs:
         shell: bash
         run: pip install -r test/requirements.txt
   
-      # Install PDK
-      #- name: Setup PDK
-      #  uses: TinyTapeout/tt-gds-action@ttihp26b
-      #  with:
-      #    pdk: ihp-sg13g2
-
       - name: Install and Run PDK Downloader Directly
         run: |
           # 1. Install ciel (the open-source IHP PDK version manager)
