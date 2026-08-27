@@ -52,18 +52,26 @@ else ifeq ($(SIM),icarus)
     ifneq ($(GATES),yes)
         # RTL simulation:
         SIM_BUILD		= sim_build/rtl
-        #VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
-    
+        COMPILE_ARGS    += -DSIM
+        # This allows Icarus to load real nanosecond timing data from the PDK.
+        # We pass the default typical timing corner resolution mapping:
+        COMPILE_ARGS += -Ttyp
+        
         #2. Append compilation macros
         COMPILE_ARGS += -DFUNCTIONAL -gno-specify
 
+        #VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
+
         # 2. Instruct Icarus to append the .v suffix to search tokens 
         # when hunting down missing modules like sg13g2_decap_8.
-        COMPILE_ARGS += -y $(PWD) -y $(PWD)/../src
-        COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2/verilog
-        COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
-        COMPILE_ARGS += -y /opt/pdk/ihp-sg13g2/libs.ref/sg13g2/verilog
-        COMPILE_ARGS += -v $(CLEAN_LOCAL_CELLS)
+        #COMPILE_ARGS += -y $(PWD) -y $(PWD)/../src
+        #COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2/verilog
+        #COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
+        #COMPILE_ARGS += -y /opt/pdk/ihp-sg13g2/libs.ref/sg13g2/verilog
+
+        # 3. Strip the raw PDK path from the sources and append our clean local version instead
+        VERILOG_SOURCES := $(filter-out $(RAW_PDK_CELLS) %sg13g2_stdcell.v, $(VERILOG_SOURCES))
+        VERILOG_SOURCES += $(CLEAN_LOCAL_CELLS)
     else
         # Gate level simulation:
         SIM_BUILD		= sim_build/gl
