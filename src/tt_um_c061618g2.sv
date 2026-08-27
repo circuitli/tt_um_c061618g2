@@ -130,6 +130,7 @@ module tt_um_c061618g2 (
     // Uses structural gate logic to force clean states when 'ena' is low.
     // When 'ena' goes high, it acts as a perfect, non-blocking wire path.
     // =========================================================================
+    /*
     always_comb begin
         // --- Synthesizable Pull-Up Shield (OR Gate forces 1'b1 when ena=0) ---
         safe_ui[0] = ui_in[0] | ~ena; // A11 Address line
@@ -154,7 +155,16 @@ module tt_um_c061618g2 (
         safe_uio[4] = 1'b0;
         safe_uio[5] = 1'b0;
         safe_uio[7] = 1'b0;
-    end
+    end#
+    */
+
+    // =========================================================================
+    // INTERMEDIATE FUNCTIONAL TRACKING WIRES
+    // =========================================================================
+    // Instantiate your packed struct as an internal variable to catch core logic
+    pmod3_outputs_t core_pmod3_out; 
+    
+    wire [7:0] core_uio_out;
 
     // =========================================================================
     // 3. CORE SUBMODULE INSTANTIATION
@@ -162,14 +172,30 @@ module tt_um_c061618g2 (
     (* keep_hierarchy = 1 *)   
     c061618g2 u_c061618g2 (
         .ui_in    (safe_ui),   // Completely clean unidirectional data bus
-        .uo_out   (uo_out),       
+        .uo_out   (core_pmod3_out),       
         .uio_in   (safe_uio),  // Completely clean unidirectional control bus
-        .uio_out  (uio_out),  
+        .uio_out  (core_uio_out),  
         .uio_oe   (uio_oe),  
         .ena      (ena),      
         .clk      (clk),     
         .rst_n    (rst_n)    
     ); 
+
+    // =========================================================================
+    // CORRECTED ACTIVE-LOW HARDWARE FIREWALL
+    // If out_en is true, pass functional core values.
+    // If out_en is false (reset/disabled/X), force safe idle lines (All 1s, Bit 7 = 0)
+    // =========================================================================
+    
+    // Explicitly confirm both control pins are driven high to allow pass-through
+    wire out_en = (ena == 1'b1) && (rst_n == 1'b1);
+
+    // Safe Idle Configuration: 8'b01111111 (Bit 7 is 0, Bits 6-0 are 1)
+    assign uo_out  = (out_en) ? 8'(core_pmod3_out) : 8'b01111111;
+    
+    // Keep bidirectional control buses safe during reset
+    assign uio_out = (out_en) ? core_uio_out       : 8'b00000000;
+
 
 endmodule
 
