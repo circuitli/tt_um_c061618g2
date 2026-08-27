@@ -7,6 +7,7 @@ FST ?= -fst # Use more efficient FST format
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
 PROJECT_SOURCES = tt_um_c061618g2.sv
+COMPILE_ARGS += -g2012
 
 # Fallback to your local formal project copy if PDK_ROOT isn't defined on Windows
 #PDK_ROOT ?= $(PWD)/formal
@@ -28,7 +29,6 @@ ifeq ($(SIM),verilator)
     COMPILE_ARGS += --timing -y $(PWD) -y $(PWD)/../src
     COMPILE_ARGS += -Wno-fatal -Wno-UNOPTFLAT -Wno-BLKANDNBLK -Wno-MODDUP
 else ifeq ($(SIM),icarus)
-    COMPILE_ARGS += -g2012
     COMPILE_ARGS += -DCOCOTB_SIM
     # =========================================================================
     # TIMESCALE RESOLUTION INJECTION
@@ -82,7 +82,8 @@ COMPILE_ARGS 		+= -I..
 
 # Include the testbench sources:
 VERILOG_SOURCES += $(PWD)/tb.v
-TOPLEVEL = tb
+#TOPLEVEL = tb
+COCOTB_TOPLEVEL = tb
 
 # List test modules to run, separated by commas and without the .py suffix:
 COCOTB_TEST_MODULES = test

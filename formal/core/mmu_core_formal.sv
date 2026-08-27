@@ -58,51 +58,44 @@ module mmu_core_formal #(
 
     // -------------------------------------------------------------------------
     // 1. GLOBAL ASYNCHRONOUS RESET SAFE-STATE PROOF
-    // Property: During reset, all active-low lines must drive high (1'b1).
-    // This prevents accidental bus contention or memory selections.
     // -------------------------------------------------------------------------
     asm_mmu_reset_assert: assert property (
-        (!rst_n) -> (out_vec == 6'b111111)
+        rst_n || (out_vec == 6'b111111)
     );
 
     // -------------------------------------------------------------------------
-    // 2. ADDRESS DECODING PROOFS
+    // 2. ADDRESS DECODING PROOFS (ARROW-FREE TRANSFORMS)
     // -------------------------------------------------------------------------
     
     // /S4 Expansion Right Cartridge Select ($8000-$9FFF)
     asm_decode_s4_assert: assert property (
-        (rst_n && !a13 && !a14 && a15 && rd4 && ref_n) -> (s4_n == 1'b0)
+        !(rst_n && !a13 && !a14 && a15 && rd4 && ref_n) || (s4_n == 1'b0)
     );
 
     // /S5 Expansion Left Cartridge Select ($A000-$BFFF)
     asm_decode_s5_assert: assert property (
-        (rst_n && a13 && !a14 && a15 && rd5 && ref_n) -> (s5_n == 1'b0)
+        !(rst_n && a13 && !a14 && a15 && rd5 && ref_n) || (s5_n == 1'b0)
     );
 
     // /BASIC CS Memory Space Decode ($A000-$BFFF if enabled via port)
     asm_decode_basic_assert: assert property (
-        (rst_n && a13 && !a14 && a15 && !rd5 && !be_n && ref_n) -> (basic_n == 1'b0)
+        !(rst_n && a13 && !a14 && a15 && !rd5 && !be_n && ref_n) || (basic_n == 1'b0)
     );
 
     // /IO Peripheral Space Decode ($D000 Custom IC Registers)
     asm_decode_io_assert: assert property (
-        (rst_n && !a11 && a12 && !a13 && a14 && a15 && ref_n) -> (io_n == 1'b0)
+        !(rst_n && !a11 && a12 && !a13 && a14 && a15 && ref_n) || (io_n == 1'b0)
     );
 
     // -------------------------------------------------------------------------
     // 3. MUTUAL EXCLUSION MUTUAL INDUCTION PROOF
-    // Property: /BASIC and /S5 space overlap on the physical address bus.
-    // They must never be allowed to select simultaneously to prevent short-circuits.
     // -------------------------------------------------------------------------
     asm_mmu_exclusion_assert: assert property (
-        (rst_n) -> !(basic_n == 1'b0 && s5_n == 1'b0)
+        !rst_n || !(basic_n == 1'b0 && s5_n == 1'b0)
     );
 
     // -------------------------------------------------------------------------
     // 4. METASTABILITY & X-PROPAGATION BOUNDARY PROOF
-    // FIXED: Replaced non-existent $entry function with an XOR reduction check.
-    // This forces the SMT engine to verify that the output pins are strictly
-    // binary (0 or 1) and never leak uninitialized state bits.
     // -------------------------------------------------------------------------
     asm_mmu_clean_bus_assert: assert property (
         (out_vec ^ out_vec) === 6'b000000
