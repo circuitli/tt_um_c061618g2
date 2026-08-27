@@ -26,7 +26,7 @@
 `default_nettype none
 
 // =========================================================================
-// CUSTOM ATARI 800XL MMU REPRODUCTION CORE - TINY TAPEOUT ASIC COMPLIANT
+// CUSTOM MMU REPRODUCTION CORE - TINY TAPEOUT ASIC COMPLIANT
 // True structural bit-slicing automatically severs the linter tracking graph,
 // completely eliminating all intermediate layers, masks, and shields.
 // =========================================================================
@@ -52,7 +52,7 @@ module mmu_core #(
     assign {a15, a14, a13, a12, a11} = core_in.addr;
 
     // =========================================================================
-    // 2. ATARI CO61618 CHIP DECODING MATRIX
+    // 2. CHIP DECODING MATRIX
     // Evaluates combinational logic equations smoothly from 2-state vectors.
     // Gated by rst_n to force active-low signals high (inactive) during reset.
     // =========================================================================

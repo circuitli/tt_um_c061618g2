@@ -29,42 +29,24 @@ module async_latch_cell (
 );
 
     // =========================================================================
-    // HARDENED MUX-BASED ASYNCHRONOUS LATCH WITH FULL LOOP CLEARING
-    // Replaces discrete logic feedback loops with a glitch-minimized
-    // safe multiplexer cell, ensuring zero residual feedback during reset.
+    // HIGH-RELIABILITY ZERO-DELAY ASYNCHRONOUS LATCH
+    // Fully eliminates simulation delay hacks (#1).
+    // Uses a stable, mathematically locked consensus loop that resolves
+    // instantly within a single simulator delta-cycle.
     // =========================================================================
     
-    (* keep = 1 *) wire mux_out;
-    (* keep = 1 *) wire feedback_loop;
+    (* keep = 1, dont_touch = "true" *) wire latch_core;
 
-    `ifdef COCOTB_SIM
-        // Prevent delta-cycle simulator lockups during zero-delay simulation
-        // The feedback loop is explicitly zeroed when rst_n goes low
-        assign #1 feedback_loop = rst_n ? q : 1'b0;
-    `else
-        // Structural fix: Clears the feedback channel instantly on reset
-        assign feedback_loop = rst_n ? q : 1'b0;
-    `endif
+    // -------------------------------------------------------------------------
+    // CLEAN CONTINUOUS LOGIC LOOP CONTEXT
+    // This Sum-of-Products (SOP) equation includes a consensus term (hold & latch_core)
+    // which prevents output droop or glitches during selection transitions.
+    // Every single product term is gated by rst_n to break feedback instantly.
+    // -------------------------------------------------------------------------
+    assign latch_core = (set & hold & rst_n) | (!set & latch_core & rst_n) | (hold & latch_core & rst_n);
 
-    // Functional Truth:
-    // When 'set' is active (high), we force the latch to sample 'hold'.
-    // When 'set' is inactive (low), the latch samples its own 'feedback_loop'.
-    // mapping parameters to the safe async multiplexer:
-    // a0 -> feedback_loop (Selected when set == 0)
-    // a1 -> hold          (Selected when set == 1)
-    // s  -> set           (Toggle select line)
-    // y  -> mux_out       (Glitch-free result)
-    safe_async_mux u_latch_mux (
-        .rst_n (rst_n),
-        .a0    (feedback_loop),
-        .a1    (hold),
-        .s     (set),
-        .y     (mux_out)
-    );
-
-    // Secure Output Boundary: Prevents uninitialized states or glitches 
-    // from sneaking past the latch core when rst_n drops to 0.
-    assign q = rst_n ? mux_out : 1'b0;
+    // Secure, type-isolated output boundary
+    assign q = rst_n ? latch_core : 1'b0;
 
 endmodule
 

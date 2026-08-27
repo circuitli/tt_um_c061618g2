@@ -51,9 +51,9 @@ module tt_um_c061618g2_formal (
     );
 
     // --------------------------------------------------------------------------
-    // 3. Atari Bus Contention Prevention Rules
+    // 3. Bus Contention Prevention Rules
     // --------------------------------------------------------------------------
-    // Verify bidirectional out-enables map safely to valid Atari configurations
+    // Verify bidirectional out-enables map safely to valid configurations
     a_uio_oe_safety: assert property (
         @(posedge clk) disable iff (!rst_n)
         ena |-> (uio_oe == 8'h00 || uio_oe == 8'hFF || uio_oe == 8'hF0 || uio_oe == 8'h0F)

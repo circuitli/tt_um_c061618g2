@@ -66,7 +66,7 @@ module mmu_core_formal #(
     );
 
     // -------------------------------------------------------------------------
-    // 2. ATARI CO61618 SPECIFICATION ADDRESS DECODING PROOFS
+    // 2. ADDRESS DECODING PROOFS
     // -------------------------------------------------------------------------
     
     // /S4 Expansion Right Cartridge Select ($8000-$9FFF)
