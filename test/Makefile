@@ -37,13 +37,16 @@ CLEAN_LOCAL_CELLS = $(CURDIR)/sg13g2_stdcell_functional.v
 # 1. Create a local functional copy with the problematic lines deleted
 $(shell sed '/ifnone/d' $(RAW_PDK_CELLS) > $(CLEAN_LOCAL_CELLS))
 
-#2. Append compilation macros
-COMPILE_ARGS += -DFUNCTIONAL -gno-specify
+COMPILE_ARGS += -timescale=1ns/1ps
 
 ifneq ($(GATES),yes)
     # RTL simulation:
     SIM_BUILD		= sim_build/rtl
     VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
+    
+    #2. Append compilation macros
+    COMPILE_ARGS += -DFUNCTIONAL -gno-specify
+
     # 2. Instruct Icarus to append the .v suffix to search tokens 
     # when hunting down missing modules like sg13g2_decap_8.
     COMPILE_ARGS += -y $(PWD) -y $(PWD)/../src
