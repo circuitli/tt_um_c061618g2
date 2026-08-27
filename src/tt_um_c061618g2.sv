@@ -72,6 +72,7 @@ module tt_um_c061618g2 (
     // Placing these bit-by-bit inside an always_comb block forces Verilator
     // to drop the structural wire tracking graph, rendering them as clean variables.
     // =========================================================================
+    /*
     always_comb begin
         // --- ui_in Channel Masking (Address Matrix & Map Controls) ---
         // Address lines A11-A15 default high (1'b1) via motherboard pull-ups
@@ -105,7 +106,23 @@ module tt_um_c061618g2 (
         safe_uio[5] = (uio_in[5] == 1'b1);
         safe_uio[7] = (uio_in[7] == 1'b1);
     end
+    */
 
+    always_comb begin
+        if (!rst_n) begin
+            // --- HARDWARE RESET STATE (Forces safe pull-up/down values) ---
+            safe_ui[4:0] = 5'b11111; // Default address lines high
+            safe_ui[5]   = 1'b1;     // Default map_n high (idle)
+            safe_ui[7:6] = 2'b00;    // Default rd4/rd5 low
+            
+            safe_uio     = 8'b11111110; // Sets control lines to default idle states
+        end else begin
+            // --- ACTIVE FUNCTIONAL STATE ---
+            // Direct pass-through. Transistors handle standard high/low logic.
+            safe_ui  = ui_in;
+            safe_uio = uio_in;
+        end
+    end
     // =========================================================================
     // 3. CORE SUBMODULE INSTANTIATION
     // =========================================================================
