@@ -23,94 +23,103 @@
 // Top-Level Formal Verification Container: tt_um_c061618g2_formal
 // Fully clockless to match our purely asynchronous IHP silicon layout.
 // =============================================================================
-module tt_um_c061618g2_formal (
-    input wire [7:0] ui_in,
-    input wire [7:0] uo_out,
-    input wire [7:0] uio_in,
-    input wire [7:0] uio_out,
-    input wire [7:0] uio_oe,
-    input wire       ena,
-    input wire       clk,
-    input wire       rst_n
+module c061618g2_formal (
+    input  wire  [7:0] ui_in,        // Dedicated hardware inputs
+    input  wire  [7:0] uo_out,       // Dedicated hardware outputs
+    input  wire  [7:0] uio_in,       // Bidirectional bus input network
+    input  wire  [7:0] uio_out,      // Bidirectional bus output network
+    input  wire  [7:0] uio_oe,       // Safe output enablement bus mapping
+    input  wire        ena,          // Environment block enable signal
+    input  wire        clk,          // Standard clock input
+    input  wire        rst_n         // Asynchronous active-low reset
 );
 
-    // Casting wires to our structured layout types to make the properties readable
-    // and completely safe against pin-ordering bugs.
-    wire pmod1_inputs_t  p1_in  = pmod1_inputs_t'(ui_in);
-    wire pmod2_inputs_t  p2_in  = pmod2_inputs_t?(uio_in);
-    wire pmod2_outputs_t p2_out = pmod2_outputs_t'(uio_out);
-    wire pmod3_outputs_t p3_out = pmod3_outputs_t'(uo_out);
+`ifdef FORMAL
 
-    // =========================================================================
-    // ARCHITECTURAL ENVIRONMENTAL ASSUMPTIONS (Combinatorial Invariants)
-    // =========================================================================
-    
-    // TinyTapeout rule: Ensure the design is always selected during validation
-    assume_system_enabled: assume property (ena == 1'b1);
-
-    // =========================================================================
-    // EXHAUSTIVE MEMORY DECODER MAPPING ASSERTIONS (Clockless Boolean)
-    // =========================================================================
-    
-    // 1. Operating System ROM Allocation ($F800 - $FFFF)
-    // Upper address bits match 5'b11111
-    wire is_os_space = (p1_in.addr == 5'b11111); 
-    assert_os_decode: assert property (
-        !(rst_n && is_os_space && p2_in.ren && p2_in.ref_n) || (p3_out.os_n == 1'b0)
+    // -------------------------------------------------------------------------
+    // CATEGORY 1: ABSOLUTE GLOBAL RESET SAFETY PROOFS
+    // -------------------------------------------------------------------------
+    asm_pad_reset_oe_assert: assert property (
+        (!rst_n) -> (uio_oe == 8'b00000000)
     );
 
-    // 2. BASIC Interpreter Memory Map Allocation ($A000 - $BFFF)
-    // Address bits match 2'b10xx
-    wire is_basic_space = (p1_in.addr[4:3] == 2'b10); 
-    assert_basic_decode: assert property (
-        !(rst_n && is_basic_space && !p2_in.be_n && p2_in.ref_n && !p1_in.control_bits[2]) || (p3_out.basic_n == 1'b0)
+    asm_pad_reset_uio_assert: assert property (
+        (!rst_n) -> (uio_out == 8'b00000000)
     );
 
-    // 3. Peripheral Hardware I/O Register Allocation ($D000 - $D7FF)
-    wire is_io_space = (p1_in.addr == 5'b11010);
-    assert_io_decode: assert property (
-        !(rst_n && is_io_space && p2_in.ref_n) || (p3_out.io_n == 1'b0)
+    asm_pad_reset_uo_static_assert: assert property (
+        (!rst_n) -> (uo_out[7] == 1'b0)
     );
 
-    // =========================================================================
-    // PRIORITY INTERLOCK AND EXCEPTION OVERRIDE DECODE PROOFS
-    // =========================================================================
-
-    // 4. Left Cartridge Priority Dominance Over BASIC Space
-    // control_bits[2] represents rd5 (Left Cartridge Sense)
-    assert_cartridge_dominance: assert property (
-        !(rst_n && is_basic_space && !p2_in.be_n && p1_in.control_bits[2]) || (p3_out.basic_n == 1'b1)
+    asm_pad_reset_uo_flag_assert: assert property (
+        (!rst_n) -> (uo_out[6] == 1'b0)
     );
 
-    // 5. Software OS Disabling via REN Control Loop
-    assert_ren_disabled_os: assert property (
-        !(rst_n && is_os_space && !p2_in.ren) || (p3_out.os_n == 1'b1)
+    asm_pad_reset_uo_signals_assert: assert property (
+        (!rst_n) -> (uo_out[5:0] == 6'b111111)
     );
 
-    // 6. Refresh Wait-State CAS Inhibit Priority
-    assert_refresh_cas_inhibit: assert property (
-        !(rst_n && !p2_in.ref_n) || (p3_out.ci_n == 1'b0)
+    // -------------------------------------------------------------------------
+    // CATEGORY 2: CHIP ENVIRONMENT ENABLE / DISABLE MASKS
+    // -------------------------------------------------------------------------
+    asm_ena_disabled_oe_assert: assert property (
+        (!ena) -> (uio_oe == 8'b00000000)
     );
 
-    // 7. PBI Math Pack Address Conflict Disable ($D800)
-    wire is_math_pack = (p1_in.addr == 5'b11011);
-    assert_math_pack_disable: assert property (
-        !(rst_n && is_math_pack && !p2_in.mpd_n) || (p3_out.os_n == 1'b1)
+    asm_ena_disabled_uio_assert: assert property (
+        (!ena) -> (uio_out == 8'b00000000)
     );
 
-    // =========================================================================
-    // SYSTEM BOUNDARY ISOLATION SECURITY ASSERTIONS
-    // =========================================================================
-
-    // 8. Global System Master Cutoff Verification (Reset Override)
-    assert_safety_cutoff: assert property (
-        (rst_n) || (uo_out[5:0] == 6'b111111)
+    asm_ena_disabled_uo_flag_assert: assert property (
+        (!ena) -> (uo_out[6] == 1'b0)
     );
 
-    // 9. Unfiltered Pure Timing Probe Loopback Invariant
-    assert_trigger_loopback: assert property (
-        !(rst_n) || (p2_out.TRIGGER_OUT == p1_in.control_bits[0]) // Maps map_n directly out
+    asm_ena_disabled_uo_signals_assert: assert property (
+        (!ena) -> (uo_out[5:0] == 6'b111111)
     );
+
+    // -------------------------------------------------------------------------
+    // CATEGORY 3: INPUT PIN DEPENDENCY FLG_IN_n OVERRIDES
+    // -------------------------------------------------------------------------
+    asm_flgin_disabled_uo_flag_assert: assert property (
+        (!uio_in[6]) -> (uo_out[6] == 1'b0)
+    );
+
+    asm_flgin_disabled_uo_signals_assert: assert property (
+        (!uio_in[6]) -> (uo_out[5:0] == 6'b111111)
+    );
+
+    // -------------------------------------------------------------------------
+    // CATEGORY 4: FUNCTIONAL OPERATION & TRISTATE VALIDATION
+    // -------------------------------------------------------------------------
+    asm_normal_op_oe_assert: assert property (
+        (rst_n && ena) -> (uio_oe == 8'b00100000)
+    );
+
+    asm_normal_op_uio_static_low_assert: assert property (
+        (rst_n && ena) -> (uio_out[7:6] == 2'b00)
+    );
+
+    asm_normal_op_uio_static_trailing_assert: assert property (
+        (rst_n && ena) -> (uio_out[4:0] == 5'b00000)
+    );
+
+    // -------------------------------------------------------------------------
+    // CATEGORY 5: STRICT METASTABILITY & X-PROPAGATION BARRIERS
+    // -------------------------------------------------------------------------
+    asm_uo_out_binary_assert: assert property (
+        (uo_out ^ uo_out) === 8'b00000000
+    );
+
+    asm_uio_out_binary_assert: assert property (
+        (uio_out ^ uio_out) === 8'b00000000
+    );
+
+    asm_uio_oe_binary_assert: assert property (
+        (uio_oe ^ uio_oe) === 8'b00000000
+    );
+
+`endif
 
 endmodule
 

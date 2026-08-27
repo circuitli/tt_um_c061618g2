@@ -29,7 +29,17 @@ module async_glitch_filter #(
 );
 
     (* keep = 1 *) wire [STAGES:0] delay_chain /*verilator split_var*/;
-    assign delay_chain[0] = async_in;
+
+    // -------------------------------------------------------------------------
+    // NON-INVERTING ENTRY RESET GATE
+    // Prevents un-reset transitions from propagating down the inverter chain.
+    // Uses the non-inverting .X pin of sg13g2_and2_1 to preserve layout symmetry.
+    // -------------------------------------------------------------------------
+    (* dont_touch = "true" *) sg13g2_and2_1 u_input_reset_gate (
+        .A (async_in),
+        .B (rst_n),
+        .X (delay_chain[0])
+    );
 
     // Array to trap the outputs of the capacitor nodes so they are never floating
     wire [STAGES-1:0] functional_cap_sink_a;
@@ -67,9 +77,10 @@ module async_glitch_filter #(
 
     // =========================================================================
     // GLITCH DETECTION WINDOWS 
+    // Gated by rst_n to force a clean, known low state when reset is active.
     // =========================================================================
-    wire filter_set  = &delay_chain[STAGES:1];
-    wire filter_hold = |delay_chain[STAGES:1];
+    wire filter_set  = (&delay_chain[STAGES:1]) & rst_n;
+    wire filter_hold = (|delay_chain[STAGES:1]) & rst_n;
 
     // =========================================================================
     // THE SINK GUARANTEE
@@ -94,7 +105,12 @@ module async_glitch_filter #(
         .q     (latch_raw_out)
     );
 
-    assign async_out = rst_n ? latch_raw_out : async_in;
+    // =========================================================================
+    // SECURE OUTPUT BOUNDARY
+    // Forces the output to a safe logic 0 during reset to prevent raw, 
+    // un-reset asynchronous inputs from leaking downstream into the logic fabric.
+    // =========================================================================
+    assign async_out = rst_n ? latch_raw_out : 1'b0;
 
 endmodule
 

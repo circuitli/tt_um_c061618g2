@@ -33,6 +33,7 @@
 module mmu_core #(
     parameter int FILTER_STAGES = 4
 )(
+    input  wire                 rst_n,     // Asynchronous active-low reset
     input  wire  pmod1_inputs_t  core_in,   // Packed structural input net array
     input  wire                 ren,       // OS ROM Read Enable (Active-High)
     input  wire                 ref_n,     // DRAM Refresh Cycle (Active-Low)
@@ -53,13 +54,14 @@ module mmu_core #(
     // =========================================================================
     // 2. ATARI CO61618 CHIP DECODING MATRIX
     // Evaluates combinational logic equations smoothly from 2-state vectors.
+    // Gated by rst_n to force active-low signals high (inactive) during reset.
     // =========================================================================
     logic [5:0] clean_signals;
     logic [5:0] raw_signals;
     logic       raw_s4_n, raw_s5_n, raw_basic_n, raw_io_n, raw_os_n, raw_ci_n, local_os_n;
 
     always_comb begin
-        // Hardwired Active-Low Pull-Up Baselines (Deasserted)
+        // Hardwired Active-Low Pull-Up Baselines (Deasserted / High)
         raw_s4_n    = 1'b1;
         raw_s5_n    = 1'b1;
         raw_basic_n = 1'b1;
@@ -68,43 +70,46 @@ module mmu_core #(
         raw_ci_n    = 1'b1; 
         local_os_n  = 1'b1;
 
-        // Evaluate /S4 Expansion Right Cartridge Select ($8000-$9FFF)
-        if (!a13 && !a14 && a15 && rd4 && ref_n) begin
-            raw_s4_n = 1'b0;
-        end
+        // Only evaluate decoding matrix if the system is not in reset
+        if (rst_n) begin
+            // Evaluate /S4 Expansion Right Cartridge Select ($8000-$9FFF)
+            if (!a13 && !a14 && a15 && rd4 && ref_n) begin
+                raw_s4_n = 1'b0;
+            end
 
-        // Evaluate /S5 Expansion Left Cartridge Select ($A000-$BFFF)
-        if (a13 && !a14 && a15 && rd5 && ref_n) begin
-            raw_s5_n = 1'b0;
-        end
+            // Evaluate /S5 Expansion Left Cartridge Select ($A000-$BFFF)
+            if (a13 && !a14 && a15 && rd5 && ref_n) begin
+                raw_s5_n = 1'b0;
+            end
 
-        // Evaluate /BASIC CS Memory Space Decode ($A000-$BFFF if enabled internally)
-        if (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) begin
-            raw_basic_n = 1'b0;
-        end
+            // Evaluate /BASIC CS Memory Space Decode ($A000-$BFFF if enabled internally)
+            if (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) begin
+                raw_basic_n = 1'b0;
+            end
 
-        // Evaluate /IO Peripheral Space Decode ($D000 Custom IC Registers)
-        if (!a11 && a12 && !a13 && a14 && a15 && ref_n) begin
-            raw_io_n = 1'b0;
-        end
+            // Evaluate /IO Peripheral Space Decode ($D000 Custom IC Registers)
+            if (!a11 && a12 && !a13 && a14 && a15 && ref_n) begin
+                raw_io_n = 1'b0;
+            end
 
-        // Evaluate /OS Operating System ROM Decode ($C000-$CFFF, $E000-$FFFF)
-        if ( (a13 && a14 && a15 && ren && ref_n) ||
-             (!a12 && a14 && a15 && ren && ref_n) ||
-             (a11 && a12 && !a13 && a14 && a15 && ren && mpd_n && ref_n) ||
-             (!a11 && a12 && !a13 && a14 && !a15 && ren && !map_n && ref_n) ) begin
-            local_os_n  = 1'b0;
-        end
-        raw_os_n = local_os_n;
+            // Evaluate /OS Operating System ROM Decode ($C000-$CFFF, $E000-$FFFF)
+            if ( (a13 && a14 && a15 && ren && ref_n) ||
+                 (!a12 && a14 && a15 && ren && ref_n) ||
+                 (a11 && a12 && !a13 && a14 && a15 && ren && mpd_n && ref_n) ||
+                 (!a11 && a12 && !a13 && a14 && !a15 && ren && !map_n && ref_n) ) begin
+                local_os_n  = 1'b0;
+            end
+            raw_os_n = local_os_n;
 
-        // Evaluate /CI Clock Inhibit Generation
-        if ( (!a13 && !a14 && a15 && rd4 && ref_n) ||
-             (a13 && !a14 && a15 && rd5 && ref_n) ||
-             (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) ||
-             (local_os_n == 1'b1) ||
-             !(a11 && a12 && !a13 && a14 && a15 && ref_n) ||
-             (!ref_n) ) begin
-            raw_ci_n = 1'b0;
+            // Evaluate /CI Clock Inhibit Generation
+            if ( (!a13 && !a14 && a15 && rd4 && ref_n) ||
+                 (a13 && !a14 && a15 && rd5 && ref_n) ||
+                 (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) ||
+                 (local_os_n == 1'b1) ||
+                 !(a11 && a12 && !a13 && a14 && a15 && ref_n) ||
+                 (!ref_n) ) begin
+                raw_ci_n = 1'b0;
+            end
         end
 
         // Safe procedural packing prevents signal races across module walls
@@ -113,12 +118,13 @@ module mmu_core #(
 
     // =========================================================================
     // 3. PHYSICAL GLITCH ISOLATION LAYER (BANK INTEGRATION)
+    // Connects rst_n to clear internal latch feedback and input delay networks.
     // =========================================================================
     async_glitch_filter_bank #(
         .WIDTH(6), 
         .STAGES(FILTER_STAGES)
     ) u_mmu_filter_bank (
-        .rst_n    (1'b1), // Static logic-high tie-off for asynchronous operation
+        .rst_n    (rst_n), // Connected directly to the top-level reset port
         .async_in (raw_signals), 
         .async_out(clean_signals)
     );
@@ -126,8 +132,10 @@ module mmu_core #(
     // =========================================================================
     // 4. TYPE-SAFE STRUCT CONVERSION
     // Packed bit casting delivers 2-state logic parameters natively to ports.
+    // If rst_n is low, output structural fields are clamped to static safe values.
     // =========================================================================
-    assign core_out = pmod3_outputs_t'({1'b0, 1'b1, clean_signals});
+    assign core_out = rst_n ? pmod3_outputs_t'({1'b0, 1'b1, clean_signals}) 
+                            : pmod3_outputs_t'({1'b0, 1'b1, 6'b111111}); // All active-low lines forced high
 
 endmodule
 

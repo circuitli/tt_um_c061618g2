@@ -19,21 +19,23 @@
 `default_nettype none
 
 module safe_async_mux (
-    input  wire  a0, // Selected data channel when s == 0
-    input  wire  a1, // Selected data channel when s == 1
-    input  wire  s,  // Active select control line
-    output logic y   // Glitch-free, type-isolated output net
+    input  wire  rst_n, // Asynchronous active-low reset
+    input  wire  a0,    // Selected data channel when s == 0
+    input  wire  a1,    // Selected data channel when s == 1
+    input  wire  s,     // Active select control line
+    output logic y      // Glitch-free, type-isolated output net
 );
 
     // 1. Declare an internal wire with preservation pragmas to lock the gates
     (* keep = 1, dont_touch = "true" *) wire glitch_free_y;
 
-    // 2. Continuous hazard-free combinational logic assignment with consensus loop
-    // The '| (a0 & a1)' loop prevents transient dropout spikes during transition transitions.
-    assign glitch_free_y = (a0 & ~s) | (a1 & s) | (a0 & a1);
+    // 2. Continuous hazard-free combinational logic assignment with consensus loop.
+    // Every single term is gated by 'rst_n' to ensure that if rst_n == 0, 
+    // the intermediate node drops to 0 instantly without any intermediate glitch states.
+    assign glitch_free_y = (a0 & ~s & rst_n) | (a1 & s & rst_n) | (a0 & a1 & rst_n);
 
     // =========================================================================
-    // SECURE OUTPUT BOUNDARY
+    // SECURE OUTPUT BOUNDARY WITH SYSTEMVERILOG X-PROPAGATION BLOCK
     // Using '===' ensures that if glitch_free_y is X or Z, the condition 
     // evaluates to a strict, clean FALSE (1'b0). This forces 'y' to a 
     // safe, predictable 1'b0, stopping the RTL X leak at the gate.

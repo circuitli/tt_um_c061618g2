@@ -107,7 +107,7 @@ module tt_um_c061618g2 (
         safe_uio[7] = (uio_in[7] == 1'b1);
     end
     */
-    /*
+    
     always_comb begin
         if (!rst_n) begin
             // --- HARDWARE RESET STATE (Forces safe pull-up/down values) ---
@@ -123,7 +123,6 @@ module tt_um_c061618g2 (
             safe_uio = uio_in;
         end
     end
-    */
 
     // =========================================================================
     // SYNTHESIZABLE CONTINUOUS HARDWARE INPUT SHIELD
@@ -166,6 +165,8 @@ module tt_um_c061618g2 (
     // 1. Declare a clean 8-bit intermediate wire vector
     wire [7:0] flat_core_uo;
     wire [7:0] core_uio_out;
+    wire [7:0] core_oe_out;
+
 
     // =========================================================================
     // 3. CORE SUBMODULE INSTANTIATION
@@ -176,7 +177,7 @@ module tt_um_c061618g2 (
         .uo_out   (flat_core_uo),       
         .uio_in   (safe_uio),  // Completely clean unidirectional control bus
         .uio_out  (core_uio_out),  
-        .uio_oe   (uio_oe),  
+        .uio_oe   (core_oe_out),  
         .ena      (ena),      
         .clk      (clk),     
         .rst_n    (rst_n)    
@@ -194,8 +195,11 @@ module tt_um_c061618g2 (
     // Safe Idle Configuration: 8'b01111111 (Bit 7 is 0, Bits 6-0 are 1)
     assign uo_out  = (out_en) ? 8'(core_pmod3_out) : 8'b01111111;
     
-    // Keep bidirectional control buses safe during reset
+    // Keep bidirectional buses safe during reset
     assign uio_out = (out_en) ? flat_core_uo       : 8'b00000000;
+
+    // Keep bidirectional control buses safe during reset
+    assign uio_oe  = (out_en) ? core_oe_out        : 8'b00000000;
 
 
 endmodule

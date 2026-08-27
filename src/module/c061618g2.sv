@@ -96,6 +96,7 @@ module c061618g2 (
     pmod3_outputs_t core_signals;
 
     mmu_core core_inst (
+        .rst_n    (rst_n),
         .core_in  (mmu_core_in), 
         .ren      (clean_ren),   
         .ref_n    (clean_ref_n), 
@@ -105,7 +106,7 @@ module c061618g2 (
     );
 
     // ---- BUS DIRECTION HARDCODING ----
-    assign uio_oe = 8'b00100000; 
+    assign uio_oe = (rst_n && ena) ? 8'b00100000 : 8'b00000000; 
 
     wire FLG_IN_n_top = filtered[12];
     wire system_disabled = (FLG_IN_n_top === 1'b0) || (ena === 1'b0) || (rst_n === 1'b0);
@@ -120,7 +121,7 @@ module c061618g2 (
     // =========================================================================
     // 6. PHYSICAL ROUTING MATRIX (PURE ASYNCHRONOUS PADS)
     // =========================================================================
-    assign uio_out = {2'b00, a11_top, 5'b00000};
+    assign uio_out = system_disabled ? 8'b00000000 : {2'b00, a11_top, 5'b00000};
 
     assign uo_out[7] = 1'b0;                                                // Static ground tie-off
     assign uo_out[6] = FLG_n;                                               // Instant, filtered safety status 

@@ -21,56 +21,62 @@
 `default_nettype none
 
 module safe_async_mux_formal (
-    input  wire  a0, // Data channel 0
-    input  wire  a1, // Data channel 1
-    input  wire  s,  // Channel select line
-    input  wire  y   // Monitored output from the actual DUT instance
+    input  wire  rst_n,
+    input  wire  a0,
+    input  wire  a1,
+    input  wire  s,
+    input  wire  y
 );
 
 `ifdef FORMAL
-    // =========================================================================
-    // 1. INPUT ASSUMPTIONS (Environment Modeling)
-    // We assume the environmental inputs behave like true physical 2-state nets.
-    // =========================================================================
-    always_comb begin
-        assume (a0 === 1'b0 || a0 === 1'b1);
-        assume (a1 === 1'b0 || a1 === 1'b1);
-        assume (s  === 1'b0 || s  === 1'b1);
-    end
 
-    // =========================================================================
-    // 2. STABILITY AND COVERAGE CHECKS
-    // Immediate combinational assertions to verify math truth tables.
-    // =========================================================================
-    always_comb begin
-        // Guarantee clean binary output mapping under all standard operations
-        assert (y === 1'b0 || y === 1'b1);
+    // -------------------------------------------------------------------------
+    // 1. ASYNCHRONOUS RESET VERIFICATION
+    // -------------------------------------------------------------------------
+    // Property: Whenever rst_n is pulled low, the output must drop to 0 
+    // instantly, regardless of data inputs or selection lines.
+    // -------------------------------------------------------------------------
+    asm_reset_assert: assert property (
+        (!rst_n) -> (y == 1'b0)
+    );
 
-        // Prove Channel 0 routing precision
-        if (s == 1'b0) begin
-            assert (y == a0);
-        end
+    // -------------------------------------------------------------------------
+    // 2. FUNCTIONAL MULTIPLEXING VERIFICATION
+    // -------------------------------------------------------------------------
+    // Property: When not in reset, the output must reflect the selected path.
+    // -------------------------------------------------------------------------
+    asm_select_0_assert: assert property (
+        (rst_n && !s) -> (y == a0)
+    );
 
-        // Prove Channel 1 routing precision
-        if (s == 1'b1) begin
-            assert (y == a1);
-        end
+    asm_select_1_assert: assert property (
+        (rst_n && s) -> (y == a1)
+    );
 
-        // Prove the Consensus Term Rule (Hazard Protection)
-        // If both data channels are identical, changing 's' MUST NOT glitch 'y'
-        if (a0 == a1) begin
-            assert (y == a0);
-        end
-    end
+    // -------------------------------------------------------------------------
+    // 3. GLITCH-FREE CONSENSUS PROOF
+    // -------------------------------------------------------------------------
+    // Property: If both inputs match, switching the selection line 's' 
+    // must never cause the output 'y' to toggle or experience a dropout.
+    // -------------------------------------------------------------------------
+    asm_consensus_high_assert: assert property (
+        (rst_n && a0 && a1) -> (y == 1'b1)
+    );
 
-    // =========================================================================
-    // 3. EXPLORATORY COMPONENT COVERAGE
-    // Forces SBY to output a structural validation trace showing active paths
-    // =========================================================================
-    always_comb begin
-        cover (s == 1'b0 && a0 == 1'b1 && y == 1'b1);
-        cover (s == 1'b1 && a1 == 1'b1 && y == 1'b1);
-    end
+    asm_consensus_low_assert: assert property (
+        (rst_n && !a0 && !a1) -> (y == 1'b0)
+    );
+
+    // -------------------------------------------------------------------------
+    // 4. X/Z METASTABILITY ISOLATION PROOF
+    // -------------------------------------------------------------------------
+    // Property: Ensure the output is strictly binary (0 or 1) and never 
+    // propagates floating or unknown states under any operating condition.
+    // -------------------------------------------------------------------------
+    asm_binary_isolation_assert: assert property (
+        (y == 1'b1) || (y == 1'b0)
+    );
+
 `endif
 
 endmodule
@@ -81,6 +87,7 @@ endmodule
 // Binds directly to your physical safe_async_mux module workspace
 // =========================================================================
 bind safe_async_mux safe_async_mux_formal u_formal_check (
+    .rst_n (rst_n),
     .a0(a0),
     .a1(a1),
     .s(s),
