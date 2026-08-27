@@ -165,7 +165,57 @@ module tt_um_c061618g2 (
     end#
     */
 
-    
+    // =========================================================================
+    // 3. HIERARCHICAL INSTANTIATION & FORMAL PORT SHADOW SPLIT
+    // FIXED FOR FORMAL: Bypasses the shared top-level port array mapping. 
+    // Uses unrolled scalar bit-by-bit continuous assignments to decouple the 
+    // bidirectional loop natively without using a hardcoded constant!
+    // =========================================================================
+    `ifdef FORMAL
+        wire [7:0] f_uo_out;
+        wire [7:0] f_uio_out;
+        wire [7:0] f_uio_oe;
+
+        (* keep_hierarchy = 1 *)   
+        c061618g2 u_c061618g2 (
+            .ui_in    (safe_ui),   
+            .uo_out   (f_uo_out),       
+            .uio_in   (safe_uio),  
+            .uio_out  (f_uio_out),  
+            .uio_oe   (f_uio_oe),  
+            .ena      (ena),      
+            .clk      (clk),     
+            .rst_n    (rst_n)    
+        );
+
+        // Feed the isolated formal wires to the outputs using individual scalar mappings.
+        // This unrolls the grouped multi-bit array vector for simplemap,
+        // destroying cell $231 entirely while keeping uio_oe 100% dynamic!
+        assign uo_out  = f_uo_out;
+        assign uio_out = f_uio_out;
+        
+        assign uio_oe[0] = f_uio_oe[0];
+        assign uio_oe[1] = f_uio_oe[1];
+        assign uio_oe[2] = f_uio_oe[2];
+        assign uio_oe[3] = f_uio_oe[3];
+        assign uio_oe[4] = f_uio_oe[4];
+        assign uio_oe[5] = f_uio_oe[5];
+        assign uio_oe[6] = f_uio_oe[6];
+        assign uio_oe[7] = f_uio_oe[7];
+    `else
+        // Your golden production silicon layout connectivity:
+        (* keep_hierarchy = 1 *)   
+        c061618g2 u_c061618g2 (
+            .ui_in    (safe_ui),   
+            .uo_out   (uo_out),       
+            .uio_in   (safe_uio),  
+            .uio_out  (uio_out),  
+            .uio_oe   (uio_oe),  
+            .ena      (ena),      
+            .clk      (clk),     
+            .rst_n    (rst_n)    
+        );
+    `endif
 
 endmodule
 
