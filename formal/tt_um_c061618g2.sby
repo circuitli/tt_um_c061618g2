@@ -24,7 +24,7 @@ verilog_defaults -add -I.
 
 # 0. READ THE IHP STANDARD CELL BLACKBOXES FIRST
 # This macro tells Yosys to strip out specify/timing blocks from the primitives
-read_verilog -formal -lib sg13g2_stdcell_clean.v
+#read_verilog -formal -lib sg13g2_stdcell_clean.v
 
 # 1. Read standard design RTL files normally as SystemVerilog
 read -sv defs/mmu_defs.sv
@@ -58,6 +58,12 @@ read -formal tt_um_c061618g2_formal.sv
 # We unpack the automated prep command to run synthesis and split the 
 # port arrays. This resolves the write_smt2 circular loop crash natively.
 # =========================================================================
+# -------------------------------------------------------------------------
+# SBY COMPILER PASS RESOLUTION
+# Added the -generate flag to automatically stub out the missing IHP gates
+# as ideal structural blackboxes, bypassing the PDK file completely.
+# -------------------------------------------------------------------------
+hierarchy -generate sg13g2_* o:X o:Y o:Q i:A i:B i:D i:G i:S i:A0 i:A1
 hierarchy -top tt_um_c061618g2
 proc
 flatten

@@ -37,8 +37,6 @@ CLEAN_LOCAL_CELLS = $(CURDIR)/sg13g2_stdcell_functional.v
 # 1. Create a local functional copy with the problematic lines deleted
 $(shell sed '/ifnone/d' $(RAW_PDK_CELLS) > $(CLEAN_LOCAL_CELLS))
 
-COMPILE_ARGS += --timescale=1ns/1ps
-
 ifneq ($(GATES),yes)
     # RTL simulation:
     SIM_BUILD		= sim_build/rtl
