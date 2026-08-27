@@ -38,23 +38,25 @@ jobs:
       #  with:
       #    pdk: ihp-sg13g2
 
-      - name: Install IHP PDK and Generate Tech Config
+      - name: Install and Run PDK Downloader Directly
         run: |
-          # 1. Update your dependencies
-          python3 -m pip install volare librelane
+          # 1. Install volare directly into the host machine
+          python3 -m pip install volare
           
-          # 2. RUN FROM THE CORRECT DIRECTORY LOCATION:
-          if [ -f "./tt_tool.py" ]; then
-            python3 ./tt_tool.py --create-user-config
-          elif [ -f "./tt-support-tools/tt_tool.py" ]; then
-            python3 ./tt-support-tools/tt_tool.py --create-user-config
-          else
-            echo "Searching for the script anywhere in the workspace..."
-            python3 $(find . -name "tt_tool.py" | head -n 1) --create-user-config
-          fi
-          
-          # 3. Pull down the hardware cells directly
+          # 2. Instruct volare directly to fetch and unpack the IHP PDK target
+          # (This completely bypasses the need to call tt_tool.py)
           volare download --pdk ihp-sg13g2
+          
+          # 3. Create the flat directory path layout your tests expect
+          mkdir -p /home/runner/pdk
+          
+          # 4. Find the hashed directory where Volare put the cells and symlink it
+          VOLARE_DIR=$(find /home/runner/.volare/volare/ihp-sg13g2/versions/ -maxdepth 2 -name "ihp-sg13g2" | head -n 1)
+          ln -s "$VOLARE_DIR" /home/runner/pdk/ihp-sg13g2
+          
+          # 5. Export environment variables for your subsequent test benches
+          echo "PDK_ROOT=/home/runner/pdk" >> $GITHUB_ENV
+          echo "PDK=ihp-sg13g2" >> $GITHUB_ENV
 
       # 4. FIX PATH MISMATCH (Forces the flat path your tests expect to exist)
       - name: Map Volare Cache to Flat Path
