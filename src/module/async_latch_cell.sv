@@ -19,13 +19,6 @@
 
 `default_nettype none
 
-`default_nettype none
-
-`default_nettype none
-
-`default_nettype none
-`timescale 1ns/1ps
-
 module async_latch_cell (
     input  wire clk,     // Virtual validation clock injected strictly to slice the SMT graph
     input  wire rst_n,   // Asynchronous active-low reset

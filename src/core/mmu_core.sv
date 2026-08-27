@@ -19,6 +19,7 @@
 `default_nettype none
 
 `include "src/defs/mmu_defs.sv"
+`include "src/module/async_glitch_filter_bank.sv"
 
 // =========================================================================
 // CUSTOM MMU DECODING MATRIX (INTERNAL CORE LAYER)

@@ -52,7 +52,7 @@ else ifeq ($(SIM),icarus)
     ifneq ($(GATES),yes)
         # RTL simulation:
         SIM_BUILD		= sim_build/rtl
-        VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
+        #VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
     
         #2. Append compilation macros
         COMPILE_ARGS += -DFUNCTIONAL -gno-specify
