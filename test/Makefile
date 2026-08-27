@@ -36,6 +36,9 @@ ifeq ($(SIM),verilator)
     COMPILE_ARGS += -Wno-fatal -Wno-UNOPTFLAT -Wno-BLKANDNBLK -Wno-MODDUP
 else ifeq ($(SIM),icarus)
     COMPILE_ARGS += -DCOCOTB_SIM
+    # This allows Icarus to load real nanosecond timing data from the PDK.
+    # We pass the default typical timing corner resolution mapping:
+    COMPILE_ARGS += -Ttyp
     # =========================================================================
     # TIMESCALE RESOLUTION INJECTION
     # This format uses the '+' syntax. It bypasses 'invalid option -- -' errors
@@ -53,9 +56,6 @@ else ifeq ($(SIM),icarus)
         # RTL simulation:
         SIM_BUILD		= sim_build/rtl
         COMPILE_ARGS    += -DSIM
-        # This allows Icarus to load real nanosecond timing data from the PDK.
-        # We pass the default typical timing corner resolution mapping:
-        COMPILE_ARGS += -Ttyp
         
         #2. Append compilation macros
         COMPILE_ARGS += -DFUNCTIONAL -gno-specify
@@ -77,9 +77,6 @@ else ifeq ($(SIM),icarus)
         SIM_BUILD		= sim_build/gl
         COMPILE_ARGS    += -DGL_TEST
         COMPILE_ARGS    += -DSIM
-        # This allows Icarus to load real nanosecond timing data from the PDK.
-        # We pass the default typical timing corner resolution mapping:
-        COMPILE_ARGS += -Ttyp
 
         # this gets copied in by the GDS action workflow
         VERILOG_SOURCES += $(PWD)/gate_level_netlist.v
