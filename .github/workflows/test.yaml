@@ -43,18 +43,22 @@ jobs:
           # 1. Install ciel (the open-source IHP PDK version manager)
           python3 -m pip install ciel
           
-          # 2. Instruct ciel to pull down the IHP target structure
-          # It uses 'enable' to simultaneously download and activate the library
-          python3 -m ciel enable --pdk ihp-sg13g2
+          # 2. Automatically retrieve the latest available version hash from IHP-Open-PDK
+          # This extracts the latest commit tracking string dynamically
+          LATEST_HASH=$(python3 -m ciel ls-remote --pdk-family ihp-sg13g2 | head -n 1 | awk '{print $1}')
+          echo "Activating IHP PDK Version Hash: $LATEST_HASH"
           
-          # 3. Create the flat path layout required by your simulations
+          # 3. Instruct ciel to pull down and enable the target build using that hash
+          python3 -m ciel enable --pdk-family ihp-sg13g2 "$LATEST_HASH"
+          
+          # 4. Create the flat path layout required by your simulations
           mkdir -p /home/runner/pdk
           
-          # 4. Locate where ciel placed the versioned directory assets and symlink it
+          # 5. Locate where ciel placed the versioned directory assets and symlink it
           CIEL_DIR=$(find /home/runner/.ciel/ciel/ihp-sg13g2/versions/ -maxdepth 2 -name "ihp-sg13g2" | head -n 1)
           ln -s "$CIEL_DIR" /home/runner/pdk/ihp-sg13g2
           
-          # 5. Export environment variables to expose paths to subsequent tools
+          # 6. Export environment variables to expose paths to subsequent tools
           echo "PDK_ROOT=/home/runner/pdk" >> $GITHUB_ENV
           echo "PDK=ihp-sg13g2" >> $GITHUB_ENV
 
