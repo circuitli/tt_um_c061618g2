@@ -32,46 +32,38 @@ module safe_async_mux_formal (
 
     // -------------------------------------------------------------------------
     // 1. ASYNCHRONOUS RESET VERIFICATION
-    // -------------------------------------------------------------------------
-    // Property: Whenever rst_n is pulled low, the output must drop to 0 
-    // instantly, regardless of data inputs or selection lines.
+    // Property: Whenever rst_n is pulled low, the output must drop to 0.
+    // Equivalent Boolean Form: rst_n || (y == 1'b0)
     // -------------------------------------------------------------------------
     asm_reset_assert: assert property (
-        (!rst_n) -> (y == 1'b0)
+        rst_n || (y == 1'b0)
     );
 
     // -------------------------------------------------------------------------
     // 2. FUNCTIONAL MULTIPLEXING VERIFICATION
-    // -------------------------------------------------------------------------
-    // Property: When not in reset, the output must reflect the selected path.
+    // Replaced 'A -> B' with '!A || B' for strict Yosys compliance.
     // -------------------------------------------------------------------------
     asm_select_0_assert: assert property (
-        (rst_n && !s) -> (y == a0)
+        !(rst_n && !s) || (y == a0)
     );
 
     asm_select_1_assert: assert property (
-        (rst_n && s) -> (y == a1)
+        !(rst_n && s) || (y == a1)
     );
 
     // -------------------------------------------------------------------------
     // 3. GLITCH-FREE CONSENSUS PROOF
     // -------------------------------------------------------------------------
-    // Property: If both inputs match, switching the selection line 's' 
-    // must never cause the output 'y' to toggle or experience a dropout.
-    // -------------------------------------------------------------------------
     asm_consensus_high_assert: assert property (
-        (rst_n && a0 && a1) -> (y == 1'b1)
+        !(rst_n && a0 && a1) || (y == 1'b1)
     );
 
     asm_consensus_low_assert: assert property (
-        (rst_n && !a0 && !a1) -> (y == 1'b0)
+        !(rst_n && !a0 && !a1) || (y == 1'b0)
     );
 
     // -------------------------------------------------------------------------
     // 4. X/Z METASTABILITY ISOLATION PROOF
-    // -------------------------------------------------------------------------
-    // Property: Ensure the output is strictly binary (0 or 1) and never 
-    // propagates floating or unknown states under any operating condition.
     // -------------------------------------------------------------------------
     asm_binary_isolation_assert: assert property (
         (y == 1'b1) || (y == 1'b0)
@@ -80,7 +72,6 @@ module safe_async_mux_formal (
 `endif
 
 endmodule
-
 
 // =========================================================================
 // SYNTAX SAFE BIND DIRECTIVE
