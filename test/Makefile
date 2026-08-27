@@ -14,7 +14,6 @@ PROJECT_SOURCES = tt_um_c061618g2.sv
 # when scanning your test directories, ensuring 'tb.v' is discovered!
 # =========================================================================
 COMPILE_ARGS += -Y .v
-VERILOG_SOURCES     += $(CURDIR)/tb.v
 
 # Fallback to your local formal project copy if PDK_ROOT isn't defined on Windows
 #PDK_ROOT ?= $(PWD)/formal
@@ -44,7 +43,7 @@ else ifeq ($(SIM),icarus)
     # This format uses the '+' syntax. It bypasses 'invalid option -- -' errors
     # and locks the 1ps precision grid globally for BOTH RTL and GLS flows.
     # =========================================================================
-    COMPILE_ARGS += +timescale+1ns/1ps
+    COMPILE_ARGS += -timescale 1ns/1ps
 
     # Define filenames
     CLEAN_LOCAL_CELLS = $(CURDIR)/sg13g2_stdcell_functional.v
@@ -55,12 +54,11 @@ else ifeq ($(SIM),icarus)
     ifneq ($(GATES),yes)
         # RTL simulation:
         SIM_BUILD		= sim_build/rtl
-        COMPILE_ARGS    += -DSIM
         
         #2. Append compilation macros
         COMPILE_ARGS += -DFUNCTIONAL -gno-specify
 
-        #VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
+        VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
 
         # 2. Instruct Icarus to append the .v suffix to search tokens 
         # when hunting down missing modules like sg13g2_decap_8.
@@ -76,6 +74,7 @@ else ifeq ($(SIM),icarus)
         # Gate level simulation:
         SIM_BUILD		= sim_build/gl
         COMPILE_ARGS    += -DGL_TEST
+        COMPILE_ARGS += -DFUNCTIONAL
         COMPILE_ARGS    += -DSIM
 
         # this gets copied in by the GDS action workflow
@@ -88,9 +87,10 @@ else ifeq ($(SIM),icarus)
 endif
 
 # Allow sharing configuration between design and testbench via `include`:
-COMPILE_ARGS 		+= -I..
+COMPILE_ARGS 		+= -I..  -I$(SRC_DIR)
 
 # Include the testbench sources:
+VERILOG_SOURCES += $(PWD)/tb.v
 TOPLEVEL = tb
 COCOTB_TOPLEVEL = tb
 
