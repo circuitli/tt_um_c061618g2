@@ -107,7 +107,7 @@ module tt_um_c061618g2 (
         safe_uio[7] = (uio_in[7] == 1'b1);
     end
     */
-
+    /*
     always_comb begin
         if (!rst_n) begin
             // --- HARDWARE RESET STATE (Forces safe pull-up/down values) ---
@@ -123,6 +123,39 @@ module tt_um_c061618g2 (
             safe_uio = uio_in;
         end
     end
+    */
+
+    // =========================================================================
+    // SYNTHESIZABLE CONTINUOUS HARDWARE INPUT SHIELD
+    // Uses structural gate logic to force clean states when 'ena' is low.
+    // When 'ena' goes high, it acts as a perfect, non-blocking wire path.
+    // =========================================================================
+    always_comb begin
+        // --- Synthesizable Pull-Up Shield (OR Gate forces 1'b1 when ena=0) ---
+        safe_ui[0] = ui_in[0] | ~ena; // A11 Address line
+        safe_ui[1] = ui_in[1] | ~ena; // A12 Address line
+        safe_ui[2] = ui_in[2] | ~ena; // A13 Address line
+        safe_ui[3] = ui_in[3] | ~ena; // A14 Address line
+        safe_ui[4] = ui_in[4] | ~ena; // A15 Address line
+        safe_ui[5] = ui_in[5] | ~ena; // map_n control channel
+    
+        // --- Synthesizable Pull-Down Shield (AND Gate forces 1'b0 when ena=0) ---
+        safe_ui[6] = ui_in[6] & ena;  // rd4 cartridge line
+        safe_ui[7] = ui_in[7] & ena;  // rd5 cartridge line
+
+        // --- uio_in Control Channel Clamping ---
+        safe_uio[0] = uio_in[0] & ena;  // ren (Active-High defaults low)
+        safe_uio[1] = uio_in[1] | ~ena; // ref_n (Active-Low defaults high)
+        safe_uio[2] = uio_in[2] | ~ena; // mpd_n (Active-Low defaults high)
+        safe_uio[3] = uio_in[3] | ~ena; // be_n  (Active-Low defaults high)
+        safe_uio[6] = uio_in[6] | ~ena; // FLG_IN_n (Active-Low defaults high)
+
+        // --- Unreferenced Padding Channels (Tied to safe 0 states) ---
+        safe_uio[4] = 1'b0;
+        safe_uio[5] = 1'b0;
+        safe_uio[7] = 1'b0;
+    end
+
     // =========================================================================
     // 3. CORE SUBMODULE INSTANTIATION
     // =========================================================================
