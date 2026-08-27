@@ -40,21 +40,21 @@ jobs:
 
       - name: Install and Run PDK Downloader Directly
         run: |
-          # 1. Install volare directly into the host machine
-          python3 -m pip install volare
+          # 1. Install ciel (the open-source IHP PDK version manager)
+          python3 -m pip install ciel
           
-          # 2. Instruct volare directly to fetch and unpack the IHP PDK target
-          # (This completely bypasses the need to call tt_tool.py)
-          volare download --pdk ihp-sg13g2
+          # 2. Instruct ciel to pull down the IHP target structure
+          # It uses 'enable' to simultaneously download and activate the library
+          python3 -m ciel enable --pdk ihp-sg13g2
           
-          # 3. Create the flat directory path layout your tests expect
+          # 3. Create the flat path layout required by your simulations
           mkdir -p /home/runner/pdk
           
-          # 4. Find the hashed directory where Volare put the cells and symlink it
-          VOLARE_DIR=$(find /home/runner/.volare/volare/ihp-sg13g2/versions/ -maxdepth 2 -name "ihp-sg13g2" | head -n 1)
-          ln -s "$VOLARE_DIR" /home/runner/pdk/ihp-sg13g2
+          # 4. Locate where ciel placed the versioned directory assets and symlink it
+          CIEL_DIR=$(find /home/runner/.ciel/ciel/ihp-sg13g2/versions/ -maxdepth 2 -name "ihp-sg13g2" | head -n 1)
+          ln -s "$CIEL_DIR" /home/runner/pdk/ihp-sg13g2
           
-          # 5. Export environment variables for your subsequent test benches
+          # 5. Export environment variables to expose paths to subsequent tools
           echo "PDK_ROOT=/home/runner/pdk" >> $GITHUB_ENV
           echo "PDK=ihp-sg13g2" >> $GITHUB_ENV
 
