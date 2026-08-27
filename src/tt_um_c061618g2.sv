@@ -162,8 +162,9 @@ module tt_um_c061618g2 (
     // INTERMEDIATE FUNCTIONAL TRACKING WIRES
     // =========================================================================
     // Instantiate your packed struct as an internal variable to catch core logic
-    pmod3_outputs_t core_pmod3_out; 
-    
+    //pmod3_outputs_t core_pmod3_out; 
+    // 1. Declare a clean 8-bit intermediate wire vector
+    wire [7:0] flat_core_uo;
     wire [7:0] core_uio_out;
 
     // =========================================================================
@@ -172,7 +173,7 @@ module tt_um_c061618g2 (
     (* keep_hierarchy = 1 *)   
     c061618g2 u_c061618g2 (
         .ui_in    (safe_ui),   // Completely clean unidirectional data bus
-        .uo_out   (core_pmod3_out),       
+        .uo_out   (flat_core_uo),       
         .uio_in   (safe_uio),  // Completely clean unidirectional control bus
         .uio_out  (core_uio_out),  
         .uio_oe   (uio_oe),  
@@ -194,7 +195,7 @@ module tt_um_c061618g2 (
     assign uo_out  = (out_en) ? 8'(core_pmod3_out) : 8'b01111111;
     
     // Keep bidirectional control buses safe during reset
-    assign uio_out = (out_en) ? core_uio_out       : 8'b00000000;
+    assign uio_out = (out_en) ? flat_core_uo       : 8'b00000000;
 
 
 endmodule
