@@ -8,6 +8,7 @@ TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
 PROJECT_SOURCES = tt_um_c061618g2.sv
 COMPILE_ARGS += -g2012
+VERILOG_SOURCES     += $(CURDIR)/tb.v
 
 # Fallback to your local formal project copy if PDK_ROOT isn't defined on Windows
 #PDK_ROOT ?= $(PWD)/formal
@@ -79,7 +80,6 @@ endif
 COMPILE_ARGS 		+= -I..
 
 # Include the testbench sources:
-VERILOG_SOURCES     += $(CURDIR)/tb.v
 TOPLEVEL = tb
 COCOTB_TOPLEVEL = tb
 

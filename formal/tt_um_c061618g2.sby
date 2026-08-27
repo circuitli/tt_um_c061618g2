@@ -63,7 +63,7 @@ read -formal tt_um_c061618g2_formal.sv
 # Added the -generate flag to automatically stub out the missing IHP gates
 # as ideal structural blackboxes, bypassing the PDK file completely.
 # -------------------------------------------------------------------------
-hierarchy -generate sg13g2_* o:X o:Y o:Q i:A i:B i:D i:G i:S i:A0 i:A1
+hierarchy -generate sg13g2_* o:X o:Y o:Q i:A i:B i:D i:G i:S i:I i:A0 i:A1
 hierarchy -top tt_um_c061618g2
 proc
 flatten
