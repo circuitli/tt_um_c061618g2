@@ -38,16 +38,22 @@ jobs:
       #  with:
       #    pdk: ihp-sg13g2
 
-      # 3. USE TT_TOOL TO INSTALL THE PDK & GENERATE THE CONFIGS
       - name: Install IHP PDK and Generate Tech Config
         run: |
-          # Install dependencies required by the tiny tapeout tool scripts
+          # 1. Update your dependencies
           python3 -m pip install volare librelane
           
-          # Run tt_tool to dynamically fetch the PDK and generate "ihp-sg13g2.yaml"
-          python3 ./tt/tt_tool.py --create-user-config
+          # 2. RUN FROM THE CORRECT DIRECTORY LOCATION:
+          if [ -f "./tt_tool.py" ]; then
+            python3 ./tt_tool.py --create-user-config
+          elif [ -f "./tt-support-tools/tt_tool.py" ]; then
+            python3 ./tt-support-tools/tt_tool.py --create-user-config
+          else
+            echo "Searching for the script anywhere in the workspace..."
+            python3 $(find . -name "tt_tool.py" | head -n 1) --create-user-config
+          fi
           
-          # Force Volare to download the locked IHP-SG13G2 cell assets
+          # 3. Pull down the hardware cells directly
           volare download --pdk ihp-sg13g2
 
       # 4. FIX PATH MISMATCH (Forces the flat path your tests expect to exist)
