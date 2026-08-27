@@ -23,7 +23,8 @@ smtbmc yices
 verilog_defaults -add -I.
 
 # 0. READ THE IHP STANDARD CELL BLACKBOXES FIRST
-read_verilog -lib /home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
+# This macro tells Yosys to strip out specify/timing blocks from the primitives
+read_verilog -formal -D SIMULATION -D FUNCTIONAL /home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
 #read_verilog -lib /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2/verilog/sg13g2_stdcell.v
 #read_verilog -lib /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
 #read_verilog -lib /opt/pdk/ihp-sg13g2/libs.ref/sg13g2/verilog/sg13g2_stdcell.v

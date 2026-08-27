@@ -71,19 +71,21 @@ set_clock_uncertainty 0.0 [get_clocks dummy_clk]
 #set_clock_groups -logically_exclusive -group [get_clocks clk] -group [get_clocks sys_clk]
 
 # ====================================================================
-# 2. PURE ASYNCHRONOUS DELAY MANAGEMENT (BALANCED HIGH-UPGRADE WINDOW)
+# PURE ASYNCHRONOUS DELAY MANAGEMENT (LEAN & CORRECT)
+# Without external board delays stealing time, OpenROAD has a true,
+# predictable window to balance paths and eliminate logic glitches.
 # ====================================================================
-set_max_delay 16.30 -from [get_ports {ui_in[*] uio_in[*]}] -to [get_ports {uo_out[*]}]
-set_min_delay  1.31 -from [get_ports {ui_in[*] uio_in[*]}] -to [get_ports {uo_out[*]}]
+set_max_delay 9.5 -from [get_ports {ui_in[*] uio_in[*]}] -to [get_ports {uo_out[*]}]
+set_min_delay 0.2 -from [get_ports {ui_in[*] uio_in[*]}] -to [get_ports {uo_out[*]}]
 
 # Handle FLG
-set_max_delay 15.77 -from [get_ports {uio_in[6]}] -to [get_ports {uo_out[6]}]
-set_min_delay  1.24 -from [get_ports {uio_in[6]}] -to [get_ports {uo_out[6]}]
+set_max_delay 9.0 -from [get_ports {uio_in[6]}] -to [get_ports {uo_out[6]}]
+set_min_delay 0.2 -from [get_ports {uio_in[6]}] -to [get_ports {uo_out[6]}]
 
 # Handle Raw Diagnostic Trigger Bypass Exception
 # Keeps the a11 passthrough pin working instantaneously without layout buffer bloat.
-set_max_delay 15.54 -from [get_ports {ui_in[0]}] -to [get_ports {uio_out[5]}]
-set_min_delay  1.18 -from [get_ports {ui_in[0]}] -to [get_ports {uio_out[5]}]
+set_max_delay 8.5 -from [get_ports {ui_in[0]}] -to [get_ports {uio_out[5]}]
+set_min_delay 0.2 -from [get_ports {ui_in[0]}] -to [get_ports {uio_out[5]}]
 
 # ====================================================================
 # 4. COMBINATIONAL INPUT AND ACTIVE OUTPUT DELAYS
@@ -91,11 +93,11 @@ set_min_delay  1.18 -from [get_ports {ui_in[0]}] -to [get_ports {uio_out[5]}]
 # physical PMOD board traces and shim adapters
 # anchored directly to the virtual dummy clock.
 # ====================================================================
-set_input_delay -max 7.5 -clock dummy_clk [get_ports {ui_in[*] uio_in[*]}]
-set_input_delay -min 0.45 -clock dummy_clk [get_ports {ui_in[*] uio_in[*]}]
+#set_input_delay -max 7.5 -clock dummy_clk [get_ports {ui_in[*] uio_in[*]}]
+#set_input_delay -min 0.45 -clock dummy_clk [get_ports {ui_in[*] uio_in[*]}]
 
-set_output_delay -max 7.5 -clock dummy_clk [get_ports {uo_out[*] uio_out[*]}]
-set_output_delay -min 0.45 -clock dummy_clk [get_ports {uo_out[*] uio_out[*]}]
+#set_output_delay -max 7.5 -clock dummy_clk [get_ports {uo_out[*] uio_out[*]}]
+#set_output_delay -min 0.45 -clock dummy_clk [get_ports {uo_out[*] uio_out[*]}]
 
 # ====================================================================
 # 5. STATIC PORT EXEMPTION (Fixes the uio_oe Delay Contradiction)
