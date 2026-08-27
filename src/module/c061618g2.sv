@@ -152,7 +152,7 @@ module c061618g2 (
         assign uo_out[2] = core_signals.os_n;          
         assign uo_out[1] = core_signals.basic_n;       
         assign uo_out[0] = core_signals.s5_n;          
-    ` : begin
+    `else
         // Your golden physical un-clocked silicon layout routing:
         assign uio_out   = system_disabled ? 8'b00000000 : {2'b00, a11_top, 5'b00000};
         assign uo_out[6] = FLG_n;                                               // Instant, filtered safety status 
@@ -163,7 +163,6 @@ module c061618g2 (
         assign uo_out[2] = system_disabled ? 1'b1 : core_signals.os_n;          // OS Kernel Selected Memory Lane
         assign uo_out[1] = system_disabled ? 1'b1 : core_signals.basic_n;       // BASIC Interpreter Selected Memory Lane
         assign uo_out[0] = system_disabled ? 1'b1 : core_signals.s5_n;          // S5 Expansion Select Lane
-    end
     `endif
 
 endmodule
