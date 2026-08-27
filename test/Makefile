@@ -36,6 +36,12 @@ else ifeq ($(SIM),icarus)
     # and locks the 1ps precision grid globally for BOTH RTL and GLS flows.
     # =========================================================================
     COMPILE_ARGS += +timescale+1ns/1ps
+    # =========================================================================
+    # PRECISE SYSTEMVERILOG EXTENSION SCAN FIX
+    # This explicitly forces Icarus to search for and parse '.v' files 
+    # when scanning your test directories, ensuring 'tb.v' is discovered!
+    # =========================================================================
+    COMPILE_ARGS += -Y .v
 
     # Define filenames
     CLEAN_LOCAL_CELLS = $(CURDIR)/sg13g2_stdcell_functional.v
