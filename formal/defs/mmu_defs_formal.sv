@@ -20,33 +20,6 @@
 `default_nettype none
 `include "src/defs/mmu_defs.sv"
 
-// =========================================================================
-// PURE FORMAL SYNTHESIS BLACKBOX STUBS FOR IHP CELLS
-// Provides explicit, hardcoded interfaces to bypass hierarchy errors.
-// =========================================================================
-
-(* blackbox *)
-module sg13g2_buf_4 (
-    input  wire I,
-    output wire Y
-);
-endmodule
-
-(* blackbox *)
-module sg13g2_inv_1 (
-    input  wire A,
-    output wire Y
-);
-endmodule
-
-(* blackbox *)
-module sg13g2_and2_1 (
-    input  wire A,
-    input  wire B,
-    output wire X
-);
-endmodule
-
 module mmu_defs_formal(
     input logic [7:0] ui_in,
     input logic [7:0] uio_in,

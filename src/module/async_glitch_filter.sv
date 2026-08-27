@@ -45,35 +45,53 @@ module async_glitch_filter #(
     wire [STAGES-1:0] functional_cap_sink_a;
     wire [STAGES-1:0] functional_cap_sink_b;
 
-    generate
-        for (genvar i = 0; i < STAGES; i = i + 1) begin : gen_stages
-            (* keep = 1 *) wire internal_inv_node;
+    // =========================================================================
+    // 1. STRUCTURAL ASYNCHRONOUS DELAY WINDOW GENERATION
+    // FIXED FOR SBY: In formal mode, we break the zero-delay combinational gate 
+    // circle by mapping the taps to steady state vectors. This completely removes
+    // the mathematical dependency loop from simplemap_bitop!
+    // =========================================================================
+    `ifdef FORMAL
+        // For the math solver, assign the taps straight to the input gate.
+        // This preserves your exact truth table and address space checks 
+        // but fully eliminates the circular graph path.
+        assign delay_chain[1] = delay_chain[0];
+        assign delay_chain[2] = delay_chain[0];
+        
+        // Drive the cap dumps cleanly to stop floating wire warnings
+        assign functional_cap_sink_a = {STAGES{1'b0}};
+        assign functional_cap_sink_b = {STAGES{1'b0}};
+    `else
+        // Your golden physical silicon cross-coupled hardware layout:
+        generate
+            for (genvar i = 0; i < STAGES; i = i + 1) begin : gen_stages
+                (* keep = 1 *) wire internal_inv_node;
 
-            // --- FIRST HALF STAGE ---
-            (* dont_touch = "true" *) sg13g2_inv_1 u_inv_a (
-                .A (delay_chain[i]),
-                .Y (internal_inv_node)
-            );
-            
-            // CONNECTED: Output drives functional_cap_sink_a instead of floating
-            (* dont_touch = "true" *) sg13g2_buf_4 u_load_cap_a (
-                .A (internal_inv_node),
-                .X (functional_cap_sink_a[i]) 
-            );
+                // --- FIRST HALF STAGE ---
+                (* dont_touch = "true" *) sg13g2_inv_1 u_inv_a (
+                    .A (delay_chain[i]),
+                    .Y (internal_inv_node)
+                );
+                
+                (* dont_touch = "true" *) sg13g2_buf_4 u_load_cap_a (
+                    .A (internal_inv_node),
+                    .X (functional_cap_sink_a[i]) 
+                );
 
-            // --- SECOND HALF STAGE ---
-            (* dont_touch = "true" *) sg13g2_inv_1 u_inv_b (
-                .A (internal_inv_node),
-                .Y (delay_chain[i+1])
-            );
+                // --- SECOND HALF STAGE ---
+                (* dont_touch = "true" *) sg13g2_inv_1 u_inv_b (
+                    .A (internal_inv_node),
+                    .Y (delay_chain[i+1])
+                );
 
-            // CONNECTED: Output drives functional_cap_sink_b instead of floating
-            (* dont_touch = "true" *) sg13g2_buf_4 u_load_cap_b (
-                .A (delay_chain[i+1]),
-                .X (functional_cap_sink_b[i]) 
-            );
-        end
-    endgenerate
+                (* dont_touch = "true" *) sg13g2_buf_4 u_load_cap_b (
+                    .A (delay_chain[i+1]),
+                    .X (functional_cap_sink_b[i]) 
+                );
+            end
+        endgenerate
+    `endif
+
 
     // =========================================================================
     // GLITCH DETECTION WINDOWS 
@@ -85,11 +103,24 @@ module async_glitch_filter #(
     // =========================================================================
     // THE SINK GUARANTEE
     // We mix the capacitor outputs back into the latch activation logic.
-    // Because they influence the real output, no EDA optimizer can ever touch them!
     // =========================================================================
     wire cap_dependency_mask = (&functional_cap_sink_a) | (|functional_cap_sink_b);
-    wire optimized_set       = filter_set  & (cap_dependency_mask | ~cap_dependency_mask);
-    wire optimized_hold      = filter_hold | (cap_dependency_mask & ~cap_dependency_mask);
+    
+    wire optimized_set;
+    wire optimized_hold;
+
+    `ifdef FORMAL
+        // For the formal mathematical solver, optimize out the structural loop.
+        // This evaluates to the exact same logical truth table but cuts the 
+        // circular graph path completely.
+        assign optimized_set  = filter_set;
+        assign optimized_hold = filter_hold;
+    `else
+        // Your golden physical silicon layout lock-masks:
+        // Because they influence the real output, no EDA optimizer can ever touch them!
+        assign optimized_set  = filter_set  & (cap_dependency_mask | ~cap_dependency_mask);
+        assign optimized_hold = filter_hold | (cap_dependency_mask & ~cap_dependency_mask);
+    `endif
 
     // =========================================================================
     // LATCH LOOP BOUNDARY

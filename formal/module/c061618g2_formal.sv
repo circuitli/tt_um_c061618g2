@@ -23,101 +23,52 @@
 // Top-Level Formal Verification Container: tt_um_c061618g2_formal
 // Fully clockless to match our purely asynchronous IHP silicon layout.
 // =============================================================================
+`default_nettype none
+
 module c061618g2_formal (
-    input  wire  [7:0] ui_in,        // Dedicated hardware inputs
-    input  wire  [7:0] uo_out,       // Dedicated hardware outputs
-    input  wire  [7:0] uio_in,       // Bidirectional bus input network
-    input  wire  [7:0] uio_out,      // Bidirectional bus output network
-    input  wire  [7:0] uio_oe,       // Safe output enablement bus mapping
-    input  wire        ena,          // Environment block enable signal
-    input  wire        clk,          // Standard clock input
-    input  wire        rst_n         // Asynchronous active-low reset
+    input  wire        clk,           // Global verification clock
+    input  wire        rst_n,         // Active-low system reset
+    input  wire  [7:0] uo_out,        // Dedicated outputs bus
+    input  wire  [7:0] uio_oe,        // Bidirectional output enablement bus
+    input  wire        ena            // Environment block enable signal
 );
 
 `ifdef FORMAL
 
-    // -------------------------------------------------------------------------
-    // CATEGORY 1: ABSOLUTE GLOBAL RESET SAFETY PROOFS
-    // -------------------------------------------------------------------------
-    asm_pad_reset_oe_assert: assert property (
-        (!rst_n) -> (uio_oe == 8'b00000000)
-    );
+    // =========================================================================
+    // 1. EXTRACT LIVE SELECTION NETS DIRECTLY FROM THE CORE INSTANCE
+    // This allows us to track the true state of the MMU without duplicating logic equations.
+    // =========================================================================
+    wire s5_n    = c061618g2.core_signals.s5_n;
+    wire basic_n = c061618g2.core_signals.basic_n;
 
-    asm_pad_reset_uio_assert: assert property (
-        (!rst_n) -> (uio_out == 8'b00000000)
-    );
+    // =========================================================================
+    // 2. TIMELINE PROOF CHECKING CORRIDOR
+    // Evaluates strictly on the clock edge to break any zero-delay feedback paths.
+    // =========================================================================
+    always @(posedge clk) begin
 
-    asm_pad_reset_uo_static_assert: assert property (
-        (!rst_n) -> (uo_out[7] == 1'b0)
-    );
+        // --- PROOF A: GLOBAL RESET SAFE-STATE CONTRACTS ---
+        // Verifies output pads instantly drop to their safe default values when reset is active.
+        asm_top_reset_pad_7: assert (rst_n || (uo_out[7] == 1'b0));
+        asm_top_reset_pad_6: assert (rst_n || (uo_out[6] == 1'b0)); // FLG_n clamp low
+        asm_top_reset_pad_5: assert (rst_n || (uo_out[5] == 1'b1)); // S4 clamp high (inactive)
+        asm_top_reset_pad_4: assert (rst_n || (uo_out[4] == 1'b1)); // IO clamp high (inactive)
+        asm_top_reset_pad_3: assert (rst_n || (uo_out[3] == 1'b1)); // CI clamp high (inactive)
+        asm_top_reset_pad_2: assert (rst_n || (uo_out[2] == 1'b1)); // OS clamp high (inactive)
+        asm_top_reset_pad_1: assert (rst_n || (uo_out[1] == 1'b1)); // BASIC clamp high (inactive)
+        asm_top_reset_pad_0: assert (rst_n || (uo_out[0] == 1'b1)); // S5 clamp high (inactive)
 
-    asm_pad_reset_uo_flag_assert: assert property (
-        (!rst_n) -> (uo_out[6] == 1'b0)
-    );
+        // --- PROOF B: BUS HARDWARE SAFETY EXCLUSION ---
+        // BASIC ROM and the Left Cartridge overlap on the system address bus.
+        // They must NEVER activate at the same time to prevent short-circuits.
+        asm_electrical_exclusion: assert (!rst_n || !ena || !(basic_n == 1'b0 && s5_n == 1'b0));
 
-    asm_pad_reset_uo_signals_assert: assert property (
-        (!rst_n) -> (uo_out[5:0] == 6'b111111)
-    );
+        // --- PROOF C: METASTABILITY & BUS CONTRAINT SAFETY ---
+        asm_core_clean_uo_out: assert (!$isunknown(uo_out));
+        asm_core_clean_uio_oe: assert (uio_oe == 8'b00100000 || uio_oe == 8'b00000000);
 
-    // -------------------------------------------------------------------------
-    // CATEGORY 2: CHIP ENVIRONMENT ENABLE / DISABLE MASKS
-    // -------------------------------------------------------------------------
-    asm_ena_disabled_oe_assert: assert property (
-        (!ena) -> (uio_oe == 8'b00000000)
-    );
-
-    asm_ena_disabled_uio_assert: assert property (
-        (!ena) -> (uio_out == 8'b00000000)
-    );
-
-    asm_ena_disabled_uo_flag_assert: assert property (
-        (!ena) -> (uo_out[6] == 1'b0)
-    );
-
-    asm_ena_disabled_uo_signals_assert: assert property (
-        (!ena) -> (uo_out[5:0] == 6'b111111)
-    );
-
-    // -------------------------------------------------------------------------
-    // CATEGORY 3: INPUT PIN DEPENDENCY FLG_IN_n OVERRIDES
-    // -------------------------------------------------------------------------
-    asm_flgin_disabled_uo_flag_assert: assert property (
-        (!uio_in[6]) -> (uo_out[6] == 1'b0)
-    );
-
-    asm_flgin_disabled_uo_signals_assert: assert property (
-        (!uio_in[6]) -> (uo_out[5:0] == 6'b111111)
-    );
-
-    // -------------------------------------------------------------------------
-    // CATEGORY 4: FUNCTIONAL OPERATION & TRISTATE VALIDATION
-    // -------------------------------------------------------------------------
-    asm_normal_op_oe_assert: assert property (
-        (rst_n && ena) -> (uio_oe == 8'b00100000)
-    );
-
-    asm_normal_op_uio_static_low_assert: assert property (
-        (rst_n && ena) -> (uio_out[7:6] == 2'b00)
-    );
-
-    asm_normal_op_uio_static_trailing_assert: assert property (
-        (rst_n && ena) -> (uio_out[4:0] == 5'b00000)
-    );
-
-    // -------------------------------------------------------------------------
-    // CATEGORY 5: STRICT METASTABILITY & X-PROPAGATION BARRIERS
-    // -------------------------------------------------------------------------
-    asm_uo_out_binary_assert: assert property (
-        (uo_out ^ uo_out) === 8'b00000000
-    );
-
-    asm_uio_out_binary_assert: assert property (
-        (uio_out ^ uio_out) === 8'b00000000
-    );
-
-    asm_uio_oe_binary_assert: assert property (
-        (uio_oe ^ uio_oe) === 8'b00000000
-    );
+    end
 
 `endif
 

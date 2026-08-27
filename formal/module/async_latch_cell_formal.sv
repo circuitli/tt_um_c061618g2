@@ -20,6 +20,7 @@
 `default_nettype none
 
 module async_latch_cell_formal (
+    input  wire  clk,   // Virtual verification clock port to drive the temporal properties!
     input  wire  rst_n,
     input  wire  set,
     input  wire  hold,
@@ -28,43 +29,39 @@ module async_latch_cell_formal (
 
 `ifdef FORMAL
 
-    // -------------------------------------------------------------------------
-    // 1. ASYNCHRONOUS RESET VERIFICATION
-    // Property: If !rst_n is active, q must drop to 1'b0 instantly.
-    // Equivalent Boolean Form: rst_n || (q == 1'b0)
-    // -------------------------------------------------------------------------
-    asm_latch_reset_assert: assert property (
-        rst_n || (q == 1'b0)
-    );
+    // =========================================================================
+    // FIXED LOOP-SAFE PROCEDURAL CLOCKED FORMAL PROPERTIES
+    // Moving assertions inside always @(posedge clk) fixes the unexpected '@'
+    // syntax error completely while keeping your timeline unrolled!
+    // =========================================================================
+    always @(posedge clk) begin
+        
+        // 1. ASYNCHRONOUS RESET VERIFICATION
+        asm_latch_reset_assert: assert (rst_n || (q == 1'b0));
 
-    // -------------------------------------------------------------------------
-    // 2. FUNCTIONAL LATCH TRANSITION VERIFICATION
-    // Replaced 'A -> B' with '!A || B' for strict Yosys compliance.
-    // -------------------------------------------------------------------------
-    
-    // If out of reset and set is asserted, output matches hold state
-    asm_latch_set_assert: assert property (
-        !(rst_n && set) || (q == hold)
-    );
+        // 2. FUNCTIONAL LATCH TRANSITION VERIFICATION
+        // If out of reset and set is asserted, output matches hold state
+        asm_latch_set_assert: assert (!(rst_n && set) || (q == hold));
 
-    // If out of reset and set falls, output must remain stable (latch hold)
-    asm_latch_hold_assert: assert property (
-        !(rst_n && !set) || $stable(q)
-    );
+        // If out of reset and set falls, output must remain stable (latch hold)
+        asm_latch_hold_assert: assert (!(rst_n && !set) || $stable(q));
 
-    // -------------------------------------------------------------------------
-    // 3. X/Z METASTABILITY ISOLATION PROOF
-    // -------------------------------------------------------------------------
-    asm_latch_binary_clean_assert: assert property (
-        (q == 1'b1) || (q == 1'b0)
-    );
+        // 3. X/Z METASTABILITY ISOLATION PROOF
+        asm_latch_binary_clean_assert: assert ((q == 1'b1) || (q == 1'b0));
+
+    end
 
 `endif
 
 endmodule
 
-// Injects the properties directly around the outer cell instance interface
+// =========================================================================
+// PROPERTY INTERFACE BIND HOOKS (VIRTUAL WORKAROUND RE-INJECTION)
+// Traverses the hierarchy to pass the outermost Tiny Tapeout wrapper clock
+// directly into the formal layer port boundary!
+// =========================================================================
 bind async_latch_cell async_latch_cell_formal i_async_latch_cell_formal (
+    .clk   (tt_um_c061618g2.clk), // Maps parent clock down to satisfy the formal port
     .rst_n (rst_n),
     .set   (set),
     .hold  (hold),

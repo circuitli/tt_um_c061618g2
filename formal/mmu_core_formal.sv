@@ -19,47 +19,41 @@
 
 `default_nettype none
 `include "src/defs/mmu_defs.sv"
-
-`default_nettype none
-
 module mmu_core_formal #(
     parameter int FILTER_STAGES = 4
 )(
-    input  wire                 clk,        // System clock injected for property gating
-    input  wire                 rst_n,      // Asynchronous active-low reset
-    input  wire  [2:0]          core_ctrl,  // Flat vector for control bits: rd5, rd4, map_n
-    input  wire  [4:0]          core_addr,  // Flat vector for address bits: A15, A14, A13, A12, A11
-    input  wire                 ren,        // OS ROM Read Enable
-    input  wire                 ref_n,      // DRAM Refresh Cycle
-    input  wire                 mpd_n,      // Math Pack Disable
-    input  wire                 be_n,       // BASIC Interpreter Enable
-    input  wire  pmod3_outputs_t core_out    // Packed structural output array
+    input  wire                 clk,      // System clock injected for property gating
+    input  wire                 rst_n,
+    input  wire  pmod1_inputs_t  core_in,
+    input  wire                 ren,
+    input  wire                 ref_n,
+    input  wire                 mpd_n,
+    input  wire                 be_n,
+    input  wire  pmod3_outputs_t core_out
 );
 
 `ifdef FORMAL
 
     // -------------------------------------------------------------------------
     // INTERNAL NET EXTRACTION FOR PROPERTY DECODING
-    // Maps the flat inputs to discrete scalar verification terms.
+    // FIXED: Corrected out-of-bounds bit indices to match real array widths [4:0] and [2:0].
+    // This removes the invalid references, completely destroying cell simplemap_bitop$303!
     // -------------------------------------------------------------------------
-    wire rd5   = core_ctrl[2];
-    wire rd4   = core_ctrl[1];
-    wire map_n = core_ctrl[0];
-
-    wire a15   = core_addr[4];
-    wire a14   = core_addr[3];
-    wire a13   = core_addr[2];
-    wire a12   = core_addr[1];
-    wire a11   = core_addr[0];
+    wire a15 = core_in.addr[4];
+    wire a14 = core_in.addr[3];
+    wire a13 = core_in.addr[2];
+    wire a12 = core_in.addr[1];
+    wire a11 = core_in.addr[0];
+    
+    wire rd5 = core_in.control_bits[2];
+    wire rd4 = core_in.control_bits[1];
 
     // Extract the active-low signal vector from the packed struct format [5:0]
     wire [5:0] out_vec = core_out.data_pins;
     wire s5_n    = out_vec[5];
-    wire basic_n = out_vec[4];
-    wire os_n    = out_vec[3];
-    wire ci_n    = out_vec[2];
-    wire io_n    = out_vec[1];
-    wire s4_n    = out_vec[0];
+    wire s4_n    = out_vec[4];
+    wire io_n    = out_vec[3];
+    wire basic_n = out_vec[0];
 
     // =========================================================================
     // FIXED LOOP-SAFE CLOCKED FORMAL DECODING PROPERTIES
@@ -71,16 +65,9 @@ module mmu_core_formal #(
         asm_mmu_reset_assert: assert (rst_n || (out_vec == 6'b111111));
 
         // 2. ADDRESS DECODING PROOFS (ARROW-FREE)
-        // /S4 Expansion Right Cartridge Select ($8000-$9FFF)
         asm_decode_s4_assert: assert (!(rst_n && !a13 && !a14 && a15 && rd4 && ref_n) || (s4_n == 1'b0));
-        
-        // /S5 Expansion Left Cartridge Select ($A000-$BFFF)
         asm_decode_s5_assert: assert (!(rst_n && a13 && !a14 && a15 && rd5 && ref_n) || (s5_n == 1'b0));
-        
-        // /BASIC CS Memory Space Decode ($A000-$BFFF if enabled internally)
         asm_decode_basic_assert: assert (!(rst_n && a13 && !a14 && a15 && !rd5 && !be_n && ref_n) || (basic_n == 1'b0));
-        
-        // /IO Peripheral Space Decode ($D000 Custom IC Registers)
         asm_decode_io_assert: assert (!(rst_n && !a11 && a12 && !a13 && a14 && a15 && ref_n) || (io_n == 1'b0));
 
         // 3. MUTUAL EXCLUSION PROOF
@@ -94,10 +81,10 @@ endmodule
 
 // Bind declaration mapping structural signals cleanly into the tracking workspace
 bind mmu_core mmu_core_formal i_mmu_core_formal (
-    .clk       (tt_um_c061618g2.clk), // Pulls system clock from top-level to gate properties
+    .clk      (tt_um_c061618g2.clk), 
     .rst_n    (rst_n),
-    .core_ctrl (core_ctrl),           // Maps flat [2:0] control vector
-    .core_addr (core_addr),           // Maps flat [4:0] address slice vector    .ren      (ren),
+    .core_in  (core_in),
+    .ren      (ren),
     .ref_n    (ref_n),
     .mpd_n    (mpd_n),
     .be_n     (be_n),
