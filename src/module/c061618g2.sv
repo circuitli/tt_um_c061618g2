@@ -34,11 +34,11 @@ module c061618g2 (
     input  wire  [7:0] uio_in,   // Bidirectional bus input network
     output logic [7:0] uio_out,  // Bidirectional bus output network
     output logic [7:0] uio_oe,   // Safe output enablement bus mapping
-    input  ena,      // Tiny Tapeout macro environment block enable signal
+    input  wire        ena,      // Tiny Tapeout macro environment block enable signal
     /* verilator lint_off UNUSEDSIGNAL */
-    input  clk,      // Part of the strict wrapper standard!
+    input  wire        clk,      // Part of the strict wrapper standard!
     /* verilator lint_on UNUSEDSIGNAL */
-    input  rst_n     // Part of the strict wrapper standard!
+    input  wire        rst_n     // Part of the strict wrapper standard!
 );
     /* verilator lint_off UNUSEDSIGNAL */
     bit unused_p2_b7 = uio_in[7]; // Breaks tracking graph at Time 0
@@ -71,27 +71,23 @@ module c061618g2 (
     );
 
     // =========================================================================
-    // 5. UNIDIRECTIONAL DECOUPLING LAYER (EXPLICIT DATA PASS-THROUGH)
+    // 5. UNIDIRECTIONAL DECOUPLING LAYER (ICARUS COMPLIANT CONTINUOUS ASSIGNS)
+    // Replaced the always_comb block to eliminate constant part-select crash bugs.
     // =========================================================================
-    logic clean_ren;
-    logic clean_ref_n;
-    logic clean_mpd_n;
-    logic clean_be_n;
+    wire clean_ren;
+    wire clean_ref_n;
+    wire clean_mpd_n;
+    wire clean_be_n;
     pmod1_inputs_t mmu_core_in;
 
-    always_comb begin
-        // CORRECTED CHECK: Evaluates to 1'b0 (disabled) when the filtered pin is 0,
-        // matching the active-high polarity of the ren line exactly.
-        clean_ren   = (filtered[8]  == 1'b1) ? 1'b1 : 1'b0; // ren (active-high)
-        
-        // Active-low lines pass their true values straight through
-        clean_ref_n = (filtered[9]  == 1'b1); // ref_n (active-low)
-        clean_mpd_n = (filtered[10] == 1'b1); // mpd_n (active-low)
-        clean_be_n  = (filtered[11] == 1'b1); // be_n  (active-low)
-        
-        mmu_core_in.control_bits = filtered[7:5]; // rd5, rd4, map_n
-        mmu_core_in.addr         = filtered[4:0]; // A15, A14, A13, A12, A11
-    end
+    // Direct continuous wire decoupling assignments
+    assign clean_ren   = filtered[8];  // ren (active-high)
+    assign clean_ref_n = filtered[9];  // ref_n (active-low)
+    assign clean_mpd_n = filtered[10]; // mpd_n (active-low)
+    assign clean_be_n  = filtered[11]; // be_n  (active-low)
+    
+    assign mmu_core_in.control_bits = filtered[7:5]; // rd5, rd4, map_n
+    assign mmu_core_in.addr         = filtered[4:0]; // A15, A14, A13, A12, A11
 
     pmod3_outputs_t core_signals;
 
@@ -105,13 +101,21 @@ module c061618g2 (
         .core_out (core_signals)
     );
 
-    // ---- BUS DIRECTION HARDCODING ----
+    // =========================================================================
+    // BUS TRISTATE SAFETY OVERRIDE
+    // Completely forces all bidirectional pins to High-Z input mode during 
+    // reset or macro disablement to prevent IO contention.
+    // =========================================================================
     assign uio_oe = (rst_n && ena) ? 8'b00100000 : 8'b00000000; 
 
-    wire FLG_IN_n_top = filtered[12];
-    wire system_disabled = (FLG_IN_n_top === 1'b0) || (ena === 1'b0) || (rst_n === 1'b0);
-    wire FLG_n = system_disabled ? 1'b0 : 1'b1;
-    wire a11_top = filtered[0]; 
+    // =========================================================================
+    // CLEAN SILICON PROTECTION MATRIX (REAL HARDWARE LOGIC)
+    // Stripped simulation-only '===' expressions to enable synthesis matching.
+    // =========================================================================
+    wire FLG_IN_n_top     = filtered[12];
+    wire system_disabled  = (!FLG_IN_n_top) || (!ena) || (!rst_n);
+    wire FLG_n            = system_disabled ? 1'b0 : 1'b1;
+    wire a11_top          = filtered[0]; 
 
     /* verilator lint_off UNUSED */
     wire unused_p3_b7 = core_signals.unused_p3_b7;

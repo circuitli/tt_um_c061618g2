@@ -108,21 +108,16 @@ module tt_um_c061618g2 (
     end
     */
     
-    always_comb begin
-        if (!rst_n) begin
-            // --- HARDWARE RESET STATE (Forces safe pull-up/down values) ---
-            safe_ui[4:0] = 5'b11111; // Default address lines high
-            safe_ui[5]   = 1'b1;     // Default map_n high (idle)
-            safe_ui[7:6] = 2'b00;    // Default rd4/rd5 low
-            
-            safe_uio     = 8'b11111110; // Sets control lines to default idle states
-        end else begin
-            // --- ACTIVE FUNCTIONAL STATE ---
-            // Direct pass-through. Transistors handle standard high/low logic.
-            safe_ui  = ui_in;
-            safe_uio = uio_in;
-        end
-    end
+    // --- Active Reset Routing or Functional Mappings ---
+    assign safe_ui[4:0] = rst_n ? ui_in[4:0] : 5'b11111; // Default address lines high
+    assign safe_ui[5]   = rst_n ? ui_in[5]   : 1'b1;     // Default map_n high (idle)
+    assign safe_ui[7:6] = rst_n ? ui_in[7:6] : 2'b00;    // Default rd4/rd5 low
+
+    assign safe_uio[0]   = rst_n ? uio_in[0]   : 1'b0;    // ren (Active-High defaults low)
+    assign safe_uio[3:1] = rst_n ? uio_in[3:1] : 3'b111;  // ref_n, mpd_n, be_n (Active-Low default high)
+    assign safe_uio[5:4] = rst_n ? uio_in[5:4] : 2'b00;   // Padding tracking channels
+    assign safe_uio[6]   = rst_n ? uio_in[6]   : 1'b1;    // FLG_IN_n (Active-Low defaults high)
+    assign safe_uio[7]   = rst_n ? uio_in[7]   : 1'b0;    // Padding tracking channels
 
     // =========================================================================
     // SYNTHESIZABLE CONTINUOUS HARDWARE INPUT SHIELD
@@ -157,50 +152,17 @@ module tt_um_c061618g2 (
     end#
     */
 
-    // =========================================================================
-    // INTERMEDIATE FUNCTIONAL TRACKING WIRES
-    // =========================================================================
-    // Instantiate your packed struct as an internal variable to catch core logic
-    //pmod3_outputs_t core_pmod3_out; 
-    // 1. Declare a clean 8-bit intermediate wire vector
-    wire [7:0] flat_core_uo;
-    wire [7:0] core_uio_out;
-    wire [7:0] core_oe_out;
-
-
-    // =========================================================================
-    // 3. CORE SUBMODULE INSTANTIATION
-    // =========================================================================
-    (* keep_hierarchy = 1 *)   
+     (* keep_hierarchy = 1 *)   
     c061618g2 u_c061618g2 (
-        .ui_in    (safe_ui),   // Completely clean unidirectional data bus
-        .uo_out   (flat_core_uo),       
-        .uio_in   (safe_uio),  // Completely clean unidirectional control bus
-        .uio_out  (core_uio_out),  
-        .uio_oe   (core_oe_out),  
+        .ui_in    (ui_in),   
+        .uo_out   (uo_out),       
+        .uio_in   (uio_in),  
+        .uio_out  (uio_out),  
+        .uio_oe   (uio_oe),  
         .ena      (ena),      
         .clk      (clk),     
         .rst_n    (rst_n)    
-    ); 
-
-    // =========================================================================
-    // CORRECTED ACTIVE-LOW HARDWARE FIREWALL
-    // If out_en is true, pass functional core values.
-    // If out_en is false (reset/disabled/X), force safe idle lines (All 1s, Bit 7 = 0)
-    // =========================================================================
-    
-    // Explicitly confirm both control pins are driven high to allow pass-through
-    wire out_en = (ena == 1'b1) && (rst_n == 1'b1);
-
-    // Safe Idle Configuration: 8'b01111111 (Bit 7 is 0, Bits 6-0 are 1)
-    assign uo_out  = (out_en) ? 8'(core_pmod3_out) : 8'b01111111;
-    
-    // Keep bidirectional buses safe during reset
-    assign uio_out = (out_en) ? flat_core_uo       : 8'b00000000;
-
-    // Keep bidirectional control buses safe during reset
-    assign uio_oe  = (out_en) ? core_oe_out        : 8'b00000000;
-
+    );
 
 endmodule
 

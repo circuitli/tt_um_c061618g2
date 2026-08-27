@@ -30,9 +30,18 @@ ifeq ($(SIM),verilator)
 else ifeq ($(SIM),icarus)
     COMPILE_ARGS += -g2012
     COMPILE_ARGS += -DCOCOTB_SIM
-ifneq ($(GATES),yes)
 
-# RTL simulation:
+# Define filenames
+CLEAN_LOCAL_CELLS = $(CURDIR)/sg13g2_stdcell_functional.v
+
+# 1. Create a local functional copy with the problematic lines deleted
+$(shell sed '/ifnone/d' $(RAW_PDK_CELLS) > $(CLEAN_LOCAL_CELLS))
+
+#2. Append compilation macros
+COMPILE_ARGS += -DFUNCTIONAL -gno-specify
+
+ifneq ($(GATES),yes)
+    # RTL simulation:
     SIM_BUILD		= sim_build/rtl
     VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
     # 2. Instruct Icarus to append the .v suffix to search tokens 
@@ -41,28 +50,15 @@ ifneq ($(GATES),yes)
     COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2/verilog
     COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
     COMPILE_ARGS += -y /opt/pdk/ihp-sg13g2/libs.ref/sg13g2/verilog
-    COMPILE_ARGS += -v $(RAW_PDK_CELLS)
-
+    COMPILE_ARGS += -v $(CLEAN_LOCAL_CELLS)
 else
+    # Gate level simulation:
+    SIM_BUILD		= sim_build/gl
+    COMPILE_ARGS    += -DGL_TEST
+    COMPILE_ARGS    += -DSIM
 
-# Gate level simulation:
-SIM_BUILD		= sim_build/gl
-COMPILE_ARGS    += -DGL_TEST
-#COMPILE_ARGS    += -gno-specify
-COMPILE_ARGS    += -DFUNCTIONAL
-COMPILE_ARGS    += -DSIM
-
-# this gets copied in by the GDS action workflow
-VERILOG_SOURCES += $(PWD)/gate_level_netlist.v
-
-   # Define filenames
-    CLEAN_LOCAL_CELLS = $(CURDIR)/sg13g2_stdcell_functional.v
-
-    # 1. Create a local functional copy with the problematic lines deleted
-    $(shell sed '/ifnone/d' $(RAW_PDK_CELLS) > $(CLEAN_LOCAL_CELLS))
-
-    # 2. Append compilation macros
-    COMPILE_ARGS += -DFUNCTIONAL -gno-specify
+    # this gets copied in by the GDS action workflow
+    VERILOG_SOURCES += $(PWD)/gate_level_netlist.v
 
     # 3. Strip the raw PDK path from the sources and append our clean local version instead
     VERILOG_SOURCES := $(filter-out $(RAW_PDK_CELLS) %sg13g2_stdcell.v, $(VERILOG_SOURCES))
