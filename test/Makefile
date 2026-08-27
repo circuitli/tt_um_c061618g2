@@ -30,6 +30,12 @@ ifeq ($(SIM),verilator)
 else ifeq ($(SIM),icarus)
     COMPILE_ARGS += -g2012
     COMPILE_ARGS += -DCOCOTB_SIM
+    # =========================================================================
+    # TIMESCALE RESOLUTION INJECTION
+    # This format uses the '+' syntax. It bypasses 'invalid option -- -' errors
+    # and locks the 1ps precision grid globally for BOTH RTL and GLS flows.
+    # =========================================================================
+    COMPILE_ARGS += +timescale+1ns/1ps
 
 # Define filenames
 CLEAN_LOCAL_CELLS = $(CURDIR)/sg13g2_stdcell_functional.v
@@ -57,6 +63,9 @@ else
     SIM_BUILD		= sim_build/gl
     COMPILE_ARGS    += -DGL_TEST
     COMPILE_ARGS    += -DSIM
+    # This allows Icarus to load real nanosecond timing data from the PDK.
+    # We pass the default typical timing corner resolution mapping:
+    COMPILE_ARGS += -Ttyp
 
     # this gets copied in by the GDS action workflow
     VERILOG_SOURCES += $(PWD)/gate_level_netlist.v
