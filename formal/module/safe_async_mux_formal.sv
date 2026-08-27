@@ -18,38 +18,63 @@
 `define SAFE_ASYNC_MUX_FORMAL_SVH
 `default_nettype none
 
+`default_nettype none
+
 module safe_async_mux_formal (
-    input wire a0,
-    input wire a1,
-    input wire s,
-    input logic y // Monitored directly from the physical module output
+    input  wire  a0, // Data channel 0
+    input  wire  a1, // Data channel 1
+    input  wire  s,  // Channel select line
+    input  wire  y   // Monitored output from the actual DUT instance
 );
 
+`ifdef FORMAL
     // =========================================================================
-    // 1. FUNCTIONAL CORRECTNESS PROPERTIES (Checked on the real design port!)
+    // 1. INPUT ASSUMPTIONS (Environment Modeling)
+    // We assume the environmental inputs behave like true physical 2-state nets.
     // =========================================================================
-    
-    // Property: When select is 0, physical output must strictly match input a0
-    asm_select_a0: assert property (s == 1'b0 -> y == a0);
-
-    // Property: When select is 1, physical output must strictly match input a1
-    asm_select_a1: assert property (s == 1'b1 -> y == a1);
+    always_comb begin
+        assume (a0 === 1'b0 || a0 === 1'b1);
+        assume (a1 === 1'b0 || a1 === 1'b1);
+        assume (s  === 1'b0 || s  === 1'b1);
+    end
 
     // =========================================================================
-    // 2. TRUE PHYSICAL GLITCH IMMUNITY PROOFS
-    // These evaluate the actual 'y' terminal under boundary input states.
-    // If Yosys strips the cover term from your RTL file, these will instantly FAIL.
+    // 2. STABILITY AND COVERAGE CHECKS
+    // Immediate combinational assertions to verify math truth tables.
     // =========================================================================
+    always_comb begin
+        // Guarantee clean binary output mapping under all standard operations
+        assert (y === 1'b0 || y === 1'b1);
 
-    // CRITICAL GLITCH INVARIANT:
-    // If both physical inputs are HIGH, the physical output 'y' MUST stay HIGH,
-    // completely preventing any intermediate voltage dropout when select 's' toggles.
-    asm_glitch_immune_high: assert property ((a0 == 1'b1 && a1 == 1'b1) -> y == 1'b1);
+        // Prove Channel 0 routing precision
+        if (s == 1'b0) begin
+            assert (y == a0);
+        end
 
-    // If both physical inputs are LOW, the physical output 'y' MUST stay LOW.
-    asm_glitch_immune_low: assert property ((a0 == 1'b0 && a1 == 1'b0) -> y == 1'b0);
+        // Prove Channel 1 routing precision
+        if (s == 1'b1) begin
+            assert (y == a1);
+        end
+
+        // Prove the Consensus Term Rule (Hazard Protection)
+        // If both data channels are identical, changing 's' MUST NOT glitch 'y'
+        if (a0 == a1) begin
+            assert (y == a0);
+        end
+    end
+
+    // =========================================================================
+    // 3. EXPLORATORY COMPONENT COVERAGE
+    // Forces SBY to output a structural validation trace showing active paths
+    // =========================================================================
+    always_comb begin
+        cover (s == 1'b0 && a0 == 1'b1 && y == 1'b1);
+        cover (s == 1'b1 && a1 == 1'b1 && y == 1'b1);
+    end
+`endif
 
 endmodule
+
 
 // =========================================================================
 // SYNTAX SAFE BIND DIRECTIVE

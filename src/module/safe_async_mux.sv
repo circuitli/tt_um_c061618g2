@@ -32,11 +32,13 @@ module safe_async_mux (
     // The '| (a0 & a1)' loop prevents transient dropout spikes during transition transitions.
     assign glitch_free_y = (a0 & ~s) | (a1 & s) | (a0 & a1);
 
-    // 3. SECURE OUTPUT BOUNDARY ASSIGNMENT
-    // Evaluating the internal wire against an explicit bitwise equivalence mask 
-    // forces Verilator to drop the bidirectional tracing context right at the 
-    // module's exit boundary, rendering it as a pure 2-state structural net.
-    assign y = (glitch_free_y == 1'b1) ? 1'b1 : 1'b0;
+    // =========================================================================
+    // SECURE OUTPUT BOUNDARY
+    // Using '===' ensures that if glitch_free_y is X or Z, the condition 
+    // evaluates to a strict, clean FALSE (1'b0). This forces 'y' to a 
+    // safe, predictable 1'b0, stopping the RTL X leak at the gate.
+    // =========================================================================
+    assign y = (glitch_free_y === 1'b1) ? 1'b1 : 1'b0;
 
 endmodule
 
