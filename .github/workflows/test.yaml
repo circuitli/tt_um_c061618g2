@@ -65,7 +65,6 @@ jobs:
       - name: Run tests
         run: |
           # Explicitly force the path back to the actual system PDK install location
-          export PDK_ROOT="/home/runner/.volare"
           cd test
           make clean
           make
