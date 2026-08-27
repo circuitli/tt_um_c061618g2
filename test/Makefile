@@ -79,7 +79,7 @@ endif
 COMPILE_ARGS 		+= -I..
 
 # Include the testbench sources:
-VERILOG_SOURCES += $(PWD)/tb.v
+COMPILE_ARGS        += $(PWD)/tb.v
 TOPLEVEL = tb
 COCOTB_TOPLEVEL = tb
 

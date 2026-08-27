@@ -29,39 +29,33 @@ module async_latch_cell_formal (
 `ifdef FORMAL
 
     // -------------------------------------------------------------------------
-    // 1. ASYNCHRONOUS RESET PROOF
-    // Property: Whenever rst_n is pulled low, the latch output must drop to 0 
-    // instantly, completely ignoring the 'set' and 'hold' lines.
+    // 1. ASYNCHRONOUS RESET VERIFICATION
+    // Property: If !rst_n is active, q must drop to 1'b0 instantly.
+    // Equivalent Boolean Form: rst_n || (q == 1'b0)
     // -------------------------------------------------------------------------
     asm_latch_reset_assert: assert property (
-        (!rst_n) -> (q == 1'b0)
+        rst_n || (q == 1'b0)
     );
 
     // -------------------------------------------------------------------------
-    // 2. TRANSPARENT SAMPLING PROOF (DATA PASS-THROUGH)
-    // Property: When rst_n is inactive and 'set' is high, the latch cell 
-    // must act completely transparently, driving 'q' to match 'hold'.
+    // 2. FUNCTIONAL LATCH TRANSITION VERIFICATION
+    // Replaced 'A -> B' with '!A || B' for strict Yosys compliance.
     // -------------------------------------------------------------------------
-    asm_latch_sample_assert: assert property (
-        (rst_n && set) -> (q == hold)
+    
+    // If out of reset and set is asserted, output matches hold state
+    asm_latch_set_assert: assert property (
+        !(rst_n && set) || (q == hold)
     );
 
-    // -------------------------------------------------------------------------
-    // 3. ASYNCHRONOUS STATE HOLD PROOF
-    // Property: When 'set' drops low, the circuit enters memory mode. The output
-    // at the next evaluation phase must mirror the immediate past value of 'q',
-    // provided a reset event does not occur.
-    // -------------------------------------------------------------------------
+    // If out of reset and set falls, output must remain stable (latch hold)
     asm_latch_hold_assert: assert property (
-        (rst_n && $past(rst_n) && !set) -> (q == $past(q))
+        !(rst_n && !set) || $stable(q)
     );
 
     // -------------------------------------------------------------------------
-    // 4. METASTABILITY & X-PROPAGATION BARRIER PROOF
-    // Property: The latch output port must remain strictly binary under all 
-    // valid or pseudo-valid operational states to protect downstream logic.
+    // 3. X/Z METASTABILITY ISOLATION PROOF
     // -------------------------------------------------------------------------
-    asm_latch_binary_assert: assert property (
+    asm_latch_binary_clean_assert: assert property (
         (q == 1'b1) || (q == 1'b0)
     );
 
