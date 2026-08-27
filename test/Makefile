@@ -8,6 +8,12 @@ TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
 PROJECT_SOURCES = tt_um_c061618g2.sv
 COMPILE_ARGS += -g2012
+# =========================================================================
+# PRECISE SYSTEMVERILOG EXTENSION SCAN FIX
+# This explicitly forces Icarus to search for and parse '.v' files 
+# when scanning your test directories, ensuring 'tb.v' is discovered!
+# =========================================================================
+COMPILE_ARGS += -Y .v
 VERILOG_SOURCES     += $(CURDIR)/tb.v
 
 # Fallback to your local formal project copy if PDK_ROOT isn't defined on Windows
@@ -36,12 +42,6 @@ else ifeq ($(SIM),icarus)
     # and locks the 1ps precision grid globally for BOTH RTL and GLS flows.
     # =========================================================================
     COMPILE_ARGS += +timescale+1ns/1ps
-    # =========================================================================
-    # PRECISE SYSTEMVERILOG EXTENSION SCAN FIX
-    # This explicitly forces Icarus to search for and parse '.v' files 
-    # when scanning your test directories, ensuring 'tb.v' is discovered!
-    # =========================================================================
-    COMPILE_ARGS += -Y .v
 
     # Define filenames
     CLEAN_LOCAL_CELLS = $(CURDIR)/sg13g2_stdcell_functional.v

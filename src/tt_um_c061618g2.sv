@@ -19,7 +19,7 @@
 // ==============================================================================
 `default_nettype none
 
-`include "src/module/c061618g2_input_shield.sv"
+//`include "src/module/c061618g2_input_shield.sv"
 `include "src/module/c061618g2.sv"
 
 module tt_um_c061618g2 (
