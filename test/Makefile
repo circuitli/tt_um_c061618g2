@@ -43,7 +43,7 @@ else ifeq ($(SIM),icarus)
     # This format uses the '+' syntax. It bypasses 'invalid option -- -' errors
     # and locks the 1ps precision grid globally for BOTH RTL and GLS flows.
     # =========================================================================
-    COMPILE_ARGS += -timescale 1ns/1ps
+    #COMPILE_ARGS += -timescale 1ns/1ps
 
     # Define filenames
     CLEAN_LOCAL_CELLS = $(CURDIR)/sg13g2_stdcell_functional.v
@@ -68,7 +68,7 @@ else ifeq ($(SIM),icarus)
         #COMPILE_ARGS += -y /opt/pdk/ihp-sg13g2/libs.ref/sg13g2/verilog
 
         # 3. Strip the raw PDK path from the sources and append our clean local version instead
-        VERILOG_SOURCES := $(filter-out $(RAW_PDK_CELLS) %sg13g2_stdcell.v, $(VERILOG_SOURCES))
+        #VERILOG_SOURCES := $(filter-out $(RAW_PDK_CELLS) %sg13g2_stdcell.v, $(VERILOG_SOURCES))
         VERILOG_SOURCES += $(CLEAN_LOCAL_CELLS)
     else
         # Gate level simulation:
@@ -81,7 +81,7 @@ else ifeq ($(SIM),icarus)
         VERILOG_SOURCES += $(PWD)/gate_level_netlist.v
 
         # 3. Strip the raw PDK path from the sources and append our clean local version instead
-        VERILOG_SOURCES := $(filter-out $(RAW_PDK_CELLS) %sg13g2_stdcell.v, $(VERILOG_SOURCES))
+        #VERILOG_SOURCES := $(filter-out $(RAW_PDK_CELLS) %sg13g2_stdcell.v, $(VERILOG_SOURCES))
         VERILOG_SOURCES += $(CLEAN_LOCAL_CELLS)
     endif
 endif
