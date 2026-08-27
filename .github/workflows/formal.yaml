@@ -49,6 +49,24 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      # =========================================================================
+      # THE COMPLIANT PDK CLEANING STEP
+      # This runs safely inside the local runner directory context without breaking
+      # global paths, making the library 100% parseable by Yosys.
+      # =========================================================================
+      - name: Extract and Clean IHP SG13G2 Standard Cell Library
+        working-directory: formal
+        run: |
+          # 1. Copy the un-scrubbed host PDK asset to the current repository directory root
+          cp /home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v ./sg13g2_stdcell_clean.v
+          
+          # 2. Strip structural specify timing blocks that contain the ifnone errors
+          sed -i '/specify/,/endspecify/d' ./sg13g2_stdcell_clean.v
+          
+          # 3. Strip sequential user-defined primitive tables that break token parsing
+          sed -i '/primitive/,/endprimitive/d' ./sg13g2_stdcell_clean.v
+
+
       #- name: Run SymbiYosys Primitives Checks
       #  working-directory: formal/module
       #  if: false
