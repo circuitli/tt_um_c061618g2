@@ -13,17 +13,24 @@
 # limitations under the License.
 
 [options]
-mode bmc
-depth 1
-
+#mode bmc
+mode cover
+#mode prove
+###depth 1
+depth 100
 
 [engines]
 # High-speed native SMT-solver engine matrix
 #smtbmc --unroll z3
 #smtbmc yices
+#smtbmc
 # Bypasses the smt2 backend entirely, while still utilizing a 
 # high-performance Z3/Boolector-class solver backend (btormc)
 btor btormc
+#btor pono
+# Bypasses the smt2 pipeline completely and runs a high-performance 
+# AIGER-based bounded model checker that natively accepts design loops!
+#abc bmc3
 
 [script]
 verilog_defaults -add -I.
@@ -81,6 +88,9 @@ read -formal tt_um_c061618g2_formal.sv
 hierarchy -top tt_um_c061618g2 -purge_lib
 proc
 
+# Breaks the latch feedback loops in SBY tool memory without hacking the source code
+#chformal -early
+
 # =========================================================================
 # CRITICAL FLATTENING ADJUSTMENT
 # Using 'flatten -wb' (whitebox flatten) tells Yosys to merge the modules 
@@ -88,7 +98,7 @@ proc
 # cross-module combinational feedback loop, preventing simplemap_bitop 
 # from crashing!
 # =========================================================================
-flatten
+####flatten
 
 # 1. Fully synthesize the behavior to break high-level logic loops
 #synth -noabc
@@ -99,8 +109,8 @@ flatten
 ##check
 
 # 2. Convert raw gates into standard library cells so loops are generic
-techmap
-simplemap
+###techmap
+###simplemap
 
 # =========================================================================
 # ASYNCHRONOUS LOOP SOLUTION
@@ -111,7 +121,7 @@ simplemap
 #async2sync
 
 # Map tech primitives and isolate ports cleanly
-splitnets -ports
+###splitnets -ports
 #setundef -undriven -expose
 #scc -set_attr loop_break 1
 #opt_expr
@@ -121,7 +131,7 @@ splitnets -ports
 
 # 1. Manually break continuous combinatorial loops by inserting
 # a formal register mapping to isolate the latch paths
-scc -set_attr formal_keep 1
+###scc -set_attr formal_keep 1
 
 # =========================================================================
 # THE ULTIMATE SMT2 FEEDBACK MATRIX BREAKOUT
@@ -138,7 +148,7 @@ scc -set_attr formal_keep 1
 #scc -all_cell_types
 
 # Finalize the formal execution logic maps
-clk2fflogic
+###clk2fflogic
 
 # === THE DEFINITIVE FIX FOR THE LOGIC LOOP ERROR ===
 # Detects feedback networks and simplifies word widths to eliminate 
@@ -149,7 +159,7 @@ clk2fflogic
 # Standard formal elaboration mapping without port splitting
 #flatten
 #prep -top tt_um_c061618g2 -nordff
-#prep -top tt_um_c061618g2
+prep -top tt_um_c061618g2
 ##chformal -early
 ##opt_clean
 

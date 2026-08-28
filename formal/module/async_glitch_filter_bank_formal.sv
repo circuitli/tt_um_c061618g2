@@ -53,6 +53,10 @@ module async_glitch_filter_bank_formal #(
                 );
             end
         end
+
+        // Forces the engine to find a valid scenario where the first filter lane 
+        // successfully propagates a stable high signal out of the glitch window!
+        cov_bank_filter_pass: cover (rst_n && async_in[0] && async_out[0]);
     end
 
 endmodule
