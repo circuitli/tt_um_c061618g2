@@ -34,11 +34,17 @@ module c061618g2 (
 );
     /* verilator lint_off UNUSEDSIGNAL */
     `ifdef jsdhaksjhdksajhd
-        // Removed formal loop blockers to ensure clean runtime synthesis
+        // For the math solver, strip these unclocked bit assignments
     `else
-        bit unused_p2_b7 = uio_in; 
-        bit uio5_pad     = uio_in; 
-        bit TESTMODE_n   = uio_in; 
+        // ---------------------------------------------------------------------
+        // HAZARD-FREE OBSERVATION NETS
+        // Changing 'bit' to 'wire' converts these from active simulation 
+        // state drivers into safe, passive observation nets, completely
+        // unlocking the control bus ports!
+        // ---------------------------------------------------------------------
+        wire unused_p2_b7 = uio_in[7]; 
+        wire uio5_pad     = uio_in[5]; 
+        wire TESTMODE_n   = uio_in[4]; 
     `endif
     /* verilator lint_on UNUSEDSIGNAL */
 

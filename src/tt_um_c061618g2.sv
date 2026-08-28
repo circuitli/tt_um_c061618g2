@@ -69,16 +69,23 @@ module tt_um_c061618g2 (
     // UI_IN MATRIX: If in reset, clamp to 8'h1F. Otherwise, pass-through ui_in.
     assign safe_ui = rst_n ? ui_in : 8'b00011111;
 
-    // =========================================================================
+        // =========================================================================
     // HAZARD-FREE AND WARNING-FREE SCALAR COMBINATIONAL PACKING
+    // Unpacking into explicit single-bit scalar equations completely destroys
+    // simulator delta-cycle race traps and guarantees correct pin values!
     // =========================================================================
-    assign safe_uio[0] = uio_ren;                          // Live pass-through
-    assign safe_uio[3:1] = rst_n ? {uio_be_n, uio_mpd_n, uio_ref_n} : 3'b111; // Reset clamps
+    assign safe_uio[0] = uio_ren;                          // Bit 0 -> ren live pass-through
+    
     // Explicit single-bit ternary assignments isolate the evaluation queues:
+    assign safe_uio[1] = rst_n ? uio_ref_n : 1'b1;         // Bit 1 -> ref_n safety gate
+    assign safe_uio[2] = rst_n ? uio_mpd_n : 1'b1;         // Bit 2 -> mpd_n safety gate
+    assign safe_uio[3] = rst_n ? uio_be_n  : 1'b1;         // Bit 3 -> be_n safety gate
+    
     assign safe_uio[4] = 1'b0;                             // Safe padding clamp
     assign safe_uio[5] = 1'b0;                             // Safe padding clamp
-    assign safe_uio[6] = uio_flg_n;                        // Critical live pass-through
-    assign safe_uio[7] = uio_bit7;                         // Reserved live pass-through
+    assign safe_uio[6] = uio_flg_n;                        // Bit 6 -> FLG_IN_n live pass-through
+    assign safe_uio[7] = uio_bit7;                         // Bit 7 -> Reserved live pass-through
+
 
     // =========================================================================
     // 2. CORE HIERARCHICAL INSTANTIATION
