@@ -18,6 +18,7 @@ mode cover
 #mode prove
 ###depth 1
 depth 100
+multiclock on
 
 [engines]
 # High-speed native SMT-solver engine matrix

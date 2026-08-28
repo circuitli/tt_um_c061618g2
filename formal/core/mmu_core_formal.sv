@@ -25,7 +25,6 @@
 module mmu_core_formal #(
     parameter int FILTER_STAGES = 4
 )(
-    input  wire                 clk,        // System clock injected for property gating
     input  wire                 rst_n,      // Asynchronous active-low reset
     input  wire  [2:0]          core_ctrl,  // Flat vector for control bits: rd5, rd4, map_n
     input  wire  [4:0]          core_addr,  // Flat vector for address bits: A15, A14, A13, A12, A11
@@ -97,7 +96,6 @@ endmodule
 
 // Bind declaration mapping structural signals cleanly into the tracking workspace
 bind mmu_core mmu_core_formal i_mmu_core_formal (
-    .clk      (clk), // Pulls system clock from top-level to gate properties
     .rst_n    (rst_n),
     .core_ctrl (core_ctrl),           // Maps flat [2:0] control vector
     .core_addr (core_addr),           // Maps flat [4:0] address slice vector    .ren      (ren),

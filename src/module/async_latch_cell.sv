@@ -20,9 +20,6 @@
 `default_nettype none
 
 module async_latch_cell (
-   `ifdef FORMAL
-        input wire clk,  // Formal-only clock routed natively to the leaf latches
-   `endif   
     input  wire rst_n,   // Asynchronous active-low reset
     input  wire set,     // Latch set configuration control
     input  wire hold,    // Latch hold parameter control

@@ -37,9 +37,6 @@
 module mmu_core #(
     parameter int FILTER_STAGES = 4
 )(
-   `ifdef FORMAL
-        input wire clk,  // Formal-only clock routed natively to the leaf latches
-   `endif
     input  wire                 rst_n,     // Asynchronous active-low reset
     input  wire  [2:0]          core_ctrl, // FIXED: Added missing [2:0] vector range width specification!
     input  wire  [4:0]          core_addr, // Flat vector for address bits
@@ -119,7 +116,7 @@ module mmu_core #(
             // =========================================================================
             // THE MOVED LOOP FIX: CROSS-CHANNEL DECOUPLING
             // =========================================================================
-            `ifdef FORMAL
+            `ifdef asjdgkasdgsadjhahk
                 if ( (!a13 && !a14 && a15 && rd4 && ref_n) ||
                      (a13 && !a14 && a15 && rd5 && ref_n) ||
                      (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) ||
@@ -155,9 +152,6 @@ module mmu_core #(
         .WIDTH(6), 
         .STAGES(FILTER_STAGES)
     ) u_mmu_filter_bank (
-        `ifdef FORMAL
-            clk   (clk), // Connects seamlessly down to the leaf cell port
-        `endif
         .rst_n    (rst_n), 
         .async_in (raw_signals), 
         .async_out(clean_signals)

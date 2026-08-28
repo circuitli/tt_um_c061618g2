@@ -20,7 +20,6 @@
 `default_nettype none
 
 module async_latch_cell_formal (
-    input  wire  clk,   // Virtual verification clock port to drive the temporal properties!
     input  wire  rst_n,
     input  wire  set,
     input  wire  hold,
@@ -53,7 +52,6 @@ endmodule
 // 2. RE-ROUTE LATCH BIND DOWNWARD NATIVELY
 // Placing this at the top wrapper level allows it to use the local 'clk' wire directly
 bind async_latch_cell async_latch_cell_formal i_async_latch_cell_formal (
-    .clk   (clk), // Connects directly to the local top-level wrapper port wire cleanly!
     .rst_n (rst_n),
     .set   (set),
     .hold  (hold),

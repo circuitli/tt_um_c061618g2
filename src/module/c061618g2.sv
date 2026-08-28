@@ -79,9 +79,6 @@ module c061618g2 (
             .WIDTH(13),
             .STAGES(4)
         ) u_mmu_filter_bank (
-            `ifdef FORMAL
-                .clk   (clk), // Connects seamlessly down to the leaf cell port
-            `endif
             .rst_n    (rst_n), 
             .async_in (functional_unfiltered),
             .async_out(filtered)
@@ -108,9 +105,6 @@ module c061618g2 (
 
     // Connect flat vector slices straight to the core engine module ports
     mmu_core core_inst (
-        `ifdef FORMAL
-.           clk   (clk), // Connects seamlessly down to the leaf cell port
-        `endif
         .rst_n     (rst_n),
         .core_ctrl (filtered[7:5]), // [2:0] -> rd5, rd4, map_n passed natively as flat bits
         .core_addr (filtered[4:0]), // [4:0] -> A15, A14, A13, A12, A11 passed natively as flat bits

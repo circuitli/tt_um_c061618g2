@@ -26,7 +26,6 @@ module async_glitch_filter_bank_formal #(
     parameter int WIDTH  = 13,
     parameter int STAGES = 4
 )(
-    input wire                clk,  // Formal-only clock routed natively to the leaf latches
     input wire                rst_n,      
     input wire  [WIDTH-1:0]   async_in,   
     input logic [WIDTH-1:0]   async_out   
@@ -69,7 +68,6 @@ bind async_glitch_filter_bank async_glitch_filter_bank_formal #(
     .WIDTH(WIDTH),
     .STAGES(STAGES)
 ) i_async_glitch_filter_bank_formal (
-    .clk       (clk), // Connects seamlessly down to the leaf cell port
     .rst_n     (rst_n),
     .async_in  (async_in),
     .async_out (async_out)

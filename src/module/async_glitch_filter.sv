@@ -23,9 +23,6 @@
 module async_glitch_filter #(
     parameter int STAGES = 2 // Number of double-inverter delay blocks
 )(
-    `ifdef FORMAL
-        input wire clk,  // Formal-only clock routed natively to the leaf latches
-    `endif
     input  wire  rst_n,
     input  wire  async_in,
     output logic async_out
@@ -131,9 +128,6 @@ module async_glitch_filter #(
     /* verilator lint_on UNOPTFLAT */
 
     async_latch_cell u_latch_inst (
-        `ifdef FORMAL
-            .clk   (clk), // Connects seamlessly down to the leaf cell port
-        `endif
         .rst_n (rst_n),
         .set   (optimized_set),  // Uses the locked mask
         .hold  (optimized_hold), // Uses the locked mask
