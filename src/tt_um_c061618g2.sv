@@ -53,18 +53,18 @@ module tt_um_c061618g2 (
     logic [7:0] safe_ui;
     logic [7:0] safe_uio;
 
-     // =========================================================================
+    // =========================================================================
     // ISOLATION HARNESS PASS
-    // Instantiating the custom submodules cleanly separates the port nets.
+    // Explicitly paths each independent bit to restore true motherboard control lines.
     // =========================================================================
     wire uio_ren, uio_ref_n, uio_mpd_n, uio_be_n, uio_flg_n, uio_bit7;
 
-    safe_wire_buffer u_buf_ren   (.A(uio_in[0]), .Y(uio_ren));
-    safe_wire_buffer u_buf_ref   (.A(uio_in[1]), .Y(uio_ref_n));
-    safe_wire_buffer u_buf_mpd   (.A(uio_in[2]), .Y(uio_mpd_n));
-    safe_wire_buffer u_buf_be    (.A(uio_in[3]), .Y(uio_be_n));
-    safe_wire_buffer u_buf_flg   (.A(uio_in[6]), .Y(uio_flg_n));
-    safe_wire_buffer u_buf_bit7  (.A(uio_in[7]), .Y(uio_bit7));
+    safe_wire_buffer u_buf_ren   (.A(uio_in[0]), .Y(uio_ren));   // Bit 0 -> ren
+    safe_wire_buffer u_buf_ref   (.A(uio_in[1]), .Y(uio_ref_n)); // Bit 1 -> ref_n
+    safe_wire_buffer u_buf_mpd   (.A(uio_in[2]), .Y(uio_mpd_n)); // Bit 2 -> mpd_n
+    safe_wire_buffer u_buf_be    (.A(uio_in[3]), .Y(uio_be_n));  // Bit 3 -> be_n
+    safe_wire_buffer u_buf_flg   (.A(uio_in[6]), .Y(uio_flg_n)); // Bit 6 -> FLG_IN_n
+    safe_wire_buffer u_buf_bit7  (.A(uio_in[7]), .Y(uio_bit7));  // Bit 7 -> Reserved
 
     // UI_IN MATRIX: If in reset, clamp to 8'h1F. Otherwise, pass-through ui_in.
     assign safe_ui = rst_n ? ui_in : 8'b00011111;
@@ -73,9 +73,7 @@ module tt_um_c061618g2 (
     // HAZARD-FREE AND WARNING-FREE SCALAR COMBINATIONAL PACKING
     // =========================================================================
     assign safe_uio[0] = uio_ren;                          // Live pass-through
-    assign safe_uio[1] = rst_n ? uio_ref_n : 1'b1;         // Clamp high during reset
-    assign safe_uio[2] = rst_n ? uio_mpd_n : 1'b1;         // Clamp high during reset
-    assign safe_uio[3] = rst_n ? uio_be_n  : 1'b1;         // Clamp high during reset
+    assign safe_uio[3:1] = rst_n ? {uio_be_n, uio_mpd_n, uio_ref_n} : 3'b111; // Reset clamps
     assign safe_uio[4] = 1'b0;                             // Safe padding clamp
     assign safe_uio[5] = 1'b0;                             // Safe padding clamp
     assign safe_uio[6] = uio_flg_n;                        // Critical live pass-through

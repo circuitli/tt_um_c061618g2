@@ -36,6 +36,40 @@ module tt_um_c061618g2_formal (
     input  wire       rst_n     // Active-low system reset
 );
 
+  m // =========================================================================
+    // STRUCTURAL ROUTING LINT CONTRACTS (THE ANTI-SCRAMBLING SHIELD)
+    // These concurrent checks verify that your custom safe_wire_buffer arrays
+    // are connected to the exact correct parent ports. If you ever type
+    // ui_in instead of uio_in again, SymbiYosys will fail instantly at Step 0!
+    // =========================================================================
+    always @* begin
+        if (rst_n) begin
+            
+            // 1. Verify ui_in is mapping 1-to-1 to safe_ui (No cross-talk or scrambling)
+            assert_ui_purity_0: assert (safe_ui[0] == ui_in[0]); // A11
+            assert_ui_purity_1: assert (safe_ui[1] == ui_in[1]); // A12
+            assert_ui_purity_2: assert (safe_ui[2] == ui_in[2]); // A13
+            assert_ui_purity_3: assert (safe_ui[3] == ui_in[3]); // A14
+            assert_ui_purity_4: assert (safe_ui[4] == ui_in[4]); // A15
+            assert_ui_purity_5: assert (safe_ui[5] == ui_in[5]); // map_n
+            assert_ui_purity_6: assert (safe_ui[6] == ui_in[6]); // rd4
+            assert_ui_purity_7: assert (safe_ui[7] == ui_in[7]); // rd5
+
+            // 2. Verify uio_in is mapping 1-to-1 to safe_uio (No copying typos)
+            assert_uio_purity_0: assert (safe_uio[0] == uio_in[0]); // ren
+            assert_uio_purity_1: assert (safe_uio[1] == uio_in[1]); // ref_n
+            assert_uio_purity_2: assert (safe_uio[2] == uio_in[2]); // mpd_n
+            assert_uio_purity_3: assert (safe_uio[3] == uio_in[3]); // be_n
+            assert_uio_purity_6: assert (safe_uio[6] == uio_in[6]); // FLG_IN_n
+            assert_uio_purity_7: assert (safe_uio[7] == uio_in[7]); // Reserved Bit
+            
+            // 3. Verify that padding channels remain strictly isolated and zeroed out
+            assert_uio_padding_4: assert (safe_uio[4] == 1'b0);
+            assert_uio_padding_5: assert (safe_uio[5] == 1'b0);
+
+        end
+    end
+
     // -------------------------------------------------------------------------
     // DIRECT LIVE NET EXTRACTION FROM CHIP OUTPUTS
     // -------------------------------------------------------------------------
