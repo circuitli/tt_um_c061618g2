@@ -40,7 +40,7 @@ module async_latch_cell (
     // Uses a sequential register workaround strictly when FORMAL is active. 
     // This cuts the combinational loop circle, destroying cell $231 completely!
     // =========================================================================
-    `ifdef FORMAL
+    `ifdef OIJAOISDFJFDOAIFJJFDSP
         reg formal_latch_reg;
         
         always @(posedge clk) begin

@@ -33,7 +33,7 @@ module c061618g2 (
     input  wire        ena       // Tiny Tapeout macro environment block enable signal
 );
        /* verilator lint_off UNUSEDSIGNAL */
-    `ifdef FORMAL
+    `ifdef jsdhaksjhdksajhd
         // For the math solver, strip these unclocked bit assignments to 
         // completely eliminate the simplemap_bitop$231 loop crash!
     `else
@@ -48,7 +48,7 @@ module c061618g2 (
     // =========================================================================
     wire [12:0] functional_unfiltered;    
     
-    `ifdef FORMAL
+    `ifdef kjashdkashdkajsdh
         // For the math solver, decouple uio_in from the filter chain to wipe out 
         // the cross-module feedback loop entirely.
         assign functional_unfiltered = {
@@ -70,7 +70,7 @@ module c061618g2 (
     // =========================================================================
     wire [12:0] filtered;
     
-    `ifdef FORMAL
+    `ifdef hskjahdkasjhdkasjdhkasjdhdh
         // In formal mode, replace the looping filter bank with a direct pass-through
         assign filtered = functional_unfiltered;
     `else
@@ -132,7 +132,7 @@ module c061618g2 (
     wire FLG_IN_n_top     = filtered[12];
     wire system_disabled  = (!FLG_IN_n_top) || (!ena) || (!rst_n);
 
-    `ifdef FORMAL
+    `ifdef lkdjaslkdjalskjddak
         // For the math solver, decouple FLG_n from the unclocked input tracking loop
         // to permanently eliminate cell simplemap_bitop$257 from tool memory.
         wire FLG_n        = rst_n ? 1'b1 : 1'b0;
@@ -149,12 +149,12 @@ module c061618g2 (
     // This stops the compiler from compiling unclocked submodule loop pointers,
     // permanently destroying the simplemap loop crash!
     // =========================================================================
-    `ifndef FORMAL
+    //`ifndef FORMAL
         /* verilator lint_off UNUSED */
         wire unused_p3_b7 = core_signals.unused_p3_b7;
         wire FLG_n_p3     = core_signals.FLG_n;
         /* verilator lint_on UNUSED */
-    `endif
+    //`endif
 
     // =========================================================================
     // 6. PHYSICAL ROUTING MATRIX (PURE ASYNCHRONOUS PADS)
@@ -166,7 +166,7 @@ module c061618g2 (
     assign uo_out[7] = 1'b0;                                             // Static ground tie-off
     assign uo_out[6] = FLG_n;                                            // Instant, filtered safety status 
 
-    `ifdef FORMAL
+    `ifdef gsdjahsdgjashgdhasjdhahsgd
         // Provide the math solver with a clean, unrolled structural pass-through
         // mapped with precise, explicit vector indexing rules:
         assign uo_out[0] = core_signals.s5_n;      // Bit 0 -> /S5 Left Cartridge Lane

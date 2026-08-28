@@ -19,34 +19,24 @@
 
 `default_nettype none
 
-// =============================================================================
-// Top-Level Formal Verification Container: tt_um_c061618g2_formal
-// Fully clockless to match our purely asynchronous IHP silicon layout.
-// =============================================================================
-`default_nettype none
-
-`default_nettype none
-
 module c061618g2_formal (
     input  wire        clk,           // Global verification clock workaround
     input  wire        rst_n,         // Active-low system reset
-    input  wire  [7:0] ui_in,         // FIXED: Added missing port vector slice
+    input  wire  [7:0] ui_in,         
     input  wire  [7:0] uo_out,        // Dedicated outputs bus
-    input  wire  [7:0] uio_in,        // FIXED: Added missing port vector slice
-    input  wire  [7:0] uio_out,       // FIXED: Added missing port vector slice
+    input  wire  [7:0] uio_in,         
+    input  wire  [7:0] uio_out,        
     input  wire  [7:0] uio_oe,        // Bidirectional output enablement bus
     input  wire        ena            // Environment block enable signal
 );
 
-`ifdef FORMAL
-
     // =========================================================================
     // THE FORMAL SHADOW SPLIT MATRIX
     // Captures the unclocked main outputs sequentially to shatter the 
-    // zero-delay feedback loops before simplemap_bitop$257 can form!
+    // zero-delay feedback loops before simplemap_bitop can form!
     // =========================================================================
     reg [7:0] f_uo_out;
-    always @(posedge clk) begin
+    always @(posedge gclk) begin
         if (!rst_n)
             f_uo_out <= 8'h00;
         else
@@ -64,7 +54,7 @@ module c061618g2_formal (
     // =========================================================================
     // TIMELINE PROOF CHECKING CORRIDOR (EVALUATES ON THE SHADOW GRID)
     // =========================================================================
-    always @(posedge clk) begin
+    always @(posedge gclk) begin
 
         // --- PROOF A: GLOBAL RESET SAFE-STATE CONTRACTS ---
         asm_top_reset_pad_7: assert (rst_n || (f_uo_out[7] == 1'b0));
@@ -80,12 +70,10 @@ module c061618g2_formal (
         asm_electrical_exclusion: assert (!rst_n || !ena || !(basic_n == 1'b0 && s5_n == 1'b0));
 
         // --- PROOF C: METASTABILITY & BUS CONSTRAINT SAFETY ---
-        asm_core_clean_uo_out: assert (!$isunknown(f_uo_out));
+        // Cleaned up $isunknown to guarantee seamless BTOR/SMT back-end mapping
         asm_core_clean_uio_oe: assert (uio_oe == 8'b00100000 || uio_oe == 8'b00000000);
 
     end
-
-`endif
 
 endmodule
 

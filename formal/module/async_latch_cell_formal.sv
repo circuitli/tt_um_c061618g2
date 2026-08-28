@@ -27,14 +27,12 @@ module async_latch_cell_formal (
     input  wire  q
 );
 
-`ifdef FORMAL
-
     // =========================================================================
-    // FIXED LOOP-SAFE PROCEDURAL CLOCKED FORMAL PROPERTIES
+    // LOOP-SAFE PROCEDURAL CLOCKED FORMAL PROPERTIES
     // Moving assertions inside always @(posedge clk) fixes the unexpected '@'
     // syntax error completely while keeping your timeline unrolled!
     // =========================================================================
-    always @(posedge clk) begin
+    always @(posedge gclk) begin
         
         // 1. ASYNCHRONOUS RESET VERIFICATION
         asm_latch_reset_assert: assert (rst_n || (q == 1'b0));
@@ -48,10 +46,7 @@ module async_latch_cell_formal (
 
         // 3. X/Z METASTABILITY ISOLATION PROOF
         asm_latch_binary_clean_assert: assert ((q == 1'b1) || (q == 1'b0));
-
     end
-
-`endif
 
 endmodule
 

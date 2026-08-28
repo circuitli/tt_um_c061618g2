@@ -33,14 +33,12 @@ module async_glitch_filter_formal #(
     input  wire  [STAGES:0]     delay_chain  // FIXED: Added missing tracking input port wire vector!
 );
 
-`ifdef FORMAL
-
     // =========================================================================
     // CLOCKED FORMAL PROPERTIES
     // Moving assertions inside always @(posedge clk) allows Yosys to resolve
     // $past and $rose as clean step registers, destroying cell simplemap_bitop$257!
     // =========================================================================
-    always @(posedge clk) begin
+    always @(posedge gclk) begin
 
         // 1. ABSOLUTE RESET DOMINANCE PROOF
         asm_filter_immediate_reset_assert: assert (rst_n || (async_out == 1'b0));
@@ -55,8 +53,6 @@ module async_glitch_filter_formal #(
         asm_filter_binary_clean_assert: assert ((async_out == 1'b1) || (async_out == 1'b0));
 
     end
-
-`endif
 
 endmodule
 

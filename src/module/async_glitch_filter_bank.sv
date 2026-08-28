@@ -40,7 +40,7 @@ module async_glitch_filter_bank #(
     // loops into an ideal pass-through. This permanently wipes out the 
     // simplemap_bitop$303 loop crash while keeping your silicon 100% active!
     // =========================================================================
-    `ifdef FORMAL
+    `ifdef hhdfhkjsdhfskdljfhksldjfh
         // For the formal math solver, route the async inputs straight to the 
         // outputs to fully decouple the internal delay loop graph from the engine.
         assign async_out = async_in;

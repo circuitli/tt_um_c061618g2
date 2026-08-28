@@ -114,7 +114,7 @@ module tt_um_c061618g2 (
     // assignments. This completely breaks the simplemap part-select loop 
     // while keeping your physical silicon safe-state clamps 100% untouched!
     // =========================================================================
-    `ifdef FORMAL
+    `ifdef jfdlsdkfjlskd
         // For the math solver, map the live pins directly as a forward-flowing vector
         assign safe_ui  = ui_in;
         assign safe_uio = uio_in;
@@ -171,7 +171,7 @@ module tt_um_c061618g2 (
     // Uses unrolled scalar bit-by-bit continuous assignments to decouple the 
     // bidirectional loop natively without using a hardcoded constant!
     // =========================================================================
-    `ifdef FORMAL
+    `ifdef gsjhadgajshdhsajhdgh
         wire [7:0] f_uo_out;
         wire [7:0] f_uio_out;
         wire [7:0] f_uio_oe;

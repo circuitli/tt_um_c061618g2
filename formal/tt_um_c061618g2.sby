@@ -19,7 +19,11 @@ depth 1
 
 [engines]
 # High-speed native SMT-solver engine matrix
-smtbmc yices
+#smtbmc --unroll z3
+#smtbmc yices
+# Bypasses the smt2 backend entirely, while still utilizing a 
+# high-performance Z3/Boolector-class solver backend (btormc)
+btor btormc
 
 [script]
 verilog_defaults -add -I.
@@ -27,7 +31,6 @@ verilog_defaults -add -I.
 # 0. READ THE IHP STANDARD CELL BLACKBOXES FIRST
 # This macro tells Yosys to strip out specify/timing blocks from the primitives
 #read_verilog -formal -lib sg13g2_stdcell_clean.v
-
 
 # -------------------------------------------------------------------------
 # READ THE IDEAL TRANSISTOR CELLS FIRST
@@ -74,7 +77,8 @@ read -formal tt_um_c061618g2_formal.sv
 # as ideal structural blackboxes, bypassing the PDK file completely.
 # -------------------------------------------------------------------------
 #hierarchy -generate sg13g2_* O:X O:Y O:Q I:A I:B I:D I:G I:S I:I I:A0 I:A1
-hierarchy -top tt_um_c061618g2
+##hierarchy -top tt_um_c061618g2
+hierarchy -top tt_um_c061618g2 -purge_lib
 proc
 
 # =========================================================================
@@ -86,10 +90,17 @@ proc
 # =========================================================================
 flatten
 
+# 1. Fully synthesize the behavior to break high-level logic loops
+#synth -noabc
+
 # Optimize the flattened logical gate tree structures
-opt_expr
-opt_clean
-check
+##opt_expr
+##opt_clean
+##check
+
+# 2. Convert raw gates into standard library cells so loops are generic
+techmap
+simplemap
 
 # =========================================================================
 # ASYNCHRONOUS LOOP SOLUTION
@@ -108,6 +119,10 @@ splitnets -ports
 #abc
 #opt_clean
 
+# 1. Manually break continuous combinatorial loops by inserting
+# a formal register mapping to isolate the latch paths
+scc -set_attr formal_keep 1
+
 # =========================================================================
 # THE ULTIMATE SMT2 FEEDBACK MATRIX BREAKOUT
 # This native Yosys pass extracts unclocked combinatorial feedback cycles 
@@ -117,17 +132,33 @@ splitnets -ports
 #scc -set_attr loop_break 1
 #opt_clean
 
+# === ASYNC LATCH LOOPS ===
+# This finds loops and breaks them with formal-only variables 
+# so the SMT2 backend can output the design cleanly.
+#scc -all_cell_types
+
+# Finalize the formal execution logic maps
+clk2fflogic
+
+# === THE DEFINITIVE FIX FOR THE LOGIC LOOP ERROR ===
+# Detects feedback networks and simplifies word widths to eliminate 
+# false multidimensional loops before the SMT2 graph check.
+#wreduce
+#clean
+
 # Standard formal elaboration mapping without port splitting
+#flatten
 #prep -top tt_um_c061618g2 -nordff
-chformal -early
-opt_clean
+#prep -top tt_um_c061618g2
+##chformal -early
+##opt_clean
 
 # =========================================================================
 # Uses the native 'cutpoint' pass. Paths must use forward slashes (/) instead 
 # of dots (.), ensuring the SMT2 math engine can compile your address 
 # decoding truth tables seamlessly without logic loop crashes.
 # =========================================================================
-cutpoint w:u_c061618g2.uo_out
+##cutpoint w:u_c061618g2.uo_out
 
 # =========================================================================
 # THE ULTIMATE CORE MODULE LOOP BREAKOUT MATRIX
@@ -136,11 +167,15 @@ cutpoint w:u_c061618g2.uo_out
 # =========================================================================
 #wreduce
 #scc -set_attr loop_break 1
-opt_expr
-opt_clean
+##opt_expr
+##opt_clean
 
-# Finalize the formal execution logic maps
+# 4. Inject structural formal-only variable registers to break the loops 
 #clk2fflogic
+
+# 5. Clean and check the netlist without regenerating loops
+clean
+check
 
 [files]
 # Target Destination Path              # Local Source Repository Path

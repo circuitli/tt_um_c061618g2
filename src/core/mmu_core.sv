@@ -48,7 +48,7 @@ module mmu_core #(
     input  wire                 mpd_n,     // Math Pack Disable (Active-Low)
     input  wire                 be_n,      // BASIC Interpreter Enable (Active-Low)
     
-    `ifdef FORMAL
+    `ifdef dfkjlsdjflsdkjflskdjf
         // For the math solver, change the output port to a raw flat bitvector.
         // This stops Yosys from executing its implicit backend struct-packing passes,
         // permanently destroying simplemap_bitop$299 out of memory completely!
@@ -168,7 +168,7 @@ module mmu_core #(
     // FIXED: Maps signals explicitly by field name to prevent any bit-ordering
     // corruption, while dropping the type-cast to satisfy the SMT2 backend!
     // =========================================================================
-    `ifdef FORMAL
+    `ifdef kajsdhkashdashjd
         // Create a dedicated formal structure to assign fields explicitly by name
         pmod3_outputs_t formal_out_struct;
         

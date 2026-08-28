@@ -32,15 +32,10 @@ module async_glitch_filter_bank_formal #(
     input logic [WIDTH-1:0]   async_out   
 );
 
-  
-`ifdef FORMAL
-
     // =========================================================================
     // LOOP-SAFE PROCEDURAL CLOCKED FORMAL BANK PROPERTIES
-    // Aligns checks to true reset behaviors and wraps them inside a clocked
-    // boundary block to permanently eliminate simplemap logic loop crashes!
     // =========================================================================
-    always @(posedge clk) begin
+    always @(posedge gclk) begin
 
         // 1. ABSOLUTE RESET SAFE-STATE PROOF
         // When reset is active low, the bank MUST force all outputs to safe zeros!
@@ -49,25 +44,16 @@ module async_glitch_filter_bank_formal #(
         // 2. DATA METASTABILITY & X-PROPAGATION BARRIER PROOF
         assert_bank_binary_clean: assert ((async_out | ~async_out) == {WIDTH{1'b1}});
 
-    end
-
-    // 3. CHANNEL LANE STEP MATRIX
-    // Evaluates individual channel relationships dynamically inside a clocked generate block
-    generate
-        for (genvar i = 0; i < WIDTH; i++) begin : gen_bit_invariants
-            always @(posedge clk) begin
-                if (rst_n) begin
-                    // If the output updates/changes, it must correlate to a valid input history state.
-                    // This verifies independent lane boundaries without forcing a static transparent wire check.
-                    assert_channel_functional_bound: assert (
-                        !$changed(async_out[i]) || ($past(async_in[i]) == async_out[i] || async_in[i] == async_out[i])
-                    );
-                end
+        // 3. CHANNEL LANE STEP MATRIX (Condensed Inside Main Block)
+        if (rst_n) begin
+            for (int i = 0; i < WIDTH; i++) begin
+                // If the output updates/changes, it must correlate to a valid input history state.
+                assert_channel_functional_bound: assert (
+                    !$changed(async_out[i]) || ($past(async_in[i]) == async_out[i] || async_in[i] == async_out[i])
+                );
             end
         end
-    endgenerate
-
-`endif
+    end
 
 endmodule
 

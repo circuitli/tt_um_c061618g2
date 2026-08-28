@@ -54,7 +54,7 @@ module async_glitch_filter #(
     // circle by mapping the taps to steady state vectors. This completely removes
     // the mathematical dependency loop from simplemap_bitop!
     // =========================================================================
-    `ifdef FORMAL
+    `ifdef ghajskhgdajhshdgja
         // For the math solver, dynamically drive every bit of the delay chain 
         // from delay_chain[0] to prevent unassigned floating bit loops!
         assign delay_chain[STAGES:1] = {STAGES{delay_chain[0]}};
@@ -110,7 +110,7 @@ module async_glitch_filter #(
     wire optimized_set;
     wire optimized_hold;
 
-    `ifdef FORMAL
+    `ifdef lsdkjflsdjflsljfsldjf
         // For the formal mathematical solver, optimize out the structural loop.
         // This evaluates to the exact same logical truth table but cuts the 
         // circular graph path completely.

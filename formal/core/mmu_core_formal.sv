@@ -36,8 +36,6 @@ module mmu_core_formal #(
     input  wire  pmod3_outputs_t core_out    // Packed structural output array
 );
 
-`ifdef FORMAL
-
     // -------------------------------------------------------------------------
     // INTERNAL NET EXTRACTION FOR PROPERTY DECODING
     // FIXED: Maps inputs by index slices and extracts output terms directly by
@@ -64,7 +62,7 @@ module mmu_core_formal #(
     // =========================================================================
     // FIXED LOOP-SAFE CLOCKED FORMAL DECODING PROPERTIES
     // =========================================================================
-    always @(posedge clk) begin
+    always @(posedge gclk) begin
 
         // 1. GLOBAL ASYNCHRONOUS RESET SAFE-STATE PROOF
         // When rst_n is low, all active-low control output lines must be high (deasserted)
@@ -94,8 +92,6 @@ module mmu_core_formal #(
         asm_mmu_exclusion_assert: assert (!rst_n || !(basic_n == 1'b0 && s5_n == 1'b0));
 
     end
-
-`endif
 
 endmodule
 
