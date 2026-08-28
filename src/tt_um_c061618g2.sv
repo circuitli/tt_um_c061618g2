@@ -74,6 +74,7 @@ module tt_um_c061618g2 (
     // =========================================================================
     assign safe_uio[0] = uio_ren;                          // Live pass-through
     assign safe_uio[3:1] = rst_n ? {uio_be_n, uio_mpd_n, uio_ref_n} : 3'b111; // Reset clamps
+    // Explicit single-bit ternary assignments isolate the evaluation queues:
     assign safe_uio[4] = 1'b0;                             // Safe padding clamp
     assign safe_uio[5] = 1'b0;                             // Safe padding clamp
     assign safe_uio[6] = uio_flg_n;                        // Critical live pass-through
