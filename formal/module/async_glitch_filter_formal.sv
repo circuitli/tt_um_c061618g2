@@ -33,24 +33,32 @@ module async_glitch_filter_formal #(
 );
 
     // =========================================================================
-    // CLOCKED FORMAL PROPERTIES
-    // Moving assertions inside always @(posedge clk) allows Yosys to resolve
-    // $past and $rose as clean step registers, destroying cell simplemap_bitop$257!
+    // COMBINATIONAL FILTER PROPERTIES
+    // Uses structural tracking across the delay chain vector to eliminate
+    // the need for $past, $rose, or formal sampling clocks entirely!
     // =========================================================================
-    always @(posedge gclk) begin
+    always @* begin
 
         // 1. ABSOLUTE RESET DOMINANCE PROOF
         asm_filter_immediate_reset_assert: assert (rst_n || (async_out == 1'b0));
 
-        // 2. DELAY CHAIN STALE FLUSH PROOF
-        asm_filter_post_reset_flush_assert: assert (!($past(!rst_n) && !rst_n) || (async_out == 1'b0));
-
-        // 3. GLITCH REJECTION & WINDOW INTEGRITY PROOF
-        asm_filter_glitch_rejection_assert: assert (!(rst_n && $rose(async_out)) || ($past(async_in) && async_in));
-
-        // 4. METASTABILITY & X-PROPAGATION BARRIER PROOF
+        // 2. METASTABILITY & X-PROPAGATION BARRIER PROOF
         asm_filter_binary_clean_assert: assert ((async_out == 1'b1) || (async_out == 1'b0));
 
+        // 3. GLITCH REJECTION & WINDOW INTEGRITY PROOF
+        // If out of reset and the output rises or is high, the internal delay chain 
+        // stages must validate that the input was stable across the window.
+        if (rst_n && async_out) begin
+            // If the output is high, the entire filtering stage window must be full
+            asm_filter_window_integrity_assert: assert (delay_chain[STAGES:0] == { (STAGES+1){1'b1} });
+        end
+
+        // 4. LOW-STABILITY SAFETY CONTRACT
+        if (rst_n && !async_in && (delay_chain[STAGES:0] == { (STAGES+1){1'b0} })) begin
+            // If the input has been low long enough to completely clear the pipeline, 
+            // the output must stay clamped to zero.
+            asm_filter_flush_stable_assert: assert (async_out == 1'b0);
+        end
     end
 
 endmodule

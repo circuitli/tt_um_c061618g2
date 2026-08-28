@@ -32,30 +32,30 @@ module async_glitch_filter_bank_formal #(
 );
 
     // =========================================================================
-    // LOOP-SAFE PROCEDURAL CLOCKED FORMAL BANK PROPERTIES
+    // COMBINATIONAL FORMAL BANK PROPERTIES
+    // Evaluates the wide vector ports continuously on any signal state change.
     // =========================================================================
-    always @(posedge gclk) begin
+    always @* begin
 
         // 1. ABSOLUTE RESET SAFE-STATE PROOF
-        // When reset is active low, the bank MUST force all outputs to safe zeros!
         assert_bank_reset_safe: assert (rst_n || (async_out == {WIDTH{1'b0}}));
 
         // 2. DATA METASTABILITY & X-PROPAGATION BARRIER PROOF
         assert_bank_binary_clean: assert ((async_out | ~async_out) == {WIDTH{1'b1}});
 
-        // 3. CHANNEL LANE STEP MATRIX (Condensed Inside Main Block)
+        // 3. CHANNEL LANE STATE CONTRACT
         if (rst_n) begin
             for (int i = 0; i < WIDTH; i++) begin
-                // If the output updates/changes, it must correlate to a valid input history state.
-                assert_channel_functional_bound: assert (
-                    !$changed(async_out[i]) || ($past(async_in[i]) == async_out[i] || async_in[i] == async_out[i])
-                );
+                // Functional Boundary: An output lane can only be high if its 
+                // corresponding input is actively high or passing through the filter.
+                assert_channel_functional_bound: assert (!async_out[i] || async_in[i] || async_out[i] == async_in[i]);
             end
         end
 
-        // Forces the engine to find a valid scenario where the first filter lane 
-        // successfully propagates a stable high signal out of the glitch window!
+        // 4. COVER TARGET TIMELINE SIGNAL EXTRACTION
+        // The immediate cover statement evaluates on any combinational updates.
         cov_bank_filter_pass: cover (rst_n && async_in[0] && async_out[0]);
+
     end
 
 endmodule

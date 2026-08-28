@@ -59,9 +59,10 @@ module mmu_core_formal #(
     wire s4_n    = core_out.s4_n;
 
     // =========================================================================
-    // FIXED LOOP-SAFE CLOCKED FORMAL DECODING PROPERTIES
+    // COMBINATIONAL DECODING PROPERTIES
+    // Evaluates the decoding equations continuously on any input signal transition.
     // =========================================================================
-    always @(posedge gclk) begin
+    always @* begin
 
         // 1. GLOBAL ASYNCHRONOUS RESET SAFE-STATE PROOF
         // When rst_n is low, all active-low control output lines must be high (deasserted)

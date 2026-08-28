@@ -36,28 +36,16 @@ module tt_um_c061618g2_formal (
     input  wire       rst_n     // Active-low system reset
 );
 
-    // =========================================================================
-    // THE FORMAL SHADOW SPLIT MATRIX
-    // This breaks the simplemap_bitop loop by sampling the live unclocked pins
-    // into an independent tracking register, cutting the combinational cycle!
-    // =========================================================================
-    reg [7:0] f_uo_out;
-    always @(posedge gclk) begin
-        if (!rst_n)
-            f_uo_out <= 8'h00;
-        else
-            f_uo_out <= uo_out; // Sample the outputs sequentially
-    end
-
     // -------------------------------------------------------------------------
-    // INTERNAL NET EXTRACTION FROM THE SAFE SHADOW REGISTER
+    // DIRECT LIVE NET EXTRACTION FROM CHIP OUTPUTS
     // -------------------------------------------------------------------------
-    wire [5:0] active_out_pins = f_uo_out[5:0];
+    wire [5:0] active_out_pins = uo_out[5:0];
 
     // =========================================================================
-    // WRAPPER BOUNDARY SAFETY CONTRACTS (NO CORE DECODING FORMULAS)
+    // WRAPPER BOUNDARY SAFETY CONTRACTS
+    // Evaluates constraints instantly on any live physical pin state updates.
     // =========================================================================
-    always @(posedge gclk) begin
+    always @* begin
 
         // 1. GLOBAL RESET SAFE-STATE PROOF
         // Verifies the top-level chip pins successfully clamp high (inactive) during reset

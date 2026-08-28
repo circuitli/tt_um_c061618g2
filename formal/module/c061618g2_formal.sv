@@ -20,45 +20,34 @@
 `default_nettype none
 
 module c061618g2_formal (
-    input  wire        clk,           // Global verification clock workaround
+    input  wire        clk,           // Unused verification clock hook
     input  wire        rst_n,         // Active-low system reset
     input  wire  [7:0] ui_in,         
-    input  wire  [7:0] uo_out,        // Dedicated outputs bus
+    input  wire  [7:0] uo_out,        // Live, unclocked physical outputs bus
     input  wire  [7:0] uio_in,         
     input  wire  [7:0] uio_out,        
     input  wire  [7:0] uio_oe,        // Bidirectional output enablement bus
     input  wire        ena            // Environment block enable signal
 );
 
-    // =========================================================================
-    // THE FORMAL SHADOW SPLIT MATRIX
-    // Captures the unclocked main outputs sequentially to shatter the 
-    // zero-delay feedback loops before simplemap_bitop can form!
-    // =========================================================================
-    reg [7:0] f_uo_out;
-    always @(posedge gclk) begin
-        if (!rst_n)
-            f_uo_out <= 8'h00;
-        else
-            f_uo_out <= uo_out; // Sample the outputs sequentially
-    end
-
     // -------------------------------------------------------------------------
-    // INTERNAL NET EXTRACTION FROM THE SAFE SHADOW REGISTER
+    // DIRECT LIVE NET EXTRACTION 
+    // Extracts bits continuously from the real physical outputs
     // -------------------------------------------------------------------------
-    wire [5:0] active_out_pins = f_uo_out[5:0];
+    wire [5:0] active_out_pins = uo_out[5:0];
     
     wire s5_n    = active_out_pins[0]; // Aligned to your physical bit index layout
     wire basic_n = active_out_pins[1]; // Bit 1 -> basic_n tracking target
 
     // =========================================================================
-    // TIMELINE PROOF CHECKING CORRIDOR (EVALUATES ON THE SHADOW GRID)
+    // COMBINATIONAL VERIFICATION CORRIDOR
+    // Evaluates constraints instantly on any live physical pin state updates.
     // =========================================================================
-    always @(posedge gclk) begin
+    always @* begin
 
         // --- PROOF A: GLOBAL RESET SAFE-STATE CONTRACTS ---
-        asm_top_reset_pad_7: assert (rst_n || (f_uo_out[7] == 1'b0));
-        asm_top_reset_pad_6: assert (rst_n || (f_uo_out[6] == 1'b0)); 
+        asm_top_reset_pad_7: assert (rst_n || (uo_out[7] == 1'b0));
+        asm_top_reset_pad_6: assert (rst_n || (uo_out[6] == 1'b0)); 
         asm_top_reset_pad_5: assert (rst_n || (active_out_pins[5] == 1'b1)); 
         asm_top_reset_pad_4: assert (rst_n || (active_out_pins[4] == 1'b1)); 
         asm_top_reset_pad_3: assert (rst_n || (active_out_pins[3] == 1'b1)); 
@@ -70,7 +59,6 @@ module c061618g2_formal (
         asm_electrical_exclusion: assert (!rst_n || !ena || !(basic_n == 1'b0 && s5_n == 1'b0));
 
         // --- PROOF C: METASTABILITY & BUS CONSTRAINT SAFETY ---
-        // Cleaned up $isunknown to guarantee seamless BTOR/SMT back-end mapping
         asm_core_clean_uio_oe: assert (uio_oe == 8'b00100000 || uio_oe == 8'b00000000);
 
     end
