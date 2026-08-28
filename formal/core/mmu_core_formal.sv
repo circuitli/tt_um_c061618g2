@@ -40,7 +40,8 @@ module mmu_core_formal #(
 
     // -------------------------------------------------------------------------
     // INTERNAL NET EXTRACTION FOR PROPERTY DECODING
-    // Maps the flat inputs to discrete scalar verification terms.
+    // FIXED: Maps inputs by index slices and extracts output terms directly by
+    // their true struct field names to prevent any bit-ordering corruption!
     // -------------------------------------------------------------------------
     wire rd5   = core_ctrl[2];
     wire rd4   = core_ctrl[1];
@@ -52,23 +53,29 @@ module mmu_core_formal #(
     wire a12   = core_addr[1];
     wire a11   = core_addr[0];
 
-    // Extract the active-low signal vector from the packed struct format [5:0]
-    wire [5:0] out_vec = core_out.data_pins;
-    wire s5_n    = out_vec[5];
-    wire basic_n = out_vec[4];
-    wire os_n    = out_vec[3];
-    wire ci_n    = out_vec[2];
-    wire io_n    = out_vec[1];
-    wire s4_n    = out_vec[0];
+    // Reference fields directly from the struct to mirror the hardware layout perfectly
+    wire s5_n    = core_out.s5_n;
+    wire basic_n = core_out.basic_n;
+    wire os_n    = core_out.os_n;
+    wire ci_n    = core_out.ci_n;
+    wire io_n    = core_out.io_n;
+    wire s4_n    = core_out.s4_n;
 
     // =========================================================================
     // FIXED LOOP-SAFE CLOCKED FORMAL DECODING PROPERTIES
-    // Evaluates on the clocked posedge grid to prevent simplemap self-loops!
     // =========================================================================
     always @(posedge clk) begin
 
         // 1. GLOBAL ASYNCHRONOUS RESET SAFE-STATE PROOF
-        asm_mmu_reset_assert: assert (rst_n || (out_vec == 6'b111111));
+        // When rst_n is low, all active-low control output lines must be high (deasserted)
+        asm_mmu_reset_assert: assert (rst_n || (
+            s5_n    == 1'b1 && 
+            basic_n == 1'b1 && 
+            os_n    == 1'b1 && 
+            ci_n    == 1'b1 && 
+            io_n    == 1'b1 && 
+            s4_n    == 1'b1
+        ));
 
         // 2. ADDRESS DECODING PROOFS (ARROW-FREE)
         // /S4 Expansion Right Cartridge Select ($8000-$9FFF)
@@ -94,7 +101,7 @@ endmodule
 
 // Bind declaration mapping structural signals cleanly into the tracking workspace
 bind mmu_core mmu_core_formal i_mmu_core_formal (
-    .clk       (tt_um_c061618g2.clk), // Pulls system clock from top-level to gate properties
+    .clk      (clk), // Pulls system clock from top-level to gate properties
     .rst_n    (rst_n),
     .core_ctrl (core_ctrl),           // Maps flat [2:0] control vector
     .core_addr (core_addr),           // Maps flat [4:0] address slice vector    .ren      (ren),
@@ -105,4 +112,3 @@ bind mmu_core mmu_core_formal i_mmu_core_formal (
 );
 
 `endif
-

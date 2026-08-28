@@ -55,13 +55,10 @@ module async_latch_cell_formal (
 
 endmodule
 
-// =========================================================================
-// PROPERTY INTERFACE BIND HOOKS (VIRTUAL WORKAROUND RE-INJECTION)
-// Traverses the hierarchy to pass the outermost Tiny Tapeout wrapper clock
-// directly into the formal layer port boundary!
-// =========================================================================
+// 2. RE-ROUTE LATCH BIND DOWNWARD NATIVELY
+// Placing this at the top wrapper level allows it to use the local 'clk' wire directly
 bind async_latch_cell async_latch_cell_formal i_async_latch_cell_formal (
-    .clk   (tt_um_c061618g2.clk), // Maps parent clock down to satisfy the formal port
+    .clk   (clk), // Connects directly to the local top-level wrapper port wire cleanly!
     .rst_n (rst_n),
     .set   (set),
     .hold  (hold),

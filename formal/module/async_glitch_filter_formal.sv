@@ -26,43 +26,35 @@
 module async_glitch_filter_formal #(
     parameter int STAGES = 2
 )(
+    input  wire  clk,  // Formal-only clock routed natively to the leaf latches
     input  wire  rst_n,
     input  wire  async_in,
-    input  wire  async_out
+    input  wire  async_out,
+    input  wire  [STAGES:0]     delay_chain  // FIXED: Added missing tracking input port wire vector!
 );
 
 `ifdef FORMAL
 
-    // -------------------------------------------------------------------------
-    // 1. ABSOLUTE RESET DOMINANCE PROOF
-    // Equivalent Boolean Form: rst_n || (async_out == 1'b0)
-    // -------------------------------------------------------------------------
-    asm_filter_immediate_reset_assert: assert property (
-        rst_n || (async_out == 1'b0)
-    );
+    // =========================================================================
+    // CLOCKED FORMAL PROPERTIES
+    // Moving assertions inside always @(posedge clk) allows Yosys to resolve
+    // $past and $rose as clean step registers, destroying cell simplemap_bitop$257!
+    // =========================================================================
+    always @(posedge clk) begin
 
-    // -------------------------------------------------------------------------
-    // 2. DELAY CHAIN STALE FLUSH PROOF
-    // Equivalent Boolean Form: !($past(!rst_n) && !rst_n) || (async_out == 1'b0)
-    // -------------------------------------------------------------------------
-    asm_filter_post_reset_flush_assert: assert property (
-        !($past(!rst_n) && !rst_n) || (async_out == 1'b0)
-    );
+        // 1. ABSOLUTE RESET DOMINANCE PROOF
+        asm_filter_immediate_reset_assert: assert (rst_n || (async_out == 1'b0));
 
-    // -------------------------------------------------------------------------
-    // 3. GLITCH REJECTION & WINDOW INTEGRITY PROOF
-    // Equivalent Boolean Form: !(rst_n && $rose(async_out)) || ($past(async_in) && async_in)
-    // -------------------------------------------------------------------------
-    asm_filter_glitch_rejection_assert: assert property (
-        !(rst_n && $rose(async_out)) || ($past(async_in) && async_in)
-    );
+        // 2. DELAY CHAIN STALE FLUSH PROOF
+        asm_filter_post_reset_flush_assert: assert (!($past(!rst_n) && !rst_n) || (async_out == 1'b0));
 
-    // -------------------------------------------------------------------------
-    // 4. METASTABILITY & X-PROPAGATION BARRIER PROOF
-    // -------------------------------------------------------------------------
-    asm_filter_binary_clean_assert: assert property (
-        (async_out == 1'b1) || (async_out == 1'b0)
-    );
+        // 3. GLITCH REJECTION & WINDOW INTEGRITY PROOF
+        asm_filter_glitch_rejection_assert: assert (!(rst_n && $rose(async_out)) || ($past(async_in) && async_in));
+
+        // 4. METASTABILITY & X-PROPAGATION BARRIER PROOF
+        asm_filter_binary_clean_assert: assert ((async_out == 1'b1) || (async_out == 1'b0));
+
+    end
 
 `endif
 
@@ -75,6 +67,7 @@ endmodule
 bind async_glitch_filter async_glitch_filter_formal #(
     .STAGES(STAGES)
 ) i_async_glitch_filter_formal (
+    .clk         (clk), // Connects seamlessly down to the leaf cell port
     .rst_n       (rst_n),
     .async_in    (async_in),
     .async_out   (async_out),

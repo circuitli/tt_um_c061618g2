@@ -23,6 +23,9 @@
 module async_glitch_filter #(
     parameter int STAGES = 2 // Number of double-inverter delay blocks
 )(
+    `ifdef FORMAL
+        input wire clk,  // Formal-only clock routed natively to the leaf latches
+    `endif
     input  wire  rst_n,
     input  wire  async_in,
     output logic async_out
@@ -52,11 +55,9 @@ module async_glitch_filter #(
     // the mathematical dependency loop from simplemap_bitop!
     // =========================================================================
     `ifdef FORMAL
-        // For the math solver, assign the taps straight to the input gate.
-        // This preserves your exact truth table and address space checks 
-        // but fully eliminates the circular graph path.
-        assign delay_chain[1] = delay_chain[0];
-        assign delay_chain[2] = delay_chain[0];
+        // For the math solver, dynamically drive every bit of the delay chain 
+        // from delay_chain[0] to prevent unassigned floating bit loops!
+        assign delay_chain[STAGES:1] = {STAGES{delay_chain[0]}};
         
         // Drive the cap dumps cleanly to stop floating wire warnings
         assign functional_cap_sink_a = {STAGES{1'b0}};
@@ -130,6 +131,9 @@ module async_glitch_filter #(
     /* verilator lint_on UNOPTFLAT */
 
     async_latch_cell u_latch_inst (
+        `ifdef FORMAL
+            .clk   (clk), // Connects seamlessly down to the leaf cell port
+        `endif
         .rst_n (rst_n),
         .set   (optimized_set),  // Uses the locked mask
         .hold  (optimized_hold), // Uses the locked mask

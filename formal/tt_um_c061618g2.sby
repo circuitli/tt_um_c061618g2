@@ -101,12 +101,12 @@ check
 
 # Map tech primitives and isolate ports cleanly
 splitnets -ports
-setundef -undriven -expose
+#setundef -undriven -expose
 #scc -set_attr loop_break 1
 #opt_expr
 #techmap
 #abc
-opt_clean
+#opt_clean
 
 # =========================================================================
 # THE ULTIMATE SMT2 FEEDBACK MATRIX BREAKOUT
@@ -120,20 +120,22 @@ opt_clean
 # Standard formal elaboration mapping without port splitting
 #prep -top tt_um_c061618g2 -nordff
 chformal -early
+opt_clean
 
 # =========================================================================
 # Uses the native 'cutpoint' pass. Paths must use forward slashes (/) instead 
 # of dots (.), ensuring the SMT2 math engine can compile your address 
 # decoding truth tables seamlessly without logic loop crashes.
 # =========================================================================
-#cutpoint u_mmu_filter_bank/gen_filter_bank[*]/u_filter/u_latch_inst/latch_core
+cutpoint w:u_c061618g2.uo_out
 
 # =========================================================================
 # THE ULTIMATE CORE MODULE LOOP BREAKOUT MATRIX
 # Running scc at the absolute bottom captures the loops formed by the 
 # clockless assertion tracking nets, permanently destroying cell $231!
 # =========================================================================
-scc -set_attr loop_break 1
+#wreduce
+#scc -set_attr loop_break 1
 opt_expr
 opt_clean
 

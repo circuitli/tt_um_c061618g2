@@ -206,14 +206,14 @@ module tt_um_c061618g2 (
         // Your golden production silicon layout connectivity:
         (* keep_hierarchy = 1 *)   
         c061618g2 u_c061618g2 (
+            .clk      (clk),     
+            .rst_n    (rst_n),
             .ui_in    (safe_ui),   
             .uo_out   (uo_out),       
             .uio_in   (safe_uio),  
             .uio_out  (uio_out),  
             .uio_oe   (uio_oe),  
-            .ena      (ena),      
-            .clk      (clk),     
-            .rst_n    (rst_n)    
+            .ena      (ena)
         );
     `endif
 
