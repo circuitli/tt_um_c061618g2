@@ -54,38 +54,20 @@ module tt_um_c061618g2 (
     logic [7:0] safe_uio;
 
     // =========================================================================
-    // ISOLATION HARNESS PASS
-    // Explicitly paths each independent bit to restore true motherboard control lines.
+    // HAZARD-FREE & WARNING-FREE ATOMIC VECTOR INPUT SHIELD
+    // Replaces sliced wires and always_comb blocks with explicit full-vector 
+    // bitwise masks. This removes part-select fragmentation traps for Yosys SBY 
+    // and eliminates delta-cycle timing skews for Cocotb simultaneously!
     // =========================================================================
-    wire uio_ren, uio_ref_n, uio_mpd_n, uio_be_n, uio_flg_n, uio_bit7;
-
-    safe_wire_buffer u_buf_ren   (.A(uio_in[0]), .Y(uio_ren));   // Bit 0 -> ren
-    safe_wire_buffer u_buf_ref   (.A(uio_in[1]), .Y(uio_ref_n)); // Bit 1 -> ref_n
-    safe_wire_buffer u_buf_mpd   (.A(uio_in[2]), .Y(uio_mpd_n)); // Bit 2 -> mpd_n
-    safe_wire_buffer u_buf_be    (.A(uio_in[3]), .Y(uio_be_n));  // Bit 3 -> be_n
-    safe_wire_buffer u_buf_flg   (.A(uio_in[6]), .Y(uio_flg_n)); // Bit 6 -> FLG_IN_n
-    safe_wire_buffer u_buf_bit7  (.A(uio_in[7]), .Y(uio_bit7));  // Bit 7 -> Reserved
-
+    
     // UI_IN MATRIX: If in reset, clamp to 8'h1F. Otherwise, pass-through ui_in.
     assign safe_ui = rst_n ? ui_in : 8'b00011111;
 
-        // =========================================================================
-    // HAZARD-FREE AND WARNING-FREE SCALAR COMBINATIONAL PACKING
-    // Unpacking into explicit single-bit scalar equations completely destroys
-    // simulator delta-cycle race traps and guarantees correct pin values!
-    // =========================================================================
-    assign safe_uio[0] = uio_ren;                          // Bit 0 -> ren live pass-through
-    
-    // Explicit single-bit ternary assignments isolate the evaluation queues:
-    assign safe_uio[1] = rst_n ? uio_ref_n : 1'b1;         // Bit 1 -> ref_n safety gate
-    assign safe_uio[2] = rst_n ? uio_mpd_n : 1'b1;         // Bit 2 -> mpd_n safety gate
-    assign safe_uio[3] = rst_n ? uio_be_n  : 1'b1;         // Bit 3 -> be_n safety gate
-    
-    assign safe_uio[4] = 1'b0;                             // Safe padding clamp
-    assign safe_uio[5] = 1'b0;                             // Safe padding clamp
-    assign safe_uio[6] = uio_flg_n;                        // Bit 6 -> FLG_IN_n live pass-through
-    assign safe_uio[7] = uio_bit7;                         // Bit 7 -> Reserved live pass-through
-
+    // UIO_IN MATRIX: If in reset, evaluate using an explicit 8-bit atomic mask:
+    // (uio_in & 8'b11000001) preserves bits [7:6] and bit [0] natively as 1-to-1 passes.
+    // (| 8'b00001110) forces the active-low pull-up clamp high on bits [3:1] (3'b111).
+    // Bits [5:4] are natively zeroed out because they are masked off and un-set.
+    assign safe_uio = rst_n ? uio_in : ((uio_in & 8'b11000001) | 8'b00001110);
 
     // =========================================================================
     // 2. CORE HIERARCHICAL INSTANTIATION
