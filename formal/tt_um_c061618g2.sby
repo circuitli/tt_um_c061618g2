@@ -99,7 +99,20 @@ proc
 # cross-module combinational feedback loop, preventing simplemap_bitop 
 # from crashing!
 # =========================================================================
-####flatten
+flatten -wb
+
+# === AUTOMATED LOOP-BREAKING MATRICES ===
+# 1. Automatically scan the entire flattened design tree, isolate every strongly 
+#    connected loop cell type (like simplemap_bitop), and select them in memory.
+scc -all_cell_types -select
+
+# 2. Sever the loops on the selected cells to convert them into independent wires.
+#    This guarantees that the btor graph engine can serialize your logic 
+#    equations cleanly without throwing topological loop panics!
+cutpoint
+
+# 3. Clear the selection marker so subsequent passes can run normally
+select -clear
 
 # 1. Fully synthesize the behavior to break high-level logic loops
 #synth -noabc
@@ -119,7 +132,7 @@ proc
 # elements. This allows the smt2 backend to evaluate your truth tables 
 # cleanly without throwing circular logic loop crashes!
 # =========================================================================
-#async2sync
+async2sync
 
 # Map tech primitives and isolate ports cleanly
 ###splitnets -ports

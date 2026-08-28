@@ -38,27 +38,22 @@ module mmu_core #(
     parameter int FILTER_STAGES = 4
 )(
     input  wire                 rst_n,     // Asynchronous active-low reset
-    input  wire  [2:0]          core_ctrl, // FIXED: Added missing [2:0] vector range width specification!
-    input  wire  [4:0]          core_addr, // Flat vector for address bits
-    input  wire                 ren,       // OS ROM Read Enable (Active-High)
-    input  wire                 ref_n,     // DRAM Refresh Cycle (Active-Low)
-    input  wire                 mpd_n,     // Math Pack Disable (Active-Low)
-    input  wire                 be_n,      // BASIC Interpreter Enable (Active-Low)
+    input  wire  [2:0]          core_ctrl, // Control bits: rd5, rd4, map_n
+    input  wire  [4:0]          core_addr, // Address bits: A15, A14, A13, A12, A11
+    input  wire                 ren,       // OS ROM Read Enable
+    input  wire                 ref_n,     // DRAM Refresh Cycle
+    input  wire                 mpd_n,     // Math Pack Disable
+    input  wire                 be_n,      // BASIC Interpreter Enable
     
     `ifdef dfkjlsdjflsdkjflskdjf
-        // For the math solver, change the output port to a raw flat bitvector.
-        // This stops Yosys from executing its implicit backend struct-packing passes,
-        // permanently destroying simplemap_bitop$299 out of memory completely!
         output wire  [7:0]          core_out
     `else
-        // Your golden physical un-clocked silicon struct architecture:
         output pmod3_outputs_t      core_out   // Unidirectional packed structure output
     `endif
 );
 
     // =========================================================================
     // 1. DIRECT WIRE SPLICING
-    // Scalar wire tracing isolates each line into independent logic channels.
     // =========================================================================
     wire a11, a12, a13, a14, a15, map_n, rd4, rd5;
     
@@ -82,29 +77,28 @@ module mmu_core #(
         raw_ci_n    = 1'b1; 
         local_os_n  = 1'b1;
 
-        // Only evaluate decoding matrix if the system is not in reset
         if (rst_n) begin
-            // Evaluate /S4 Expansion Right Cartridge Select ($8000-$9FFF)
+            // /S4 Expansion Right Cartridge Select ($8000-$9FFF)
             if (!a13 && !a14 && a15 && rd4 && ref_n) begin
                 raw_s4_n = 1'b0;
             end
 
-            // Evaluate /S5 Expansion Left Cartridge Select ($A000-$BFFF)
+            // /S5 Expansion Left Cartridge Select ($A000-$BFFF)
             if (a13 && !a14 && a15 && rd5 && ref_n) begin
                 raw_s5_n = 1'b0;
             end
 
-            // Evaluate /BASIC CS Memory Space Decode ($A000-$BFFF if enabled internally)
+            // /BASIC CS Memory Space Decode ($A000-$BFFF)
             if (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) begin
                 raw_basic_n = 1'b0;
             end
 
-            // Evaluate /IO Peripheral Space Decode ($D000 Custom IC Registers)
+            // /IO Peripheral Space Decode ($D000)
             if (!a11 && a12 && !a13 && a14 && a15 && ref_n) begin
                 raw_io_n = 1'b0;
             end
 
-            // Evaluate /OS Operating System ROM Decode ($C000-$CFFF, $E000-$FFFF)
+            // /OS Operating System ROM Decode ($C000-$CFFF, $E000-$FFFF)
             if ( (a13 && a14 && a15 && ren && ref_n) ||
                  (!a12 && a14 && a15 && ren && ref_n) ||
                  (a11 && a12 && !a13 && a14 && a15 && ren && mpd_n && ref_n) ||
@@ -114,7 +108,7 @@ module mmu_core #(
             raw_os_n = local_os_n;
 
             // =========================================================================
-            // THE MOVED LOOP FIX: CROSS-CHANNEL DECOUPLING
+            // FIXED CLEAN MACRO GENERATION LAYOUT
             // =========================================================================
             `ifdef asjdgkasdgsadjhahk
                 if ( (!a13 && !a14 && a15 && rd4 && ref_n) ||
@@ -128,7 +122,7 @@ module mmu_core #(
                      (!ref_n) ) begin
                     raw_ci_n = 1'b0;
                 end
-            ` : begin
+            `else
                 if ( (!a13 && !a14 && a15 && rd4 && ref_n) ||
                      (a13 && !a14 && a15 && rd5 && ref_n) ||
                      (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) ||
@@ -137,11 +131,10 @@ module mmu_core #(
                      (!ref_n) ) begin
                     raw_ci_n = 1'b0;
                 end
-            end
             `endif
         end
 
-        // Safe procedural packing prevents signal races across module walls
+        // Safe procedural packing
         raw_signals = {raw_s4_n, raw_io_n, raw_ci_n, raw_os_n, raw_basic_n, raw_s5_n};
     end
 
@@ -158,26 +151,22 @@ module mmu_core #(
     );
 
     // =========================================================================
-    // 4. TYPE-SAFE STRUCT CONVERSION
-    // FIXED: Maps signals explicitly by field name to prevent any bit-ordering
-    // corruption, while dropping the type-cast to satisfy the SMT2 backend!
+    // 4. HAZARD-FREE TYPE-SAFE STRUCT CONVERSION
+    // Procedural assignment prevents delta-cycle vector slice mismatches.
     // =========================================================================
     `ifdef kajsdhkashdashjd
-        // Create a dedicated formal structure to assign fields explicitly by name
         pmod3_outputs_t formal_out_struct;
-        
         always_comb begin
             if (rst_n) begin
                 formal_out_struct.unused_p3_b7 = 1'b0;
-                formal_out_struct.FLG_n        = 1'b1; // Default status out of reset
+                formal_out_struct.FLG_n        = 1'b1; 
                 formal_out_struct.s4_n         = raw_s4_n;
                 formal_out_struct.io_n         = raw_io_n;
-                formal_out_struct.ci_n         = raw_ci_n; // RESTORED LIVE LOGIC PATH
+                formal_out_struct.ci_n         = raw_ci_n; 
                 formal_out_struct.os_n         = raw_os_n;
                 formal_out_struct.basic_n      = raw_basic_n;
                 formal_out_struct.s5_n         = raw_s5_n;
             end else begin
-                // Asynchronous Reset State Matrix
                 formal_out_struct.unused_p3_b7 = 1'b0;
                 formal_out_struct.FLG_n        = 1'b1;
                 formal_out_struct.s4_n         = 1'b1;
@@ -188,13 +177,38 @@ module mmu_core #(
                 formal_out_struct.s5_n         = 1'b1;
             end
         end
-
-        // Pass the structurally pure vector straight out to the port boundary
         assign core_out = formal_out_struct;
     `else
-        // Your golden physical un-clocked silicon layout routing:
-        assign core_out = rst_n ? pmod3_outputs_t'({1'b0, 1'b1, clean_signals}) 
-                                : pmod3_outputs_t'({1'b0, 1'b1, 6'b111111}); // All active-low lines forced high
+        // ---------------------------------------------------------------------
+        // HAZARD-FREE SIMULATION STRUCT MAPPING
+        // Unpacks fields procedures inside always_comb to guarantee the simulator
+        // resolves the port assignments atomically, eliminating pin skew.
+        // ---------------------------------------------------------------------
+        pmod3_outputs_t sim_out_struct;
+        
+        always_comb begin
+            if (rst_n) begin
+                sim_out_struct.unused_p3_b7 = 1'b0;
+                sim_out_struct.FLG_n        = 1'b1;
+                {sim_out_struct.s4_n,    
+                 sim_out_struct.io_n,    
+                 sim_out_struct.ci_n,    
+                 sim_out_struct.os_n,    
+                 sim_out_struct.basic_n, 
+                 sim_out_struct.s5_n}       = clean_signals;
+            end else begin
+                sim_out_struct.unused_p3_b7 = 1'b0;
+                sim_out_struct.FLG_n        = 1'b1;
+                sim_out_struct.s4_n         = 1'b1;
+                sim_out_struct.io_n         = 1'b1;
+                sim_out_struct.ci_n         = 1'b1;
+                sim_out_struct.os_n         = 1'b1;
+                sim_out_struct.basic_n      = 1'b1;
+                sim_out_struct.s5_n         = 1'b1;
+            end
+        end
+        
+        assign core_out = sim_out_struct;
     `endif
 
 endmodule

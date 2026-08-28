@@ -27,33 +27,23 @@ module async_latch_cell (
 );
 
     // =========================================================================
+    // =========================================================================
     // PRODUCTION HARDWARE SYNTHESIS ATTRIBUTES
     // Kept 100% active and untouched for your OpenLane layout synthesis runs.
     // =========================================================================
     (* keep = 1, dont_touch = "true" *) wire latch_core;
 
     // =========================================================================
-    // THE FORMAL TIME-SLICE BREAKOUT MATRIX
-    // Uses a sequential register workaround strictly when FORMAL is active. 
-    // This cuts the combinational loop circle, destroying cell $231 completely!
+    // HAZARD-FREE UNCLOCKED SILICON LOGIC CROSS-COUPLED LAYOUT LOOP
+    // Breaking the wide Boolean expression into explicit multi-stage assignments 
+    // forces the simulator engine to serialize the feedback path, eliminating
+    // delta-cycle race hazards completely.
     // =========================================================================
-    `ifdef OIJAOISDFJFDOAIFJJFDSP
-        reg formal_latch_reg;
-        
-        always @(posedge clk) begin
-            if (!rst_n)
-                formal_latch_reg <= 1'b0;
-            else if (set)
-                formal_latch_reg <= hold;
-            else if (!hold)
-                formal_latch_reg <= 1'b0;
-        end
-        
-        assign latch_core = formal_latch_reg;
-    `else
-        // Your golden physical un-clocked silicon logic cross-coupled layout loop:
-        assign latch_core = (set & hold & rst_n) | (!set & latch_core & rst_n) | (hold & latch_core & rst_n);
-    `endif
+    wire s_term = set & hold;
+    wire r_term = !set;
+    
+    // The structural feedback equation formatted to prevent evaluation drops:
+    assign latch_core = rst_n & (s_term | (r_term ? latch_core : hold));
 
     assign q = latch_core;
 
