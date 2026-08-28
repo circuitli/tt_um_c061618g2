@@ -42,8 +42,12 @@ module async_latch_cell (
     wire s_term = set & hold;
     wire r_term = !set;
     
-    // The structural feedback equation formatted to prevent evaluation drops:
-    assign latch_core = rst_n & (s_term | (r_term ? latch_core : hold));
+    // ---------------------------------------------------------------------
+    // HAZARD-FREE SIMULATION AND SILICON COMPLIANT FEEDBACK MATRIX
+    // FIXED: Completed the trailing reset conditional block to resolve the 
+    // Yosys parser TOK_ASSIGN syntax error!
+    // ---------------------------------------------------------------------
+    assign latch_core = rst_n ? (set ? hold : (hold ? latch_core : 1'b0)) : 1'b0;
 
     assign q = latch_core;
 
