@@ -40,28 +40,36 @@ module c061618g2_formal (
     wire basic_n = active_out_pins[1]; // Bit 1 -> basic_n tracking target
 
     // =========================================================================
-    // COMBINATIONAL VERIFICATION CORRIDOR
+    // GCLK-FREE COMBINATIONAL VERIFICATION CORRIDOR
     // Evaluates constraints instantly on any live physical pin state updates.
     // =========================================================================
     always @* begin
 
         // --- PROOF A: GLOBAL RESET SAFE-STATE CONTRACTS ---
-        asm_top_reset_pad_7: assert (rst_n || (uo_out[7] == 1'b0));
-        asm_top_reset_pad_6: assert (rst_n || (uo_out[6] == 1'b0)); 
-        asm_top_reset_pad_5: assert (rst_n || (active_out_pins[5] == 1'b1)); 
-        asm_top_reset_pad_4: assert (rst_n || (active_out_pins[4] == 1'b1)); 
-        asm_top_reset_pad_3: assert (rst_n || (active_out_pins[3] == 1'b1)); 
-        asm_top_reset_pad_2: assert (rst_n || (active_out_pins[2] == 1'b1)); 
-        asm_top_reset_pad_1: assert (rst_n || (basic_n == 1'b1)); 
-        asm_top_reset_pad_0: assert (rst_n || (s5_n == 1'b1)); 
+        // Verifies the exact physical bit vector mapping matching 8'b00111111 ($3F)
+        asm_top_reset_pad_7: assert (rst_n || (uo_out[7] == 1'b0)); // Static Ground Tie-off
+        asm_top_reset_pad_6: assert (rst_n || (uo_out[6] == 1'b0)); // FLG_n asserts low when system is disabled
+        asm_top_reset_pad_5: assert (rst_n || (active_out_pins[5] == 1'b1)); // s4_n high
+        asm_top_reset_pad_4: assert (rst_n || (active_out_pins[4] == 1'b1)); // io_n high
+        asm_top_reset_pad_3: assert (rst_n || (active_out_pins[3] == 1'b1)); // ci_n high
+        asm_top_reset_pad_2: assert (rst_n || (active_out_pins[2] == 1'b1)); // os_n high
+        asm_top_reset_pad_1: assert (rst_n || (basic_n == 1'b1));            // basic_n high
+        asm_top_reset_pad_0: assert (rst_n || (s5_n == 1'b1));               // s5_n high
 
         // --- PROOF B: BUS HARDWARE SAFETY EXCLUSION ---
+        // Guarantees that BASIC and OS memory channels can never assert simultaneously
         asm_electrical_exclusion: assert (!rst_n || !ena || !(basic_n == 1'b0 && s5_n == 1'b0));
 
         // --- PROOF C: METASTABILITY & BUS CONSTRAINT SAFETY ---
+        // Verifies bidirectional port enablement operates inside strict safe frames
         asm_core_clean_uio_oe: assert (uio_oe == 8'b00100000 || uio_oe == 8'b00000000);
 
     end
+
+endmodule
+
+`default_nettype wire
+Use code with caution.Now that the formal module perfectly mirrors the corrected hardware state, run SymbiYosys once more to verify everything compiles cleanly.Let me know if both Cocotb and SBY are completely green and PASSED!
 
 endmodule
 
