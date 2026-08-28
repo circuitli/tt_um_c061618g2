@@ -143,8 +143,14 @@ module c061618g2 (
     
     always_comb begin
         if (system_disabled) begin
-            // Forces all active-low memory select chip pins high (inactive)
-            raw_uo_out = 8'b01111111; 
+            // -----------------------------------------------------------------
+            // HARDWARE CONSTANT MATRIX:
+            // Bit 7: 1'b0 (Static Ground Tie-off)
+            // Bit 6: 1'b0 (FLG_n -> Clamped low to show inactive/disabled state)
+            // Bits 5:0: 6'b111111 (All memory select lines forced high/inactive)
+            // Combined Vector Word: 8'b00111111 ($3F)
+            // -----------------------------------------------------------------
+            raw_uo_out = 8'b00111111; 
         end else begin
             raw_uo_out[0] = core_signals.s5_n;     // Bit 0
             raw_uo_out[1] = core_signals.basic_n;  // Bit 1
