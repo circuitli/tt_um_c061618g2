@@ -96,16 +96,17 @@ async def initialize_dut(dut):
     dut.rst_n.value = 1
     await Timer(50, unit="ns") # Give the asynchronous delay chains time to stabilize
 
-async def drive_and_settle(dut, ui_val, uio_val, settle_ns=50):
+async def drive_and_settle(dut, ui_val, uio_val, ena_val=1, settle_ns=50):
     """
-    Drives all input vectors simultaneously to eliminate address skew,
-    then steps by 1ps to cleanly resolve asynchronous feedback loops.
+    Drives all input vectors and environment flags simultaneously to eliminate 
+    address skew, then steps time to cleanly resolve asynchronous feedback loops.
     """
-    # 1. Drive ALL input ports in parallel at the exact same delta cycle
+    # 1. Drive ALL input ports and environment pins in parallel at the EXACT same instant
     dut.ui_in.value = ui_val
     dut.uio_in.value = uio_val
+    dut.ena.value = ena_val
     
-    # Immediately advance time by 1ps to break the infinite delta loop trap
+    # 2. Advance time by 1ps to break the infinite delta loop trap
     await Timer(1, unit="ps")
     
     # 3. Wait out the remaining settlement window cleanly
@@ -325,8 +326,8 @@ async def test_11_flg_n_input_handling(dut):
 async def test_12_global_enable_behavior(dut):
     dut._log.info("--- Running Test Case 12: Global Enable Pin Gating ---")
     await initialize_dut(dut)
-    dut.ena.value = 0
-    await drive_and_settle(dut, ui_val=0x00, uio_val=0x00)
+    # Drive all pins—including the enable flag—in a single atomic simulation step
+    await drive_and_settle(dut, ui_val=0x00, uio_val=0x00, ena_val=0)
     
     raw_uo = str(dut.uo_out.value)
     pins = unpack_uo_out(int(raw_uo, 2))
