@@ -43,6 +43,9 @@
   "//": "SYNTH_DONT_CHOP_FLOATING - Disables OpenLane from deleting floating wires. Keeps dummy_cap lines alive.",
   "SYNTH_DONT_CHOP_FLOATING": true,
 
+  "//": "SYNTH_DONT_TOUCH - Seals the async filter module boundary so external routing doesn't get messed up.",
+  "SYNTH_DONT_TOUCH": [ "async_glitch_filter" ],
+
   "//": "SYNTH_GATES_REMAP - Stops Yosys from altering explicit cell layouts. Protects safe_async_mux cover terms.",
   "SYNTH_GATES_REMAP": false,
 

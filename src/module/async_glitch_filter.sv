@@ -20,6 +20,7 @@
 
 `include "src/module/async_latch_cell.sv"
 
+// Relies on SYNTH_DONT_TOUCH workaround!!!
 module async_glitch_filter #(
     parameter int STAGES = 2 // Number of double-inverter delay blocks
 )(
@@ -28,12 +29,12 @@ module async_glitch_filter #(
     output logic async_out
 );
 
-    (* keep = 1 *) wire [STAGES:0] delay_chain;
+    wire [STAGES:0] delay_chain;
 
     // -------------------------------------------------------------------------
     // INPUT AND RESET GATE
     // -------------------------------------------------------------------------
-    (* dont_touch = "true" *) sg13g2_and2_1 u_input_reset_gate (
+    sg13g2_and2_1 u_input_reset_gate (
         .A (async_in),
         .B (rst_n),
         .X (delay_chain[0])
@@ -49,25 +50,25 @@ module async_glitch_filter #(
             (* keep = 1 *) wire cap_sink_b;
 
             // --- FIRST HALF STAGE ---
-            (* dont_touch = "true" *) sg13g2_inv_1 u_inv_a (
+            sg13g2_inv_1 u_inv_a (
                 .A (delay_chain[i]),
                 .Y (internal_inv_node)
             );
             
             // Attached capacitor load
-            (* dont_touch = "true" *) sg13g2_buf_4 u_load_cap_a (
+            sg13g2_buf_4 u_load_cap_a (
                 .A (internal_inv_node),
                 .X (cap_sink_a) 
             );
 
             // --- SECOND HALF STAGE ---
-            (* dont_touch = "true" *) sg13g2_inv_1 u_inv_b (
+            sg13g2_inv_1 u_inv_b (
                 .A (internal_inv_node),
                 .Y (delay_chain[i+1])
             );
 
             // Attached capacitor load
-            (* dont_touch = "true" *) sg13g2_buf_4 u_load_cap_b (
+            sg13g2_buf_4 u_load_cap_b (
                 .A (delay_chain[i+1]),
                 .X (cap_sink_b) 
             );
