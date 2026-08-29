@@ -73,7 +73,7 @@ module async_glitch_filter #(
                 .X (cap_sink_b[i]) 
             );
         end
-    </generate>
+    endgenerate
 
     // =========================================================================
     // GLITCH DETECTION WINDOWS (STRUCTURALLY LINKED TO DUMMY CAPS)
