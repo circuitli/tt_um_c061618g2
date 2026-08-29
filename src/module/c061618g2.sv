@@ -32,6 +32,29 @@ module c061618g2 (
     output logic [7:0] uio_oe,   // Safe output enablement bus mapping
     input  wire        ena       // Tiny Tapeout macro environment block enable signal
 );
+
+    // =========================================================================
+    // 1. PURE 2-STATE VARIABLE FIREWALL
+    // =========================================================================
+    logic [7:0] safe_ui;
+    logic [7:0] safe_uio;
+
+    // =========================================================================
+    // HAZARD-FREE & WARNING-FREE ATOMIC VECTOR INPUT SHIELD
+    // Replaces sliced wires and always_comb blocks with explicit full-vector 
+    // bitwise masks. This removes part-select fragmentation traps for Yosys SBY 
+    // and eliminates delta-cycle timing skews for Cocotb simultaneously!
+    // =========================================================================
+    
+    // UI_IN MATRIX: If in reset, clamp to 8'h1F. Otherwise, pass-through ui_in.
+    assign safe_ui = rst_n ? ui_in : 8'b00011111;
+
+    // UIO_IN MATRIX: If in reset, evaluate using an explicit 8-bit atomic mask:
+    // (uio_in & 8'b11000001) preserves bits [7:6] and bit [0] natively as 1-to-1 passes.
+    // (| 8'b00001110) forces the active-low pull-up clamp high on bits [3:1] (3'b111).
+    // Bits [5:4] are natively zeroed out because they are masked off and un-set.
+    assign safe_uio = rst_n ? uio_in : ((uio_in & 8'b11000001) | 8'b00001110);
+
     /* verilator lint_off UNUSEDSIGNAL */
     // ---------------------------------------------------------------------
     // HAZARD-FREE OBSERVATION NETS
@@ -39,9 +62,9 @@ module c061618g2 (
     // state drivers into safe, passive observation nets, completely
     // unlocking the control bus ports!
     // ---------------------------------------------------------------------
-    wire unused_p2_b7 = uio_in[7]; 
-    wire uio5_pad     = uio_in[5]; 
-    wire TESTMODE_n   = uio_in[4]; 
+    wire unused_p2_b7 = safe_uio[7]; 
+    wire uio5_pad     = safe_uio[5]; 
+    wire TESTMODE_n   = safe_uio[4]; 
     /* verilator lint_on UNUSEDSIGNAL */
 
     // =========================================================================
@@ -50,9 +73,9 @@ module c061618g2 (
     wire [12:0] functional_unfiltered;    
     
     assign functional_unfiltered = {
-        uio_in[6],     // Bit 12 (MSB) -> FLG_IN_n
-        uio_in[3:0],   // Bits 11:8    -> be_n, mpd_n, ref_n, ren
-        ui_in[7:0]     // Bits 7:0     -> rd5, rd4, map_n, A15, A14, A13, A12, A11 (LSB)
+        safe_uio[6],     // Bit 12 (MSB) -> FLG_IN_n
+        safe_uio[3:0],   // Bits 11:8    -> be_n, mpd_n, ref_n, ren
+        safe_ui[7:0]     // Bits 7:0     -> rd5, rd4, map_n, A15, A14, A13, A12, A11 (LSB)
     };
 
     // =========================================================================

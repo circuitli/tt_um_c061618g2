@@ -48,36 +48,14 @@ module tt_um_c061618g2 (
 );
 
     // =========================================================================
-    // 1. PURE 2-STATE VARIABLE FIREWALL
-    // =========================================================================
-    logic [7:0] safe_ui;
-    logic [7:0] safe_uio;
-
-    // =========================================================================
-    // HAZARD-FREE & WARNING-FREE ATOMIC VECTOR INPUT SHIELD
-    // Replaces sliced wires and always_comb blocks with explicit full-vector 
-    // bitwise masks. This removes part-select fragmentation traps for Yosys SBY 
-    // and eliminates delta-cycle timing skews for Cocotb simultaneously!
-    // =========================================================================
-    
-    // UI_IN MATRIX: If in reset, clamp to 8'h1F. Otherwise, pass-through ui_in.
-    assign safe_ui = rst_n ? ui_in : 8'b00011111;
-
-    // UIO_IN MATRIX: If in reset, evaluate using an explicit 8-bit atomic mask:
-    // (uio_in & 8'b11000001) preserves bits [7:6] and bit [0] natively as 1-to-1 passes.
-    // (| 8'b00001110) forces the active-low pull-up clamp high on bits [3:1] (3'b111).
-    // Bits [5:4] are natively zeroed out because they are masked off and un-set.
-    assign safe_uio = rst_n ? uio_in : ((uio_in & 8'b11000001) | 8'b00001110);
-
-    // =========================================================================
     // 2. CORE HIERARCHICAL INSTANTIATION
     // =========================================================================
     c061618g2 u_c061618g2 (
         .clk     (clk),
         .rst_n   (rst_n),
-        .ui_in   (safe_ui),
+        .ui_in   (ui_in),
         .uo_out  (uo_out),
-        .uio_in  (safe_uio),
+        .uio_in  (uio_in),
         .uio_out (uio_out),
         .uio_oe  (uio_oe),
         .ena     (ena)
