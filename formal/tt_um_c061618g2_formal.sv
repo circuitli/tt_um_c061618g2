@@ -1,19 +1,18 @@
 /*
  * Copyright 2026 circuitli (https://github.com)
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the CERN Open Hardware Licence Version 2 - Weakly Reciprocal (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://apache.org
+ *     https://cern-ohl.web.cern.ch/
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- 
+ */
  
 //`ifndef TT_UM_C061618G2_FORMAL_SV
 //`define TT_UM_C061618G2_FORMAL_SV
@@ -36,7 +35,7 @@ module tt_um_c061618g2_formal (
     input  wire       rst_n     // Active-low system reset
 );
 
-  m // =========================================================================
+    // =========================================================================
     // STRUCTURAL ROUTING LINT CONTRACTS (THE ANTI-SCRAMBLING SHIELD)
     // These concurrent checks verify that your custom safe_wire_buffer arrays
     // are connected to the exact correct parent ports. If you ever type

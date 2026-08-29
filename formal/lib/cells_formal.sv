@@ -1,11 +1,11 @@
 /*
  * Copyright 2026 circuitli (https://github.com)
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the CERN Open Hardware Licence Version 2 - Weakly Reciprocal (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://apache.org
+ *     https://cern-ohl.web.cern.ch/
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,16 +15,9 @@
  */
 
 // =========================================================================
-// LOOP-SAFE IDEAL CELL MODELS FOR SBY FORMAL VERIFICATION
-// Introduces an implicit clocked state boundary strictly under the FORMAL pass.
-// This cuts the zero-delay combinational circles inside your inverter chains,
-// allowing write_smt2 to map out your address truth tables flawlessly!
-// =========================================================================
-
-// =========================================================================
 // IDEAL TRANSISTOR CELL REPLICAS FOR SBY FORMAL VERIFICATION
-// FIXED: Swapped behavioral logical operators (&&) for bitwise operators (&)
-// to prevent the SMT2 backend tracker from creating a simplemap self-loop!
+// Swapped behavioral logical operators (&&) for bitwise operators (&)
+// to prevent the SMT2 backend tracker from creating a simplemap self-loop
 // =========================================================================
 
 module sg13g2_and2_1 (
