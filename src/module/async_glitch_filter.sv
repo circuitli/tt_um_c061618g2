@@ -86,30 +86,31 @@ module async_glitch_filter #(
     wire filter_hold = (|delay_chain[STAGES:1]) & rst_n;
 
     // =========================================================================
-    // SINK GUARANTEE (HAZARD-FREE SIMULATION STRUCTURING)
-    // We mask the capacitor terms using an explicit bitwise identity form 
-    // that forces the simulator to resolve the boolean equation statically,
-    // destroying delta-cycle transient glitches entirely!
+    // SINK GUARANTEE
+    // We reduce the parallel capacitor branches to a single dynamic wire bit.
+    // By XOR-ing this value with itself, we create a dynamic functional path 
+    // that always equals 1'b0 in hardware, but forces Yosys to keep the 
+    // fan-out capacitance alive during mapping.
     // =========================================================================
-    wire cap_dependency_mask = (&functional_cap_sink_a) | (|functional_cap_sink_b);
-    
+    wire cap_reduction = (&functional_cap_sink_a) ^ (|functional_cap_sink_b);
+    wire dynamic_zero  = cap_reduction ^ cap_reduction; // Mathematically always 0
+
     wire optimized_set;
     wire optimized_hold;
 
     // ---------------------------------------------------------------------
-    // HAZARD-FREE SIMULATION AND HARDWARE BALANCED SYNTHESIS ATTRIBUTES
-    // Factoring the layout locks into continuous conditional expressions 
-    // forces the event queue to bypass evaluation phase timing races.
+    // HARDWARE BALANCED SYNTHESIS ATTRIBUTES
+    // We inject the dynamic_zero natively into our boolean equation. 
+    // ABC cannot optimize this out because it cannot prove 'cap_reduction'
+    // is constant at compilation time.
     // ---------------------------------------------------------------------
-    wire static_true  = (cap_dependency_mask == 1'b1) || (cap_dependency_mask == 1'b0);
-    wire static_false = (cap_dependency_mask == 1'b1) && (cap_dependency_mask == 1'b0);
-
-    assign optimized_set  = filter_set  & static_true;
-    assign optimized_hold = filter_hold | static_false;
+    assign optimized_set  = filter_set  & (~dynamic_zero); // filter_set & 1
+    assign optimized_hold = filter_hold | dynamic_zero;    // filter_hold | 0
 
     // =========================================================================
     // LATCH LOOP BOUNDARY
     // =========================================================================
+
     /* verilator lint_off UNOPTFLAT */
     logic  latch_raw_out;
     /* verilator lint_on UNOPTFLAT */

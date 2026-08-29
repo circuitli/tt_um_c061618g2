@@ -110,7 +110,3 @@ set_false_path -to [get_ports {uio_oe[*]}]
 set_load 0.0334 [get_ports uo_out]
 set_load 0.0334 [get_ports uio_out]
 set_load 0.0334 [get_ports uio_oe]
-
-# Breaks the STA calculation wheel inside the async latch feedback loop.
-# Stops OpenROAD from reporting a false infinite setup violation.
-set_false_path -through [get_nets -hierarchical *feedback_loop*]
