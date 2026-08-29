@@ -28,10 +28,10 @@ module async_glitch_filter #(
     output logic async_out
 );
 
-    (* keep = 1 *) wire [STAGES:0] delay_chain /*verilator split_var*/;
+    (* keep = 1 *) wire [STAGES:0] delay_chain;
 
     // -------------------------------------------------------------------------
-    // NON-INVERTING ENTRY RESET GATE
+    // INPUT AND RESET GATE
     // -------------------------------------------------------------------------
     (* dont_touch = "true" *) sg13g2_and2_1 u_input_reset_gate (
         .A (async_in),
@@ -39,45 +39,40 @@ module async_glitch_filter #(
         .X (delay_chain[0])
     );
 
-    wire [STAGES-1:0] functional_cap_sink_a;
-    wire [STAGES-1:0] functional_cap_sink_b;
-
     // =========================================================================
-    // 1. STRUCTURAL ASYNCHRONOUS DELAY WINDOW GENERATION
+    // 1. STRUCTURAL ASYNCHRONOUS DELAY WINDOW GENERATION WITH CAPACITORS
     // =========================================================================
-    `ifdef ghajskhgdajhshdgja
-        assign delay_chain[STAGES:1] = {STAGES{delay_chain[0]}};
-        assign functional_cap_sink_a = {STAGES{1'b0}};
-        assign functional_cap_sink_b = {STAGES{1'b0}};
-    `else
-        generate
-            for (genvar i = 0; i < STAGES; i = i + 1) begin : gen_stages
-                (* keep = 1 *) wire internal_inv_node;
+    generate
+        for (genvar i = 0; i < STAGES; i = i + 1) begin : gen_stages
+            (* keep = 1 *) wire internal_inv_node;
+            (* keep = 1 *) wire cap_sink_a;
+            (* keep = 1 *) wire cap_sink_b;
 
-                // --- FIRST HALF STAGE ---
-                (* dont_touch = "true" *) sg13g2_inv_1 u_inv_a (
-                    .A (delay_chain[i]),
-                    .Y (internal_inv_node)
-                );
-                
-                (* dont_touch = "true" *) sg13g2_buf_4 u_load_cap_a (
-                    .A (internal_inv_node),
-                    .X (functional_cap_sink_a[i]) 
-                );
+            // --- FIRST HALF STAGE ---
+            (* dont_touch = "true" *) sg13g2_inv_1 u_inv_a (
+                .A (delay_chain[i]),
+                .Y (internal_inv_node)
+            );
+            
+            // Attached capacitor load
+            (* dont_touch = "true" *) sg13g2_buf_4 u_load_cap_a (
+                .A (internal_inv_node),
+                .X (cap_sink_a) 
+            );
 
-                // --- SECOND HALF STAGE ---
-                (* dont_touch = "true" *) sg13g2_inv_1 u_inv_b (
-                    .A (internal_inv_node),
-                    .Y (delay_chain[i+1])
-                );
+            // --- SECOND HALF STAGE ---
+            (* dont_touch = "true" *) sg13g2_inv_1 u_inv_b (
+                .A (internal_inv_node),
+                .Y (delay_chain[i+1])
+            );
 
-                (* dont_touch = "true" *) sg13g2_buf_4 u_load_cap_b (
-                    .A (delay_chain[i+1]),
-                    .X (functional_cap_sink_b[i]) 
-                );
-            end
-        endgenerate
-    `endif
+            // Attached capacitor load
+            (* dont_touch = "true" *) sg13g2_buf_4 u_load_cap_b (
+                .A (delay_chain[i+1]),
+                .X (cap_sink_b) 
+            );
+        end
+    </generate>
 
     // =========================================================================
     // GLITCH DETECTION WINDOWS 
@@ -86,52 +81,21 @@ module async_glitch_filter #(
     wire filter_hold = (|delay_chain[STAGES:1]) & rst_n;
 
     // =========================================================================
-    // SINK GUARANTEE
-    // We reduce the parallel capacitor branches to a single dynamic wire bit.
-    // By XOR-ing this value with itself, we create a dynamic functional path 
-    // that always equals 1'b0 in hardware, but forces Yosys to keep the 
-    // fan-out capacitance alive during mapping.
-    // =========================================================================
-    wire cap_reduction = (&functional_cap_sink_a) ^ (|functional_cap_sink_b);
-    wire dynamic_zero  = cap_reduction ^ cap_reduction; // Mathematically always 0
-
-    wire optimized_set;
-    wire optimized_hold;
-
-    // ---------------------------------------------------------------------
-    // HARDWARE BALANCED SYNTHESIS ATTRIBUTES
-    // We inject the dynamic_zero natively into our boolean equation. 
-    // ABC cannot optimize this out because it cannot prove 'cap_reduction'
-    // is constant at compilation time.
-    // ---------------------------------------------------------------------
-    assign optimized_set  = filter_set  & (~dynamic_zero); // filter_set & 1
-    assign optimized_hold = filter_hold | dynamic_zero;    // filter_hold | 0
-
-    // =========================================================================
     // LATCH LOOP BOUNDARY
     // =========================================================================
-
-    /* verilator lint_off UNOPTFLAT */
     logic  latch_raw_out;
-    /* verilator lint_on UNOPTFLAT */
 
     async_latch_cell u_latch_inst (
         .rst_n (rst_n),
-        .set   (optimized_set),  
-        .hold  (optimized_hold), 
+        .set   (filter_set),  
+        .hold  (filter_hold), 
         .q     (latch_raw_out)
     );
 
-    // =========================================================================
-    // SECURE OUTPUT BOUNDARY
-    // Replaced the conditional ternary gate with a direct continuous assignment.
-    // Because u_latch_inst is already gated natively by rst_n, the output 
-    // collapses to 1'b0 instantly during reset without inducing a $ternary 
-    // topological feedback loop in the btor graph!
-    // =========================================================================
     assign async_out = latch_raw_out;
 
 endmodule
+
 
 `default_nettype wire
 `endif
