@@ -28,7 +28,7 @@
   "SYNTH_HIER_PASS": true,
 
   "//": "SYNTH_FLATTEN - Disable global flattening to preserve submodule boundaries for physical macro bounding and hierarchical power grid connection",
-  "SYNTH_FLATTEN": true,
+  "SYNTH_FLATTEN": false,
 
   "//": "SYNTH_SHARE_RESOURCES - Dictates whether Yosys forces resource sharing by actively identifying matching algebraic sub-expressions (like duplicated multiplexers or address decoders) and merging them into unified gate networks. For purely combinational macros, leaving this enabled or disabled changes area footprint without breaking function.",
   "SYNTH_SHARE_RESOURCES": 1,
