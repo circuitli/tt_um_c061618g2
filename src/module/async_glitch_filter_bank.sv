@@ -33,32 +33,28 @@ module async_glitch_filter_bank #(
     // =========================================================================
     // PARALLEL GLITCH FILTER BANK ARRAY INTEGRATION
     // =========================================================================
-    `ifdef hhdfhkjsdhfskdljfhksldjfh
-        assign async_out = async_in;
-    `else
-        // Independent intermediate wiring mesh array
-        wire [WIDTH-1:0] filter_bank_outputs;
+    // Independent intermediate wiring mesh array
+    wire [WIDTH-1:0] filter_bank_outputs;
 
-        generate
-            for (genvar i = 0; i < WIDTH; i = i + 1) begin : gen_filter_bank
-                async_glitch_filter #(
-                    .STAGES(STAGES)
-                ) u_filter (
-                    .rst_n    (rst_n),
-                    .async_in (async_in[i]),
-                    .async_out(filter_bank_outputs[i]) // Gated safely internally
-                );
-            end
-        endgenerate
+    generate
+        for (genvar i = 0; i < WIDTH; i = i + 1) begin : gen_filter_bank
+            async_glitch_filter #(
+                .STAGES(STAGES)
+            ) u_filter (
+                .rst_n    (rst_n),
+                .async_in (async_in[i]),
+                .async_out(filter_bank_outputs[i]) // Gated safely internally
+            );
+        end
+    endgenerate
 
-        // ---------------------------------------------------------------------
-        // HAZARD-FREE AND LOOP-FREE ATOMIC VECTOR ASSIGNMENT
-        // Replaced the conditional ternary statement with a direct, clean, 
-        // forward-propagating vector pass-through. This permanently wipes out 
-        // the $ternary topological loop crash inside the btor parser!
-        // ---------------------------------------------------------------------
-        assign async_out = filter_bank_outputs;
-    `endif
+    // ---------------------------------------------------------------------
+    // HAZARD-FREE AND LOOP-FREE ATOMIC VECTOR ASSIGNMENT
+    // Replaced the conditional ternary statement with a direct, clean, 
+    // forward-propagating vector pass-through. This permanently wipes out 
+    // the $ternary topological loop crash inside the btor parser!
+    // ---------------------------------------------------------------------
+    assign async_out = filter_bank_outputs;
 
 endmodule
 

@@ -96,21 +96,16 @@ module async_glitch_filter #(
     wire optimized_set;
     wire optimized_hold;
 
-    `ifdef lsdkjflsdjflsljfsldjf
-        assign optimized_set  = filter_set;
-        assign optimized_hold = filter_hold;
-    `else
-        // ---------------------------------------------------------------------
-        // HAZARD-FREE SIMULATION AND HARDWARE BALANCED SYNTHESIS ATTRIBUTES
-        // Factoring the layout locks into continuous conditional expressions 
-        // forces the event queue to bypass evaluation phase timing races.
-        // ---------------------------------------------------------------------
-        wire static_true  = (cap_dependency_mask == 1'b1) || (cap_dependency_mask == 1'b0);
-        wire static_false = (cap_dependency_mask == 1'b1) && (cap_dependency_mask == 1'b0);
+    // ---------------------------------------------------------------------
+    // HAZARD-FREE SIMULATION AND HARDWARE BALANCED SYNTHESIS ATTRIBUTES
+    // Factoring the layout locks into continuous conditional expressions 
+    // forces the event queue to bypass evaluation phase timing races.
+    // ---------------------------------------------------------------------
+    wire static_true  = (cap_dependency_mask == 1'b1) || (cap_dependency_mask == 1'b0);
+    wire static_false = (cap_dependency_mask == 1'b1) && (cap_dependency_mask == 1'b0);
 
-        assign optimized_set  = filter_set  & static_true;
-        assign optimized_hold = filter_hold | static_false;
-    `endif
+    assign optimized_set  = filter_set  & static_true;
+    assign optimized_hold = filter_hold | static_false;
 
     // =========================================================================
     // LATCH LOOP BOUNDARY

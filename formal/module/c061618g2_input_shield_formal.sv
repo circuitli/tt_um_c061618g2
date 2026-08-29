@@ -29,7 +29,6 @@ module c061618g2_input_shield_formal (
     input  logic [7:0] safe_uio
 );
 
-`ifdef FORMAL
     // Unchecked verification assumptions helper macro
     // Since formal analysis can inject ANY combination of 1, 0, X, or Z, 
     // we let the solver drive the inputs completely unconstrained.
@@ -122,7 +121,6 @@ module c061618g2_input_shield_formal (
         assert final (safe_uio !== 1'bx && safe_uio !== 1'bz);
     end
 
-`endif
 endmodule
 
 // Bind the verification properties directly into the production code tracking target

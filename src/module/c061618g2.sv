@@ -33,19 +33,15 @@ module c061618g2 (
     input  wire        ena       // Tiny Tapeout macro environment block enable signal
 );
     /* verilator lint_off UNUSEDSIGNAL */
-    `ifdef jsdhaksjhdksajhd
-        // For the math solver, strip these unclocked bit assignments
-    `else
-        // ---------------------------------------------------------------------
-        // HAZARD-FREE OBSERVATION NETS
-        // Changing 'bit' to 'wire' converts these from active simulation 
-        // state drivers into safe, passive observation nets, completely
-        // unlocking the control bus ports!
-        // ---------------------------------------------------------------------
-        wire unused_p2_b7 = uio_in[7]; 
-        wire uio5_pad     = uio_in[5]; 
-        wire TESTMODE_n   = uio_in[4]; 
-    `endif
+    // ---------------------------------------------------------------------
+    // HAZARD-FREE OBSERVATION NETS
+    // Changing 'bit' to 'wire' converts these from active simulation 
+    // state drivers into safe, passive observation nets, completely
+    // unlocking the control bus ports!
+    // ---------------------------------------------------------------------
+    wire unused_p2_b7 = uio_in[7]; 
+    wire uio5_pad     = uio_in[5]; 
+    wire TESTMODE_n   = uio_in[4]; 
     /* verilator lint_on UNUSEDSIGNAL */
 
     // =========================================================================
@@ -53,37 +49,25 @@ module c061618g2 (
     // =========================================================================
     wire [12:0] functional_unfiltered;    
     
-    `ifdef kjashdkashdkajsdh
-        assign functional_unfiltered = {
-            1'b1,          
-            4'b1111,       
-            ui_in[7:0]     
-        };
-    `else
-        assign functional_unfiltered = {
-            uio_in[6],     // Bit 12 (MSB) -> FLG_IN_n
-            uio_in[3:0],   // Bits 11:8    -> be_n, mpd_n, ref_n, ren
-            ui_in[7:0]     // Bits 7:0     -> rd5, rd4, map_n, A15, A14, A13, A12, A11 (LSB)
-        };
-    `endif
+    assign functional_unfiltered = {
+        uio_in[6],     // Bit 12 (MSB) -> FLG_IN_n
+        uio_in[3:0],   // Bits 11:8    -> be_n, mpd_n, ref_n, ren
+        ui_in[7:0]     // Bits 7:0     -> rd5, rd4, map_n, A15, A14, A13, A12, A11 (LSB)
+    };
 
     // =========================================================================
     // 4. CLOCKLESS ASYNCHRONOUS GLITCH FILTER MATRIX
     // =========================================================================
     wire [12:0] filtered;
     
-    `ifdef hskjahdkasjhdkasjdhkasjdhdh
-        assign filtered = functional_unfiltered;
-    `else
-        async_glitch_filter_bank #(
-            .WIDTH(13),
-            .STAGES(4)
-        ) u_mmu_filter_bank (
-            .rst_n    (rst_n), 
-            .async_in (functional_unfiltered),
-            .async_out(filtered)
-        );
-    `endif
+    async_glitch_filter_bank #(
+        .WIDTH(13),
+        .STAGES(4)
+    ) u_mmu_filter_bank (
+        .rst_n    (rst_n), 
+        .async_in (functional_unfiltered),
+        .async_out(filtered)
+    );
 
     // =========================================================================
     // 5. UNIDIRECTIONAL DECOUPLING LAYER
@@ -121,13 +105,7 @@ module c061618g2 (
     // =========================================================================
     wire FLG_IN_n_top     = filtered[12];
     wire system_disabled  = (!FLG_IN_n_top) || (!ena) || (!rst_n);
-
-    `ifdef lkdjaslkdjalskjddak
-        wire FLG_n        = rst_n ? 1'b1 : 1'b0;
-    `else
-        wire FLG_n        = system_disabled ? 1'b0 : 1'b1;
-    `endif
-
+    wire FLG_n            = system_disabled ? 1'b0 : 1'b1;
     wire a11_top          = filtered[0]; 
 
     /* verilator lint_off UNUSED */

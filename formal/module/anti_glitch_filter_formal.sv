@@ -88,12 +88,6 @@ module anti_glitch_filter_formal (
 
 endmodule
 
-// =========================================================================
-// 3. THE COMPLETE SYNTAX SAFE BIND DIRECTIVE
-// Keeping this completely clean and parameter-free eliminates the syntax bug.
-// =========================================================================
-`ifdef FORMAL
-
 bind anti_glitch_filter anti_glitch_filter_formal i_anti_glitch_filter_formal (
     .clk              (clk),
     .rst_n            (rst_n),
@@ -101,8 +95,6 @@ bind anti_glitch_filter anti_glitch_filter_formal i_anti_glitch_filter_formal (
     .raw_signal_in    (raw_signal_in),
     .clean_signal_out (clean_signal_out)
 );
-
-`endif // FORMAL
 
 `endif // ANTI_GLITCH_FILTER_FORMAL_SV
 

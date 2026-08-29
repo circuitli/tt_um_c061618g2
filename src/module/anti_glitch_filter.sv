@@ -45,18 +45,9 @@ module async_glitch_filter #(
     // =========================================================================
     logic loop_feedback;
 
-    `ifdef FORMAL
-        // For the formal SMT solver, using a non-blocking assignment within 
-        // a combinational event block inserts an explicit tool-only state boundary.
-        // This completely removes the infinite gate loop from simplemap_bitop.
-        always @(*) begin
-            loop_feedback <= (&delay_chain) | (loop_feedback & (|delay_chain));
-        end
-    `else
-        // In normal production synthesis (ASIC/OpenLane), compile the pure,
-        // instantaneous clockless hardware continuous assignment loops directly to silicon.
-        assign loop_feedback = (&delay_chain) | (loop_feedback & (|delay_chain));
-    `endif
+    // In normal production synthesis (ASIC/OpenLane), compile the pure,
+    // instantaneous clockless hardware continuous assignment loops directly to silicon.
+    assign loop_feedback = (&delay_chain) | (loop_feedback & (|delay_chain));
 
     // Apply the rst_n condition downstream at the final multiplexer gate stage.
     assign async_out = rst_n ? loop_feedback : async_in;

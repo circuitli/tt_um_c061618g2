@@ -28,8 +28,6 @@ module safe_async_mux_formal (
     input  wire  y
 );
 
-`ifdef FORMAL
-
     // -------------------------------------------------------------------------
     // 1. ASYNCHRONOUS RESET VERIFICATION
     // Property: Whenever rst_n is pulled low, the output must drop to 0.
@@ -68,8 +66,6 @@ module safe_async_mux_formal (
     asm_binary_isolation_assert: assert property (
         (y == 1'b1) || (y == 1'b0)
     );
-
-`endif
 
 endmodule
 

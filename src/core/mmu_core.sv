@@ -107,31 +107,14 @@ module mmu_core #(
             end
             raw_os_n = local_os_n;
 
-            // =========================================================================
-            // FIXED CLEAN MACRO GENERATION LAYOUT
-            // =========================================================================
-            `ifdef asjdgkasdgsadjhahk
-                if ( (!a13 && !a14 && a15 && rd4 && ref_n) ||
-                     (a13 && !a14 && a15 && rd5 && ref_n) ||
-                     (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) ||
-                     ( !(a13 && a14 && a15 && ren && ref_n) &&
-                       !(!a12 && a14 && a15 && ren && ref_n) &&
-                       !(a11 && a12 && !a13 && a14 && a15 && ren && mpd_n && ref_n) &&
-                       !(!a11 && a12 && !a13 && a14 && !a15 && ren && !map_n && ref_n) ) ||
-                     !(a11 && a12 && !a13 && a14 && a15 && ref_n) ||
-                     (!ref_n) ) begin
-                    raw_ci_n = 1'b0;
-                end
-            `else
-                if ( (!a13 && !a14 && a15 && rd4 && ref_n) ||
-                     (a13 && !a14 && a15 && rd5 && ref_n) ||
-                     (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) ||
-                     (local_os_n == 1'b1) ||
-                     !(a11 && a12 && !a13 && a14 && a15 && ref_n) ||
-                     (!ref_n) ) begin
-                    raw_ci_n = 1'b0;
-                end
-            `endif
+            if ( (!a13 && !a14 && a15 && rd4 && ref_n) ||
+                    (a13 && !a14 && a15 && rd5 && ref_n) ||
+                    (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) ||
+                    (local_os_n == 1'b1) ||
+                    !(a11 && a12 && !a13 && a14 && a15 && ref_n) ||
+                    (!ref_n) ) begin
+                raw_ci_n = 1'b0;
+            end
         end
 
         // Safe procedural packing
@@ -150,66 +133,36 @@ module mmu_core #(
         .async_out(clean_signals)
     );
 
-    // =========================================================================
-    // 4. HAZARD-FREE TYPE-SAFE STRUCT CONVERSION
-    // Procedural assignment prevents delta-cycle vector slice mismatches.
-    // =========================================================================
-    `ifdef kajsdhkashdashjd
-        pmod3_outputs_t formal_out_struct;
-        always_comb begin
-            if (rst_n) begin
-                formal_out_struct.unused_p3_b7 = 1'b0;
-                formal_out_struct.FLG_n        = 1'b1; 
-                formal_out_struct.s4_n         = raw_s4_n;
-                formal_out_struct.io_n         = raw_io_n;
-                formal_out_struct.ci_n         = raw_ci_n; 
-                formal_out_struct.os_n         = raw_os_n;
-                formal_out_struct.basic_n      = raw_basic_n;
-                formal_out_struct.s5_n         = raw_s5_n;
-            end else begin
-                formal_out_struct.unused_p3_b7 = 1'b0;
-                formal_out_struct.FLG_n        = 1'b1;
-                formal_out_struct.s4_n         = 1'b1;
-                formal_out_struct.io_n         = 1'b1;
-                formal_out_struct.ci_n         = 1'b1;
-                formal_out_struct.os_n         = 1'b1;
-                formal_out_struct.basic_n      = 1'b1;
-                formal_out_struct.s5_n         = 1'b1;
-            end
-        end
-        assign core_out = formal_out_struct;
-    `else
-        // ---------------------------------------------------------------------
-        // HAZARD-FREE SIMULATION STRUCT MAPPING
-        // Unpacks fields procedures inside always_comb to guarantee the simulator
-        // resolves the port assignments atomically, eliminating pin skew.
-        // ---------------------------------------------------------------------
-        pmod3_outputs_t sim_out_struct;
+    // ---------------------------------------------------------------------
+    // HAZARD-FREE SIMULATION STRUCT MAPPING
+    // Unpacks fields procedures inside always_comb to guarantee the simulator
+    // resolves the port assignments atomically, eliminating pin skew.
+    // ---------------------------------------------------------------------
+    pmod3_outputs_t sim_out_struct;
         
-        always_comb begin
-            if (rst_n) begin
-                sim_out_struct.unused_p3_b7 = 1'b0;
-                sim_out_struct.FLG_n        = 1'b1;
-                {sim_out_struct.s4_n,    
-                 sim_out_struct.io_n,    
-                 sim_out_struct.ci_n,    
-                 sim_out_struct.os_n,    
-                 sim_out_struct.basic_n, 
-                 sim_out_struct.s5_n}       = clean_signals;
-            end else begin
-                sim_out_struct.unused_p3_b7 = 1'b0;
-                sim_out_struct.FLG_n        = 1'b1;
-                sim_out_struct.s4_n         = 1'b1;
-                sim_out_struct.io_n         = 1'b1;
-                sim_out_struct.ci_n         = 1'b1;
-                sim_out_struct.os_n         = 1'b1;
-                sim_out_struct.basic_n      = 1'b1;
-                sim_out_struct.s5_n         = 1'b1;
-            end
+    always_comb begin
+        if (rst_n) begin
+            sim_out_struct.unused_p3_b7 = 1'b0;
+            sim_out_struct.FLG_n        = 1'b1;
+            {sim_out_struct.s4_n,    
+                sim_out_struct.io_n,    
+                sim_out_struct.ci_n,    
+                sim_out_struct.os_n,    
+                sim_out_struct.basic_n, 
+                sim_out_struct.s5_n}       = clean_signals;
+        end else begin
+            sim_out_struct.unused_p3_b7 = 1'b0;
+            sim_out_struct.FLG_n        = 1'b1;
+            sim_out_struct.s4_n         = 1'b1;
+            sim_out_struct.io_n         = 1'b1;
+            sim_out_struct.ci_n         = 1'b1;
+            sim_out_struct.os_n         = 1'b1;
+            sim_out_struct.basic_n      = 1'b1;
+            sim_out_struct.s5_n         = 1'b1;
         end
+    end
         
-        assign core_out = sim_out_struct;
-    `endif
+    assign core_out = sim_out_struct;
 
 endmodule
 

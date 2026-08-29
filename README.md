@@ -17,11 +17,11 @@ The physical layout aligns with the Tiny Tapeout hardware tile format using the 
 ### Primary Input Vector  (`ui_in`)
 | Pin | Name | Type | Description |
 |---|---|---|---|
-| `ui_in[0]` | `a11` | Input | Address line 11 slice |
-| `ui_in[1]` | `a12` | Input | Address line 12 slice |
-| `ui_in[2]` | `a13` | Input | Address line 13 slice |
-| `ui_in[3]` | `a14` | Input | Address line 14 slice |
-| `ui_in[4]` | `a15` | Input | Address line 15 slice |
+| `ui_in[0]` | `a11` | Input | Address line 11 |
+| `ui_in[1]` | `a12` | Input | Address line 12 |
+| `ui_in[2]` | `a13` | Input | Address line 13 |
+| `ui_in[3]` | `a14` | Input | Address line 14 |
+| `ui_in[4]` | `a15` | Input | Address line 15 |
 | `ui_in[5]` | `map_n` | Input | Active-low mapping control flag |
 | `ui_in[6]` | `rd4` | Input | Cartridge expansion control line 4 |
 | `ui_in[7]` | `rd5` | Input | Cartridge expansion control line 5 |
@@ -32,7 +32,7 @@ The physical layout aligns with the Tiny Tapeout hardware tile format using the 
 | `uio_in[0]` | `ren` | Input | Active-low ROM/RAM enable flag |
 | `uio_in[1]` | `ref_n` | Input | Active-low dynamic refresh cycle signal |
 | `uio_in[2]` | `mpd_n` | Input | Active-Low memory protect select flag |
-| `uio_in[3]` | `be_n` | Input | Active-low baseline memory space enable |
+| `uio_in[3]` | `be_n` | Input | Active-low interpreter memory space enable |
 | `uio_in[4]` | `TESTMODE_n` | Input | Active-Low production test mode bypass |
 | `uio_out[5]` | `TRIGGER_OUT` | Output | Dedicated Hardware Validation Output Trigger |
 | `uio_in[6]` | `FLG_IN_n` | Input | Active-Low system error flag |
@@ -47,7 +47,7 @@ The physical layout aligns with the Tiny Tapeout hardware tile format using the 
 | `uo_out[3]` | `ci_n` | Output | Filtered clock inhibit wait-state line |
 | `uo_out[4]` | `io_n` | Output | Active-low peripheral I/O space select |
 | `uo_out[5]` | `s4_n` | Output | Active-low expansion chip select 4 |
-| `uo_out[6]` | `FLG_n`| Output | Operational loop diagnostic status |
+| `uo_out[6]` | `FLG_n`| Output | Active-Low error flag |
 | `uo_out[7]` | `unnused` | Reserved | Static ground isolation line |
 
 ## 5. How to Run Simulation
@@ -70,17 +70,20 @@ Validates the mathematical precision of the combinatorial address decoding matri
 # Execute baseline RTL functional verification
 make SIM=icarus
 
+
 ### Mode 2: Visible Siimiplified Gate-Level Simulation (GLS)
 Verifies the compiled structural netlist against real physical standard cell gate libraries, but removing some code problematic with SystemVerilog. Gate-level simulation requires an **additional parameter** (`GATES=yes`) passed to the compilation flag matrix. This tells the wrapper toolchain to bypass behavioral descriptions, pull in the synthesized gate netlist, and properly evaluate the synchronous initialization sequences required to prevent uninitialized `X`-propagation:
 ```bash
 # Execute simplified gate-level simulation with the mandatory gates parameter
 make SIM=icarus GATES=yes
 
+
 ### 𝐌𝐨𝐝𝐞 𝟑: Portable Simplified 𝐆𝐚𝐭𝐞-𝐋𝐞𝐯𝐞𝐥 𝐒𝐢𝐦𝐮𝐥𝐚𝐭𝐢𝐨𝐧 (𝐆𝐋𝐒)
 Verifies the compiled structural netlist against real physical standard cell gate primitives.
 ```bash
 # Execute full gate-level simulation
 make SIM=verilator
+
 
 ### Mode 4: Formal Verification
 Mathematically proves all state-space properties, mutual exclusion bounds, and glitch-rejection characteristics of the synchronous shift registers across all possible input conditions. Formal routines bypass testbench stimulus scripts and are executed directly through SymbiYosys:

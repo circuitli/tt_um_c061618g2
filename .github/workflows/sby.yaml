@@ -1,4 +1,4 @@
-name: Formal Hardware Verification
+name: sby
 
 on:
   push:

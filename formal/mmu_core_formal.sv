@@ -32,8 +32,6 @@ module mmu_core_formal #(
     input  wire  pmod3_outputs_t core_out
 );
 
-`ifdef FORMAL
-
     // -------------------------------------------------------------------------
     // INTERNAL NET EXTRACTION FOR PROPERTY DECODING
     // FIXED: Corrected out-of-bounds bit indices to match real array widths [4:0] and [2:0].
@@ -74,8 +72,6 @@ module mmu_core_formal #(
         asm_mmu_exclusion_assert: assert (!rst_n || !(basic_n == 1'b0 && s5_n == 1'b0));
 
     end
-
-`endif
 
 endmodule
 
