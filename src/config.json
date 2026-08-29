@@ -165,7 +165,7 @@
 
   "//": "PL_TARGET_DENSITY_PCT - You can increase this if Global Placement fails with error GPL-0302.",
   "//": "Users have reported that values up to 80 worked well for them.",
-  "PL_TARGET_DENSITY_PCT": 95,
+  "PL_TARGET_DENSITY_PCT": 70,
 
   "//1": "Master boolean activation switch that turns on the placement-stage timing repair tool block, instructing OpenROAD to actively resize logic gates and patch setup violations before routing begins.",
   "_PL_REPAIR_TIMING": true,
