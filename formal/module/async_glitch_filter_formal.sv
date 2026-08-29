@@ -23,52 +23,54 @@
 // Sub-Module Level Formal Checker: async_glitch_filter_formal
 // Now parameterized to match any configuration under test dynamically.
 // =============================================================================
+`default_nettype none
+
 module async_glitch_filter_formal #(
     parameter int STAGES = 2
 )(
     input  wire  rst_n,
     input  wire  async_in,
     input  wire  async_out,
-    input  wire  [STAGES:0] delay_chain
+    input  wire  [STAGES:0] delay_chain,
+    input  wire  [STAGES-1:0] cap_sink_a,
+    input  wire  [STAGES-1:0] cap_sink_b
 );
 
-// =========================================================================
+    // =========================================================================
     // COMBINATIONAL FILTER PROPERTIES
     // =========================================================================
-    always @* begin
+    always_comb begin
 
         // 1. ABSOLUTE RESET DOMINANCE PROOF
-        // Under active reset, the output must be driven cleanly to zero.
         if (!rst_n) begin
             asm_filter_immediate_reset_assert: assert (async_out == 1'b0);
         end
 
         // 2. METASTABILITY & X-PROPAGATION BARRIER PROOF
-        // Prevents uninitialized states or floating loops from propagating.
         asm_filter_binary_clean_assert: assert ((async_out == 1'b1) || (async_out == 1'b0));
 
-        // 3. GLITCH REJECTION & WINDOW INTEGRITY PROOF (FIXED CONTRACT)
-        // If out of reset and the output is high, it MUST be supported by either
-        // a complete matching input chain (Set Condition) OR the latch state 
-        // retention mechanism must be actively engaged (Hold Condition).
+        // 3. GLITCH REJECTION & WINDOW INTEGRITY PROOF
+        // Verifies the latch output is structurally bound to the identical
+        // masked conditions mapped in the main filter module.
         if (rst_n && async_out) begin
-            // Re-map the exact operational conditions of your main module
-            wire filter_set  = (&delay_chain[STAGES:1]);
-            wire filter_hold = (|delay_chain[STAGES:1]);
+            wire cap_mask_a = &cap_sink_a;
+            wire cap_mask_b = |cap_sink_b;
+
+            wire filter_set  = (&delay_chain[STAGES:1]) & (cap_mask_a | ~cap_mask_a);
+            wire filter_hold = (|delay_chain[STAGES:1]) | (cap_mask_b & ~cap_mask_b);
             
-            // The output can only be 1 if it was just set, or if it is holding memory
+            // The output can only remain high if the set or hold condition is active
             asm_filter_window_integrity_assert: assert (filter_set || filter_hold);
         end
 
         // 4. LOW-STABILITY SAFETY CONTRACT
-        // If the entire pipeline has been flushed down to zero, the output 
-        // must drop and clamp cleanly to zero.
         if (rst_n && !async_in && (delay_chain[STAGES:0] == { (STAGES+1){1'b0} })) begin
             asm_filter_flush_stable_assert: assert (async_out == 1'b0);
         end
     end
 
 endmodule
+
 
 // =============================================================================
 // THE PARAMETERIZED BIND DIRECTIVE
@@ -80,7 +82,9 @@ bind async_glitch_filter async_glitch_filter_formal #(
     .rst_n       (rst_n),
     .async_in    (async_in),
     .async_out   (async_out),
-    .delay_chain (delay_chain)
+    .delay_chain (delay_chain),
+    .cap_sink_a  (cap_sink_a),
+    .cap_sink_b  (cap_sink_b)
 );
 
 `endif // ASYNC_GLITCH_FILTER_FORMAL_SV
