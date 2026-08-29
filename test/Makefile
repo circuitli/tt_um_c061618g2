@@ -59,22 +59,12 @@ else ifeq ($(SIM),icarus)
         COMPILE_ARGS += -DFUNCTIONAL -gno-specify
 
         VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
-
-        # 2. Instruct Icarus to append the .v suffix to search tokens 
-        # when hunting down missing modules like sg13g2_decap_8.
-        #COMPILE_ARGS += -y $(PWD) -y $(PWD)/../src
-        #COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2/verilog
-        #COMPILE_ARGS += -y /home/runner/.openlane/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog
-        #COMPILE_ARGS += -y /opt/pdk/ihp-sg13g2/libs.ref/sg13g2/verilog
-
-        # 3. Strip the raw PDK path from the sources and append our clean local version instead
-        #VERILOG_SOURCES := $(filter-out $(RAW_PDK_CELLS) %sg13g2_stdcell.v, $(VERILOG_SOURCES))
         VERILOG_SOURCES += $(CLEAN_LOCAL_CELLS)
     else
         # Gate level simulation:
         SIM_BUILD		= sim_build/gl
         COMPILE_ARGS    += -DGL_TEST
-        COMPILE_ARGS += -DFUNCTIONAL
+        COMPILE_ARGS    += -DFUNCTIONAL
         COMPILE_ARGS    += -DSIM
 
         # this gets copied in by the GDS action workflow
