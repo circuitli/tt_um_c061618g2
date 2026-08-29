@@ -23,6 +23,15 @@
 // Sub-Module Level Formal Checker: async_glitch_filter_formal
 // Now parameterized to match any configuration under test dynamically.
 // =============================================================================
+module async_glitch_filter_formal #(
+    parameter int STAGES = 2
+)(
+    input  wire  rst_n,
+    input  wire  async_in,
+    input  wire  async_out,
+    input  wire  [STAGES:0] delay_chain
+);
+
 // =========================================================================
     // COMBINATIONAL FILTER PROPERTIES
     // =========================================================================
@@ -59,7 +68,7 @@
         end
     end
 
-eendmodule
+endmodule
 
 // =============================================================================
 // THE PARAMETERIZED BIND DIRECTIVE
