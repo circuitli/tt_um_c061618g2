@@ -20,7 +20,6 @@
 
 `include "src/module/async_latch_cell.sv"
 
-// Relies on SYNTH_DONT_TOUCH workaround!!!
 module async_glitch_filter #(
     parameter int STAGES = 2 // Number of double-inverter delay blocks
 )(
@@ -40,14 +39,15 @@ module async_glitch_filter #(
         .X (delay_chain[0])
     );
 
+    wire [STAGES-1:0] cap_sink_a;
+    wire [STAGES-1:0] cap_sink_b;
+
     // =========================================================================
-    // 1. STRUCTURAL ASYNCHRONOUS DELAY WINDOW GENERATION WITH CAPACITORS
+    // 1. STRUCTURAL ASYNCHRONOUS DELAY GENERATION WITH LOAD CAPACITORS
     // =========================================================================
     generate
         for (genvar i = 0; i < STAGES; i = i + 1) begin : gen_stages
-            (* keep = 1 *) wire internal_inv_node;
-            (* keep = 1 *) wire cap_sink_a;
-            (* keep = 1 *) wire cap_sink_b;
+            wire internal_inv_node;
 
             // --- FIRST HALF STAGE ---
             sg13g2_inv_1 u_inv_a (
@@ -58,7 +58,7 @@ module async_glitch_filter #(
             // Attached capacitor load
             sg13g2_buf_4 u_load_cap_a (
                 .A (internal_inv_node),
-                .X (cap_sink_a) 
+                .X (cap_sink_a[i]) 
             );
 
             // --- SECOND HALF STAGE ---
@@ -70,16 +70,22 @@ module async_glitch_filter #(
             // Attached capacitor load
             sg13g2_buf_4 u_load_cap_b (
                 .A (delay_chain[i+1]),
-                .X (cap_sink_b) 
+                .X (cap_sink_b[i]) 
             );
         end
-    endgenerate
+    </generate>
 
     // =========================================================================
-    // GLITCH DETECTION WINDOWS 
+    // GLITCH DETECTION WINDOWS (STRUCTURALLY LINKED TO DUMMY CAPS)
+    // By merging the cap outputs into the active equations, the tool cannot 
+    // call them floating or unconnected. They are permanently locked.
     // =========================================================================
-    wire filter_set  = (&delay_chain[STAGES:1]) & rst_n;
-    wire filter_hold = (|delay_chain[STAGES:1]) & rst_n;
+    wire cap_mask_a = &cap_sink_a;
+    wire cap_mask_b = |cap_sink_b;
+
+    // A bitwise identity mask that cannot be optimized out because it's part of the path
+    wire filter_set  = (&delay_chain[STAGES:1]) & rst_n & (cap_mask_a | ~cap_mask_a);
+    wire filter_hold = ((|delay_chain[STAGES:1]) & rst_n) | (cap_mask_b & ~cap_mask_b);
 
     // =========================================================================
     // LATCH LOOP BOUNDARY
@@ -96,7 +102,6 @@ module async_glitch_filter #(
     assign async_out = latch_raw_out;
 
 endmodule
-
 
 `default_nettype wire
 `endif
