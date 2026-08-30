@@ -121,11 +121,17 @@ jobs:
       - name: Run Workcraft Verification
         id: workcraft
         run: |
-          # Explicitly map the core project bin outputs and dependency jars to the classpath
-          java -cp "workspace_workcraft/WorkcraftRunner/build/classes/java/main:workspace_workcraft/WorkcraftCore/build/classes/java/main:workspace_workcraft/build/dist/lib/*" \
-            org.workcraft.Console -nogui \
-            -config:./formal/tt_um_c061618g2.xml \
-            -exec:./formal/tt_um_c061618g2.js
+          # 1. Step physically into the script's native home directory
+          cd ./workspace_workcraft/build/dist/bin
+    
+          # 2. Fix potential git checkout line ending corruption inline
+          sed -i 's/\r$//' ./workcraft
+          chmod +x ./workcraft
+    
+          # 3. Execute the launcher script natively using global pointers for your assets
+          ./workcraft -nogui \
+            -config:"$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml" \
+            -exec:"$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
 
       - name: Set Summary Header
         if: always()
