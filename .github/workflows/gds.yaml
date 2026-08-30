@@ -121,6 +121,10 @@ jobs:
       - name: Run Workcraft Verification
         id: workcraft
         run: |
+          # Force fix potential Windows line ending bugs in the launcher script
+          sed -i 's/\r$//' ./workspace_workcraft/build/dist/bin/workcraft
+          chmod +x ./workspace_workcraft/build/dist/bin/workcraft
+
           # Explicitly run the core Java archive bypassing the broken wrapper script
           java -jar ./workspace_workcraft/build/dist/bin/workcraft.jar -nogui \
             -config:formal/tt_um_c061618g2.xml \
