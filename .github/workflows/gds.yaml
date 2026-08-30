@@ -116,6 +116,8 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17' # Workcraft core engine requires Java 17+
+
+      - name: Download and Unpack Workcraft + MPSAT
         run: |
           echo "📥 Fetching official standalone Workcraft Linux archive from direct GitHub Mirror..."
           
