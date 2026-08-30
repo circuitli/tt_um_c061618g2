@@ -126,42 +126,50 @@ jobs:
           WORKCRAFT_EXIT_CODE=0
 
           echo "🚀 Initiating headless asynchronous analysis..."
-          
+    
           # 2. Invoke the compiled Workcraft engine using its exact relative path
-          ./workspace_workcraft/build/dist/bin/workcraft -nogui \
+          if ./workspace_workcraft/build/dist/bin/workcraft -nogui \
             -config:formal/tt_um_c061618g2.xml \
-            -exec:formal/tt_um_c061618g2.js > "\(LOG_FILE" 2>&1 \vert{}\vert{} WORKCRAFT_EXIT_CODE=\)?
+            -exec:formal/tt_um_c061618g2.js > "\$LOG_FILE" 2>&1; then
+              WORKCRAFT_EXIT_CODE=0
+          else
+              WORKCRAFT_EXIT_CODE=\$?
+          fi
 
           # 3. Process and output the log details straight to the Step Summary page
           if [ -f "\$LOG_FILE" ]; then
             # Clean out any ANSI color escape sequences from the text output
             sed -i 's/\x1b\[[0-9;]*m//g' "\$LOG_FILE"
-            
-            echo "## 🇨🇭 Workcraft Asynchronous Formal Summary" >> \$GITHUB_STEP_SUMMARY
-            echo "" >> \$GITHUB_STEP_SUMMARY
-            
+      
+            echo "## 🇨🇭 Workcraft Asynchronous Formal Summary" >> "\$GITHUB_STEP_SUMMARY"
+            echo "" >> "\$GITHUB_STEP_SUMMARY"
+      
             if [ "\$WORKCRAFT_EXIT_CODE" -eq 0 ]; then
-              echo "✅ **PASS: All asynchronous structures are mathematically hazard-free and stable!**" >> \$GITHUB_STEP_SUMMARY
+              echo "✅ **PASS: All asynchronous structures are mathematically hazard-free and stable!**" >> "\$GITHUB_STEP_SUMMARY"
             else
-              echo "❌ **FAIL: Asynchronous loop violation or structural hazard detected!**" >> \$GITHUB_STEP_SUMMARY
+              echo "❌ **FAIL: Asynchronous loop violation or structural hazard detected!**" >> "\$GITHUB_STEP_SUMMARY"
             fi
-            
-            echo "" >> \$GITHUB_STEP_SUMMARY
-            echo "### 🔍 Analysis Execution Log Output" >> \$GITHUB_STEP_SUMMARY
-            echo "<details open><summary>Click to collapse console details</summary>" >> \$GITHUB_STEP_SUMMARY
-            echo "" >> \$GITHUB_STEP_SUMMARY
-            echo '```text' >> \$GITHUB_STEP_SUMMARY
-            cat "\(LOG_FILE" >> \)GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            echo "</details>" >> $GITHUB_STEP_SUMMARY
+      
+            echo "" >> "\$GITHUB_STEP_SUMMARY"
+            echo "### 🔍 Analysis Execution Log Output" >> "\$GITHUB_STEP_SUMMARY"
+            echo "<details open><summary>Click to collapse console details</summary>" >> "\$GITHUB_STEP_SUMMARY"
+            echo "" >> "\$GITHUB_STEP_SUMMARY"
+            echo '```text' >> "\$GITHUB_STEP_SUMMARY"
+            cat "\(LOG_FILE" >> "\)GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            echo "</details>" >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "### ⚠️ Workcraft log file not found at $LOG_FILE!" >> $GITHUB_STEP_SUMMARY
+            echo "### ⚠️ Workcraft log file not found at $LOG_FILE!" >> "$GITHUB_STEP_SUMMARY"
           fi
+
+          if [ "$WORKCRAFT_EXIT_CODE" -ne 0 ]; then
+             exit "$WORKCRAFT_EXIT_CODE"
+          fi
+
 
           if [ "$WORKCRAFT_EXIT_CODE" -ne 0 ]; then
              exit $WORKCRAFT_EXIT_CODE
           fi
-
 
   verilator:
     runs-on: ubuntu-latest
