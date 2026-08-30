@@ -120,6 +120,8 @@ jobs:
 
       - name: Run Workcraft Verification
         id: workcraft
+        env:
+          WORKCRAFT_USE_NATIVE_JAVA: 1
         run: |
           # Run Workcraft and print output to the console while saving a copy to check for issues
           ./workspace_workcraft/build/dist/bin/workcraft -nogui \
