@@ -135,6 +135,9 @@ jobs:
           sed -i 's/\r$//' "$LAUNCHER_PATH"
           chmod +x "$LAUNCHER_PATH"
 
+          # 3. Inject the real distribution JAR libraries into the script's classpath variable
+          export WORKCRAFT_CLASSPATH="/home/runner/work/tt_um_c061618g2/tt_um_c061618g2/workspace_workcraft/dist/lib/*"
+
           # 3. Execute the detected tool cleanly
           "$LAUNCHER_PATH" -nogui \
             -config:"${{ github.workspace }}/formal/tt_um_c061618g2.xml" \
