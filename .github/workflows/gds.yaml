@@ -147,21 +147,15 @@ jobs:
           echo "## 🇨🇭 Workcraft Asynchronous Formal Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-            - name: Set Summary Header
-              if: always()
-              run: |
-                echo "## 🇨🇭 Workcraft Asynchronous Formal Summary" >> $GITHUB_STEP_SUMMARY
-                echo "" >> $GITHUB_STEP_SUMMARY
+      - name: Set Pass Summary
+        if: always() && steps.workcraft.outcome == 'success'
+        run: |
+          echo "✅ **PASS: All asynchronous structures are mathematically hazard-free and stable!**" >> $GITHUB_STEP_SUMMARY
 
-            - name: Set Pass Summary
-              if: always() && steps.workcraft.outcome == 'success'
-              run: |
-                echo "✅ **PASS: All asynchronous structures are mathematically hazard-free and stable!**" >> $GITHUB_STEP_SUMMARY
-
-            - name: Set Fail Summary
-              if: always() && steps.workcraft.outcome != 'success'
-              run: |
-                echo "❌ **FAIL: Asynchronous loop violation or structural hazard detected!**" >> $GITHUB_STEP_SUMMARY
+      - name: Set Fail Summary
+        if: always() && steps.workcraft.outcome != 'success'
+        run: |
+          echo "❌ **FAIL: Asynchronous loop violation or structural hazard detected!**" >> $GITHUB_STEP_SUMMARY
 
   verilator:
     runs-on: ubuntu-latest
