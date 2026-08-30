@@ -126,12 +126,12 @@ jobs:
           ln -sfn dist/template/linux/tools tools
 
           # 2. Execute Workcraft natively using the formal Gradle run task
-          ./gradlew run -Pargs="-nogui -config:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml -exec:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
+          ./gradlew run -Djava.awt.headless=true -Pargs="-nogui $GITHUB_WORKSPACE/formal/tt_um_c061618g2.js $GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml"
 
       - name: Set Summary Header
         if: always()
         run: |
-          echo "## 🇨🇭 Workcraft Asynchronous Formal Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## 🛠️ Workcraft Asynchronous Formal Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
       - name: Set Pass Summary
