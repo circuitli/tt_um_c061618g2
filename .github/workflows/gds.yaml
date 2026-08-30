@@ -120,29 +120,13 @@ jobs:
 
       - name: Run Workcraft Verification
         id: workcraft
+        working-directory: workspace_workcraft
         run: |
-          # 1. Dynamically locate the true binary file anywhere in the workspace
-          LAUNCHER_PATH=$(find ${{ github.workspace }} -type f -name "workcraft" | grep -v "node_modules" | head -n 1)
+          # 1. Establish the official repository root tools symbolic link
+          ln -sfn dist/template/linux/tools tools
 
-          if [ -z "$LAUNCHER_PATH" ]; then
-            echo "❌ Error: Could not find the workcraft execution file anywhere in the workspace!"
-            exit 1
-          fi
-
-          echo "🚀 Found Workcraft path at: $LAUNCHER_PATH"
-
-          # 2. Automatically apply clean-up directly to the exact file discovered
-          sed -i 's/\r$//' "$LAUNCHER_PATH"
-          chmod +x "$LAUNCHER_PATH"
-
-          # 2. Map the true source classpath targets built by Gradle
-          export WORKCRAFT_CLASSPATH="${{ github.workspace }}/workspace_workcraft/WorkcraftRunner/build/classes/java/main:${{ github.workspace }}/workspace_workcraft/WorkcraftCore/build/classes/java/main:${{ github.workspace }}/workspace_workcraft/build/libs/*"
-
-          # 3. Execute the detected tool cleanly
-          "$LAUNCHER_PATH" -nogui \
-            -dir:"/home/runner/work/tt_um_c061618g2/tt_um_c061618g2/workspace_workcraft/dist" \
-            -config:"${{ github.workspace }}/formal/tt_um_c061618g2.xml" \
-            -exec:"${{ github.workspace }}/formal/tt_um_c061618g2.js"
+          # 2. Execute Workcraft natively using the formal Gradle run task
+          ./gradlew run -Pargs="-nogui -config:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml -exec:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
 
       - name: Set Summary Header
         if: always()
