@@ -121,12 +121,18 @@ jobs:
       - name: Run Workcraft Verification
         id: workcraft
         run: |
-          # Force fix potential Windows line ending bugs in the launcher script
-          sed -i 's/\r$//' ./workspace_workcraft/build/dist/bin/workcraft
-          chmod +x ./workspace_workcraft/build/dist/bin/workcraft
-
-          # Explicitly run the core Java archive bypassing the broken wrapper script
-          java -jar ./workspace_workcraft/build/dist/bin/workcraft.jar -nogui \
+          echo "🔍 Dynamically locating the Workcraft binary..."
+          REAL_PATH=$(find . -type f -name "workcraft" | grep -v "node_modules" | head -n 1)
+    
+          if [ -z "$REAL_PATH" ]; then
+            echo "❌ Error: Could not find the workcraft execution file anywhere in the workspace!"
+            exit 1
+          fi
+    
+          echo "🚀 Found it at: $REAL_PATH. Starting headless analysis..."
+    
+          # Run the found tool dynamically
+          $REAL_PATH -nogui \
             -config:formal/tt_um_c061618g2.xml \
             -exec:formal/tt_um_c061618g2.js
 
