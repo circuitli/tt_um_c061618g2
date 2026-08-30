@@ -140,6 +140,7 @@ jobs:
 
           # 3. Execute the detected tool cleanly
           "$LAUNCHER_PATH" -nogui \
+            -dir:"/home/runner/work/tt_um_c061618g2/tt_um_c061618g2/workspace_workcraft/dist" \
             -config:"${{ github.workspace }}/formal/tt_um_c061618g2.xml" \
             -exec:"${{ github.workspace }}/formal/tt_um_c061618g2.js"
 
