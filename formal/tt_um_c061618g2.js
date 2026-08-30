@@ -25,3 +25,5 @@ if (!deadlockClean || !hazardsClean) {
     framework.printStatus("PASS: All top-level paths and async submodules are fully verified!");
     framework.exit(0);
 }
+
+exit();
