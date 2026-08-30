@@ -120,11 +120,32 @@ jobs:
 
       - name: Run Workcraft Verification
         id: workcraft
-        working-directory: ./workspace_workcraft/build/dist/bin
         run: |
+          # 1. Dynamically locate the true Workcraft installation directory
+          LAUNCHER_PATH=$(find $GITHUB_WORKSPACE -type f -name "workcraft" | grep -v "node_modules" | head -n 1)
+    
+          if [ -z "$LAUNCHER_PATH" ]; then
+            echo "❌ Error: Could not find the workcraft executable anywhere in the workspace!"
+            exit 1
+          fi
+    
+          # Extract the directory containing the launcher
+          WORKCRAFT_BIN_DIR=$(dirname "$LAUNCHER_PATH")
+          echo "🚀 Found Workcraft bin folder at: $WORKCRAFT_BIN_DIR"
+    
+          # 2. Step into that directory so the Java Classpath resolves natively
+          cd "$WORKCRAFT_BIN_DIR"
+    
+          # 3. Execute using absolute paths for your config and script files
           ./workcraft -nogui \
             -config:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml \
             -exec:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js
+
+- name: Set Summary Header
+  if: always()
+  run: |
+    echo "## 🇨🇭 Workcraft Asynchronous Formal Summary" >> $GITHUB_STEP_SUMMARY
+    echo "" >> $GITHUB_STEP_SUMMARY
 
       - name: Set Summary Header
         if: always()
