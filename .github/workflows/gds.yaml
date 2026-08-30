@@ -75,7 +75,86 @@ jobs:
     steps:
       - uses: TinyTapeout/tt-gds-action/viewer@ttihp26b
 
-  workcraft_plus_verilator:
+  workcraft:
+    runs-on: ubuntu-24.04
+    needs: [gds]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Download Post-Synthesis Netlist Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: gds_artifacts
+          path: gds_drop/
+
+      - name: Setup Java Runtime Environment
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle' # Automatically tracks and speeds up gradle download passes
+
+      - name: Compile Workcraft From Source
+        run: |
+          echo "🔨 Cloning and assembling the Workcraft verification framework..."
+          git clone --depth 1 https://github.com/workcraft/workcraft.git workspace_workcraft
+          cd workspace_workcraft
+          git submodule update --init --remote
+          
+          # FIXED: Explicitly force Gradle to use the active Java 21 path configuration
+          export JAVA_HOME=\$JAVA_HOME_21_X64
+          ./gradlew assemble
+          
+          # STRUCTURAL FIX: Create the required platform symbolic links for backend binaries
+          mkdir -p tools
+          ln -s ../dist/template/linux/tools/mpsat tools/mpsat
+          ln -s ../dist/template/linux/tools/petrify tools/petrify
+          
+          # Add the compiled build path and binary hooks directly to the global runner system PATH
+          echo "\(GITHUB_WORKSPACE/workspace_workcraft/build/dist/bin" >> \)GITHUB_PATH
+          echo "🚀 Workcraft compiled from source and backend tools successfully initialized!"
+
+      - name: Inject Custom Workcraft Data into TT Summary Page
+        if: always()
+        run: |
+          LOG_FILE="\$GITHUB_WORKSPACE/workcraft_run.log"
+          WORKCRAFT_EXIT_CODE=0
+
+          # Fire headless asynchronous deadlock and hazard scanners against the post-synthesis path
+          workcraft -nogui -config:formal/workcraft_config.xml -exec:formal/verify_mmu.js 2>&1 | tee "\(LOG_FILE" \vert{}\vert{} WORKCRAFT_EXIT_CODE=\)?
+
+          if [ -f "\$LOG_FILE" ]; then
+            sed -i 's/\x1b\[[0-9;]*m//g' "\$LOG_FILE"
+            
+            echo "## 🇨🇭 Workcraft Asynchronous Formal Summary" >> \$GITHUB_STEP_SUMMARY
+            echo "" >> \$GITHUB_STEP_SUMMARY
+            
+            if [ "\$WORKCRAFT_EXIT_CODE" -eq 0 ]; then
+              echo "✅ **PASS: All asynchronous structures are mathematically hazard-free and stable!**" >> \$GITHUB_STEP_SUMMARY
+            else
+              echo "❌ **FAIL: Asynchronous loop violation or structural hazard detected!**" >> \$GITHUB_STEP_SUMMARY
+            fi
+            
+            echo "" >> \$GITHUB_STEP_SUMMARY
+            echo "### 🔍 Analysis Execution Log Output" >> \$GITHUB_STEP_SUMMARY
+            echo "<details open><summary>Click to collapse console details</summary>" >> \$GITHUB_STEP_SUMMARY
+            echo "" >> \$GITHUB_STEP_SUMMARY
+            echo '```text' >> \$GITHUB_STEP_SUMMARY
+            cat "\(LOG_FILE" >> \)GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "</details>" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ⚠️ Workcraft log file not found at $LOG_FILE!" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ "$WORKCRAFT_EXIT_CODE" -ne 0 ]; then
+             exit $WORKCRAFT_EXIT_CODE
+          fi
+
+  verilator:
     runs-on: ubuntu-latest
     needs: [gds]
     steps:
@@ -111,71 +190,7 @@ jobs:
       - name: Install Cocotb Framework Dependencies
         run: pip install cocotb pytest
 
-      - name: Setup Java Runtime (Required for Workcraft)
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17' # Workcraft core engine requires Java 17+
-
-      - name: Compile Workcraft From Source
-        run: |
-          echo "🔨 Cloning and assembling the Workcraft verification framework..."
-          # 1. Clone the master repository and pull its official structural backend tools
-          git clone --depth 1 https://github.com/workcraft/workcraft.git workspace_workcraft
-          cd workspace_workcraft
-          git submodule update --init --remote
-          
-          # 2. Compile the headless console engine using the official build system
-          ./gradlew assemble
-          
-          # 3. Add the freshly built binary environment directly to the active runner system PATH
-          echo "\(GITHUB_WORKSPACE/workspace_workcraft/build/dist/bin" >> \)GITHUB_PATH
-          echo "🚀 Workcraft compiled from source and backend tools successfully initialized!"
-
-      - name: Execute Asynchronous Hazard & Deadlock Checks
-        if: always()
-        run: |
-          LOG_FILE="\$GITHUB_WORKSPACE/workcraft_run.log"
-          
-          # Run the verification step and pipe a duplicate of the raw console log out to the workspace
-          workcraft -nogui \
-            -config:formal/tt_um_c061618g2.xml \
-            -exec:formal/tt_um_c061618g2.js 2>&1 | tee "\(LOG_FILE" \vert{}\vert{} WORKCRAFT_EXIT_CODE=\)?
-
-          if [ -f "\$LOG_FILE" ]; then
-            # Clean out any ANSI color escape sequences from the text output
-            sed -i 's/\x1b\[[0-9;]*m//g' "\$LOG_FILE"
-            
-            echo "## 🇨🇭 Workcraft Asynchronous Formal Summary" >> \$GITHUB_STEP_SUMMARY
-            echo "" >> \$GITHUB_STEP_SUMMARY
-            
-            # Print status summary banner
-            if [ -z "\$WORKCRAFT_EXIT_CODE" ]; then
-              echo "✅ **PASS: All asynchronous structures are mathematically hazard-free and stable!**" >> \$GITHUB_STEP_SUMMARY
-            else
-              echo "❌ **FAIL: Asynchronous loop violation or structural hazard detected!**" >> \$GITHUB_STEP_SUMMARY
-            fi
-            
-            echo "" >> \$GITHUB_STEP_SUMMARY
-            echo "### 🔍 Analysis Execution Log Output" >> \$GITHUB_STEP_SUMMARY
-            echo "<details open><summary>Click to collapse console details</summary>" >> \$GITHUB_STEP_SUMMARY
-            echo "" >> \$GITHUB_STEP_SUMMARY
-            echo '```text' >> \$GITHUB_STEP_SUMMARY
-            cat "\(LOG_FILE" >> \)GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            echo "</details>" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "### ⚠️ Workcraft log file not found at $LOG_FILE!" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          # Explicitly force the runner to fail if Workcraft returned a failure exit code
-          if [ ! -z "$WORKCRAFT_EXIT_CODE" ]; then
-             exit $WORKCRAFT_EXIT_CODE
-          fi
-
-      # ... [Your existing steps that continue to Placement, Routing, and GDS generation] ...
-
-      - name: Execute Full Verilator Gate-Level Simulation
+      - name: Execute Verilator Simulation
         run: |
           cd test
           make SIM=verilator 2>&1 | tee "$GITHUB_WORKSPACE/verilator_run.log"
