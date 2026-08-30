@@ -117,27 +117,20 @@ jobs:
           distribution: 'temurin'
           java-version: '17' # Workcraft core engine requires Java 17+
 
-      - name: Download and Unpack Workcraft + MPSAT
-        if: always()
+      - name: Compile Workcraft From Source
         run: |
-          LOG_FILE="\$GITHUB_WORKSPACE/workcraft_run.log"
-          WORKCRAFT_EXIT_CODE=0
-
-          echo "📥 Fetching and verifying official standalone Workcraft Linux archive..."
+          echo "🔨 Cloning and assembling the Workcraft verification framework..."
+          # 1. Clone the master repository and pull its official structural backend tools
+          git clone --depth 1 https://github.com/workcraft/workcraft.git workspace_workcraft
+          cd workspace_workcraft
+          git submodule update --init --remote
           
-          # Use curl -L (Follow redirects) and --fail (crash if 404/500) to ensure we get the real file
-          curl -L --fail -o workcraft-linux.tar.gz https://github.com
+          # 2. Compile the headless console engine using the official build system
+          ./gradlew assemble
           
-          # Sanity check: Ensure we downloaded a real archive, not an HTML page
-          if file workcraft-linux.tar.gz | grep -q "HTML document"; then
-             echo "❌ ERROR: Downloaded an HTML error page instead of the gzip archive!"
-             cat workcraft-linux.tar.gz
-             exit 1
-          fi
-
-          tar -xzf workcraft-linux.tar.gz
-          export PATH="\(GITHUB_WORKSPACE/workcraft/bin:\)PATH"
-          echo "🚀 Workcraft suite and MPSAT backends successfully unpacked!"
+          # 3. Add the freshly built binary environment directly to the active runner system PATH
+          echo "\(GITHUB_WORKSPACE/workspace_workcraft/build/dist/bin" >> \)GITHUB_PATH
+          echo "🚀 Workcraft compiled from source and backend tools successfully initialized!"
 
       - name: Execute Asynchronous Hazard & Deadlock Checks
         if: always()
