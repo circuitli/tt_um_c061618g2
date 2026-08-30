@@ -126,7 +126,7 @@ jobs:
           ln -sfn dist/template/linux/tools tools
 
           # 2. Execute Workcraft natively using the formal Gradle run task
-          xvfb-run ./gradlew run -Djava.awt.headless=true -Pargs="-nogui -dir:$GITHUB_WORKSPACE/formal -config:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml -exec:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
+          ./gradlew run -Dworkcraft.nogui=true -Pargs="-dir:$GITHUB_WORKSPACE/formal -config:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml -exec:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
       - name: Set Summary Header
         if: always()
         run: |
