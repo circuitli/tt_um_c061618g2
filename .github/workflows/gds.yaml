@@ -121,8 +121,8 @@ jobs:
       - name: Run Workcraft Verification
         id: workcraft
         run: |
-          # Execute the formal verification matrix using Workcraft's true runner entry path
-          java -cp "./workspace_workcraft/WorkcraftRunner/bin/main:./workspace_workcraft/WorkcraftCore/bin/main:./workspace_workcraft/plugins/*:./workspace_workcraft/libs/*" \
+          # Wrapping the classpath string in single quotes prevents Bash from expanding the asterisks early
+          java -cp './workspace_workcraft/build/dist/bin:./workspace_workcraft/build/dist/bin/*:./workspace_workcraft/build/dist/lib:./workspace_workcraft/build/dist/lib/*' \
             org.workcraft.Console -nogui \
             -config:./formal/tt_um_c061618g2.xml \
             -exec:./formal/tt_um_c061618g2.js
