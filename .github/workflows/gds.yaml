@@ -121,8 +121,10 @@ jobs:
       - name: Run Workcraft Verification
         id: workcraft
         run: |
-          # Force Gradle to execute the headless console using its own native classpath mapping
-          ./gradlew run -Pargs="-nogui -config:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml -exec:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
+          # Execute the core framework JAR directly so Java handles the classpath natively
+          java -jar ./workspace_workcraft/build/dist/lib/workcraft-core.jar -nogui \
+            -config:./formal/tt_um_c061618g2.xml \
+            -exec:./formal/tt_um_c061618g2.js
 
       - name: Set Summary Header
         if: always()
