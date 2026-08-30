@@ -72,7 +72,9 @@ else ifeq ($(SIM),icarus)
 
         # 3. Strip the raw PDK path from the sources and append our clean local version instead
         #VERILOG_SOURCES := $(filter-out $(RAW_PDK_CELLS) %sg13g2_stdcell.v, $(VERILOG_SOURCES))
-        VERILOG_SOURCES += $(CLEAN_LOCAL_CELLS)
+        #VERILOG_SOURCES += $(CLEAN_LOCAL_CELLS
+        VERILOG_SOURCES += $(RAW_PDK_CELLS)
+
     endif
 endif
 
