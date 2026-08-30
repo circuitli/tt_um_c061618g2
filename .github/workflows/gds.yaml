@@ -119,22 +119,12 @@ jobs:
           echo "🚀 Workcraft compiled from source and backend tools successfully initialized!"
 
       - name: Run Workcraft Verification
-        id: workcraft
         run: |
-          echo "🔍 Dynamically locating the Workcraft binary..."
-          REAL_PATH=$(find . -type f -name "workcraft" | grep -v "node_modules" | head -n 1)
-    
-          if [ -z "$REAL_PATH" ]; then
-            echo "❌ Error: Could not find the workcraft execution file anywhere in the workspace!"
-            exit 1
-          fi
-    
-          echo "🚀 Found it at: $REAL_PATH. Starting headless analysis..."
-    
-          # Run the found tool dynamically
-          $REAL_PATH -nogui \
-            -config:formal/tt_um_c061618g2.xml \
-            -exec:formal/tt_um_c061618g2.js
+          # Map the exact directory paths AND their wildcards into the Java Classpath
+          java -cp "./workspace_workcraft/build/dist/bin:./workspace_workcraft/build/dist/bin/*:./workspace_workcraft/build/dist/lib:./workspace_workcraft/build/dist/lib/*" \
+            org.workcraft.Console -nogui \
+            -config:./formal/tt_um_c061618g2.xml \
+            -exec:./formal/tt_um_c061618g2.js
 
       - name: Generate Detailed Summary
         if: always()
