@@ -121,14 +121,25 @@ jobs:
       - name: Run Workcraft Verification
         id: workcraft
         run: |
-          # 1. Step physically into the script's native home directory
-          cd ./workspace_workcraft/build/dist/bin
+          # 1. Dynamically locate the true launcher script anywhere in the workspace
+          LAUNCHER_PATH=$(find $GITHUB_WORKSPACE -type f -name "workcraft" | grep "dist/bin" | head -n 1)
     
-          # 2. Fix potential git checkout line ending corruption inline
+          if [ -z "$LAUNCHER_PATH" ]; then
+            echo "❌ Error: Could not find the workcraft launcher script!"
+            exit 1
+          fi
+    
+          # Extract the directory containing the launcher script
+          LAUNCHER_DIR=$(dirname "$LAUNCHER_PATH")
+          echo "🚀 Found Workcraft bin folder at: $LAUNCHER_DIR"
+    
+          # 2. Step physically into its folder so its internal relative lookups work natively
+          cd "$LAUNCHER_DIR"
+    
+          # 3. Clean line endings and run using absolute paths for your assets
           sed -i 's/\r$//' ./workcraft
           chmod +x ./workcraft
     
-          # 3. Execute the launcher script natively using global pointers for your assets
           ./workcraft -nogui \
             -config:"$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml" \
             -exec:"$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
@@ -138,16 +149,21 @@ jobs:
         run: |
           echo "## 🇨🇭 Workcraft Asynchronous Formal Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+            - name: Set Summary Header
+              if: always()
+              run: |
+                echo "## 🇨🇭 Workcraft Asynchronous Formal Summary" >> $GITHUB_STEP_SUMMARY
+                echo "" >> $GITHUB_STEP_SUMMARY
 
-      - name: Set Pass Summary
-        if: always() && steps.workcraft.outcome == 'success'
-        run: |
-          echo "✅ **PASS: All asynchronous structures are mathematically hazard-free and stable!**" >> $GITHUB_STEP_SUMMARY
+            - name: Set Pass Summary
+              if: always() && steps.workcraft.outcome == 'success'
+              run: |
+                echo "✅ **PASS: All asynchronous structures are mathematically hazard-free and stable!**" >> $GITHUB_STEP_SUMMARY
 
-      - name: Set Fail Summary
-        if: always() && steps.workcraft.outcome != 'success'
-        run: |
-          echo "❌ **FAIL: Asynchronous loop violation or structural hazard detected!**" >> $GITHUB_STEP_SUMMARY
+            - name: Set Fail Summary
+              if: always() && steps.workcraft.outcome != 'success'
+              run: |
+                echo "❌ **FAIL: Asynchronous loop violation or structural hazard detected!**" >> $GITHUB_STEP_SUMMARY
 
   verilator:
     runs-on: ubuntu-latest
