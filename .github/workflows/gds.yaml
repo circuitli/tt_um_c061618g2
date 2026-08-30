@@ -119,35 +119,28 @@ jobs:
           echo "🚀 Workcraft compiled from source and backend tools successfully initialized!"
 
       - name: Run Workcraft Verification
+        id: workcraft
         run: |
-          # Map the exact directory paths AND their wildcards into the Java Classpath
           java -cp "./workspace_workcraft/build/dist/bin:./workspace_workcraft/build/dist/bin/*:./workspace_workcraft/build/dist/lib:./workspace_workcraft/build/dist/lib/*" \
             org.workcraft.Console -nogui \
             -config:./formal/tt_um_c061618g2.xml \
             -exec:./formal/tt_um_c061618g2.js
 
-      - name: Generate Detailed Summary
+      - name: Set Summary Header
         if: always()
         run: |
-          echo "## 🇨🇭 Workcraft Asynchronous Formal Summary" >> \$GITHUB_STEP_SUMMARY
-          echo "" >> \$GITHUB_STEP_SUMMARY
-    
-          if [ "\${{ steps.workcraft.outcome }}" = "success" ]; then
-            echo "### ✅ Analysis Passed" >> \$GITHUB_STEP_SUMMARY
-            echo "All asynchronous structures are mathematically hazard-free and stable." >> \$GITHUB_STEP_SUMMARY
-          else
-            echo "### ❌ Analysis Failed" >> \$GITHUB_STEP_SUMMARY
-            echo "Asynchronous loop violations or structural hazards were detected during verification." >> \$GITHUB_STEP_SUMMARY
-            echo "" >> \$GITHUB_STEP_SUMMARY
-      
-            # Extract only the critical failure lines from the tool output
-            if [ -f "workcraft_run.txt" ]; then
-              echo "**Detected issues:**" >> \$GITHUB_STEP_SUMMARY
-              echo '```text' >> \$GITHUB_STEP_SUMMARY
-              grep -iE "error|fail|hazard|violation|conflict" workcraft_run.txt || echo "Check workflow build logs for full stack trace." >> \$GITHUB_STEP_SUMMARY
-              echo '```' >> $GITHUB_STEP_SUMMARY
-            fi
-          fi
+          echo "## 🇨🇭 Workcraft Asynchronous Formal Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+      - name: Set Pass Summary
+        if: always() && steps.workcraft.outcome == 'success'
+        run: |
+          echo "✅ **PASS: All asynchronous structures are mathematically hazard-free and stable!**" >> $GITHUB_STEP_SUMMARY
+
+      - name: Set Fail Summary
+        if: always() && steps.workcraft.outcome != 'success'
+        run: |
+          echo "❌ **FAIL: Asynchronous loop violation or structural hazard detected!**" >> $GITHUB_STEP_SUMMARY
 
   verilator:
     runs-on: ubuntu-latest
