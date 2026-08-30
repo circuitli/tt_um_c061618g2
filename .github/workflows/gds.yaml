@@ -121,28 +121,14 @@ jobs:
       - name: Run Workcraft Verification
         id: workcraft
         run: |
-          # 1. Dynamically locate the true launcher script anywhere in the workspace
-          LAUNCHER_PATH=$(find $GITHUB_WORKSPACE -type f -name "workcraft" | grep "dist/bin" | head -n 1)
-    
-          if [ -z "$LAUNCHER_PATH" ]; then
-            echo "❌ Error: Could not find the workcraft launcher script!"
-            exit 1
-          fi
-    
-          # Extract the directory containing the launcher script
-          LAUNCHER_DIR=$(dirname "$LAUNCHER_PATH")
-          echo "🚀 Found Workcraft bin folder at: $LAUNCHER_DIR"
-    
-          # 2. Step physically into its folder so its internal relative lookups work natively
-          cd "$LAUNCHER_DIR"
-    
-          # 3. Clean line endings and run using absolute paths for your assets
-          sed -i 's/\r$//' ./workcraft
-          chmod +x ./workcraft
-    
-          ./workcraft -nogui \
-            -config:"$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml" \
-            -exec:"$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
+          # Fix carriage returns in the script just in case git checked it out as CRLF
+          sed -i 's/\r$//' ${{ github.workspace }}/workspace_workcraft/build/dist/bin/workcraft
+          chmod +x ${{ github.workspace }}/workspace_workcraft/build/dist/bin/workcraft
+
+          # Execute using the direct absolute path
+          ${{ github.workspace }}/workspace_workcraft/build/dist/bin/workcraft -nogui \
+            -config:${{ github.workspace }}/formal/tt_um_c061618g2.xml \
+            -exec:${{ github.workspace }}/formal/tt_um_c061618g2.js
 
       - name: Set Summary Header
         if: always()
