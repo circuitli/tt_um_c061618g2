@@ -121,8 +121,8 @@ jobs:
       - name: Run Workcraft Verification
         id: workcraft
         run: |
-          # Wrapping the classpath string in single quotes prevents Bash from expanding the asterisks early
-          java -cp './workspace_workcraft/build/dist/bin:./workspace_workcraft/build/dist/bin/*:./workspace_workcraft/build/dist/lib:./workspace_workcraft/build/dist/lib/*' \
+          # Explicitly map the core project bin outputs and dependency jars to the classpath
+          java -cp "workspace_workcraft/WorkcraftRunner/build/classes/java/main:workspace_workcraft/WorkcraftCore/build/classes/java/main:workspace_workcraft/build/dist/lib/*" \
             org.workcraft.Console -nogui \
             -config:./formal/tt_um_c061618g2.xml \
             -exec:./formal/tt_um_c061618g2.js
