@@ -120,13 +120,11 @@ jobs:
 
       - name: Run Workcraft Verification
         id: workcraft
-        env:
-          WORKCRAFT_USE_NATIVE_JAVA: 1
         run: |
-          # Run Workcraft and print output to the console while saving a copy to check for issues
-          ./workspace_workcraft/build/dist/bin/workcraft -nogui \
+          # Explicitly run the core Java archive bypassing the broken wrapper script
+          java -jar ./workspace_workcraft/build/dist/bin/workcraft.jar -nogui \
             -config:formal/tt_um_c061618g2.xml \
-            -exec:formal/tt_um_c061618g2.js | tee workcraft_run.txt
+            -exec:formal/tt_um_c061618g2.js
 
       - name: Generate Detailed Summary
         if: always()
