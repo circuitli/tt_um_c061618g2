@@ -121,8 +121,8 @@ jobs:
       - name: Run Workcraft Verification
         id: workcraft
         run: |
-          # Execute the core framework JAR directly so Java handles the classpath natively
-          java -jar ./workspace_workcraft/build/dist/lib/workcraft-core.jar -nogui \
+          # Run the top-level distribution executable JAR directly
+          java -jar ./workspace_workcraft/build/dist/workcraft.jar -nogui \
             -config:./formal/tt_um_c061618g2.xml \
             -exec:./formal/tt_um_c061618g2.js
 
