@@ -118,57 +118,35 @@ jobs:
           echo "\(GITHUB_WORKSPACE/workspace_workcraft/build/dist/bin" >> \)GITHUB_PATH
           echo "🚀 Workcraft compiled from source and backend tools successfully initialized!"
 
-      - name: Execute Workcraft Verification & Generate Summary
+      - name: Run Workcraft Verification
+        id: workcraft
+        run: |
+          # Run Workcraft and print output to the console while saving a copy to check for issues
+          ./workspace_workcraft/build/dist/bin/workcraft -nogui \
+            -config:formal/tt_um_c061618g2.xml \
+            -exec:formal/tt_um_c061618g2.js | tee workcraft_run.txt
+
+      - name: Generate Detailed Summary
         if: always()
         run: |
-          # 1. Map explicit local paths to prevent environment mismatch bugs
-          LOG_FILE="\${{ github.workspace }}/workcraft_run.log"
-          WORKCRAFT_EXIT_CODE=0
-
-          echo "🚀 Initiating headless asynchronous analysis..."
+          echo "## 🇨🇭 Workcraft Asynchronous Formal Summary" >> \$GITHUB_STEP_SUMMARY
+          echo "" >> \$GITHUB_STEP_SUMMARY
     
-          # 2. Invoke the compiled Workcraft engine using its exact relative path
-          if ./workspace_workcraft/build/dist/bin/workcraft -nogui \
-            -config:formal/tt_um_c061618g2.xml \
-            -exec:formal/tt_um_c061618g2.js > "\$LOG_FILE" 2>&1; then
-              WORKCRAFT_EXIT_CODE=0
+          if [ "\${{ steps.workcraft.outcome }}" = "success" ]; then
+            echo "### ✅ Analysis Passed" >> \$GITHUB_STEP_SUMMARY
+            echo "All asynchronous structures are mathematically hazard-free and stable." >> \$GITHUB_STEP_SUMMARY
           else
-              WORKCRAFT_EXIT_CODE=\$?
-          fi
-
-          # 3. Process and output the log details straight to the Step Summary page
-          if [ -f "\$LOG_FILE" ]; then
-            # Clean out any ANSI color escape sequences from the text output
-            sed -i 's/\x1b\[[0-9;]*m//g' "\$LOG_FILE"
+            echo "### ❌ Analysis Failed" >> \$GITHUB_STEP_SUMMARY
+            echo "Asynchronous loop violations or structural hazards were detected during verification." >> \$GITHUB_STEP_SUMMARY
+            echo "" >> \$GITHUB_STEP_SUMMARY
       
-            echo "## 🇨🇭 Workcraft Asynchronous Formal Summary" >> "\$GITHUB_STEP_SUMMARY"
-            echo "" >> "\$GITHUB_STEP_SUMMARY"
-      
-            if [ "\$WORKCRAFT_EXIT_CODE" -eq 0 ]; then
-              echo "✅ **PASS: All asynchronous structures are mathematically hazard-free and stable!**" >> "\$GITHUB_STEP_SUMMARY"
-            else
-              echo "❌ **FAIL: Asynchronous loop violation or structural hazard detected!**" >> "\$GITHUB_STEP_SUMMARY"
+            # Extract only the critical failure lines from the tool output
+            if [ -f "workcraft_run.txt" ]; then
+              echo "**Detected issues:**" >> \$GITHUB_STEP_SUMMARY
+              echo '```text' >> \$GITHUB_STEP_SUMMARY
+              grep -iE "error|fail|hazard|violation|conflict" workcraft_run.txt || echo "Check workflow build logs for full stack trace." >> \$GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
             fi
-      
-            echo "" >> "\$GITHUB_STEP_SUMMARY"
-            echo "### 🔍 Analysis Execution Log Output" >> "\$GITHUB_STEP_SUMMARY"
-            echo "<details open><summary>Click to collapse console details</summary>" >> "\$GITHUB_STEP_SUMMARY"
-            echo "" >> "\$GITHUB_STEP_SUMMARY"
-            echo '```text' >> "\$GITHUB_STEP_SUMMARY"
-            cat "\(LOG_FILE" >> "\)GITHUB_STEP_SUMMARY"
-            echo '```' >> "$GITHUB_STEP_SUMMARY"
-            echo "</details>" >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo "### ⚠️ Workcraft log file not found at $LOG_FILE!" >> "$GITHUB_STEP_SUMMARY"
-          fi
-
-          if [ "$WORKCRAFT_EXIT_CODE" -ne 0 ]; then
-             exit "$WORKCRAFT_EXIT_CODE"
-          fi
-
-
-          if [ "$WORKCRAFT_EXIT_CODE" -ne 0 ]; then
-             exit $WORKCRAFT_EXIT_CODE
           fi
 
   verilator:
