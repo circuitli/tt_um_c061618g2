@@ -75,7 +75,7 @@ jobs:
     steps:
       - uses: TinyTapeout/tt-gds-action/viewer@ttihp26b
 
-  full_verilator_gls:
+  workcraft_plus_verilator:
     runs-on: ubuntu-latest
     needs: [gds]
     steps:
@@ -111,10 +111,22 @@ jobs:
       - name: Install Cocotb Framework Dependencies
         run: pip install cocotb pytest
 
-      - name: Install Workcraft & MPSAT Tools
+      - name: Setup Java Runtime (Required for Workcraft)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17' # Workcraft core engine requires Java 17+
+
+      - name: Download and Unpack Workcraft + MPSAT
         run: |
-          sudo apt-get update
-          sudo apt-get install -y workcraft mpsat
+          echo "📥 Fetching official standalone Workcraft Linux distribution..."
+          wget -q https://github.com
+          tar -xzf workcraft-v3.5.5-linux.tar.gz
+          
+          # Add the extracted binary directory directly to the active runner system PATH
+          echo "\(GITHUB_WORKSPACE/workcraft/bin" >> \)GITHUB_PATH
+          
+          echo "🚀 Workcraft suite successfully unpacked into workspace."
 
       - name: Execute Asynchronous Hazard & Deadlock Checks
         if: always()
