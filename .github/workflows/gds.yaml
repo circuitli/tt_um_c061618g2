@@ -103,8 +103,10 @@ jobs:
           cd workspace_workcraft
           git submodule update --init --remote
           
-          # FIXED: Explicitly force Gradle to use the active Java 21 path configuration
-          export JAVA_HOME=\$JAVA_HOME_21_X64
+          # Dynamically capture the exact active Java 21 path from the system binary location
+          export JAVA_HOME=$(readlink -f $(which java) | sed 's|/bin/java||')
+          echo "Using JAVA_HOME: $JAVA_HOME"
+          
           ./gradlew assemble
           
           # STRUCTURAL FIX: Create the required platform symbolic links for backend binaries
