@@ -121,8 +121,9 @@ jobs:
       - name: Run Workcraft Verification
         id: workcraft
         run: |
-          # Run the top-level distribution executable JAR directly
-          java -jar ./workspace_workcraft/build/dist/workcraft.jar -nogui \
+          # Execute the formal verification matrix using Workcraft's true runner entry path
+          java -cp "./workspace_workcraft/WorkcraftRunner/bin/main:./workspace_workcraft/WorkcraftCore/bin/main:./workspace_workcraft/plugins/*:./workspace_workcraft/libs/*" \
+            org.workcraft.Console -nogui \
             -config:./formal/tt_um_c061618g2.xml \
             -exec:./formal/tt_um_c061618g2.js
 
