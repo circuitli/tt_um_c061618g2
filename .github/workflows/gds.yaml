@@ -84,10 +84,10 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Download Post-Synthesis Netlist Artifacts
+      # Native download step: extracts the 'runs/' directory tree perfectly intact
+      - name: Download GDS Netlist Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: gds_artifacts
           path: gds_drop/
 
       - name: Setup Java Runtime Environment
@@ -180,7 +180,6 @@ jobs:
         with:
           version: '5.036'
           cache: 'pip' # Native pip cache tracking for python environments
-
 
       - name: Set up Python Runtime
         uses: actions/setup-python@v5
