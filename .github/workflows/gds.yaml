@@ -132,7 +132,7 @@ jobs:
             -config:"${{ github.workspace }}/formal/tt_um_c061618g2.xml" \
             -exec:"${{ github.workspace }}/formal/tt_um_c061618g2.js"
 
-          - name: Set Summary Header
+      - name: Set Summary Header
         if: always()
         run: |
           echo "## 🛠️ Workcraft Asynchronous Formal Summary" >> $GITHUB_STEP_SUMMARY
