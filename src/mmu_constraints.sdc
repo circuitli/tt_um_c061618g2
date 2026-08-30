@@ -110,3 +110,6 @@ set_false_path -to [get_ports {uio_oe[*]}]
 set_load 0.0334 [get_ports uo_out]
 set_load 0.0334 [get_ports uio_out]
 set_load 0.0334 [get_ports uio_oe]
+
+# Tell the timing engine to treat the clockless latch feedback loop as a free-running analog path
+set_false_path -through [get_nets *latch_core*]

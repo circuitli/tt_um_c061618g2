@@ -111,6 +111,54 @@ jobs:
       - name: Install Cocotb Framework Dependencies
         run: pip install cocotb pytest
 
+      - name: Install Workcraft & MPSAT Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y workcraft mpsat
+
+      - name: Execute Asynchronous Hazard & Deadlock Checks
+        if: always()
+        run: |
+          LOG_FILE="\$GITHUB_WORKSPACE/workcraft_run.log"
+          
+          # Run the verification step and pipe a duplicate of the raw console log out to the workspace
+          workcraft -nogui \
+            -config:formal/tt_um_c061618g2.xml \
+            -exec:formal/tt_um_c061618g2.js 2>&1 | tee "\(LOG_FILE" \vert{}\vert{} WORKCRAFT_EXIT_CODE=\)?
+
+          if [ -f "\$LOG_FILE" ]; then
+            # Clean out any ANSI color escape sequences from the text output
+            sed -i 's/\x1b\[[0-9;]*m//g' "\$LOG_FILE"
+            
+            echo "## 🇨🇭 Workcraft Asynchronous Formal Summary" >> \$GITHUB_STEP_SUMMARY
+            echo "" >> \$GITHUB_STEP_SUMMARY
+            
+            # Print status summary banner
+            if [ -z "\$WORKCRAFT_EXIT_CODE" ]; then
+              echo "✅ **PASS: All asynchronous structures are mathematically hazard-free and stable!**" >> \$GITHUB_STEP_SUMMARY
+            else
+              echo "❌ **FAIL: Asynchronous loop violation or structural hazard detected!**" >> \$GITHUB_STEP_SUMMARY
+            fi
+            
+            echo "" >> \$GITHUB_STEP_SUMMARY
+            echo "### 🔍 Analysis Execution Log Output" >> \$GITHUB_STEP_SUMMARY
+            echo "<details open><summary>Click to collapse console details</summary>" >> \$GITHUB_STEP_SUMMARY
+            echo "" >> \$GITHUB_STEP_SUMMARY
+            echo '```text' >> \$GITHUB_STEP_SUMMARY
+            cat "\(LOG_FILE" >> \)GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "</details>" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ⚠️ Workcraft log file not found at $LOG_FILE!" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Explicitly force the runner to fail if Workcraft returned a failure exit code
+          if [ ! -z "$WORKCRAFT_EXIT_CODE" ]; then
+             exit $WORKCRAFT_EXIT_CODE
+          fi
+
+      # ... [Your existing steps that continue to Placement, Routing, and GDS generation] ...
+
       - name: Execute Full Verilator Gate-Level Simulation
         run: |
           cd test

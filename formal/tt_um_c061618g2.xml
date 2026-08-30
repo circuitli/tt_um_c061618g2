@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workcraft-config>
+	<!-- =================================================================== -->
+	<!-- DYNAMIC PDK PATH INJECTION                                          -->
+	<!-- Maps the standard slow-corner timing models from your PDK root      -->
+	<!-- =================================================================== -->
+	<var name="CircuitSettings.gateLibrary" value="${PDK_ROOT}/ihp-sg13g2/libs.ref/sg13g2_stdcell/lib/sg13g2_stdcell_slow.lib"/>
+	<var name="CircuitSettings.calcDelay" value="true"/>
+
+	<!-- =================================================================== -->
+	<!-- MPSAT ASYNCHRONOUS BACKEND OVERRIDES                                -->
+	<!-- Prevents tool deadlocks when evaluating cross-coupled latch loops   -->
+	<!-- =================================================================== -->
+	<var name="MpsatVerificationSettings.solutionMode" value="MINIMUM_COST_DEADLOCK"/>
+	<var name="MpsatVerificationSettings.unfoldingLimit" value="5000"/>
+	<var name="MpsatVerificationSettings.verbosity" value="1"/>
+
+	<!-- =================================================================== -->
+	<!-- HAZARD ANALYSIS CONSTRAINTS                                        -->
+	<!-- =================================================================== -->
+	<var name="CircuitSettings.checkHazards" value="true"/>
+	<var name="CircuitSettings.activeStructureAnalysis" value="true"/>
+</workcraft-config>
