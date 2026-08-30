@@ -118,16 +118,23 @@ jobs:
           echo "\(GITHUB_WORKSPACE/workspace_workcraft/build/dist/bin" >> \)GITHUB_PATH
           echo "🚀 Workcraft compiled from source and backend tools successfully initialized!"
 
-      - name: Inject Custom Workcraft Data into TT Summary Page
+      - name: Execute Workcraft Verification & Generate Summary
         if: always()
         run: |
-          LOG_FILE="\$GITHUB_WORKSPACE/workcraft_run.log"
+          # 1. Map explicit local paths to prevent environment mismatch bugs
+          LOG_FILE="\${{ github.workspace }}/workcraft_run.log"
           WORKCRAFT_EXIT_CODE=0
 
-          # Fire headless asynchronous deadlock and hazard scanners against the post-synthesis path
-          workcraft -nogui -config:formal/workcraft_config.xml -exec:formal/verify_mmu.js 2>&1 | tee "\(LOG_FILE" \vert{}\vert{} WORKCRAFT_EXIT_CODE=\)?
+          echo "🚀 Initiating headless asynchronous analysis..."
+          
+          # 2. Invoke the compiled Workcraft engine using its exact relative path
+          ./workspace_workcraft/build/dist/bin/workcraft -nogui \
+            -config:formal/tt_um_c061618g2.xml \
+            -exec:formal/tt_um_c061618g2.js > "\(LOG_FILE" 2>&1 \vert{}\vert{} WORKCRAFT_EXIT_CODE=\)?
 
+          # 3. Process and output the log details straight to the Step Summary page
           if [ -f "\$LOG_FILE" ]; then
+            # Clean out any ANSI color escape sequences from the text output
             sed -i 's/\x1b\[[0-9;]*m//g' "\$LOG_FILE"
             
             echo "## 🇨🇭 Workcraft Asynchronous Formal Summary" >> \$GITHUB_STEP_SUMMARY
@@ -154,6 +161,7 @@ jobs:
           if [ "$WORKCRAFT_EXIT_CODE" -ne 0 ]; then
              exit $WORKCRAFT_EXIT_CODE
           fi
+
 
   verilator:
     runs-on: ubuntu-latest
