@@ -91,11 +91,10 @@ jobs:
           path: gds_drop/
 
       - name: Setup Java Runtime Environment
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
-          cache: 'gradle' # Automatically tracks and speeds up gradle download passes
 
       - name: Compile Workcraft From Source
         run: |
