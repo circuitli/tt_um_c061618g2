@@ -116,20 +116,19 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17' # Workcraft core engine requires Java 17+
-
-      - name: Download and Unpack Workcraft + MPSAT
         run: |
-          echo "📥 Fetching official standalone Workcraft Linux distribution..."
-          # Fix: Pointing directly to the mirrored archive source link
-          wget -q -O workcraft-linux.tar.gz https://workcraft.org
+          echo "📥 Fetching official standalone Workcraft Linux archive from direct GitHub Mirror..."
           
-          # Unpack the verified package file cleanly into your workspace environment
+          # Use the authoritative direct release distribution asset URL on GitHub
+          wget -q -O workcraft-linux.tar.gz https://github.com
+          
+          # Unpack the real gzip archive structure cleanly into your current workspace root
           tar -xzf workcraft-linux.tar.gz
           
-          # Add the extracted binary directory directly to the active runner system PATH
+          # Add the extracted binary path directly to the global runner system PATH context
           echo "$GITHUB_WORKSPACE/workcraft/bin" >> $GITHUB_PATH
           
-          echo "🚀 Workcraft suite successfully unpacked into workspace."
+          echo "🚀 Workcraft suite and MPSAT backends successfully unpacked into system path!"
 
       - name: Execute Asynchronous Hazard & Deadlock Checks
         if: always()
