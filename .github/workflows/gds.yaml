@@ -135,8 +135,8 @@ jobs:
           sed -i 's/\r$//' "$LAUNCHER_PATH"
           chmod +x "$LAUNCHER_PATH"
 
-          # 3. Inject the real distribution JAR libraries into the script's classpath variable
-          export WORKCRAFT_CLASSPATH="/home/runner/work/tt_um_c061618g2/tt_um_c061618g2/workspace_workcraft/dist/lib/*"
+          # 2. Map the true source classpath targets built by Gradle
+          export WORKCRAFT_CLASSPATH="${{ github.workspace }}/workspace_workcraft/WorkcraftRunner/build/classes/java/main:${{ github.workspace }}/workspace_workcraft/WorkcraftCore/build/classes/java/main:${{ github.workspace }}/workspace_workcraft/build/libs/*"
 
           # 3. Execute the detected tool cleanly
           "$LAUNCHER_PATH" -nogui \
