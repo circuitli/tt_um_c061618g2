@@ -101,21 +101,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-        
-          echo "🔨 Cloning Workcraft..."
-          git clone --depth 1 https://github.com/workcraft/workcraft.git workspace_workcraft
+          git clone --depth 1 https://github.com workspace_workcraft
           cd workspace_workcraft
-        
-          echo "📦 Initialising Workcraft submodules..."
           git submodule update --init --recursive
-        
-          echo "🔨 Building Workcraft..."
           ./gradlew assemble
-        
-          # Workcraft source build expects backend tools in ./tools
-          # Linux backend tools are provided by the dist-template submodule
           ln -s dist/template/linux/tools tools
-          echo "✅ Workcraft build complete."
 
       - name: Run Workcraft Verification
         id: workcraft
@@ -123,11 +113,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-        
-          echo "🔎 Running Workcraft verification..."
           ./gradlew run --args="-nogui -config:${{ github.workspace }}/formal/tt_um_c061618g2.xml -exec:${{ github.workspace }}/formal/tt_um_c061618g2.js"
-        
-          echo "✅ Workcraft verification completed."
 
       - name: Set Summary Header
         if: always()
