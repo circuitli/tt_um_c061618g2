@@ -118,7 +118,6 @@ jobs:
         working-directory: ${{ github.workspace }}/workspace_workcraft
         shell: bash
         run: |
-          set -euo pipefail
           echo "🔎 Running Workcraft verification..."
           #./gradlew run --args="-nogui -config:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml -exec:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
 
@@ -130,6 +129,8 @@ jobs:
             LAUNCHER_PATH="./dist/template/linux/workcraft"
           fi
     
+          set -euo pipefail
+
           echo "🚀 Using launcher path: $LAUNCHER_PATH"
     
           $LAUNCHER_PATH \
