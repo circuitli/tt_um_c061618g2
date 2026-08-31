@@ -101,11 +101,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git clone --depth 1 https://github.com workspace_workcraft
+          echo "🔨 Cloning Workcraft..."
+          git clone --depth 1 https://github.com/workcraft/workcraft.git workspace_workcraft
           cd workspace_workcraft
-          git submodule update --init --recursive
+          echo "📦 Initialising Workcraft submodules..."
+          git submodule update --init --remote
+          export JAVA_HOME=$(dirname $(dirname $(readlink -f $(command -v java))))
+          echo "Using JAVA_HOME: ${JAVA_HOME}"
+          echo "🔨 Building Workcraft..."
           ./gradlew assemble
           ln -s dist/template/linux/tools tools
+          echo "✅ Workcraft build complete."
 
       - name: Run Workcraft Verification
         id: workcraft
@@ -113,7 +119,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          ./gradlew run --args="-nogui -config:${{ github.workspace }}/formal/tt_um_c061618g2.xml -exec:${{ github.workspace }}/formal/tt_um_c061618g2.js"
+          echo "🔎 Running Workcraft verification..."
+          ./gradlew run --args="-nogui -config=$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml -exec=$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
+          echo "✅ Workcraft verification completed."
 
       - name: Set Summary Header
         if: always()
