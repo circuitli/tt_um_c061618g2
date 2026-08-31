@@ -97,40 +97,54 @@ jobs:
           java-version: '21'
 
       - name: Compile Workcraft From Source
+        working-directory: ${{ github.workspace }}
         run: |
+          set -e
+
           echo "🔨 Cloning and assembling the Workcraft verification framework..."
+
           git clone --depth 1 https://github.com/workcraft/workcraft.git workspace_workcraft
           cd workspace_workcraft
-          git submodule update --init --remote
-          
-          # Dynamically capture the exact active Java 21 path from the system binary location
-          export JAVA_HOME=$(readlink -f $(which java) | sed 's|/bin/java||')
+
+          git submodule update --init --recursive
+
+          # Resolve the active Java installation.
+          export JAVA_HOME="$(dirname "$(dirname "$(readlink -f "$(command -v java)")")")"
           echo "Using JAVA_HOME: $JAVA_HOME"
-          
+
           ./gradlew assemble
-          
-          # STRUCTURAL FIX: Create the required platform symbolic links for backend binaries
+
+          # Workcraft expects the backend tools under dist/template/linux/tools.
+          # Expose them from the repository-level tools directory.
           mkdir -p tools
-          ln -s ../dist/template/linux/tools/mpsat tools/mpsat
-          ln -s ../dist/template/linux/tools/petrify tools/petrify
-          
-          # Add the compiled build path and binary hooks directly to the global runner system PATH
-          echo "\(GITHUB_WORKSPACE/workspace_workcraft/build/dist/bin" >> \)GITHUB_PATH
-          echo "🚀 Workcraft compiled from source and backend tools successfully initialized!"
+
+          ln -sfn ../dist/template/linux/tools/mpsat tools/mpsat
+          ln -sfn ../dist/template/linux/tools/petrify tools/petrify
+
+          # Make Workcraft binaries available to subsequent GitHub Actions steps.
+          echo "${GITHUB_WORKSPACE}/workspace_workcraft/dist/bin" >> "$GITHUB_PATH"
+
+          echo "🚀 Workcraft compiled successfully."
 
       - name: Run Workcraft Verification
         id: workcraft
-        working-directory: workspace_workcraft
+        working-directory: ${{ github.workspace }}/workspace_workcraft
         run: |
-          # 1. Establish the official repository root tools symbolic link
+          set -e
+
+          echo "🔎 Running Workcraft verification..."
+
+          # Ensure the expected backend-tools path exists.
           ln -sfn dist/template/linux/tools tools
 
-          # 2. Execute Workcraft natively using the formal Gradle run task
-          #./gradlew run -Dexec="-nogui -dir:$GITHUB_WORKSPACE/formal -config:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml -exec:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
-          java -cp "workspace_workcraft/dist/lib/*" \
-            org.workcraft.Console -nogui \
-            -config:"${{ github.workspace }}/formal/tt_um_c061618g2.xml" \
-            -exec:"${{ github.workspace }}/formal/tt_um_c061618g2.js"
+          # Run Workcraft directly from the assembled distribution.
+          java -cp "dist/lib/*" \
+            org.workcraft.Console \
+            -nogui \
+            -config:"${GITHUB_WORKSPACE}/formal/tt_um_c061618g2.xml" \
+            -exec:"${GITHUB_WORKSPACE}/formal/tt_um_c061618g2.js"
+
+          echo "✅ Workcraft verification completed."
 
       - name: Set Summary Header
         if: always()
