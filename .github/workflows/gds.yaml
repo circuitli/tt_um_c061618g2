@@ -109,7 +109,7 @@ jobs:
           export JAVA_HOME=$(dirname $(dirname $(readlink -f $(command -v java))))
           echo "Using JAVA_HOME: ${JAVA_HOME}"
           echo "🔨 Building Workcraft..."
-          ./gradlew assemble
+          ./gradlew assemble copyDist
           ln -s dist/template/linux/tools tools
           echo "✅ Workcraft build complete."
 
