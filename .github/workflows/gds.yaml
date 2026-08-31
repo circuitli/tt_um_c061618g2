@@ -98,53 +98,39 @@ jobs:
 
       - name: Compile Workcraft From Source
         working-directory: ${{ github.workspace }}
+        shell: bash
         run: |
-          set -e
+          set -euo pipefail
 
-          echo "🔨 Cloning and assembling the Workcraft verification framework..."
+          echo "🔨 Cloning Workcraft..."
 
           git clone --depth 1 https://github.com/workcraft/workcraft.git workspace_workcraft
+
           cd workspace_workcraft
 
-          git submodule update --init --recursive
+          git submodule update --init --remote
 
-          # Resolve the active Java installation.
           export JAVA_HOME="$(dirname "$(dirname "$(readlink -f "$(command -v java)")")")"
           echo "Using JAVA_HOME: $JAVA_HOME"
 
           ./gradlew assemble
 
-          # Workcraft expects the backend tools under dist/template/linux/tools.
-          # Expose them from the repository-level tools directory.
-          mkdir -p tools
+          # Workcraft's documented source-build setup:
+          # expose the Linux backend tools from the dist-template submodule.
+          ln -s dist/template/linux/tools tools
 
-          ln -sfn ../dist/template/linux/tools/mpsat tools/mpsat
-          ln -sfn ../dist/template/linux/tools/petrify tools/petrify
+          echo "🚀 Workcraft compiled and backend tools configured."
 
-          # Make Workcraft binaries available to subsequent GitHub Actions steps.
-          echo "${GITHUB_WORKSPACE}/workspace_workcraft/dist/bin" >> "$GITHUB_PATH"
-
-          echo "🚀 Workcraft compiled successfully."
 
       - name: Run Workcraft Verification
         id: workcraft
         working-directory: ${{ github.workspace }}/workspace_workcraft
+        shell: bash
         run: |
-          set -e
+          set -euo pipefail
 
-          echo "🔎 Running Workcraft verification..."
-
-          # Ensure the expected backend-tools path exists.
-          ln -sfn dist/template/linux/tools tools
-
-          # Run Workcraft directly from the assembled distribution.
-          java -cp "dist/lib/*" \
-            org.workcraft.Console \
-            -nogui \
-            -config:"${GITHUB_WORKSPACE}/formal/tt_um_c061618g2.xml" \
-            -exec:"${GITHUB_WORKSPACE}/formal/tt_um_c061618g2.js"
-
-          echo "✅ Workcraft verification completed."
+          ./gradlew run \
+            -Dexec="-nogui -config:${GITHUB_WORKSPACE}/formal/tt_um_c061618g2.xml -exec:${GITHUB_WORKSPACE}/formal/tt_um_c061618g2.js"
 
       - name: Set Summary Header
         if: always()
