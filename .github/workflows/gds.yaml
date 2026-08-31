@@ -104,23 +104,27 @@ jobs:
 
           echo "🔨 Cloning Workcraft..."
 
-          git clone --depth 1 https://github.com/workcraft/workcraft.git workspace_workcraft
+          git clone --depth 1 \
+            https://github.com/workcraft/workcraft.git \
+            workspace_workcraft
 
           cd workspace_workcraft
 
+          echo "📦 Initialising Workcraft submodules..."
           git submodule update --init --remote
 
+          # Workcraft requires JDK 17+.
           export JAVA_HOME="$(dirname "$(dirname "$(readlink -f "$(command -v java)")")")"
-          echo "Using JAVA_HOME: $JAVA_HOME"
+          echo "Using JAVA_HOME: ${JAVA_HOME}"
 
+          echo "🔨 Building Workcraft..."
           ./gradlew assemble
 
-          # Workcraft's documented source-build setup:
-          # expose the Linux backend tools from the dist-template submodule.
+          # Workcraft's source build expects backend tools in ./tools.
+          # The Linux backend tools are provided by the dist-template submodule.
           ln -s dist/template/linux/tools tools
 
-          echo "🚀 Workcraft compiled and backend tools configured."
-
+          echo "✅ Workcraft build complete."
 
       - name: Run Workcraft Verification
         id: workcraft
@@ -129,8 +133,12 @@ jobs:
         run: |
           set -euo pipefail
 
+          echo "🔎 Running Workcraft verification..."
+
           ./gradlew run \
-            -Dexec="-nogui -config:${GITHUB_WORKSPACE}/formal/tt_um_c061618g2.xml -exec:${GITHUB_WORKSPACE}/formal/tt_um_c061618g2.js"
+            --args="-nogui -config:${GITHUB_WORKSPACE}/formal/tt_um_c061618g2.xml -exec:${GITHUB_WORKSPACE}/formal/tt_um_c061618g2.js"
+
+          echo "✅ Workcraft verification completed."
 
       - name: Set Summary Header
         if: always()
