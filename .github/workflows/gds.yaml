@@ -118,25 +118,33 @@ jobs:
         working-directory: ${{ github.workspace }}/workspace_workcraft
         shell: bash
         run: |
-          echo "🔎 Running Workcraft verification..."
-          #./gradlew run --args="-nogui -config:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml -exec:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
-
+          set -euo pipefail
           echo "🔎 Hunting for the actual launcher file..."
-          LAUNCHER_PATH=$(find . -type f -name "workcraft" -perm /a+x | grep -v "dist/template" | head -n 1)
+    
+          LAUNCHER_PATH=""
+    
+          # Read find results directly into a loop to prevent pipeline crashes
+          while IFS= read -r file; do
+            # Skip the dist/template directory explicitly
+            if [[ "$file" != *"dist/template"* ]]; then
+              LAUNCHER_PATH="$file"
+              break
+            fi
+          done < <(find . -maxdepth 4 -type f -name "workcraft" -perm /a+x 2>/dev/null)
     
           if [ -z "$LAUNCHER_PATH" ]; then
-            echo "❌ No generated standalone script found. Falling back to the core template wrapper."
+            echo "⚠️ No generated standalone script found. Falling back to the core template wrapper."
             LAUNCHER_PATH="./dist/template/linux/workcraft"
           fi
     
-          set -euo pipefail
-
           echo "🚀 Using launcher path: $LAUNCHER_PATH"
+          chmod +x "$LAUNCHER_PATH"
     
-          $LAUNCHER_PATH \
+          "$LAUNCHER_PATH" \
             -nogui \
             -config:"$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml" \
             -exec:"$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
+    
           echo "✅ Workcraft verification completed."
 
       - name: Set Summary Header
