@@ -121,7 +121,18 @@ jobs:
           set -euo pipefail
           echo "🔎 Running Workcraft verification..."
           #./gradlew run --args="-nogui -config:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml -exec:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
-          ./WorkcraftRunner/build/install/workcraft/bin/workcraft \
+
+          echo "🔎 Hunting for the actual launcher file..."
+          LAUNCHER_PATH=$(find . -type f -name "workcraft" -perm /a+x | grep -v "dist/template" | head -n 1)
+    
+          if [ -z "$LAUNCHER_PATH" ]; then
+            echo "❌ No generated standalone script found. Falling back to the core template wrapper."
+            LAUNCHER_PATH="./dist/template/linux/workcraft"
+          fi
+    
+          echo "🚀 Using launcher path: $LAUNCHER_PATH"
+    
+          $LAUNCHER_PATH \
             -nogui \
             -config:"$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml" \
             -exec:"$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
