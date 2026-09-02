@@ -115,7 +115,7 @@ jobs:
 
       - name: Run Workcraft Verification
         id: workcraft
-        working-directory: ${{ github.workspace }}/workspace_workcraft
+        working-directory: ${{ github.workspace }}
         shell: bash
         run: |
           set -euo pipefail
@@ -140,10 +140,7 @@ jobs:
           echo "🚀 Using launcher path: $LAUNCHER_PATH"
           chmod +x "$LAUNCHER_PATH"
     
-          "$LAUNCHER_PATH" \
-            -nogui \
-            -config:"$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml" \
-            -exec:"$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
+          ./gradlew run --args="-nogui -config:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml -exec:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
     
           echo "✅ Workcraft verification completed."
 
