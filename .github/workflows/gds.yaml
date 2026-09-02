@@ -194,6 +194,8 @@ jobs:
           #cat "$LIB_FILE" "$NETLIST_FILE" > "$COMBINED_FILE"
           cat "$NETLIST_FILE" > "$COMBINED_FILE"
 
+          echo "🧼 Scrubbing illegal backslash identifier tokens for Workcraft compatibility..."
+          sed -i 's/\\//g' "$COMBINED_FILE"
 
           echo "🔎 Hunting for the actual launcher file..."
     
