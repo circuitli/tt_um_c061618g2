@@ -235,7 +235,13 @@ jobs:
           echo "🚀 Using launcher path: $LAUNCHER_PATH"
           chmod +x "$LAUNCHER_PATH"
     
-          ./gradlew run --args="-nogui -config:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml -clicmd:\"importCircuitVerilog $COMBINED_FILE; checkDeadlock; checkHazards; exit\""
+          echo "🚀 Executing native Workcraft headless validation..."
+          cd dist/template/linux/workcraft
+          chmod +x workcraft
+    
+          ./workcraft -nogui \
+            -config:"$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml" \
+            -exec:"$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
 
           # =========================================================================
           # Dynamically locate the main application jar and ALL plugin jar files
