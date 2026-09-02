@@ -145,8 +145,8 @@ jobs:
           # It looks for a folder named 'plugins' at the root of the workspace.
           # We must link or copy the compiled plugins directly into this folder.
           # =========================================================================
-          #mkdir -p plugins
-          #find framework/plugins -name "*.jar" -exec cp {} plugins/ \;
+          mkdir -p plugins
+          find . -name "org.workcraft.plugins.*.jar" -exec cp {} plugins/ \;
 
           ln -s dist/template/linux/tools tools
           echo "✅ Workcraft build complete."
@@ -236,7 +236,6 @@ jobs:
           chmod +x "$LAUNCHER_PATH"
     
           ./gradlew run \
-                -PjvmArgs="-Dorg.workcraft.plugins=dist/template/common/plugins" \
                 --args="-nogui -config:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml -exec:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
 
           # =========================================================================
