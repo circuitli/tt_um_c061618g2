@@ -18,6 +18,9 @@
   "//_comment_speed": "HARDENED TIMING: Hardcode period to 11.64ns to natively support 24x master crystal multiplier (85.91 MHz)",
   "CLOCK_PERIOD": 0,
 
+  "//": "W_VERILOG_OPTIONS - Passing -noattr strips backslashes, while -nodec forces Yosys to expand vector array ports into independent, flat wire nodes. This stops Workcraft from crashing without altering your hierarchical module structures",
+  "W_VERILOG_OPTIONS": "-noattr -nodec",
+
   "//": "SYNTH_STRATEGY - Restores the stable balanced logic restructuring formula to keep sequential steering paths clean and routable at high speeds.",
   "SYNTH_STRATEGY": "DELAY 1",
 
@@ -28,7 +31,13 @@
   "SYNTH_HIER_PASS": true,
 
   "//": "SYNTH_FLATTEN - Disable global flattening to preserve submodule boundaries for physical macro bounding and hierarchical power grid connection",
-  "SYNTH_FLATTEN": false,
+  "_SYNTH_FLATTEN": true,
+
+  "//": "SYNTH_HIERARCHY_MODE - Flattening unrolls vector arrays and module contexts into standalone primitives, removing illegal indexing brackets from the post-synthesis netlist ports for Workcraft compatibility",
+  "SYNTH_HIERARCHY_MODE": "keep",
+
+  "//": "SYNTH_WRITE_NOATTR - Stripping compiler attributes removes internal Yosys properties, which cleans up backslash-escaped structural node names that crash the Workcraft token engine",
+  "_SYNTH_WRITE_NOATTR": false,
 
   "//": "SYNTH_SHARE_RESOURCES - Dictates whether Yosys forces resource sharing by actively identifying matching algebraic sub-expressions (like duplicated multiplexers or address decoders) and merging them into unified gate networks. For purely combinational macros, leaving this enabled or disabled changes area footprint without breaking function.",
   "SYNTH_SHARE_RESOURCES": 1,
@@ -71,6 +80,9 @@
   "_SYNTH_PARAMETERS": [
     "KEEP_HIERARCHY=1"
   ],
+
+  "//": "EXTRA_SYNTH_ARGS - Appends the splitnets command to force Yosys to isolate multi-bit array vectors into safe individual scalar strings (e.g. wire_0) specifically to satisfy the Workcraft engine without destroying hierarchy barriers",
+  "EXTRA_SYNTH_ARGS": "-run co:; splitnets -ports; -run co:",
 
   "//": "RUN_SYNTH_CHECKS - Controls the strict automated post-synthesis verification script checker. Disabling this to 0 prevents the Tiny Tapeout build harness from misinterpreting ABC combinational logic messages as fatal errors.",
   "RUN_SYNTH_CHECKS": 0,
