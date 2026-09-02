@@ -197,9 +197,14 @@ jobs:
           echo "🧼 Scrubbing illegal backslash identifier tokens for Workcraft compatibility..."
           sed -i 's/\\//g' "$COMBINED_FILE"
 
-          # 5. FIX: Replace forward slashes (/) with safe underscores (_) for <PETRIFY_NAME> token compatibility
+          # 5. Replace forward slashes (/) with safe underscores (_) for <PETRIFY_NAME> token compatibility
           echo "🧼 Substituting hierarchical forward slashes with safe underscores..."
           sed -i 's/\//_/g' "$COMBINED_FILE"
+
+          # 6. Universally flatten all remaining array indexing brackets across the whole file
+          echo "🧬 Universally scrubbing array brackets into safe underscores..."
+          sed -i 's/\[/_/g' "$COMBINED_FILE"
+          sed -i 's/\]//g' "$COMBINED_FILE"
 
           echo "🔎 Hunting for the actual launcher file..."
     
