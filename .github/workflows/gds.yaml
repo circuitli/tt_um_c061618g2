@@ -168,7 +168,7 @@ jobs:
 
           echo "📦 Merging IHP SG13G2 technology library with gate netlist..."
           # Paths to the files
-          LIB_FILE=" ./sg13g2_stdcell_clean.v"
+          LIB_FILE="./sg13g2_stdcell_clean.v"
           # 2. Use $GITHUB_WORKSPACE to target your repository's test directory exactly
           # 2. Use find to grab the netlist from your already downloaded gds_drop folder
           echo "🔎 Locating the netlist file inside downloaded artifacts..."
