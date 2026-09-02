@@ -236,7 +236,7 @@ jobs:
           chmod +x "$LAUNCHER_PATH"
     
           echo "🚀 Executing native Workcraft headless validation..."
-          cd dist/template/linux/workcraft
+          cd dist/template/linux
           chmod +x workcraft
     
           ./workcraft -nogui \
