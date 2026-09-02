@@ -201,10 +201,10 @@ jobs:
           echo "🧼 Substituting hierarchical forward slashes with safe underscores..."
           sed -i 's/\//_/g' "$COMBINED_FILE"
 
-          # 6. Universally flatten all remaining array indexing brackets across the whole file
-          echo "🧬 Universally scrubbing array brackets into safe underscores..."
-          sed -i 's/\[/_/g' "$COMBINED_FILE"
-          sed -i 's/\]//g' "$COMBINED_FILE"
+          # 6. Target ONLY array bit-select indexes attached to signal words (e.g., bus[0] -> bus_0_)
+          # This completely preserves structural declarations like [7:0] untouched!
+          echo "🧬 Safely renaming scalar bit-selects..."
+          sed -i -E 's/([a-zA-Z0-9_]+)\[([0-9]+)\]/\1_\2_/g' "$COMBINED_FILE"
 
           echo "🔎 Hunting for the actual launcher file..."
     
