@@ -115,7 +115,7 @@ jobs:
 
       - name: Run Workcraft Verification
         id: workcraft
-        working-directory: ${{ github.workspace }}
+        working-directory: ${{ github.workspace }}/workspace_workcraft
         shell: bash
         run: |
           set -euo pipefail
