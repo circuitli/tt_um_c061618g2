@@ -152,15 +152,21 @@ jobs:
         run: |
           # 1. Copy the un-scrubbed host PDK asset to the current repository directory root
           cp /home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v ./sg13g2_stdcell_clean.v
-          
+     
           # 2. Strip structural specify timing blocks that contain the ifnone errors
           sed -i '/specify/,/endspecify/d' ./sg13g2_stdcell_clean.v
-          
+     
           # 3. Strip sequential user-defined primitive tables that break token parsing
           sed -i '/primitive/,/endprimitive/d' ./sg13g2_stdcell_clean.v
 
-          #4. Strip out 'reg' declarations which break the structural gate-level parser
+          # 4. Strip out 'reg' declarations which break the structural gate-level parser
           sed -i '/^[[:space:]]*reg[[:space:]]/d' ./sg13g2_stdcell_clean.v
+
+          # 5. FIX: Wipe out all simulation initial blocks, delays, and assign statements 
+          sed -i '/^[[:space:]]*initial\>/,/^[[:space:]]*end\>/d' ./sg13g2_stdcell_clean.v
+          sed -i '/^[[:space:]]*initial[[:space:]]/d' ./sg13g2_stdcell_clean.v
+          sed -i '/^[[:space:]]*assign[[:space:]]/d' ./sg13g2_stdcell_clean.v
+          sed -i 's/#[0-9]\+//g' ./sg13g2_stdcell_clean.v
 
       - name: Run Workcraft Verification
         id: workcraft
