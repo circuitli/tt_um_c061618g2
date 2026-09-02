@@ -16,7 +16,7 @@ print("Scanning top-level and submodules for asynchronous deadlocks...");
 var deadlockClean = checkCircuitDeadlockFreeness(circuitModel);
 
 print("Scanning full combinational matrix for hazard propagation...");
-var hazardsClean = checkCircuitHazards(circuitModel);
+var hazardsClean = checkCircuitCycles(circuitModel);
 
 if (!deadlockClean || !hazardsClean) {
     print("FAIL: Clockless boundary or submodule loop hazard detected.");
