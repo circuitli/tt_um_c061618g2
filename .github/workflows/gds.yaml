@@ -191,7 +191,9 @@ jobs:
           COMBINED_FILE="$GITHUB_WORKSPACE/test/combined_netlist.v"
 
           # Concatenate the files so Workcraft has the gate definitions inline
-          cat "$LIB_FILE" "$NETLIST_FILE" > "$COMBINED_FILE"
+          #cat "$LIB_FILE" "$NETLIST_FILE" > "$COMBINED_FILE"
+          cat "$NETLIST_FILE" > "$COMBINED_FILE"
+
 
           echo "🔎 Hunting for the actual launcher file..."
     
