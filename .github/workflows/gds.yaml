@@ -119,6 +119,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+
+          echo "📦 Merging IHP SG13G2 technology library with gate netlist..."
+          # Paths to the files
+          LIB_FILE="/home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v"
+          NETLIST_FILE="/home/runner/work/tt_um_c061618g2/tt_um_c061618g2/test/gate_level_netlist.v"
+          COMBINED_FILE="${{ github.workspace }}/test/combined_netlist.v"
+
+          # Concatenate the files so Workcraft has the gate definitions inline
+          cat "$LIB_FILE" "$NETLIST_FILE" > "$COMBINED_FILE"
+
           echo "🔎 Hunting for the actual launcher file..."
     
           LAUNCHER_PATH=""
