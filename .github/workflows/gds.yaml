@@ -227,7 +227,27 @@ jobs:
           echo "🚀 Using launcher path: $LAUNCHER_PATH"
           chmod +x "$LAUNCHER_PATH"
     
-          ./gradlew run --args="-nogui -config:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml -exec:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
+          #./gradlew run \
+          #          -PjvmArgs="-Dorg.workcraft.plugins=framework/plugins" \
+          #          --args="-nogui -config:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml -exec:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
+
+          # =========================================================================
+          # Dynamically locate the main application jar and ALL plugin jar files
+          # built by copyLibs, then stitch them together with a ':' delimiter.
+          # =========================================================================
+          echo "🏗️ Constructing complete Java Classpath from build output..."
+          CLASSPATH=$(find . -name "*.jar" | tr '\n' ':')
+    
+          if [ -z "$CLASSPATH" ]; then
+            echo "❌ ERROR: No compiled Workcraft JAR files found. Verify that the compilation step completed successfully."
+            exit 1
+          fi
+
+          echo "🚀 Launching Workcraft headless entry point directly via Java..."
+          java -cp "$CLASSPATH" org.workcraft.Console \
+            -nogui \
+            -config:"$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml" \
+            -exec:"$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
     
           echo "✅ Workcraft verification completed."
 
