@@ -77,7 +77,7 @@ jobs:
 
   workcraft:
     runs-on: ubuntu-24.04
-    needs: [gds]
+    needs: gl_test
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v6
