@@ -11,12 +11,21 @@ if (circuitModel == null) {
     exit();
 }
 
+// FIX: Grab the underlying Verification Tools JavaScript plugin wrapper
+var circuitTools = framework.getPluginManager().getCommand("org.workcraft.plugins.circuit.commands.CheckDeadlockCommand");
+
+if (circuitTools == null) {
+    print("ERROR: Digital Circuit tool suite is not loaded in this environment.");
+    exit();
+}
+
 // Target the full chip loop and hazard properties
 print("Scanning top-level and submodules for asynchronous deadlocks...");
-var deadlockClean = circuit.checkDeadlock(circuitModel);
+// Execute verification natively through the framework context
+var deadlockClean = framework.executeCommand(circuitModel, "org.workcraft.plugins.circuit.commands.CheckDeadlockCommand");
 
 print("Scanning full combinational matrix for hazard propagation...");
-var hazardsClean = circuit.checkHazards(circuitModel);
+var hazardsClean = framework.executeCommand(circuitModel, "org.workcraft.plugins.circuit.commands.CheckHazardsCommand");
 
 if (!deadlockClean || !hazardsClean) {
     print("FAIL: Clockless boundary or submodule loop hazard detected.");
