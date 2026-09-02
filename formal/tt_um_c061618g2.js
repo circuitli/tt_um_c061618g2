@@ -18,10 +18,17 @@ var deadlockClean = checkCircuitDeadlockFreeness(circuitModel);
 print("Scanning full combinational matrix for hazard propagation...");
 var hazardsClean = checkCircuitCycles(circuitModel);
 
-if (!deadlockClean || !hazardsClean) {
-    print("FAIL: Clockless boundary or submodule loop hazard detected.");
-    exit();
+if (deadlockClean === false || hazardsClean === false) {
+    print("❌ FAIL: Asynchronous verification violations detected!");
+
+    if (deadlockClean === false) print("⚠️  - Deadlock/freeze state identified.");
+    if (hazardsClean === false) print("⚠️  - Unbroken combinational loop hazard identified.");
+    print("----------------------------------------------------------------------");
+
+    // Explicitly fail the GitHub Actions runner
+    java.lang.System.exit(1);
 } else {
-    print("PASS: All top-level paths and async submodules are fully verified!");
-    exit();
+    print("✅ PASS: All top-level paths and async submodules are fully verified!");
+    print("----------------------------------------------------------------------");
+    java.lang.System.exit(0);
 }
