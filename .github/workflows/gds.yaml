@@ -159,7 +159,7 @@ jobs:
           # 3. Strip sequential user-defined primitive tables that break token parsing
           sed -i '/primitive/,/endprimitive/d' ./sg13g2_stdcell_clean.v
 
-          4. Strip out 'reg' declarations which break the structural gate-level parser
+          #4. Strip out 'reg' declarations which break the structural gate-level parser
           sed -i '/^[[:space:]]*reg[[:space:]]/d' ./sg13g2_stdcell_clean.v
 
       - name: Run Workcraft Verification
