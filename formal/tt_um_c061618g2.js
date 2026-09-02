@@ -11,12 +11,17 @@ if (circuitModel == null) {
     exit();
 }
 
-// Target the full chip loop and hazard properties using global executeCommand
 print("Scanning top-level and submodules for asynchronous deadlocks...");
-var deadlockClean = executeCommand(circuitModel, "org.workcraft.plugins.circuit.commands.CheckDeadlockCommand");
+// Force Java class loading to locate the Deadlock verification command directly
+var deadlockClass = java.lang.Class.forName("org.workcraft.plugins.circuit.commands.CheckDeadlockCommand");
+var deadlockCommand = deadlockClass.newInstance();
+var deadlockClean = deadlockCommand.execute(circuitModel);
 
 print("Scanning full combinational matrix for hazard propagation...");
-var hazardsClean = executeCommand(circuitModel, "org.workcraft.plugins.circuit.commands.CheckHazardsCommand");
+// Force Java class loading to locate the Hazard verification command directly
+var hazardsClass = java.lang.Class.forName("org.workcraft.plugins.circuit.commands.CheckHazardsCommand");
+var hazardsCommand = hazardsClass.newInstance();
+var hazardsClean = hazardsCommand.execute(circuitModel);
 
 if (!deadlockClean || !hazardsClean) {
     print("FAIL: Clockless boundary or submodule loop hazard detected.");
