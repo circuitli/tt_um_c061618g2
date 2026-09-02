@@ -142,6 +142,23 @@ jobs:
           ln -s dist/template/linux/tools tools
           echo "✅ Workcraft build complete."
 
+      # =========================================================================
+      # THE COMPLIANT PDK CLEANING STEP
+      # This runs safely inside the local runner directory context without breaking
+      # global paths, making the library 100% parseable by Yosys.
+      # =========================================================================
+      - name: Extract and Clean IHP SG13G2 Standard Cell Library
+        working-directory: ${{ github.workspace }}/workspace_workcraft
+        run: |
+          # 1. Copy the un-scrubbed host PDK asset to the current repository directory root
+          cp /home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v ./sg13g2_stdcell_clean.v
+          
+          # 2. Strip structural specify timing blocks that contain the ifnone errors
+          sed -i '/specify/,/endspecify/d' ./sg13g2_stdcell_clean.v
+          
+          # 3. Strip sequential user-defined primitive tables that break token parsing
+          sed -i '/primitive/,/endprimitive/d' ./sg13g2_stdcell_clean.v
+
       - name: Run Workcraft Verification
         id: workcraft
         working-directory: ${{ github.workspace }}/workspace_workcraft
@@ -151,7 +168,7 @@ jobs:
 
           echo "📦 Merging IHP SG13G2 technology library with gate netlist..."
           # Paths to the files
-          LIB_FILE="$PDK_ROOT/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v"
+          LIB_FILE=" ./sg13g2_stdcell_clean.v"
           # 2. Use $GITHUB_WORKSPACE to target your repository's test directory exactly
           # 2. Use find to grab the netlist from your already downloaded gds_drop folder
           echo "🔎 Locating the netlist file inside downloaded artifacts..."
