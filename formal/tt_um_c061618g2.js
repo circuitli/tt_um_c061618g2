@@ -13,7 +13,7 @@ if (circuitModel == null) {
 
 // FIX: Shorthand validation routines are bound as standalone global functions
 print("Scanning top-level and submodules for asynchronous deadlocks...");
-var deadlockClean = checkCircuitDeadlock(circuitModel);
+var deadlockClean = checkCircuitDeadlockFreeness(circuitModel);
 
 print("Scanning full combinational matrix for hazard propagation...");
 var hazardsClean = checkCircuitHazards(circuitModel);
