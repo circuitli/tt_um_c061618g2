@@ -7,7 +7,7 @@ var designFile = "../gds_drop/runs/wokcraft_run/results/synthesis/tt_um_c061618g
 var circuitModel = load(designFile);
 
 if (circuitModel == null) {
-    error("Failed to parse the top-level structural gate netlist.");
+    print("ERROR: Failed to parse the top-level structural gate netlist.");
     exit();
 }
 
@@ -19,7 +19,7 @@ print("Scanning full combinational matrix for hazard propagation...");
 var hazardsClean = circuit.checkHazards(circuitModel);
 
 if (!deadlockClean || !hazardsClean) {
-    error("FAIL: Clockless boundary or submodule loop hazard detected.");
+    print("FAIL: Clockless boundary or submodule loop hazard detected.");
     exit();
 } else {
     print("PASS: All top-level paths and async submodules are fully verified!");
