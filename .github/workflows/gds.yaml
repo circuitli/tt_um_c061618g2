@@ -235,31 +235,24 @@ jobs:
           echo "🚀 Using launcher path: $LAUNCHER_PATH"
           chmod +x "$LAUNCHER_PATH"
     
-          echo "🚀 Executing native Workcraft headless validation..."
+          # =========================================================================
+          # 🚀 THE DIRECT HEADLESS JVM LAUNCH
+          # We enter the standalone compiled distribution folder. We construct a 
+          # standard Java Classpath targeting the core workcraft.jar and EVERY single 
+          # plugin .jar inside the plugins/ subdirectory, then call org.workcraft.Console.
+          # =========================================================================
+          echo "🚀 Navigating to built platform bundle..."
           cd dist/template/linux
-          chmod +x workcraft
-    
-          ./workcraft -nogui \
+          
+          echo "🏗️ Mapping full JVM Classpath across all project modules..."
+          # Creates a unified classpath including the core launcher and all plugin jars
+          MAIN_CLASSPATH="workcraft.jar:$(find plugins -name "*.jar" | tr '\n' ':')"
+
+          echo "🚀 Launching Workcraft directly via Java..."
+          java -cp "$MAIN_CLASSPATH" org.workcraft.Console \
+            -nogui \
             -config:"$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml" \
             -exec:"$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
-
-          # =========================================================================
-          # Dynamically locate the main application jar and ALL plugin jar files
-          # built by copyLibs, then stitch them together with a ':' delimiter.
-          # =========================================================================
-          #echo "🏗️ Constructing complete Java Classpath from build output..."
-          CLASSPATH=$(find . -name "*.jar" | tr '\n' ':')
-    
-          if [ -z "$CLASSPATH" ]; then
-            echo "❌ ERROR: No compiled Workcraft JAR files found. Verify that the compilation step completed successfully."
-            exit 1
-          fi
-
-          #echo "🚀 Launching Workcraft headless entry point directly via Java..."
-          #java -cp "$CLASSPATH" org.workcraft.Console \
-          #  -nogui \
-          #  -config:"$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml" \
-          #  -exec:"$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
     
           echo "✅ Workcraft verification completed."
 
