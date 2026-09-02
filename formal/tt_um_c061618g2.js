@@ -3,7 +3,7 @@
 // =========================================================================
 
 // Point directly to the cleaned netlist file
-var designFile = "../../../test/combined_netlist.v";
+var designFile = "../test/combined_netlist.v";
 var circuitModel = importCircuitVerilog(designFile);
 
 if (circuitModel == null) {
