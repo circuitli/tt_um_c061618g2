@@ -241,8 +241,7 @@ jobs:
           # standard Java Classpath targeting the core workcraft.jar and EVERY single 
           # plugin .jar inside the plugins/ subdirectory, then call org.workcraft.Console.
           # =========================================================================
-          echo "🚀 Navigating to built platform bundle..."
-          cd dist/template/linux
+          #cd dist/template/linux
           
           echo "🏗️ Mapping full JVM Classpath across all project modules..."
           # Creates a unified classpath including the core launcher and all plugin jars
