@@ -113,11 +113,3 @@ set_load 0.0334 [get_ports uio_oe]
 
 # Tell the timing engine to treat the clockless latch feedback loop as a free-running analog path
 set_false_path -through [get_nets *latch_core*]
-
-# =========================================================================
-# LAYOUT INJECTION (Fence Subregion for 385 Cells)
-# =========================================================================
-if { [info commands create_fence] ne "" } {
-    puts "\[INFO-USER\] SDC Injection: Creating physical fence region for u_c061618g2"
-    create_fence -name u_c061618g2 -box {10.08 10.08 63.84 75.60}
-}

@@ -111,8 +111,10 @@
       "source src/floorplan_hooks.tcl"
     ]
   },
-  "_hooks": {
-    "post_floorplan": "dir::src/floorplan_hooks.tcl"
+  "hooks": {
+    "OpenROAD.Floorplan": {
+      "post": "dir::src/floorplan_hooks.tcl"
+    }
   },
   "_HOOK_BEFORE_PLACEMENT": "src/floorplan_hooks.tcl",
   "_GPL_PRE_HOOK": "dir::src/floorplan_hooks.tcl",
