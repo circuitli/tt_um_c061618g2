@@ -116,7 +116,7 @@
   "FP_REGIONS_EXCLUSIVE": true,
   "// === Physical Grid Compliant Subregion Constraints ===": "",
   "FP_REGIONS": {
-    "u_c061618g2": [ 10.08, 10.08, 90.72, 65.52 ]
+    "u_c061618g2": [ 10.08, 10.08, 63.84, 75.60 ]
   },
   "//": "PL_REGIONS - Binds the entire unflattened u_c061618g2 macro logic block inside a strict physical coordinate bounding box on the Tiny Tapeout wrapper grid without needing a hard GDS database.",
   "_PL_REGIONS": {
