@@ -3,17 +3,21 @@
 // =========================================================================
 
 var designFile = "../test/combined_netlist.v";
-var circuitModel = importCircuitVerilog(designFile);
+// importCircuitVerilog returns a Framework Work/WorkspaceEntry object
+var work = importCircuitVerilog(designFile);
 
-if (circuitModel == null) {
+if (work == null) {
     print("❌ ERROR: Failed to parse the top-level structural gate netlist.");
     java.lang.System.exit(1);
 }
 
+// FIX: Extract the actual underlying Circuit Graph Model from the work wrapper
+var circuitModel = work.getModel();
+
 // =========================================================================
 // 🛠️ AUTOMATED LOOP BREAKER ATTACHMENT
-// We scan the graph model for all pins belonging to your MMU filter latches
-// ('u_latch_inst') and toggle their pathBreaker flag to isolate the loop.
+// We scan the graph model for all components matching your lockless MMU 
+// filter latches ('u_latch_inst') and tag their input pins to break the loop.
 // =========================================================================
 print("🔧 Initializing clockless state boundaries via graph properties...");
 var components = circuitModel.getFunctionComponents().toArray();
@@ -22,14 +26,13 @@ for (var i = 0; i < components.length; i++) {
     var comp = components[i];
     var compName = circuitModel.getComponentReference(comp);
 
-    // Target only the instances flagged in your cycle log trace
+    // Target only the latch instances flagged in your clockless cycle trace
     if (compName.indexOf("u_latch_inst") !== -1) {
         var contacts = comp.getFunctionContacts().toArray();
         for (var j = 0; j < contacts.length; j++) {
             var pin = contacts[j];
 
-            // Set the path breaker attribute on the loop pin
-            // (Typically input pins like hold/set that take feedback wires)
+            // Flag inputs as path breakers so the analyzer treats them as state limits
             if (pin.isInput()) {
                 pin.setPathBreaker(true);
             }
@@ -37,13 +40,13 @@ for (var i = 0; i < components.length; i++) {
     }
 }
 
-// 1. Scan for deadlocks
+// 1. Scan for deadlocks (Must return true for your clockless handshake paths)
 print("Scanning top-level and submodules for asynchronous deadlocks...");
-var deadlockClean = Boolean(checkCircuitDeadlockFreeness(circuitModel));
+var deadlockClean = Boolean(checkCircuitDeadlockFreeness(work));
 
-// 2. Scan for unbroken cycles (Should now evaluate to clean PASS)
+// 2. Scan for unbroken cycles (Should now evaluate to clean true/PASS)
 print("Scanning full combinational matrix for hazard-inducing cyclic paths...");
-var hazardsClean = Boolean(checkCircuitCycles(circuitModel));
+var hazardsClean = Boolean(checkCircuitCycles(work));
 
 print("----------------------------------------------------------------------");
 
