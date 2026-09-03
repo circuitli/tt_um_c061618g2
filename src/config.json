@@ -139,6 +139,10 @@
     "u_c061618g2": {
       "type": "fence",
       "box": [ 10.08, 10.08, 63.84, 75.60 ]
+    },
+    "u_c061618g2/*": {
+      "type": "fence",
+      "box": [ 10.08, 10.08, 63.84, 75.60 ]
     }
   },
   "_MODULE_GROUPS": {
@@ -206,6 +210,9 @@
 
   "//": "PL_REPAIR_BUFFER_OUTPUTS - Blocks OpenROAD from injecting repeaters to fix your slow 100ps capacitive filter ramps.",
   "PL_REPAIR_BUFFER_OUTPUTS": false,
+
+  "//": "GPL_DENSITY_PLACEMENT - Instructs the Nesterov engine to strictly honor high-density subregion boundaries instead of treating them as loose cells",
+  "GPL_DENSITY_PLACEMENT": true,
 
   "//": "GLB_REPAIR_REPEATER_INPUTS - Disables global routing buffer injection on input lines.",
   "GLB_REPAIR_REPEATER_INPUTS": false,
