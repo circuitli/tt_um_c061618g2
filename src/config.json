@@ -238,6 +238,9 @@
   "//": "PL_RESIZE_BUFFER_PERCENTAGE - Allocates 40% extra optimization budget to allow OpenROAD to upsize slow gates to high-drive variants along your 229 MHz critical paths.",
   "PL_RESIZE_BUFFER_PERCENTAGE": 0,
 
+  "//": "DESIGN_REPAIR_MAX_WIRE_LENGTH - THE FINAL FIX: Setting this explicitly to 0 tells LibreLane's physical design repair engine to completely skip maximum wire length buffering, ensuring clockless loops stay 100% pure wire tracks.",
+  "DESIGN_REPAIR_MAX_WIRE_LENGTH": 0,
+
   "//": "RUN_LINTER, LINTER_INCLUDE_PDK_MODELS - Disabling the linter is not recommended!",
   "RUN_LINTER": 1,
   "LINTER_INCLUDE_PDK_MODELS": 1,

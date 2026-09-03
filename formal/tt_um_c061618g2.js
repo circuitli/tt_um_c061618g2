@@ -3,7 +3,6 @@
 // =========================================================================
 
 var designFile = "../test/combined_netlist.v";
-// importCircuitVerilog returns a Framework Work/WorkspaceEntry object
 var work = importCircuitVerilog(designFile);
 
 if (work == null) {
@@ -11,21 +10,33 @@ if (work == null) {
     java.lang.System.exit(1);
 }
 
-// 1. Scan for deadlocks (Must return true for your clockless handshake paths)
+// 1. Scan for deadlocks (Returns a clean true/false boolean primitive)
 print("Scanning top-level and submodules for asynchronous deadlocks...");
 var deadlockClean = Boolean(checkCircuitDeadlockFreeness(work));
 
-// 2. Scan for unbroken cycles (Should now evaluate to clean true/PASS)
+// 2. Scan for unbroken combinational cycles 
 print("Scanning full combinational matrix for hazard-inducing cyclic paths...");
-var hazardsClean = Boolean(checkCircuitCycles(work));
+var cyclesReport = checkCircuitCycles(work); // This returns a descriptive log string
 
 print("----------------------------------------------------------------------");
 
-// 3. Script Exit Evaluation
-if (deadlockClean === false || hazardsClean === false) {
+// =========================================================================
+// 🏁 CLOCKLESS ASYNCHRONOUS EXIT CRITERIA
+// If deadlockClean is false, fail immediately.
+// If the cycles report string contains "[ERROR]" or mentions "components",
+// we catch it explicitly and fail the pipeline run.
+// =========================================================================
+var hasCycles = (cyclesReport != null && (cyclesReport.indexOf("ERROR") !== -1 || cyclesReport.indexOf("components") !== -1));
+
+if (deadlockClean === false || hasCycles === true) {
     print("❌ FAIL: Asynchronous verification violations detected!");
-    if (deadlockClean === false) print("⚠️  - Deadlock/freeze state identified.");
-    if (hazardsClean === false) print("⚠️  - Unexpected unbroken combinational loop hazard identified.");
+
+    if (deadlockClean === false) {
+        print("⚠️  - Deadlock/freeze state identified.");
+    }
+    if (hasCycles === true) {
+        print("⚠️  - Unbroken combinational loop hazard identified.");
+    }
     print("----------------------------------------------------------------------");
     java.lang.System.exit(1);
 } else {
