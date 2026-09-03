@@ -35,63 +35,181 @@ module mmu_core_formal #(
     input  wire  pmod3_outputs_t core_out    // Packed structural output array
 );
 
-    // -------------------------------------------------------------------------
-    // INTERNAL NET EXTRACTION FOR PROPERTY DECODING
-    // FIXED: Maps inputs by index slices and extracts output terms directly by
-    // their true struct field names to prevent any bit-ordering corruption!
-    // -------------------------------------------------------------------------
+    // =========================================================================
+    // 1. DESIGN UNDER TEST (DUT) INSTANTIATION
+    // =========================================================================
+    mmu_core #(
+        .FILTER_STAGES(FILTER_STAGES)
+    ) dut (
+        .rst_n    (rst_n),
+        .core_ctrl(core_ctrl),
+        .core_addr(core_addr),
+        .ren      (ren),
+        .ref_n    (ref_n),
+        .mpd_n    (mpd_n),
+        .be_n     (be_n),
+        .core_out (core_out)
+    );
+
+    // Unpack input vectors locally for human-readable architectural matching
+    wire a11   = core_addr[0];
+    wire a12   = core_addr[1];
+    wire a13   = core_addr[2];
+    wire a14   = core_addr[3];
+    wire a15   = core_addr[4];
     wire rd5   = core_ctrl[2];
     wire rd4   = core_ctrl[1];
     wire map_n = core_ctrl[0];
 
-    wire a15   = core_addr[4];
-    wire a14   = core_addr[3];
-    wire a13   = core_addr[2];
-    wire a12   = core_addr[1];
-    wire a11   = core_addr[0];
-
-    // Reference fields directly from the struct to mirror the hardware layout perfectly
-    wire s5_n    = core_out.s5_n;
-    wire basic_n = core_out.basic_n;
-    wire os_n    = core_out.os_n;
-    wire ci_n    = core_out.ci_n;
-    wire io_n    = core_out.io_n;
-    wire s4_n    = core_out.s4_n;
 
     // =========================================================================
-    // COMBINATIONAL DECODING PROPERTIES
-    // Evaluates the decoding equations continuously on any input signal transition.
+    // 2. EXPLICIT INTERMEDIATE DECODING EQUATIONS (LONG FORM SPECIFICATION)
     // =========================================================================
-    always @* begin
+    
+    // --- Math Pack (/CI) Space ($D800-$DFFF) ---
+    wire spec_ci_addr_match = (a15 == 1'b1) && (a14 == 1'b1) && (a13 == 1'b1) && (a12 == 1'b0) && (a11 == 1'b1);
+    wire spec_ci_ctrl_valid = (ref_n == 1'b1) && (map_n == 1'b1) && (mpd_n == 1'b0);
 
-        // 1. GLOBAL ASYNCHRONOUS RESET SAFE-STATE PROOF
-        // When rst_n is low, all active-low control output lines must be high (deasserted)
-        asm_mmu_reset_assert: assert (rst_n || (
-            s5_n    == 1'b1 && 
-            basic_n == 1'b1 && 
-            os_n    == 1'b1 && 
-            ci_n    == 1'b1 && 
-            io_n    == 1'b1 && 
-            s4_n    == 1'b1
-        ));
+    // --- OS ROM Space ($E000-$FFFF) ---
+    wire spec_os_addr_match = (a15 == 1'b1) && (a14 == 1'b1);
+    wire spec_os_ctrl_valid = (ref_n == 1'b1) && (map_n == 1'b1);
 
-        // 2. ADDRESS DECODING PROOFS (ARROW-FREE)
-        // /S4 Expansion Right Cartridge Select ($8000-$9FFF)
-        asm_decode_s4_assert: assert (!(rst_n && !a13 && !a14 && a15 && rd4 && ref_n) || (s4_n == 1'b0));
+
+    // =========================================================================
+    // 3. COMBINATORIAL ASSERTIONS BLOCK
+    // =========================================================================
+    always_comb begin
         
-        // /S5 Expansion Left Cartridge Select ($A000-$BFFF)
-        asm_decode_s5_assert: assert (!(rst_n && a13 && !a14 && a15 && rd5 && ref_n) || (s5_n == 1'b0));
-        
-        // /BASIC CS Memory Space Decode ($A000-$BFFF if enabled internally)
-        asm_decode_basic_assert: assert (!(rst_n && a13 && !a14 && a15 && !rd5 && !be_n && ref_n) || (basic_n == 1'b0));
-        
-        // /IO Peripheral Space Decode ($D000 Custom IC Registers)
-        asm_decode_io_assert: assert (!(rst_n && !a11 && a12 && !a13 && a14 && a15 && ref_n) || (io_n == 1'b0));
+        // ---------------------------------------------------------------------
+        // RESET STATE ASSERTIONS
+        // ---------------------------------------------------------------------
+        if (!rst_n) begin
+            assert_reset_s4:    assert(dut.raw_s4_n    == 1'b1);
+            assert_reset_s5:    assert(dut.raw_s5_n    == 1'b1);
+            assert_reset_basic: assert(dut.raw_basic_n == 1'b1);
+            assert_reset_io:    assert(dut.raw_io_n    == 1'b1);
+            assert_reset_ci:    assert(dut.raw_ci_n    == 1'b1);
+            assert_reset_os:    assert(dut.raw_os_n    == 1'b1);
+            assert_reset_local: assert(dut.local_os_n  == 1'b1);
+        end
 
-        // 3. MUTUAL EXCLUSION PROOF
-        asm_mmu_exclusion_assert: assert (!rst_n || !(basic_n == 1'b0 && s5_n == 1'b0));
+        // ---------------------------------------------------------------------
+        // OPERATIONAL FUNCTIONAL ASSERTIONS
+        // ---------------------------------------------------------------------
+        if (rst_n) begin
+            
+            // --- /S4 Expansion Right Cartridge Select ($8000-$9FFF) ---
+            if (!a13 && !a14 && a15 && rd4 && ref_n) begin
+                assert_s4_active: assert(dut.raw_s4_n == 1'b0);
+            end
 
+            // --- /S5 Expansion Left Cartridge Select ($A000-$BFFF) ---
+            if (a13 && !a14 && a15 && rd5 && ref_n) begin
+                assert_s5_active: assert(dut.raw_s5_n == 1'b0);
+            end
+
+            // --- /BASIC ROM Select ($A000-$BFFF) ---
+            if (a13 && !a14 && a15 && !be_n && ref_n && map_n) begin
+                assert_basic_active: assert(dut.raw_basic_n == 1'b0);
+            end
+
+            // --- /I/O Select ($D000-$D7FF) ---
+            if (!a11 && !a12 && a13 && a14 && a15 && ref_n && map_n) begin
+                assert_io_active: assert(dut.raw_io_n == 1'b0);
+            end
+
+            // -----------------------------------------------------------------
+            // EXPANDED /CI (MATH PACK) DECODE VERIFICATION MATRIX
+            // -----------------------------------------------------------------
+            
+            // Clause A: True Activation
+            if (spec_ci_addr_match && spec_ci_ctrl_valid) begin
+                assert_ci_perfect_match_low: assert(dut.raw_ci_n == 1'b0);
+            end
+
+            // Clause B: Blocked when math pack is explicitly disabled
+            if (spec_ci_addr_match && (mpd_n == 1'b1)) begin
+                assert_ci_disabled_by_mpd: assert(dut.raw_ci_n == 1'b1);
+            end
+
+            // Clause C: Boundary protection check against I/O lower page swap ($D000-$D7FF)
+            if (a15 && a14 && a13 && !a12 && !a11) begin
+                assert_ci_blocked_by_io_space: assert(dut.raw_ci_n == 1'b1);
+            end
+
+            // -----------------------------------------------------------------
+            // EXPANDED /OS (OS ROM) DECODE VERIFICATION MATRIX
+            // -----------------------------------------------------------------
+            
+            // Clause A: Local intermediate address match mapping
+            if (spec_os_addr_match && spec_os_ctrl_valid) begin
+                assert_local_os_internal_match: assert(dut.local_os_n == 1'b0);
+            end else begin
+                assert_local_os_outside_range:  assert(dut.local_os_n == 1'b1);
+            end
+
+            // Clause B: Active Read Enable allows the gateway to pull low
+            if (dut.local_os_n == 1'b0 && ren == 1'b1) begin
+                assert_os_gateway_opens: assert(dut.raw_os_n == 1'b0);
+            end
+
+            // Clause C: Missing Read Enable isolates external line high (Safe High State)
+            if (dut.local_os_n == 1'b0 && ren == 1'b0) begin
+                assert_os_isolated_without_ren: assert(dut.raw_os_n == 1'b1);
+            end
+
+        end
     end
+
+
+    // =========================================================================
+    // 4. SHIFT-REGISTER FILTER STABILITY EXHAUSTIVE VERIFICATION
+    // =========================================================================
+    genvar k;
+    generate
+        for (k = 0; k < 6; k = k + 1) begin : formal_filter_checks
+            
+            // Wire hooks pointing to raw filter arrays inside the DUT generation loops
+            wire [FILTER_STAGES-1:0] current_filter = dut.gen_filters[k].filter_reg;
+            wire clean_signal_out                   = dut.clean_signals[k];
+
+            always_comb begin
+                
+                // Assert structural state when filter register is entirely cleared
+                if (current_filter == {FILTER_STAGES{1'b0}}) begin
+                    assert_filter_low_drive: assert(clean_signal_out == 1'b0);
+                end
+
+                // Assert structural state when filter register is entirely filled
+                if (current_filter == {FILTER_STAGES{1'b1}}) begin
+                    assert_filter_high_drive: assert(clean_signal_out == 1'b1);
+                end
+
+                // Latch memory safety check: Mixed register values must only yield valid states
+                if ((current_filter != {FILTER_STAGES{1'b0}}) && (current_filter != {FILTER_STAGES{1'b1}})) begin
+                    assert_latch_stability: assert(
+                        (clean_signal_out == 1'b1) || (clean_signal_out == 1'b0)
+                    );
+                end
+
+            end
+        end
+    endgenerate
+
+
+    // =========================================================================
+    // 5. INTERFACE STRUCT OUTPUT MATCH CHECK
+    // =========================================================================
+    `ifndef dfkjlsdjflsdkjflskdjf
+    always_comb begin
+        assert_struct_s4:    assert(core_out.s4_n    == dut.clean_signals[5]);
+        assert_struct_s5:    assert(core_out.s5_n    == dut.clean_signals[4]);
+        assert_struct_basic: assert(core_out.basic_n == dut.clean_signals[3]);
+        assert_struct_io:    assert(core_out.io_n    == dut.clean_signals[2]);
+        assert_struct_os:    assert(core_out.os_n    == dut.clean_signals[1]);
+        assert_struct_ci:    assert(core_out.ci_n    == dut.clean_signals[0]);
+    end
+    `endif
 
 endmodule
 

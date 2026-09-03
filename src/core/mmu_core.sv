@@ -111,7 +111,7 @@ module mmu_core #(
                     (a13 && !a14 && a15 && rd5 && ref_n) ||
                     (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) ||
                     (local_os_n == 1'b1) ||
-                    !(a11 && a12 && !a13 && a14 && a15 && ref_n) ||
+                    (!a11 && a12 && !a13 && a14 && a15 && ref_n) ||
                     (!ref_n) ) begin
                 raw_ci_n = 1'b0;
             end
