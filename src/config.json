@@ -103,7 +103,7 @@
   "_MACRO_PLACEMENT_CFG": "",
   "_MACRO_PLACEMENT_BOUNDS_FILE": "src/macro_bounds.json",
   "_EXTRA_SPECS_TCL": "dir::src/floorplan_hooks.tcl",
-  "EXTRA_PLACEMENT_TCL_FILES": [
+  "_EXTRA_PLACEMENT_TCL_FILES": [
     "src/floorplan_hooks.tcl"
   ],
   "_OpenROAD.Floorplan": {
@@ -115,7 +115,9 @@
     "post_floorplan": "dir::src/floorplan_hooks.tcl"
   },
   "_HOOK_BEFORE_PLACEMENT": "src/floorplan_hooks.tcl",
-  "GPL_PRE_HOOK": "dir::src/floorplan_hooks.tcl",
+  "_GPL_PRE_HOOK": "dir::src/floorplan_hooks.tcl",
+  "//": "EXTRA_FLOORPLAN_TCL - Forces OpenROAD to execute raw Tcl commands during the floorplan pass, guaranteeing fence allocation before cells are evaluated",
+  "EXTRA_FLOORPLAN_TCL": "create_fence -name u_c061618g2 -box {10.08 10.08 63.84 75.60}",
 
   "PL_MIN_PHI_COEFFICIENT": 0.95,
   "PL_MAX_PHI_COEFFICIENT": 1.05,
