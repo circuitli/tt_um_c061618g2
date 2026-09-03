@@ -112,8 +112,11 @@
 
   "PL_MIN_PHI_COEFFICIENT": 0.95,
   "PL_MAX_PHI_COEFFICIENT": 1.05,
-  "_PL_MACRO_CHNL_VAL": {
-    "u_c061618g2": [ 10.0, 10.0, 55.36, 25.12 ]
+
+  "FP_REGIONS_EXCLUSIVE": true,
+  "// === Physical Grid Compliant Subregion Constraints ===": "",
+  "FP_REGIONS": {
+    "u_c061618g2": [ 10.08, 10.08, 90.72, 65.52 ]
   },
   "//": "PL_REGIONS - Binds the entire unflattened u_c061618g2 macro logic block inside a strict physical coordinate bounding box on the Tiny Tapeout wrapper grid without needing a hard GDS database.",
   "_PL_REGIONS": {
@@ -122,6 +125,9 @@
       "bounds": [ 10.0, 10.0, 55.36, 25.12 ],
       "type": "guide"
     }
+  },
+  "_PL_MACRO_CHNL_VAL": {
+    "u_c061618g2": [ 10.0, 10.0, 55.36, 25.12 ]
   },
   "__PLACEMENT_CONSTRAINTS": {
     "u_c061618g2": {

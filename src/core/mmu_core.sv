@@ -88,17 +88,17 @@ module mmu_core #(
                 raw_s5_n = 1'b0;
             end
 
-            // /BASIC CS Memory Space Decode ($A000-$BFFF)
+            // /BASIC ROM Select ($A000-$BFFF) - Hardware-gated to block if Left Cartridge (rd5) is active
             if (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) begin
                 raw_basic_n = 1'b0;
             end
 
-            // /IO Peripheral Space Decode ($D000)
+            // /IO Hardware Peripheral Block Select ($D400-$D7FF - Custom chip Shadow Range)
             if (!a11 && a12 && !a13 && a14 && a15 && ref_n) begin
                 raw_io_n = 1'b0;
             end
 
-            // /OS Operating System ROM Decode ($C000-$CFFF, $E000-$FFFF)
+            // /OS ROM Controller Matrix: Decodes Upper OS Space ($E000-$FFFF) and Aliases Self-Test Code into Low RAM ($5400-$57FF)
             if ( (a13 && a14 && a15 && ren && ref_n) ||
                  (!a12 && a14 && a15 && ren && ref_n) ||
                  (a11 && a12 && !a13 && a14 && a15 && ren && mpd_n && ref_n) ||
@@ -107,6 +107,7 @@ module mmu_core #(
             end
             raw_os_n = local_os_n;
 
+             // /CI Active-Low Fallback: Acts as a structural default mask whenever the OS is inactive or refresh drops
             if ( (!a13 && !a14 && a15 && rd4 && ref_n) ||
                     (a13 && !a14 && a15 && rd5 && ref_n) ||
                     (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) ||
