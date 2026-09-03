@@ -111,7 +111,7 @@
       "source src/floorplan_hooks.tcl"
     ]
   },
-  "hooks": {
+  "_hooks": {
     "OpenROAD.Floorplan": {
       "post": "dir::src/floorplan_hooks.tcl"
     }
@@ -123,6 +123,8 @@
 
   "PL_MIN_PHI_COEFFICIENT": 0.95,
   "PL_MAX_PHI_COEFFICIENT": 1.05,
+
+  "FP_DEF_TEMPLATE": "dir::src/tt_um_c061618g2.def",
 
   "FP_REGIONS_EXCLUSIVE": true,
   "// === Physical Grid Compliant Subregion Constraints ===": "",
@@ -140,7 +142,7 @@
   "_PL_MACRO_CHNL_VAL": {
     "u_c061618g2": [ 10.0, 10.0, 55.36, 25.12 ]
   },
-  "PLACEMENT_CONSTRAINTS": {
+  "_PLACEMENT_CONSTRAINTS": {
     "u_c061618g2": {
       "type": "fence",
       "box": [ 10.08, 10.08, 63.84, 75.60 ]
