@@ -25,7 +25,7 @@
   "SYNTH_STRATEGY": "DELAY 1",
 
   "//": "SYNTH_SIZING - Enables aggressive pre-placement cell sizing to scale up internal logic gates to high-performance variations early.",
-  "SYNTH_SIZING": 1,
+  "SYNTH_SIZING": 0,
 
   "//": "SYNTH_HIER_PASS - Directs Yosys to perform synthesis hierarchically, locking down local submodule ports before physical cell mapping.",
   "SYNTH_HIER_PASS": true,
