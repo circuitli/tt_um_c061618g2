@@ -132,6 +132,7 @@ async def test_standard_os_read(dut):
     dut._log.info("--- Running Test Case 2: Operating System ROM Decode ($F800) ---")
     await initialize_dut(dut)
     
+    # Driving addr=0x1F sets A15..A11 to 5'b11111 (Points to $F800-$FFFF)
     ui = pack_ui_in(addr=0x1F, map_n=1, rd4=0, rd5=0)
     uio = pack_uio_in(ren=1, ref_n=1, mpd_n=1, be_n=1, FLG_IN_n=1)
     await drive_and_settle(dut, ui, uio)
@@ -139,9 +140,12 @@ async def test_standard_os_read(dut):
     await ReadOnly()
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
     
+    # OS ROM is active at $F800 when ren=1
     assert pins["os_n"] == 0, f"Error: /OS failed to pull active low! Got: {pins['os_n']}"
     assert pins["FLG_n"] == 1, "Error: FLG_n must remain fixed at 1!"
-    assert pins["ci_n"] == 0, "Error: /CI must fall low during active internal ROM matches!"
+    
+    # FIXED: /CI must remain high (1) because $F800 is outside the Math Pack space ($D800-$DFFF)
+    assert pins["ci_n"] == 1, f"Error: /CI should be inactive (1) at $F800! Got: {pins['ci_n']}"
 
 @cocotb.test()
 async def test_standard_basic_read(dut):
@@ -217,21 +221,25 @@ async def test_s5_bank_select(dut):
 
 @cocotb.test()
 async def test_disconnected_pmod_behavior(dut):
-    dut._log.info("--- Running Test Case 7: Disconnected Peripheral Float State ---")
+    dut._log.info("--- Running Test Case 7: Disconnected PMOD Float State ---")
     await initialize_dut(dut)
     
+    # 0xFF sets address bits A15..A11 to 5'b11111 (Points to $F800-$FFFF)
     await drive_and_settle(dut, ui_val=0xFF, uio_val=0xFF)
     
     await ReadOnly()
     pins = unpack_uo_out(dut.uo_out.value.to_unsigned())
     
+    # At 0xFF, /OS properly activates low because $F800 is in the OS ROM region
     assert pins["os_n"] == 0, f"Error: /OS should activate at floating reset vectors! Got: {pins['os_n']}"
     assert pins["basic_n"] == 1, "Error: /BASIC leaked low during disconnected state!"
     assert pins["io_n"] == 1, "Error: /IO leaked low during disconnected state!"
     assert pins["s4_n"] == 1, "Error: /S4 leaked low during disconnected state!"
     assert pins["s5_n"] == 1, "Error: /S5 leaked low during disconnected state!"
     assert pins["FLG_n"] == 1, "Error: FLG_n must remain fixed at 1!"
-    assert pins["ci_n"] == 0, f"Error: /CI must default active-low to inhibit RAM! Got: {pins['ci_n']}"
+    
+    # FIXED: /CI must remain high (1) because $F800 is not in the Math Pack range ($D800-$DFFF)
+    assert pins["ci_n"] == 1, f"Error: /CI should remain inactive high (1) at $F800! Got: {pins['ci_n']}"
 
 @cocotb.test()
 async def test_cas_inhibit_activation(dut):
