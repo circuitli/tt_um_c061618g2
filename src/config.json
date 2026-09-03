@@ -22,7 +22,7 @@
   "W_VERILOG_OPTIONS": "-noattr -nodec",
 
   "//": "SYNTH_STRATEGY - Restores the stable balanced logic restructuring formula to keep sequential steering paths clean and routable at high speeds.",
-  "SYNTH_STRATEGY": "DELAY 1",
+  "SYNTH_STRATEGY": "AREA 0",
 
   "//": "SYNTH_SIZING - Enables aggressive pre-placement cell sizing to scale up internal logic gates to high-performance variations early.",
   "SYNTH_SIZING": 0,
@@ -40,7 +40,7 @@
   "_SYNTH_WRITE_NOATTR": false,
 
   "//": "SYNTH_SHARE_RESOURCES - Dictates whether Yosys forces resource sharing by actively identifying matching algebraic sub-expressions (like duplicated multiplexers or address decoders) and merging them into unified gate networks. For purely combinational macros, leaving this enabled or disabled changes area footprint without breaking function.",
-  "SYNTH_SHARE_RESOURCES": 1,
+  "SYNTH_SHARE_RESOURCES": 0,
 
   "//": "SYNTH_NO_FLIP_FLOPS - Explicitly tells Yosys that the design does not contain structural sequential memory elements. This halts structural latched-path mapping loops.",
   "SYNTH_NO_FLIP_FLOPS": 1,
@@ -82,7 +82,7 @@
   ],
 
   "//": "EXTRA_SYNTH_ARGS - Forces Yosys to skip automatic insbuf insertion on cross-coupled loops, while unrolling multi-bit vectors into clean scalar ports to clear out Workcraft token errors",
-  "EXTRA_SYNTH_ARGS": "-run co:; splitnets -ports; opt_clean -purge; -run co:",
+  "EXTRA_SYNTH_ARGS": "-run co:; splitnets -ports; opt -purge; -run co:",
 
   "//": "RUN_SYNTH_CHECKS - Controls the strict automated post-synthesis verification script checker. Disabling this to 0 prevents the Tiny Tapeout build harness from misinterpreting ABC combinational logic messages as fatal errors.",
   "RUN_SYNTH_CHECKS": 0,
