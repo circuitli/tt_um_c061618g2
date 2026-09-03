@@ -33,6 +33,12 @@
   "//": "SYNTH_FLATTEN - Disable global flattening to preserve submodule boundaries for physical macro bounding and hierarchical power grid connection",
   "_SYNTH_FLATTEN": true,
 
+  "//": "SYNTH_FLAT_TOP - Disable global flattening to preserve submodule boundaries for physical macro bounding and hierarchical power grid connection",
+  "SYNTH_FLAT_TOP": false,
+
+  "//": "SYNTH_HIERARCHICAL - Force hierarchical synthesis to retain structural instance blocks so OpenROAD placement engines can identify the fence constraint target",
+  "_SYNTH_HIERARCHICAL": true,
+
   "//": "SYNTH_HIERARCHY_MODE - Flattening unrolls vector arrays and module contexts into standalone primitives, removing illegal indexing brackets from the post-synthesis netlist ports for Workcraft compatibility",
   "SYNTH_HIERARCHY_MODE": "keep",
 
