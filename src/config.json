@@ -81,7 +81,7 @@
     "KEEP_HIERARCHY=1"
   ],
 
-  ""//": "EXTRA_SYNTH_ARGS - Forces Yosys to skip automatic insbuf insertion on cross-coupled loops, while unrolling multi-bit vectors into clean scalar ports to clear out Workcraft token errors",
+  "//": "EXTRA_SYNTH_ARGS - Forces Yosys to skip automatic insbuf insertion on cross-coupled loops, while unrolling multi-bit vectors into clean scalar ports to clear out Workcraft token errors",
   "EXTRA_SYNTH_ARGS": "-run co:; splitnets -ports; opt_clean -purge; -run co:",
 
   "//": "RUN_SYNTH_CHECKS - Controls the strict automated post-synthesis verification script checker. Disabling this to 0 prevents the Tiny Tapeout build harness from misinterpreting ABC combinational logic messages as fatal errors.",
