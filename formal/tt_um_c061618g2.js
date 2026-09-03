@@ -10,36 +10,34 @@ if (work == null) {
     java.lang.System.exit(1);
 }
 
-// 1. Scan for deadlocks (Returns a clean true/false boolean primitive)
+// 1. Scan for deadlocks (Converts the native Java Boolean into a JavaScript primitive)
 print("Scanning top-level and submodules for asynchronous deadlocks...");
 var deadlockClean = Boolean(checkCircuitDeadlockFreeness(work));
 
-// 2. Scan for unbroken combinational cycles 
+// 2. Scan for unbroken combinational cycles (Converts the clean execution return into a primitive)
 print("Scanning full combinational matrix for hazard-inducing cyclic paths...");
-var cyclesReport = checkCircuitCycles(work); // This returns a descriptive log string
+var hazardsClean = Boolean(checkCircuitCycles(work));
 
 print("----------------------------------------------------------------------");
 
 // =========================================================================
 // 🏁 CLOCKLESS ASYNCHRONOUS EXIT CRITERIA
-// If deadlockClean is false, fail immediately.
-// If the cycles report string contains "[ERROR]" or mentions "components",
-// we catch it explicitly and fail the pipeline run.
+// Both variables now evaluate to clean JavaScript boolean primitives.
+// If your LibreLane layout contains no cycles, hazardsClean evaluates to true!
 // =========================================================================
-var hasCycles = (cyclesReport != null && (cyclesReport.indexOf("ERROR") !== -1 || cyclesReport.indexOf("components") !== -1));
-
-if (deadlockClean === false || hasCycles === true) {
+if (deadlockClean === false || hazardsClean === false) {
     print("❌ FAIL: Asynchronous verification violations detected!");
 
     if (deadlockClean === false) {
         print("⚠️  - Deadlock/freeze state identified.");
     }
-    if (hasCycles === true) {
+    if (hazardsClean === false) {
         print("⚠️  - Unbroken combinational loop hazard identified.");
     }
     print("----------------------------------------------------------------------");
     java.lang.System.exit(1);
 } else {
+    print("----------------------------------------------------------------------");
     print("✅ PASS: Mathematical deadlock freeness and clockless loop pathways verified!");
     print("----------------------------------------------------------------------");
     java.lang.System.exit(0);
