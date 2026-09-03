@@ -115,6 +115,7 @@
     "post_floorplan": "dir::src/floorplan_hooks.tcl"
   },
   "_HOOK_BEFORE_PLACEMENT": "src/floorplan_hooks.tcl",
+  "GPL_PRE_HOOK": "dir::src/floorplan_hooks.tcl",
 
   "PL_MIN_PHI_COEFFICIENT": 0.95,
   "PL_MAX_PHI_COEFFICIENT": 1.05,
