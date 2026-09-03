@@ -11,8 +11,9 @@ if (work == null) {
     java.lang.System.exit(1);
 }
 
-// FIX: Extract the actual underlying Circuit Graph Model from the work wrapper
-var circuitModel = work.getModel();
+// Extract the actual underlying Circuit Graph Model from the work wrapper
+var frameworkInstance = java.lang.Class.forName("org.workcraft.Framework").getMethod("getInstance", null).invoke(null, null);
+var circuitModel = frameworkInstance.getWorkspace().getModel(work);
 
 // =========================================================================
 // 🛠️ AUTOMATED LOOP BREAKER ATTACHMENT
