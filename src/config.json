@@ -208,7 +208,7 @@
   "RUN_POST_GPL_DESIGN_REPAIR": false,
 
   "//": "RUN_POST_GRT_RESIZER_TIMING - Force a final round of precise hold-buffer patching after physical wire routing lines are drawn",
-  "RUN_POST_GRT_RESIZER_TIMING": true,
+  "RUN_POST_GRT_RESIZER_TIMING": false,
 
   "//": "RUN_POST_GRT_DESIGN_REPAIR - Force physical cell legalisation and track repair after global routing to resolve severe hold violations",
   "RUN_POST_GRT_DESIGN_REPAIR": false,
