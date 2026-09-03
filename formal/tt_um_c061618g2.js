@@ -11,9 +11,17 @@ if (work == null) {
     java.lang.System.exit(1);
 }
 
-// Extract the actual underlying Circuit Graph Model from the work wrapper
+/// =========================================================================
+// 🛠️ DIRECT REFLECTIVE MODEL EXTRACTOR (ULTIMATE FIX)
+// Forces Java to bind the method by its exact parameter signature,
+// completely bypassing Rhino's wrapper resolution bugs.
+// =========================================================================
 var frameworkInstance = java.lang.Class.forName("org.workcraft.Framework").getMethod("getInstance", null).invoke(null, null);
-var circuitModel = frameworkInstance.getWorkspace().getModel(work);
+var workspace = frameworkInstance.getWorkspace();
+
+// Look up the exact Java method by its strict type signature
+var getModelMethod = workspace.getClass().getMethod("getModel", [java.lang.Class.forName("org.workcraft.workspace.WorkspaceEntry")]);
+var circuitModel = getModelMethod.invoke(workspace, [work]);
 
 // =========================================================================
 // 🛠️ AUTOMATED LOOP BREAKER ATTACHMENT
