@@ -34,20 +34,22 @@ $(MACRO_NAMES):
 		*) echo "❌ Error: Invalid PDK select. Use PDK=ihp|sky130|gf180"; exit 1 ;; \
 	esac; \
 	\
-	# Execute the active OpenLane 2 hardening step inside the targeted macro dir
-	$(OPENLANE_EXEC) --pdk $$PDK_TARGET $(BUILD_DIR)/$@/config.json; \
+	# 🌟 THE FIX: Pass PDK_ROOT explicitly down into the OpenLane shell runner execution context
+	PDK_ROOT=$(PDK_ROOT) $(OPENLANE_EXEC) --pdk $$PDK_TARGET $(BUILD_DIR)/$@/config.json; \
 	\
 	# Locate the true physical hardware layout and timing assets
 	RAW_LEF=$$(find $(BUILD_DIR)/$@/runs/ -type f -path "*/final/lef/*" -name "*.lef" -print -quit); \
 	RAW_LIB=$$(find $(BUILD_DIR)/$@/runs/ -type f -path "*/final/lib/*" -name "*.lib" -print -quit); \
+	RAW_GDS=$$(find $(BUILD_DIR)/$@/runs/ -type f -path "*/final/gds/*" -name "*.gds" -print -quit); \
 	\
 	mkdir -p $(OUTPUT_DIR); \
 	\
-	# Only copy the physical and timing abstracts that the top-level chip needs!
+	# Safe copy operations mapping abstracts straight to the delivery folder
 	if [ -n "$$RAW_LEF" ]; then cp "$$RAW_LEF" "$(OUTPUT_DIR)/$@.lef"; fi; \
 	if [ -n "$$RAW_LIB" ]; then cp "$$RAW_LIB" "$(OUTPUT_DIR)/$@.lib"; fi; \
+	if [ -n "$$RAW_GDS" ]; then cp "$$RAW_GDS" "$(OUTPUT_DIR)/$@.gds"; fi; \
 	\
-	echo "✅ Successfully delivered abstract macro views to: $(OUTPUT_DIR)/$@.lef/lib"
+	echo "✅ Successfully delivered abstract macro views to: $(OUTPUT_DIR)/$@.*"
 
 # 3. Clean environment workspace pass
 clean:

@@ -19,7 +19,16 @@
 // ==============================================================================
 `default_nettype none
 
-//`include "src/module/c061618g2.sv"
+// =========================================================================
+// CONDITIONAL PDK INTERFACE RESOLUTION
+// If compiling for physical synthesis (OpenLane/Yosys), hide the source file 
+// so the tool treats the block as a clean hard macro blackbox.
+// If compiling for local verification (Cocotb/Icarus), include the source
+// so the simulator doesn't throw an 'Unknown module type' crash.
+// =========================================================================
+`ifndef SYNTHESIS
+    `include "src/module/c061618g2.sv"
+`endif
 
 // =========================================================================
 // STRUCTURAL CELL ISOLATION BUFFER
