@@ -20,12 +20,6 @@ jobs:
         with:
           submodules: recursive
 
-      - name: ⚙️ Setup Tiny Tapeout Toolchain (Installs OpenLane Natively)
-        if: false
-        uses: TinyTapeout/tt-setup-action@v2
-        with:
-          pdk: ihp-sg13g2 # Installs the required IHP PDK standard libraries
-
       - name: Install and Run PDK Downloader Directly
         if: false
         run: |
