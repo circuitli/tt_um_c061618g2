@@ -2,8 +2,11 @@
 // WORKCRAFT POST-SYNTHESIS ASYNCHRONOUS FORMAL CHECK
 // =========================================================================
 
+// 1. Force Workcraft to look ONLY at the flat netlist file and stop directory scanning
+setFrameworkProperty("VerilogImporter.searchPaths", "");
+
 var designFile = "../test/combined_netlist.v";
-var work = importCircuitVerilog(designFile);
+var work = importCircuitVerilog(designFile, "tt_um_c061618g2");
 
 if (work == null) {
     print("❌ ERROR: Failed to parse the top-level structural gate netlist.");
