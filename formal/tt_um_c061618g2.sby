@@ -215,7 +215,7 @@ cell/safe_async_mux.sv                 ../src/cell/safe_async_mux.sv
 cell/async_latch_cell.v                ../src/cell/async_latch_cell.v
 module/async_glitch_filter.sv          ../src/module/async_glitch_filter.sv
 module/async_glitch_filter_bank.sv     ../src/module/async_glitch_filter_bank.sv
-module/c061618g2_input_shield.sv       ../src/module/c061618g2_input_shield.sv
+#module/c061618g2_input_shield.sv       ../src/module/c061618g2_input_shield.sv
 module/c061618g2.sv                    ../src/module/c061618g2.sv
 tt_um_c061618g2.sv                     ../src/tt_um_c061618g2.sv
 src/defs/mmu_defs.sv                   ../src/defs/mmu_defs.sv
@@ -224,7 +224,7 @@ src/cell/safe_async_mux.sv             ../src/cell/safe_async_mux.sv
 src/cell/async_latch_cell.v            ../src/cell/async_latch_cell.v
 src/module/async_glitch_filter.sv      ../src/module/async_glitch_filter.sv
 src/module/async_glitch_filter_bank.sv ../src/module/async_glitch_filter_bank.sv
-src/module/c061618g2_input_shield.sv   ../src/module/c061618g2_input_shield.sv
+#src/module/c061618g2_input_shield.sv   ../src/module/c061618g2_input_shield.sv
 src/module/c061618g2.sv                ../src/module/c061618g2.sv
 defs/mmu_defs_formal.sv                    defs/mmu_defs_formal.sv
 core/mmu_core_formal.sv                    core/mmu_core_formal.sv
