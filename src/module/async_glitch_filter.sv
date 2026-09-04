@@ -43,15 +43,18 @@ module async_glitch_filter #(
         .X (delay_chain[0])
     );
 
-    wire [STAGES-1:0] cap_sink_a;
-    wire [STAGES-1:0] cap_sink_b;
+    // We declare a single tracking wire to accumulate the XOR properties safely
+    wire [STAGES:0] xor_accumulator;
+    assign xor_accumulator[0] = 1'b0;
 
     // =========================================================================
     // 1. STRUCTURAL ASYNCHRONOUS DELAY GENERATION WITH LOAD CAPACITORS
     // =========================================================================
     generate
         for (genvar i = 0; i < STAGES; i = i + 1) begin : gen_stages
-            wire internal_inv_node;
+            (* keep = "true" *) wire internal_inv_node;
+            (* keep = "true" *) wire scalar_cap_a;
+            (* keep = "true" *) wire scalar_cap_b;
 
             // --- FIRST HALF STAGE ---
             (* keep = "true" *)
@@ -64,7 +67,7 @@ module async_glitch_filter #(
             (* keep = "true" *)
             buf_4 u_load_cap_a (
                 .A (internal_inv_node),
-                .X (cap_sink_a[i]) 
+                .X (scalar_cap_a) 
             );
 
             // --- SECOND HALF STAGE ---
@@ -78,8 +81,11 @@ module async_glitch_filter #(
             (* keep = "true" *)
             buf_4 u_load_cap_b (
                 .A (delay_chain[i+1]),
-                .X (cap_sink_b[i]) 
+                .X (scalar_cap_b) 
             );
+
+            // Chain the scalar tracks into an unbroken line
+            assign xor_accumulator[i+1] = xor_accumulator[i] ^ scalar_cap_a ^ scalar_cap_b;
         end
     endgenerate
 
@@ -88,12 +94,15 @@ module async_glitch_filter #(
     // By merging the cap outputs into the active equations, the tool cannot 
     // call them floating or unconnected. They are permanently locked.
     // =========================================================================
-    wire cap_mask_a = &cap_sink_a;
-    wire cap_mask_b = |cap_sink_b;
+    // Final un-optimizable anchor net
+    wire cap_anchor = xor_accumulator[STAGES];
 
-    // A bitwise identity mask that cannot be optimized out because it's part of the path
-    wire filter_set  = (&delay_chain[STAGES:1]) & rst_n & (cap_mask_a | ~cap_mask_a);
-    wire filter_hold = ((|delay_chain[STAGES:1]) & rst_n) | (cap_mask_b & ~cap_mask_b);
+    // By combining cap_anchor directly via XOR into the active paths, the 
+    // synthesis engine cannot substitute a static boolean constant (like 1'b1).
+    // It is forced to route and maintain every stage to preserve the function.
+    wire filter_set  = (&delay_chain[STAGES:1]) & rst_n ^ cap_anchor;
+    wire filter_hold = ((|delay_chain[STAGES:1]) & rst_n) ^ cap_anchor;
+
 
     // =========================================================================
     // LATCH LOOP BOUNDARY
