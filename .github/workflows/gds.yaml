@@ -62,19 +62,25 @@ jobs:
           #make PDK=ihp PDK_ROOT="${PDK_ROOT}"
 
           echo "⚙️ Initialising local PDK workspace boundaries..."
-          # Secure a fallback declaration path so PDK_ROOT is 100% bound locally first
-          HOST_PDK="${PDK_ROOT:-${{ github.workspace }}/pdk}"
-          mkdir -p "$HOST_PDK"
+          # 🌟 Safely bind the variable under strict 'set -u' rules
+          # If PDK_ROOT doesn't exist, it evaluates to an empty string cleanly, bypassing the crash.
+          SAFE_PDK_ROOT="${PDK_ROOT:-}"
+          
+          # If it was empty, assign it to a hard workspace directory
+          if [ -z "$SAFE_PDK_ROOT" ]; then
+              SAFE_PDK_ROOT="${{ github.workspace }}/pdk"
+          fi
+          mkdir -p "$SAFE_PDK_ROOT"
           
           echo "🚀 Invoking OpenLane 2 macro compiler container..."
-          # 🌟 THE CRITICAL FIX: Every single path mapping uses the local HOST_PDK bound variable
+          # Pass the securely bound SAFE_PDK_ROOT everywhere to avoid unbound flags
           docker run --rm \
             -v ${{ github.workspace }}:/work \
-            -v "$HOST_PDK":"$HOST_PDK" \
-            -e PDK_ROOT="$HOST_PDK" \
+            -v "$SAFE_PDK_ROOT":"$SAFE_PDK_ROOT" \
+            -e PDK_ROOT="$SAFE_PDK_ROOT" \
             -w /work \
             efabless/openlane:v2 \
-            make PDK=ihp PDK_ROOT="$HOST_PDK"
+            make PDK=ihp PDK_ROOT="$SAFE_PDK_ROOT"
     
           echo "✅ Successfully delivered hardened abstract views into macro/ directory."
           ls -la ${{ github.workspace }}/macro/
