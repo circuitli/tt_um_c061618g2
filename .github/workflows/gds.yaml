@@ -61,14 +61,20 @@ jobs:
           # 🌟 Call the Makefile with the system environment variables cleanly passed
           #make PDK=ihp PDK_ROOT="${PDK_ROOT}"
 
-          # Launch the Makefile directly through Docker - no setup actions required!
-          # This compiles your 406 cells, respects the 75% density parameters, 
-          # and creates your layout and timing abstracts directly inside macro/
+          echo "⚙️ Initialising local PDK workspace boundaries..."
+          # Setup an absolute, local PDK path anchor right inside the workspace
+          LOCAL_PDK_ROOT="${{ github.workspace }}/pdk"
+          mkdir -p "$LOCAL_PDK_ROOT"
+          
+          echo "🚀 Invoking OpenLane 2 macro compiler container..."
+          # Pass the absolute path variable into the docker environment map
           docker run --rm \
             -v ${{ github.workspace }}:/work \
+            -v "$LOCAL_PDK_ROOT":"$LOCAL_PDK_ROOT" \
+            -e PDK_ROOT="$LOCAL_PDK_ROOT" \
             -w /work \
             efabless/openlane:v2 \
-            make PDK=ihp
+            make PDK=ihp PDK_ROOT="$LOCAL_PDK_ROOT"
     
           echo "✅ Successfully delivered hardened abstract views into macro/ directory."
           ls -la ${{ github.workspace }}/macro/
