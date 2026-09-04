@@ -126,31 +126,51 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
+      - name: Cache Workcraft Build Artifacts
+        id: cache-workcraft
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ${{ github.workspace }}/workspace_workcraft
+          # The cache key is bound to the latest commit hash of Workcraft master branch
+          key: workcraft-build-${{ github.sha }}
+          restore-keys: |
+            workcraft-build-
+
       - name: Compile Workcraft From Source
         working-directory: ${{ github.workspace }}
         shell: bash
         run: |
           set -euo pipefail
-          echo "🔨 Cloning Workcraft..."
-          git clone --depth 1 https://github.com/workcraft/workcraft.git workspace_workcraft
-          cd workspace_workcraft
-          echo "📦 Initialising Workcraft submodules..."
-          git submodule update --init --remote
+
+          # Only clone if the directory doesn't exist yet (handles initial bootstrap)
+          if [ ! -d "workspace_workcraft" ]; then
+              echo "🔨 Cloning Workcraft..."
+              git clone --depth 1 https://github.com workspace_workcraft
+              cd workspace_workcraft
+              echo "📦 Initialising Workcraft submodules..."
+              git submodule update --init --remote
+          else
+              cd workspace_workcraft
+              echo "✨ Cache directory found. Proceeding with incremental compilation check..."
+          fi
+
           export JAVA_HOME=$(dirname $(dirname $(readlink -f $(command -v java))))
           echo "Using JAVA_HOME: ${JAVA_HOME}"
           echo "🔨 Building Workcraft..."
           ./gradlew assemble copyLibs
 
-          # =========================================================================
-          # Workcraft's headless ClassLoader ignores the Java classpath completely.
-          # It looks for a folder named 'plugins' at the root of the workspace.
-          # We must link or copy the compiled plugins directly into this folder.
-          # =========================================================================
-          #mkdir -p plugins
-          #find . -type f -name "org.workcraft.plugins.*.jar" -exec cp {} plugins/ \;
-
+      - name: Restore Workcraft Backend Tool Links
+        working-directory: ${{ github.workspace }}/workspace_workcraft
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "🔗 Mapping platform-specific backend tools (MPSat/Petrify)..."
+          # Remove old broken links if they exist in the cache and establish a clean link
+          rm -f tools
           ln -s dist/template/linux/tools tools
-          echo "✅ Workcraft build complete."
 
       # =========================================================================
       # This runs safely inside the local runner directory context without breaking
@@ -191,8 +211,9 @@ jobs:
           # 2. Use $GITHUB_WORKSPACE to target your repository's test directory exactly
           # 2. Use find to grab the netlist from your already downloaded gds_drop folder
           echo "🔎 Locating the netlist file inside downloaded artifacts..."
-          NETLIST_FILE=$(find "$GITHUB_WORKSPACE/gds_drop" -type f -name "*.v" | head -n 1)
-
+          # Using -print -quit makes find stop natively on the first hit, preventing a broken pipe!
+          NETLIST_FILE=$(find ${{ github.workspace }} -type f -name "gate_level_netlist.v" -print -quit)
+    
           if [ -z "$NETLIST_FILE" ]; then
             echo "❌ ERROR: No gate netlist file found inside gds_drop/"
             exit 1
