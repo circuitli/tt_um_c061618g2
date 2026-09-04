@@ -1,0 +1,45 @@
+/*
+ * Copyright 2026 circuitli (https://github.com)
+ *
+ * Licensed under the CERN Open Hardware Licence Version 2 - Weakly Reciprocal (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://cern-ohl.web.cern.ch/
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+`ifndef BUF_4_V
+`define BUF_4_V
+`default_nettype none
+
+// =========================================================================
+// UNIVERSAL MULTI-PDK BUFFER CELL ABSTRACTION LAYER (Drive Strength 4)
+// =========================================================================
+
+module buf_4 (
+    input wire A,
+    output wire X
+);
+`ifdef IHP_SG13G2
+    // IHP SG130G2 Standard Density Buffer (Drive 4 maps to structural X port)
+    (* keep = "true" *) sg13g2_buf_4 u_cell (.A(A), .X(X));
+`elsif SKY130
+    // SkyWater Sky130 High-Density Buffer (Maps to drive strength 4 variant)
+    (* keep = "true" *) sky130_fd_sc_hd__buf_4 u_cell (.A(A), .X(X));
+`elsif GF180MCU
+    // GlobalFoundries GF180MCU 7-track Buffer (Maps to drive strength 4 variant)
+    (* keep = "true" *) gf180mcu_fd_sc_7at__buf_4 u_cell (.A(A), .Y(X)); // Maps Y to structural X output pin
+`else
+    // Pure behavioral fallback for local verification (Icarus / Verilator)
+    assign X = A;
+`endif
+endmodule
+
+`default_nettype wire
+`endif

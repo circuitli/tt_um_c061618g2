@@ -18,6 +18,8 @@
 `define ASYNC_GLITCH_FILTER_SV
 `default_nettype none
 
+`include "src/tech/inv_1.v"
+`include "src/tech/buf_4.v"
 `include "src/cell/async_latch_cell.v"
 
 module async_glitch_filter #(
@@ -33,7 +35,7 @@ module async_glitch_filter #(
     // -------------------------------------------------------------------------
     // INPUT AND RESET GATE
     // -------------------------------------------------------------------------
-    sg13g2_and2_1 u_input_reset_gate (
+    and2_1 u_input_reset_gate (
         .A (async_in),
         .B (rst_n),
         .X (delay_chain[0])
@@ -50,25 +52,25 @@ module async_glitch_filter #(
             wire internal_inv_node;
 
             // --- FIRST HALF STAGE ---
-            sg13g2_inv_1 u_inv_a (
+            inv_1 u_inv_a (
                 .A (delay_chain[i]),
                 .Y (internal_inv_node)
             );
             
             // Attached capacitor load
-            sg13g2_buf_4 u_load_cap_a (
+            buf_4 u_load_cap_a (
                 .A (internal_inv_node),
                 .X (cap_sink_a[i]) 
             );
 
             // --- SECOND HALF STAGE ---
-            sg13g2_inv_1 u_inv_b (
+            inv_1 u_inv_b (
                 .A (internal_inv_node),
                 .Y (delay_chain[i+1])
             );
 
             // Attached capacitor load
-            sg13g2_buf_4 u_load_cap_b (
+            buf_4 u_load_cap_b (
                 .A (delay_chain[i+1]),
                 .X (cap_sink_b[i]) 
             );

@@ -48,6 +48,9 @@ verilog_defaults -add -I.
 read_verilog -sv lib/cells_formal.sv
 
 # 1. Read standard design RTL files normally as SystemVerilog
+read -formal tech/and2_1.v                          
+read -formal tech/inv_1.v                        
+read -formal tech/buf_4.v                          
 read -sv defs/mmu_defs.sv
 read -sv core/mmu_core.sv
 #read -sv cell/safe_async_mux.sv
@@ -60,6 +63,9 @@ read -sv module/c061618g2.sv
 read -sv tt_um_c061618g2.sv
 
 # 2. Read all three exhaustive formal verification layers
+read -formal tech/and2_1_formal.sv                         
+read -formal tech/inv_1_formal.sv                       
+read -formal tech/buf_4_formal.sv 
 read -formal defs/mmu_defs_formal.sv
 read -formal core/mmu_core_formal.sv
 #read -formal cell/safe_async_mux_formal.sv
@@ -209,6 +215,9 @@ check
 [files]
 # Target Destination Path              # Local Source Repository Path
 #sg13g2_stdcell_clean.v                 
+tech/and2_1.v                          ../src/tech/and2_1.v
+tech/inv_1.v                           ../src/tech/inv_1.v
+tech/buf_4.v                           ../src/tech/buf_4.v
 defs/mmu_defs.sv                       ../src/defs/mmu_defs.sv
 core/mmu_core.sv                       ../src/core/mmu_core.sv
 cell/safe_async_mux.sv                 ../src/cell/safe_async_mux.sv
@@ -218,6 +227,9 @@ module/async_glitch_filter_bank.sv     ../src/module/async_glitch_filter_bank.sv
 #module/c061618g2_input_shield.sv       ../src/module/c061618g2_input_shield.sv
 module/c061618g2.sv                    ../src/module/c061618g2.sv
 tt_um_c061618g2.sv                     ../src/tt_um_c061618g2.sv
+src/tech/and2_1.v                      ../src/tech/and2_1.v
+src/tech/inv_1.v                       ../src/tech/inv_1.v
+src/tech/buf_4.v                       ../src/tech/buf_4.v
 src/defs/mmu_defs.sv                   ../src/defs/mmu_defs.sv
 src/core/mmu_core.sv                   ../src/core/mmu_core.sv
 src/cell/safe_async_mux.sv             ../src/cell/safe_async_mux.sv
@@ -226,6 +238,9 @@ src/module/async_glitch_filter.sv      ../src/module/async_glitch_filter.sv
 src/module/async_glitch_filter_bank.sv ../src/module/async_glitch_filter_bank.sv
 #src/module/c061618g2_input_shield.sv   ../src/module/c061618g2_input_shield.sv
 src/module/c061618g2.sv                ../src/module/c061618g2.sv
+tech/and2_1_formal.sv                      tech/and2_1_formal.sv 
+tech/inv_1_formal.sv                       tech/inv_1_formal.sv 
+tech/buf_4_formal.sv                       tech/buf_4_formal.sv 
 defs/mmu_defs_formal.sv                    defs/mmu_defs_formal.sv
 core/mmu_core_formal.sv                    core/mmu_core_formal.sv
 lib/cells_formal.sv                        lib/cells_formal.sv
