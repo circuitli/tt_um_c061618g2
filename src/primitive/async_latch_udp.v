@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-`ifndef ASYNC_LATCH_UDP_SV
-`define ASYNC_LATCH_UDP_SV
+`ifndef ASYNC_LATCH_UDP_V
+`define ASYNC_LATCH_UDP_V
  
 `default_nettype none
 

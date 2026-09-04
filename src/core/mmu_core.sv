@@ -44,12 +44,7 @@ module mmu_core #(
     input  wire                 ref_n,     // DRAM Refresh Cycle
     input  wire                 mpd_n,     // Math Pack Disable
     input  wire                 be_n,      // BASIC Interpreter Enable
-    
-    `ifdef dfkjlsdjflsdkjflskdjf
-        output wire  [7:0]          core_out
-    `else
-        output pmod3_outputs_t      core_out   // Unidirectional packed structure output
-    `endif
+    output pmod3_outputs_t      core_out   // Unidirectional packed structure output
 );
 
     // =========================================================================
@@ -166,9 +161,6 @@ module mmu_core #(
     assign core_out = sim_out_struct;
 
 endmodule
-
-`default_nettype wire
-
 
 `default_nettype wire
 `endif // MMU_CORE_SVH
