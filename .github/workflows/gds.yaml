@@ -118,7 +118,8 @@ jobs:
       - name: Download GDS Netlist Artifacts
         uses: actions/download-artifact@v4
         with:
-          path: gds_drop/
+          # Explicitly use the global workspace variable to anchor the directory path
+          path: ${{ github.workspace }}/gds_drop/
           merge-multiple: true # Prevents v4 from creating an extra nested sub-folder
 
       - name: Setup Java Runtime Environment
@@ -206,6 +207,10 @@ jobs:
         run: |
           set -euo pipefail
 
+          # Target your absolute workspace path to eliminate directory guessing
+          TARGET_DIR="${{ github.workspace }}/gds_drop"
+          TEST_DIR="${{ github.workspace }}/test"
+
           echo "📦 Merging IHP SG13G2 technology library with gate netlist..."
           # Paths to the files
           LIB_FILE="./sg13g2_stdcell_clean.v"
@@ -214,7 +219,7 @@ jobs:
           echo "🔎 Locating the netlist file inside downloaded artifacts..."
           # Using -print -quit makes find stop natively on the first hit, preventing a broken pipe!
           # 1. Dynamically find the real post-route gate-level Verilog file from the active run directory
-          NETLIST_FILE=$(find gds_drop/ -type f -name "*.v" -print -quit)
+          NETLIST_FILE=$(find "${TARGET_DIR}" -type f -name "*.v" -print -quit)
 
           if [ -z "$NETLIST_FILE" ]; then
             echo "❌ ERROR: No gate netlist file found inside gds_drop/"

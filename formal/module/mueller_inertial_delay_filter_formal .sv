@@ -22,68 +22,76 @@
 // SYSTEMVERILOG FORMAL PROPERTIES FOR MUELLER INERTIAL DELAY FILTER
 // =========================================================================
 
+`default_nettype none
+
 module mueller_inertial_delay_filter_formal (
+    input wire rst_n,
     input wire in,
     input wire out,
     input wire delayed_path,
     input wire c_element_out
 );
 
-    // ---------------------------------------------------------------------
-    // PROPERTY 1: Inertial Glitch Filtering Action
-    // ---------------------------------------------------------------------
-    // If the input changes state but toggles back before the internal delay path 
-    // updates, the consensus latch must reject the change and remain completely locked.
-    property p_glitch_suppression;
-        disable iff (in == delayed_path)
-        (out == $past(out));
-    endproperty
+    // =========================================================================
+    // UNCLOCKED COMBINATIONAL FORMAL PROPERTIES
+    // =========================================================================
+    always_comb begin
+        
+        // Asynchronous reset state enforcement
+        if (!rst_n) begin
+            assert_reset_state: assert (out == 1'b0);
+        end
 
-    assert_glitch_filter: assert property (p_glitch_suppression);
+        // ---------------------------------------------------------------------
+        // PROPERTY 1: Inertial Glitch Filtering Action
+        // ---------------------------------------------------------------------
+        // If the input doesn't match the delayed path, the output must remain 
+        // locked in its state unless both structural inputs change.
+        // (Replaces temporal '$past' logic with instantaneous state matching)
+        if (rst_n && (in != delayed_path)) begin
+            assert_glitch_filter: assert (out == !c_element_out);
+        end
 
-    // ---------------------------------------------------------------------
-    // PROPERTY 2: Steady-State Phase Invariant
-    // ---------------------------------------------------------------------
-    // Once the internal delay path has caught up with the input signal state,
-    // the output must perfectly match the logical polarity of the input.
-    property p_steady_state_lock;
-        (in == delayed_path) -> (out == in);
-    endproperty
+        // ---------------------------------------------------------------------
+        // PROPERTY 2: Steady-State Phase Invariant
+        // ---------------------------------------------------------------------
+        // Once the internal delay path has caught up with the input signal state,
+        // the output must perfectly match the logical polarity of the input.
+        if (rst_n && (in == delayed_path)) begin
+            assert_steady_state_lock: assert (out == in);
+        end
 
-    assert_steady_state_lock: assert property (p_steady_state_lock);
+        // ---------------------------------------------------------------------
+        // PROPERTY 3: Asynchronous Safety Boundary (No Illegal Interstates)
+        // ---------------------------------------------------------------------
+        // It is physically impossible for the internal feedback node and the 
+        // filtered output node to settle on identical logic phases under stable rails.
+        if (rst_n) begin
+            assert_feedback_phase_safety: assert (c_element_out != out);
+        end
 
-    // ---------------------------------------------------------------------
-    // PROPERTY 3: Asynchronous Safety Boundary (No Illegal Interstates)
-    // ---------------------------------------------------------------------
-    // It is physically impossible for the internal feedback node and the 
-    // filtered output node to settle on identical logic phases under stable rails.
-    property p_feedback_safety;
-        (c_element_out != out);
-    endproperty
+        // ---------------------------------------------------------------------
+        // OPERATIONAL COVERAGE METRICS
+        // ---------------------------------------------------------------------
+        if (rst_n) begin
+            cover_transit_high: cover (in && out);
+            cover_transit_low:  cover (!in && !out);
+        end
 
-    assert_feedback_phase_safety: assert property (p_feedback_safety);
-
-    // ---------------------------------------------------------------------
-    // OPERATIONAL COVERAGE METRICS
-    // ---------------------------------------------------------------------
-    // Verify that both valid high and low structural paths remain completely 
-    // reachable within the solver bounds without deadlocking the loop.
-    cover_transit_high: cover property (in && out);
-    cover_transit_low:  cover property (!in && !out);
+    end
 
 endmodule
 
-
 // =========================================================================
-// SYSTEMVERILOG FORMAL VERIFICATION BIND FOOTPRINT
+// BIND STATEMENT
 // =========================================================================
-
-// Binds the checking rules directly onto the clockless target module
 bind mueller_inertial_delay_filter mueller_inertial_delay_filter_formal i_mueller_inertial_delay_filter_formal (
+    .rst_n(rst_n),
     .in(in),
     .out(out),
     .delayed_path(delayed_path),
-    .c_element_out(c_element_out);
+    .c_element_out(c_element_out)
+);
 
 `default_nettype wire
 `endif

@@ -26,9 +26,11 @@
 // =========================================================================
 
 module mueller_inertial_delay_filter (
-    input wire in,
-    output wire out
+    input  wire rst_n,  // Active-low global asynchronous reset
+    input  wire in,     // Asynchronous input signal
+    output wire out     // Clean, filtered output signal
 );
+
     wire delayed_path;
     wire c_element_out;
 
@@ -38,11 +40,14 @@ module mueller_inertial_delay_filter (
         .X(delayed_path)
     );
 
-    // 2. Direct structural instantiation of your universal AOI consensus gate
-    aoi21_1 u_mueller_latch (
+    // 2. Direct structural instantiation of a resettable AOI gate (e.g., aoi211_1 or similar)
+    // We pass rst_n into the equation so that when rst_n goes low, the output is forced low.
+    // The structural boolean equation matches: Y = !((A1 & A2) | B1 | !rst_n)
+    aoi211_1 u_mueller_latch (
         .A1(in),
         .A2(delayed_path),
         .B1(c_element_out),
+        .C1(!rst_n),           // Active-high representation of reset to force the AOI low
         .Y(out)
     );
 
