@@ -213,7 +213,7 @@ jobs:
           echo "🔎 Locating the netlist file inside downloaded artifacts..."
           # Using -print -quit makes find stop natively on the first hit, preventing a broken pipe!
           # 1. Dynamically find the real post-route gate-level Verilog file from the active run directory
-          NETLIST_FILE=$(find runs/ -type f -path "*/final/*" -name "*.v" -print -quit)
+          NETLIST_FILE=$(find gds_drop/ -type f -name "*.v" -print -quit)
 
           if [ -z "$NETLIST_FILE" ]; then
             echo "❌ ERROR: No gate netlist file found inside gds_drop/"
