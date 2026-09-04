@@ -119,6 +119,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: gds_drop/
+          merge-multiple: true # Prevents v4 from creating an extra nested sub-folder
 
       - name: Setup Java Runtime Environment
         uses: actions/setup-java@v5
