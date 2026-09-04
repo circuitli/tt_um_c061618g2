@@ -3,7 +3,7 @@
 // =========================================================================
 
 // Disable the automated background directory scanning via the real framework API
-framework.setConfigVar("VerilogImporter.searchPaths", "");
+setConfigVar("VerilogImporter.searchPaths", "");
 
 var designFile = "../test/combined_netlist.v";
 var work = importCircuitVerilog(designFile, "tt_um_c061618g2");
