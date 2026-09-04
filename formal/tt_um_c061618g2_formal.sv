@@ -109,4 +109,5 @@ bind tt_um_c061618g2 tt_um_c061618g2_formal i_tt_um_c061618g2_formal (
     .rst_n     (rst_n)    // TT strict positional slot
 );
 
+`default_nettype wire
 //`endif

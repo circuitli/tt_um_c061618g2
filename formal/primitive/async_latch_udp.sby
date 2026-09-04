@@ -23,7 +23,7 @@ smtbmc yices
 verilog_defaults -add -I.
 
 # 1. Read the custom UDP cell code mapped into workspace memory
-read -sv async_latch_udp.sv
+read -v async_latch_udp.v
 
 # 2. Read the local standalone primitive checker properties
 read -formal async_latch_udp_formal.sv
@@ -34,5 +34,5 @@ clk2fflogic
 
 [files]
 # Adjusted by exactly one path layer to find your pure source code directory
-async_latch_udp.sv                 ../../src/module/async_latch_udp.sv
+async_latch_udp.v                ../../src/primitive/async_latch_udp.v
 async_latch_udp_formal.sv          async_latch_udp_formal.sv

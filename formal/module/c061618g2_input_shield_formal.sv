@@ -132,5 +132,4 @@ bind c061618g2_input_shield c061618g2_input_shield_formal i_c061618g2_input_shie
 );
 
 `default_nettype wire
-
 `endif 

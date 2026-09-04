@@ -224,4 +224,5 @@ bind mmu_core mmu_core_formal i_mmu_core_formal (
     .core_out (core_out)
 );
 
+`default_nettype wire
 `endif

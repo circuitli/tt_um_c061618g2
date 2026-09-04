@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-`ifndef ASYNC_GLITCH_FILTER_SVH
-`define ASYNC_GLITCH_FILTER_SVH
+`ifndef ASYNC_GLITCH_FILTER_SV
+`define ASYNC_GLITCH_FILTER_SV
 `default_nettype none
 
-`include "src/module/async_latch_cell.sv"
+`include "src/cell/async_latch_cell.v"
 
 module async_glitch_filter #(
     parameter int STAGES = 3 // Number of double-inverter delay blocks

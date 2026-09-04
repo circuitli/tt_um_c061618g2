@@ -96,5 +96,6 @@ bind anti_glitch_filter anti_glitch_filter_formal i_anti_glitch_filter_formal (
     .clean_signal_out (clean_signal_out)
 );
 
+`default_nettype wire
 `endif // ANTI_GLITCH_FILTER_FORMAL_SV
 

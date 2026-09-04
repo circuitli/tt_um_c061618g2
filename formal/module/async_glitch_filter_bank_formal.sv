@@ -73,5 +73,6 @@ bind async_glitch_filter_bank async_glitch_filter_bank_formal #(
     .async_out (async_out)
 );
 
+`default_nettype wire
 `endif // ASYNC_GLITCH_FILTER_BANK_FORMAL_SVH
 

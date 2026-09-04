@@ -96,4 +96,6 @@ module mmu_defs_formal(
     assert property (p3_out.s5_n         == uo_out[0]);
 
 endmodule
+
+`default_nettype wire
 `endif

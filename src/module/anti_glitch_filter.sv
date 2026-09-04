@@ -54,4 +54,5 @@ module async_glitch_filter #(
 
 endmodule
 
+`default_nettype wire
 `endif

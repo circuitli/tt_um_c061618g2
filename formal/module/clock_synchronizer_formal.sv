@@ -107,4 +107,5 @@ bind clock_synchronizer clock_synchronizer_formal #(.STAGES(2)) i_clock_synchron
     .sync_stages(sync_stages)
 );
 
+`default_nettype wire
 `endif

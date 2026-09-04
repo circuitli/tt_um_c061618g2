@@ -87,4 +87,5 @@ bind async_glitch_filter async_glitch_filter_formal #(
     .cap_sink_b  (cap_sink_b)
 );
 
+`default_nettype wire
 `endif // ASYNC_GLITCH_FILTER_FORMAL_SV

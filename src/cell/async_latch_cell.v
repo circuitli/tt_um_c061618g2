@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-`ifndef ASYNC_LATCH_CELL_SV
-`define ASYNC_LATCH_CELL_SV
+`ifndef ASYNC_LATCH_CELL_V
+`define ASYNC_LATCH_CELL_V
 
 `default_nettype none
 

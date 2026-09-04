@@ -76,4 +76,6 @@ bind signal_divider_by_4 signal_divider_by_4_formal i_signal_divider_by_4_formal
     .signal_out(signal_out),
     .sample_cnt(sample_cnt)
 );
+
+`default_nettype wire
 `endif

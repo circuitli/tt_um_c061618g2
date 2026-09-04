@@ -72,6 +72,5 @@ module c061618g2_input_shield (
 endmodule
 
 `default_nettype wire
-
 `endif 
 
