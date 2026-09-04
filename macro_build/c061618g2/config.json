@@ -1,0 +1,52 @@
+{
+  "DESIGN_NAME": "c061618g2",
+  "VERILOG_FILES": [
+    "dir::src/module/c061618g2.sv"
+  ],
+  "VERILOG_INCLUDE_DIRS": [
+    "dir::"
+  ],
+
+  "// -------------------------------------------------------------------------": "",
+  "// 1. HARD MACRO BLOCK DESIGNATION (Stops Top-Level Pad Grid Inference)": "",
+  "// -------------------------------------------------------------------------": "",
+  "DESIGN_IS_CORE": false,
+  "CLOCK_PORT": null,
+  "FP_SIZING": "absolute",
+  "FP_CORE_UTIL": 90,
+  "PL_TARGET_DENSITY_PCT": 75,
+
+  "// -------------------------------------------------------------------------": "",
+  "// 2. ROUTING AND RESOLUTION OPTIMIZATIONS FOR ASYNCHRONOUS LOOPS": "",
+  "// -------------------------------------------------------------------------": "",
+  "SYNTH_FLAT_TOP": false,
+  "SYNTH_BUFFERING": false,
+  "SYNTH_SIZING": false,
+  "GRT_ALLOW_CONGESTION": false,
+
+  "// -------------------------------------------------------------------------": "",
+  "// 3. TARGET ENVIRONMENT ENVELOPE SEEDING (Cross-PDK Platform Controls)": "",
+  "// -------------------------------------------------------------------------": "",
+  "pdk::ihp-sg13g2": {
+    "VERILOG_DEFINES": [ "IHP_SG13G2" ],
+    "DIE_AREA": [ 0, 0, 78.48, 61.56 ],
+    "FP_TAP_DISTANCE": 15,
+    "GLB_RT_MAX_DIODE_INS_ITERS": 0
+  },
+
+  "pdk::sky130*": {
+    "VERILOG_DEFINES": [ "SKY130" ],
+    "STD_CELL_LIBRARY": "sky130_fd_sc_hd",
+    "DIE_AREA": [ 0, 0, 55.76, 43.52 ],
+    "FP_TAP_DISTANCE": 14,
+    "DIODE_INSERTION_STRATEGY": 0
+  },
+
+  "pdk::gf180mcu*": {
+    "VERILOG_DEFINES": [ "GF180MCU" ],
+    "STD_CELL_LIBRARY": "gf180mcu_fd_sc_mcu7t5v0",
+    "DIE_AREA": [ 0, 0, 91.44, 78.40 ],
+    "FP_TAP_DISTANCE": 16,
+    "DIODE_INSERTION_STRATEGY": 0
+  }
+}

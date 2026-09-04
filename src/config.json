@@ -13,7 +13,28 @@
 
   "DESIGN_NAME": "tt_um_c061618g2",
 
-  "VERILOG_DEFINES": [ "IHP_SG13G2" ],
+  "// -------------------------------------------------------------------------": "",
+  "// GLOBAL EXTRA MACRO FILE INTEGRATION (Evaluated Once Globally)": "",
+  "// -------------------------------------------------------------------------": "",
+  "EXTRA_LEFS": [ "dir::macro/*.lef" ],
+  "EXTRA_LIBS": [ "dir::macro/*.lib" ],
+
+  "// -------------------------------------------------------------------------": "",
+  "// STRICT PROCESS-SPECIFIC OVERRIDES ONLY": "",
+  "// -------------------------------------------------------------------------": "",
+  "pdk::ihp-sg13g2": {
+    "VERILOG_DEFINES": [ "IHP_SG13G2" ]
+  },
+
+  "pdk::sky130*": {
+    "VERILOG_DEFINES": [ "SKY130" ],
+    "STD_CELL_LIBRARY": "sky130_fd_sc_hd"
+  },
+
+  "pdk::gf180mcu*": {
+    "VERILOG_DEFINES": [ "GF180MCU" ],
+    "STD_CELL_LIBRARY": "gf180mcu_fd_sc_mcu7t5v0"
+  },
 
   "//": "CLOCK_PERIOD - Increase this in case you are getting setup time violations.",
   "//": "The value is in nanoseconds, so 20ns == 50MHz.",
@@ -166,7 +187,7 @@
       "box": [ 0, 0, 45.36, 15.12 ]
     }
   },
-  "_MACROS": {
+  "MACROS": {
     "c061618g2": {
       "instances": {
         "u_c061618g2": {
