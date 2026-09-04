@@ -16,8 +16,7 @@
   "// -------------------------------------------------------------------------": "",
   "// GLOBAL EXTRA MACRO FILE INTEGRATION (Evaluated Once Globally)": "",
   "// -------------------------------------------------------------------------": "",
-  "EXTRA_LEFS": [ "dir::macro/*.lef" ],
-  "EXTRA_LIBS": [ "dir::macro/*.lib" ],
+  "_EXTRA_LEFS": [ "dir::macro/*.lef" ],
 
   "// -------------------------------------------------------------------------": "",
   "// STRICT PROCESS-SPECIFIC OVERRIDES ONLY": "",
@@ -189,6 +188,8 @@
   },
   "MACROS": {
     "c061618g2": {
+      "gds": [ "dir::openlane/c061618g2/runs/*/final/gds/c061618g2.gds" ],
+      "lef": [ "dir::openlane/c061618g2/runs/*/final/lef/c061618g2.lef" ],
       "instances": {
         "u_c061618g2": {
           "location": [ 10.0, 10.0 ],
@@ -197,6 +198,8 @@
       }
     }
   },
+  "EXTRA_LIBS": [ "dir::openlane/c061618g2/runs/*/final/lib/c061618g2.lib" ],
+
   "_MACRO_PLACEMENT": {
     "u_c061618g2": {
       "location": [ 10.0, 10.0 ],
