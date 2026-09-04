@@ -62,19 +62,19 @@ jobs:
           #make PDK=ihp PDK_ROOT="${PDK_ROOT}"
 
           echo "⚙️ Initialising local PDK workspace boundaries..."
-          # Setup an absolute, local PDK path anchor right inside the workspace
-          LOCAL_PDK_ROOT="${{ github.workspace }}/pdk"
-          mkdir -p "$LOCAL_PDK_ROOT"
+          # Secure a fallback declaration path so PDK_ROOT is 100% bound locally first
+          HOST_PDK="${PDK_ROOT:-${{ github.workspace }}/pdk}"
+          mkdir -p "$HOST_PDK"
           
           echo "🚀 Invoking OpenLane 2 macro compiler container..."
-          # Pass the absolute path variable into the docker environment map
+          # 🌟 THE CRITICAL FIX: Every single path mapping uses the local HOST_PDK bound variable
           docker run --rm \
             -v ${{ github.workspace }}:/work \
-            -v "$LOCAL_PDK_ROOT":"$LOCAL_PDK_ROOT" \
-            -e PDK_ROOT="$LOCAL_PDK_ROOT" \
+            -v "$HOST_PDK":"$HOST_PDK" \
+            -e PDK_ROOT="$HOST_PDK" \
             -w /work \
             efabless/openlane:v2 \
-            make PDK=ihp PDK_ROOT="$LOCAL_PDK_ROOT"
+            make PDK=ihp PDK_ROOT="$HOST_PDK"
     
           echo "✅ Successfully delivered hardened abstract views into macro/ directory."
           ls -la ${{ github.workspace }}/macro/
