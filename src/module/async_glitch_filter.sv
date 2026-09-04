@@ -18,6 +18,7 @@
 `define ASYNC_GLITCH_FILTER_SV
 `default_nettype none
 
+`include "src/tech/and2_1.v"
 `include "src/tech/inv_1.v"
 `include "src/tech/buf_4.v"
 `include "src/cell/async_latch_cell.v"
