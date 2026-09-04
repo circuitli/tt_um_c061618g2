@@ -21,7 +21,7 @@
 module and2_1_formal (
     input wire A,
     input wire B,
-    input wire Y
+    input wire X
 );
 
     // =========================================================================
@@ -30,16 +30,16 @@ module and2_1_formal (
     always_comb begin
         // Property 1: If either input is low, output Y must be low
         if (!A || !B) begin
-            assert_low_dominance: assert (Y == 1'b0);
+            assert_low_dominance: assert (X == 1'b0);
         end
 
         // Property 2: If both inputs are high, output Y must be high
         if (A && B) begin
-            assert_high_condition: assert (Y == 1'b1);
+            assert_high_condition: assert (X == 1'b1);
         end
 
         // Property 3: Safety logic equivalence equation mapping
-        assert_boolean_equivalence: assert (Y == (A & B));
+        assert_boolean_equivalence: assert (X == (A & B));
     end
 
 endmodule
@@ -47,10 +47,10 @@ endmodule
 // =========================================================================
 // BIND STATEMENT
 // =========================================================================
-bind and2_1 and2_1_formal u_and2_1_fv (
+bind and2_1 and2_1_formal i_and2_1_formal (
     .A(A),
     .B(B),
-    .Y(Y)
+    .X(X)
 );
 
 `default_nettype wire

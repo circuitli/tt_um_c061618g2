@@ -25,7 +25,7 @@
 module and2_1 (
     input wire A,   // Input operand A
     input wire B,   // Input operand B
-    output wire Y   // Output (A AND B)
+    output wire X   // Output (A AND B)
 );
 `ifdef IHP_SG13G2
     // IHP SG13G2 Open-Source 130nm AND2_1
@@ -33,7 +33,7 @@ module and2_1 (
     sg13g2_and2_1 u_cell (
         .A(A), 
         .B(B), 
-        .Y(Y)
+        .X(X)
     );
 `elsif SKY130
     // SkyWater Sky130 High-Density AND2_1
@@ -41,7 +41,7 @@ module and2_1 (
     sky130_fd_sc_hd__and2_1 u_cell (
         .A(A), 
         .B(B), 
-        .X(Y) // Maps SkyWater's internal X output port to top level Y
+        .X(X) // Maps SkyWater's internal X output port to top level Y
     );
 `elsif GF180MCU
     // GlobalFoundries GF180MCU 7-track 5V AND2_1
@@ -49,11 +49,11 @@ module and2_1 (
     gf180mcu_fd_sc_mcu7t5v0__and2_1 u_cell (
         .I0(A), // GF naming convention uses I0/I1 for logic gate inputs
         .I1(B), 
-        .Z(Y)   // Maps GF's internal Z output port to top level Y
+        .Z(X)   // Maps GF's internal Z output port to top level Y
     );
 `else
     // Pure behavioral fallback for local verification (Icarus / Verilator / Cocotb)
-    assign Y = A & B;
+    assign X = A & B;
 `endif
 endmodule
 

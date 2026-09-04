@@ -39,7 +39,7 @@ module async_glitch_filter #(
     and2_1 u_input_reset_gate (
         .A (async_in),
         .B (rst_n),
-        .Y (delay_chain[0])
+        .X (delay_chain[0])
     );
 
     wire [STAGES-1:0] cap_sink_a;

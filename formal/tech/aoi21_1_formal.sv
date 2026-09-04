@@ -53,7 +53,7 @@ endmodule
 // =========================================================================
 // SYSTEMVERILOG FORMAL VERIFICATION BIND FOOTPRINT
 // =========================================================================
-bind aoi21_1 aoi21_1_formal u_formal_aoi_checks (
+bind aoi21_1 aoi21_1_formal i_aoi21_1_formal (
     .A1(A1),
     .A2(A2),
     .B1(B1),
