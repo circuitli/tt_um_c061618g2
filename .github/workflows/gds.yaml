@@ -21,6 +21,7 @@ jobs:
           submodules: recursive
 
       - name: ⚙️ Setup Tiny Tapeout Toolchain (Installs OpenLane Natively)
+        if: false
         uses: TinyTapeout/tt-setup-action@v2
         with:
           pdk: ihp-sg13g2 # Installs the required IHP PDK standard libraries
@@ -59,12 +60,21 @@ jobs:
     
           # Extract the absolute path where ciel-action just unpacked the PDK assets
           #export PDK_ROOT="${{ github.workspace }}/pdk"
-          export OPENLANE_ROOT="${{ github.workspace }}/openlane"
+          # OPENLANE_ROOT="${{ github.workspace }}/openlane"
     
           echo "PDK_ROOT is securely mounted at: ${PDK_ROOT}"
     
           # 🌟 Call the Makefile with the system environment variables cleanly passed
-          make PDK=ihp PDK_ROOT="${PDK_ROOT}"
+          #make PDK=ihp PDK_ROOT="${PDK_ROOT}"
+
+          # Launch the Makefile directly through Docker - no setup actions required!
+          # This compiles your 406 cells, respects the 75% density parameters, 
+          # and creates your layout and timing abstracts directly inside macro/
+          docker run --rm \
+            -v ${{ github.workspace }}:/work \
+            -w /work \
+            efabless/openlane:v2 \
+            make PDK=ihp
     
           echo "✅ Successfully delivered hardened abstract views into macro/ directory."
           ls -la ${{ github.workspace }}/macro/
