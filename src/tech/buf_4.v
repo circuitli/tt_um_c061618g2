@@ -33,8 +33,8 @@ module buf_4 (
     // SkyWater Sky130 High-Density Buffer (Maps to drive strength 4 variant)
     (* keep = "true" *) sky130_fd_sc_hd__buf_4 u_cell (.A(A), .X(X));
 `elsif GF180MCU
-    // GlobalFoundries GF180MCU 7-track Buffer (Maps to drive strength 4 variant)
-    (* keep = "true" *) gf180mcu_fd_sc_7at__buf_4 u_cell (.A(A), .Y(X)); // Maps Y to structural X output pin
+    // GlobalFoundries GF180MCU 7-track Buffer (Drive 4 maps to standard Z port)
+    (* keep = "true" *) gf180mcu_fd_sc_mcu7t5v0__buf_4 u_cell (.I(A), .Z(X)); 
 `else
     // Pure behavioral fallback for local verification (Icarus / Verilator)
     assign X = A;
