@@ -36,6 +36,7 @@ module async_glitch_filter #(
     // -------------------------------------------------------------------------
     // INPUT AND RESET GATE
     // -------------------------------------------------------------------------
+    (* keep = "true" *)
     and2_1 u_input_reset_gate (
         .A (async_in),
         .B (rst_n),
@@ -53,24 +54,28 @@ module async_glitch_filter #(
             wire internal_inv_node;
 
             // --- FIRST HALF STAGE ---
+            (* keep = "true" *)
             inv_1 u_inv_a (
                 .A (delay_chain[i]),
                 .Y (internal_inv_node)
             );
             
             // Attached capacitor load
+            (* keep = "true" *)
             buf_4 u_load_cap_a (
                 .A (internal_inv_node),
                 .X (cap_sink_a[i]) 
             );
 
             // --- SECOND HALF STAGE ---
+            (* keep = "true" *)
             inv_1 u_inv_b (
                 .A (internal_inv_node),
                 .Y (delay_chain[i+1])
             );
 
             // Attached capacitor load
+            (* keep = "true" *)
             buf_4 u_load_cap_b (
                 .A (delay_chain[i+1]),
                 .X (cap_sink_b[i]) 
@@ -95,6 +100,7 @@ module async_glitch_filter #(
     // =========================================================================
     logic  latch_raw_out;
 
+    (* keep = "true" *)
     async_latch_cell u_latch_inst (
         .rst_n (rst_n),
         .set   (filter_set),  

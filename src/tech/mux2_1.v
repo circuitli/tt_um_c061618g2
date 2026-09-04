@@ -30,7 +30,6 @@ module mux2_1 (
 );
 `ifdef IHP_SG13G2
     // IHP SG13G2 Open-Source 130nm MUX2_1
-    (* keep = "true" *) 
     sg13g2_mux2_1 u_cell (
         .A0(A0), 
         .A1(A1), 
@@ -39,7 +38,6 @@ module mux2_1 (
     );
 `elsif SKY130
     // SkyWater Sky130 High-Density MUX2_1
-    (* keep = "true" *) 
     sky130_fd_sc_hd__mux2_1 u_cell (
         .A0(A0), 
         .A1(A1), 
@@ -48,7 +46,6 @@ module mux2_1 (
     );
 `elsif GF180MCU
     // GlobalFoundries GF180MCU 7-track 5V MUX2_1
-    (* keep = "true" *) 
     gf180mcu_fd_sc_mcu7t5v0__mux2_1 u_cell (
         .I0(A0), // GF naming convention uses I0/I1 for data inputs
         .I1(A1), 

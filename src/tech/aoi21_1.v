@@ -25,11 +25,11 @@ module aoi21_1 (
     output wire Y
 );
 `ifdef IHP_SG13G2
-    (* keep = "true" *) sg13g2_aoi21_1 u_cell (.A1(A1), .A2(A2), .B1(B1), .Y(Y));
+    sg13g2_aoi21_1 u_cell (.A1(A1), .A2(A2), .B1(B1), .Y(Y));
 `elsif SKY130
-    (* keep = "true" *) sky130_fd_sc_hd__aoi21_1 u_cell (.A1(A1), .A2(A2), .B1(B1), .Y(Y));
+    sky130_fd_sc_hd__aoi21_1 u_cell (.A1(A1), .A2(A2), .B1(B1), .Y(Y));
 `elsif GF180MCU
-    (* keep = "true" *) gf180mcu_fd_sc_7at__aoi21_1 u_cell (.A1(A1), .A2(A2), .B1(B1), .Y(Y));
+    gf180mcd_sc_7at__aoi21_1 u_cell (.A1(A1), .A2(A2), .B1(B1), .Y(Y));
 `else
     // Fallback behavioral modeling for Verilator/Icarus simulators
     assign Y = !((A1 && A2) || B1);

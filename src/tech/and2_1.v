@@ -29,7 +29,6 @@ module and2_1 (
 );
 `ifdef IHP_SG13G2
     // IHP SG13G2 Open-Source 130nm AND2_1
-    (* keep = "true" *) 
     sg13g2_and2_1 u_cell (
         .A(A), 
         .B(B), 
@@ -37,7 +36,6 @@ module and2_1 (
     );
 `elsif SKY130
     // SkyWater Sky130 High-Density AND2_1
-    (* keep = "true" *) 
     sky130_fd_sc_hd__and2_1 u_cell (
         .A(A), 
         .B(B), 
@@ -45,7 +43,6 @@ module and2_1 (
     );
 `elsif GF180MCU
     // GlobalFoundries GF180MCU 7-track 5V AND2_1
-    (* keep = "true" *) 
     gf180mcu_fd_sc_mcu7t5v0__and2_1 u_cell (
         .I0(A), // GF naming convention uses I0/I1 for logic gate inputs
         .I1(B), 

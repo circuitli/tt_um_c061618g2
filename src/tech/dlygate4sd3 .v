@@ -23,11 +23,11 @@ module dlygate4sd3 (
     output wire X
 );
 `ifdef IHP_SG13G2
-    (* keep = "true" *) sg13g2_dlygate4sd3 u_cell (.A(A), .X(X));
+    sg13g2_dlygate4sd3 u_cell (.A(A), .X(X));
 `elsif SKY130
-    (* keep = "true" *) sky130_fd_sc_hd__dlygate4sd3 u_cell (.A(A), .X(X));
+    sky130_fd_sc_hd__dlygate4sd3 u_cell (.A(A), .X(X));
 `elsif GF180MCU
-    (* keep = "true" *) gf180mcu_fd_sc_7at__dlygate4sd3 u_cell (.A(A), .Y(X));
+    gf180mcu_fd_sc_7at__dlygate4sd3 u_cell (.A(A), .Y(X));
 `else
     // Fallback behavioral assignment for local testbench verifications
     assign #1 X = A;

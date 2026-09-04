@@ -28,13 +28,13 @@ module inv_1 (
 );
 `ifdef IHP_SG13G2
     // IHP SG130G2 Standard Density Inverter
-    (* keep = "true" *) sg13g2_inv_1 u_cell (.A(A), .Y(Y));
+    sg13g2_inv_1 u_cell (.A(A), .Y(Y));
 `elsif SKY130
     // SkyWater Sky130 High-Density Inverter
-    (* keep = "true" *) sky130_fd_sc_hd__inv_1 u_cell (.A(A), .Y(Y));
+    sky130_fd_sc_hd__inv_1 u_cell (.A(A), .Y(Y));
 `elsif GF180MCU
     // GlobalFoundries GF180MCU 7-track Inverter
-    (* keep = "true" *) gf180mcu_fd_sc_7at__inv_1 u_cell (.A(A), .Y(Y));
+    gf180mcu_fd_sc_7at__inv_1 u_cell (.A(A), .Y(Y));
 `else
     // Pure behavioral fallback for local verification (Icarus / Verilator)
     assign Y = !A;
