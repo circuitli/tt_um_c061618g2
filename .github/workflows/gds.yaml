@@ -46,6 +46,7 @@ jobs:
           echo "PDK=ihp-sg13g2" >> $GITHUB_ENV
 
       - name: 🔨 Compile Pre-Hardened Asynchronous Macros
+        if: false
         working-directory: ${{ github.workspace }}
         shell: bash
         run: |
@@ -109,6 +110,9 @@ jobs:
         #  FP_PLACEMENT_CONSTRAINTS: "src/floorplan_hooks.tcl"
         with:
           pdk: ihp-sg13g2
+          # Runs the Makefile exactly when the PDK is fully ready
+          # The action automatically handles variables and Docker behind the scenes!
+          pre_hardening_step: "make PDK=ihp"
 
   precheck:
     needs: gds
