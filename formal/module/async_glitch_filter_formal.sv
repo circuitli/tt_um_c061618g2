@@ -26,7 +26,7 @@
 `default_nettype none
 
 module async_glitch_filter_formal #(
-    parameter int STAGES = 2
+    parameter int STAGES = 3
 )(
     input  wire  rst_n,
     input  wire  async_in,

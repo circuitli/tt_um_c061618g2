@@ -35,7 +35,7 @@
 `timescale 1ns/1ps
 
 module mmu_core #(
-    parameter int FILTER_STAGES = 4
+    parameter int FILTER_STAGES = 3
 )(
     input  wire                 rst_n,     // Asynchronous active-low reset
     input  wire  [2:0]          core_ctrl, // Control bits: rd5, rd4, map_n

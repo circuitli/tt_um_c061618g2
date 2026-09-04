@@ -24,7 +24,7 @@
 // =============================================================================
 module async_glitch_filter_bank_formal #(
     parameter int WIDTH  = 13,
-    parameter int STAGES = 4
+    parameter int STAGES = 3
 )(
     input wire                rst_n,      
     input wire  [WIDTH-1:0]   async_in,   

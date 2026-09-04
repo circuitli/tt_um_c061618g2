@@ -1,13 +1,13 @@
 ![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/test/badge.svg) ![](../../workflows/fpga/badge.svg)
 
 ## 1. Overview
-This project implements a high-density Memory Management Unit (MMU) fortraditional 8-bit computer architectures. Fabricated on the open-source 130nm Silicon-Germanium (SiGe) BiCMOS process node (IHP SG13G2), this chip translates logical processor addresses into dynamic memory page-select signals.
+This project implements a Memory Management Unit (MMU) for traditional 8-bit computer architectures. Fabricated on the 130nm Silicon-Germanium (SiGe) BiCMOS process node (IHP SG13G2), this chip translates logical processor addresses into dynamic memory page-select signals.
 
 ## 2. How It Works
 The hardware sits directly on the system's 16-bit address bus, intercepting the high-order address rows to decode sub-space windows. 
 
-* **Address Transposition:** When an access cycle lands within a designated bank-switching window, the internal combinatorial matrix maps the current state of your system register configurations to translate the address space into high-density physical memory array locations.
-* **Synchronous Glitch Rejection:** To prevent transient address hazards or routing path skew from corrupting downstream devices, the critical clock inhibit output line is passed through a multi-stage sequential shift register. This filter samples the internal state over active edges and uses a voting network to filter out sub-nanosecond noise spikes.
+* **Address Transposition:** When an access cycle lands within a designated bank-switching window, the internal combinatorial matrix maps the current state of your system register configurations to translate the address space into physical memory array locations.
+* **Synchronous Glitch Rejection:** To prevent transient signal hazards or routing path skew from corrupting downstream devices, the inputs and outputs are passed through multi-stage filters.These filters samples the internal state and use a voting network to dismiss moise spikes.
 
 ## 3. Hardware Framework Specification
 The physical layout aligns with the Tiny Tapeout hardware tile format using the 130nm SiGe BiCMOS foundry platform (IHP SG13G2). The design is clockless.
@@ -33,7 +33,7 @@ The physical layout aligns with the Tiny Tapeout hardware tile format using the 
 | `uio_in[1]` | `ref_n` | Input | Active-low dynamic refresh cycle signal |
 | `uio_in[2]` | `mpd_n` | Input | Active-Low memory protect select flag |
 | `uio_in[3]` | `be_n` | Input | Active-low interpreter memory space enable |
-| `uio_in[4]` | `TESTMODE_n` | Input | Active-Low production test mode bypass |
+| `uio_in[4]` | `TURBO_n` | Input | Active-Low high speed filter seelector |
 | `uio_out[5]` | `TRIGGER_OUT` | Output | Dedicated Hardware Validation Output Trigger |
 | `uio_in[6]` | `FLG_IN_n` | Input | Active-Low system error flag |
 | `uio_in[7]` | `unused` | Reserved | Tied off internally |
@@ -57,6 +57,8 @@ To execute the simulation matrix locally on your machine, the following environm
 * **Python 3.12+** is strictly required by the underlying cocotb test suite runners.
 * **Icarus Verilog** (v12.0 or newer recommended for standard cell primitive parsing).
 * **SymbiYosys** (required for compiling and evaluating formal bounded proofs).
+* **Workcraft** (required for compiling and evaluating formal clockless proofs).
+
 
 ### Remote Execution
 If local toolchains are unavailable, the entire verification infrastructure is fully compatible with cloud containers and can be simulated automatically within **GitHub Actions** continuous integration pipelines upon every remote branch push sequence.
@@ -86,8 +88,12 @@ make SIM=verilator
 ```
 
 ### Mode 4: Formal Verification
-Mathematically proves all state-space properties, mutual exclusion bounds, and glitch-rejection characteristics of the synchronous shift registers across all possible input conditions. Formal routines bypass testbench stimulus scripts and are executed directly through SymbiYosys:
+Mathematically proves all state-space properties, mutual exclusion bounds, and glitch-rejection characteristics of the filters across all possible input conditions. Formal routines bypass testbench stimulus scripts and are executed directly through SymbiYosys:
 ```bash
 # Run formal bounded proofs using SymbiYosys
 sby -f src/formal/mmu.sby
 ```
+
+### Mode 5: Clockless Verification
+Mathematically proves no dealocks or cycles exist through Workcraft:
+

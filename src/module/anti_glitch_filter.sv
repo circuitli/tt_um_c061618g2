@@ -20,11 +20,11 @@
 
 // Standalone clockless asynchronous glitch filter module
 module async_glitch_filter #(
-    parameter int STAGES = 4  // Filter depth
+    parameter int STAGES = 3  // Filter depth
 )(
     input  wire rst_n,       // Pure combinational reset line
     input  wire async_in,    // Raw asynchronous input signal
-    output logic async_out    // Glitch-filtered asynchronous output
+    output logic async_out   // Glitch-filtered asynchronous output
 );
 
     // Array to hold the delayed versions of the signal

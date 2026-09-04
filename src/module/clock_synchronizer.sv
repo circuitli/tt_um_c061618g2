@@ -27,7 +27,7 @@
 
 (* keep_hierarchy = 1, dont_touch = 1 *)
 module clock_synchronizer #(
-    parameter int STAGES = 2 
+    parameter int STAGES = 2
 ) (
     input  logic rst,        // Asynchronous system reset input
     input  logic raw_clk,    // Asynchronous or raw input clock source

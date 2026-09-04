@@ -85,7 +85,7 @@ module c061618g2 (
     
     async_glitch_filter_bank #(
         .WIDTH(13),
-        .STAGES(4)
+        .STAGES(3)
     ) u_mmu_filter_bank (
         .rst_n    (rst_n), 
         .async_in (functional_unfiltered),

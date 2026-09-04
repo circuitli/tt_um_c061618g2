@@ -21,7 +21,7 @@
 `include "src/module/async_latch_cell.sv"
 
 module async_glitch_filter #(
-    parameter int STAGES = 2 // Number of double-inverter delay blocks
+    parameter int STAGES = 3 // Number of double-inverter delay blocks
 )(
     input  wire  rst_n,
     input  wire  async_in,

@@ -124,7 +124,7 @@
   "PL_MIN_PHI_COEFFICIENT": 0.95,
   "PL_MAX_PHI_COEFFICIENT": 1.05,
 
-  "FP_DEF_TEMPLATE": "dir::src/tt_um_c061618g2.def",
+  "_FP_DEF_TEMPLATE": "dir::src/tt_um_c061618g2.def",
 
   "FP_REGIONS_EXCLUSIVE": true,
   "// === Physical Grid Compliant Subregion Constraints ===": "",
