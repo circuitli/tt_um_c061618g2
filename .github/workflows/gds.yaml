@@ -20,7 +20,13 @@ jobs:
         with:
           submodules: recursive
 
+      - name: ⚙️ Setup Tiny Tapeout Toolchain (Installs OpenLane Natively)
+        uses: TinyTapeout/tt-setup-action@v2
+        with:
+          pdk: ihp-sg13g2 # Installs the required IHP PDK standard libraries
+
       - name: Install and Run PDK Downloader Directly
+        if: false
         run: |
           # 1. Install ciel (the open-source IHP PDK version manager)
           python3 -m pip install ciel
