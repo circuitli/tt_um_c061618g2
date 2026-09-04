@@ -212,8 +212,9 @@ jobs:
           # 2. Use find to grab the netlist from your already downloaded gds_drop folder
           echo "🔎 Locating the netlist file inside downloaded artifacts..."
           # Using -print -quit makes find stop natively on the first hit, preventing a broken pipe!
-          NETLIST_FILE=$(find ${{ github.workspace }} -type f -name "gate_level_netlist.v" -print -quit)
-    
+          # 1. Dynamically find the real post-route gate-level Verilog file from the active run directory
+          NETLIST_FILE=$(find runs/ -type f -path "*/final/*" -name "*.v" -print -quit)
+
           if [ -z "$NETLIST_FILE" ]; then
             echo "❌ ERROR: No gate netlist file found inside gds_drop/"
             exit 1
