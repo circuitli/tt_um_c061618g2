@@ -39,7 +39,7 @@ pinout:
   uo[1]: "REF_L"
   uo[2]: "MPD_L"
   uo[3]: "BE_L"
-  uo[4]: "TESTMODE_L"
+  uo[4]: ""
   uo[5]: "TRIGGER_OUT_L"
   uo[6]: "FLG_IN_L"
   uo[7]: ""

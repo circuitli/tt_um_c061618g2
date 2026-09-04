@@ -33,7 +33,7 @@ The physical layout aligns with the Tiny Tapeout hardware tile format using the 
 | `uio_in[1]` | `ref_n` | Input | Active-low dynamic refresh cycle signal |
 | `uio_in[2]` | `mpd_n` | Input | Active-Low memory protect select flag |
 | `uio_in[3]` | `be_n` | Input | Active-low interpreter memory space enable |
-| `uio_in[4]` | `TURBO_n` | Input | Active-Low high speed filter seelector |
+| `uio_in[4]` | `unused` | Reserved | Tied off internally |
 | `uio_out[5]` | `TRIGGER_OUT` | Output | Dedicated Hardware Validation Output Trigger |
 | `uio_in[6]` | `FLG_IN_n` | Input | Active-Low system error flag |
 | `uio_in[7]` | `unused` | Reserved | Tied off internally |
