@@ -85,6 +85,7 @@ jobs:
           submodules: recursive
 
       - name: Install and Run PDK Downloader Directly
+        if: false
         run: |
           # 1. Install ciel (the open-source IHP PDK version manager)
           python3 -m pip install ciel
@@ -157,6 +158,7 @@ jobs:
       # =========================================================================
       - name: Extract and Clean IHP SG13G2 Standard Cell Library
         working-directory: ${{ github.workspace }}/workspace_workcraft
+        if: false
         run: |
           # 1. Copy the un-scrubbed host PDK asset to the current repository directory root
           cp /home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v ./sg13g2_stdcell_clean.v
