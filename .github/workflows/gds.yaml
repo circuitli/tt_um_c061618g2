@@ -61,15 +61,7 @@ jobs:
           # 🌟 Call the Makefile with the system environment variables cleanly passed
           #make PDK=ihp PDK_ROOT="${PDK_ROOT}"
 
-          echo "⚙️ Initialising local PDK workspace boundaries..."
-          # 🌟 Safely bind the variable under strict 'set -u' rules
-          # If PDK_ROOT doesn't exist, it evaluates to an empty string cleanly, bypassing the crash.
-          SAFE_PDK_ROOT="${PDK_ROOT:-}"
-          
-          # If it was empty, assign it to a hard workspace directory
-          if [ -z "$SAFE_PDK_ROOT" ]; then
-              SAFE_PDK_ROOT="${{ github.workspace }}/pdk"
-          fi
+          SAFE_PDK_ROOT="${PDK_ROOT:-${{ github.workspace }}/pdk}"
           mkdir -p "$SAFE_PDK_ROOT"
           
           echo "🚀 Invoking OpenLane 2 macro compiler container..."
