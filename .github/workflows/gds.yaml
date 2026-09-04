@@ -61,11 +61,17 @@ jobs:
           # 🌟 Call the Makefile with the system environment variables cleanly passed
           #make PDK=ihp PDK_ROOT="${PDK_ROOT}"
 
-          SAFE_PDK_ROOT="${PDK_ROOT:-${{ github.workspace }}/pdk}"
+          # We use GitHub's expression context directly on line 8. 
+          # This replaces raw '$PDK_ROOT' references completely, satisfying 'set -u'!
+          SAFE_PDK_ROOT="${{ env.PDK_ROOT }}"
+          
+          # If it was empty or unconfigured, default it to your workspace folder
+          if [ -z "$SAFE_PDK_ROOT" ]; then
+              SAFE_PDK_ROOT="${{ github.workspace }}/pdk"
+          fi
           mkdir -p "$SAFE_PDK_ROOT"
           
           echo "🚀 Invoking OpenLane 2 macro compiler container..."
-          # Pass the securely bound SAFE_PDK_ROOT everywhere to avoid unbound flags
           docker run --rm \
             -v ${{ github.workspace }}:/work \
             -v "$SAFE_PDK_ROOT":"$SAFE_PDK_ROOT" \
