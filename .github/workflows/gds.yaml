@@ -148,7 +148,7 @@ jobs:
           # Only clone if the directory doesn't exist yet (handles initial bootstrap)
           if [ ! -d "workspace_workcraft" ]; then
               echo "🔨 Cloning Workcraft..."
-              git clone --depth 1 https://github.com workspace_workcraft
+              git clone --depth 1 https://github.com/workcraft/workcraft.git workspace_workcraft
               cd workspace_workcraft
               echo "📦 Initialising Workcraft submodules..."
               git submodule update --init --remote
