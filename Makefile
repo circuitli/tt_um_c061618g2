@@ -34,8 +34,8 @@ $(MACRO_NAMES):
 		*) echo "❌ Error: Invalid PDK select. Use PDK=ihp|sky130|gf180"; exit 1 ;; \
 	esac; \
 	\
-	# 🌟 THE FIX: Pass PDK_ROOT explicitly down into the OpenLane shell runner execution context
-	PDK_ROOT=$(PDK_ROOT) $(OPENLANE_EXEC) --pdk $$PDK_TARGET $(BUILD_DIR)/$@/config.json; \
+	# Let OpenLane consume the environment parameter directly from the Docker instance map.
+	$(OPENLANE_EXEC) --pdk $$PDK_TARGET $(BUILD_DIR)/$@/config.json; \
 	\
 	# Locate the true physical hardware layout and timing assets
 	RAW_LEF=$$(find $(BUILD_DIR)/$@/runs/ -type f -path "*/final/lef/*" -name "*.lef" -print -quit); \
