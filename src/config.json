@@ -49,8 +49,8 @@
   "QUIT_ON_PDN_VIOLATIONS": true,
   "FP_PDN_CHECK_NODES": true,
 
-  "PL_MACRO_HALO": "5.04 5.04",
-  "PL_MACRO_CHANNEL": "5.04 5.04",
+  "PL_MACRO_HALO": "10.08 10.08",
+  "PL_MACRO_CHANNEL": "10.08 10.08",
 
   "MACROS": {
     "c061618g2": {
