@@ -22,9 +22,9 @@ jobs:
           submodules: recursive
 
       # 🌟 THE COMPILATION STEP: Hardens your macro sub-config natively using 
-      # the verified openlane action block before your main chip pass triggers!
+      # to build your macro sub-config inside your branch natively!
       - name: 🔨 Compile Internal Hard Macros Natively
-        uses: efabless/openlane-action@v2
+        uses: The-OpenROAD-Project/actions/openlane_run@main
         with:
           pdk: "ihp-sg13g2"
           config_path: "macros/c061618g2/config.json"
