@@ -74,20 +74,21 @@ module mmu_core #(
     // /IO Hardware Peripheral Block Select ($D400-$D7FF)
     assign raw_io_n = (rst_n && (!a11 && a12 && !a13 && a14 && a15 && ref_n)) ? 1'b0 : 1'b1;
 
-    // /OS ROM Controller Matrix ($E000-$FFFF & Shadows)
-    assign raw_os_n = (rst_n && (
-        (a13 && a14 && a15 && ren && ref_n) ||
-        (!a12 && a14 && a15 && ren && ref_n) ||
-        (a11 && a12 && !a13 && a14 && a15 && ren && mpd_n && ref_n) ||
-        (!a11 && a12 && !a13 && a14 && !a15 && ren && !map_n && ref_n)
-    )) ? 1'b0 : 1'b1;
+    // /OS ROM Controller Matrix ($E000-$FFFF)
+    wire os_match = (a13 && a14 && a15 && ren && ref_n) ||
+                    (!a12 && a14 && a15 && ren && ref_n) ||
+                    (a11 && a12 && !a13 && a14 && a15 && ren && mpd_n && ref_n) ||
+                    (!a11 && a12 && !a13 && a14 && !a15 && ren && !map_n && ref_n);
+                    
+    assign raw_os_n = (rst_n && os_match) ? 1'b0 : 1'b1;
 
-    // /CI Active-Low Fallback
+    // Instead of referencing the processed 'raw_os_n' wire, we use (!os_match).
+    // This removes the cyclic logic dependency, preventing Yosys from inferring a latch!
     assign raw_ci_n = (rst_n && (
         (!a13 && !a14 && a15 && rd4 && ref_n) ||
         (a13 && !a14 && a15 && rd5 && ref_n) ||
         (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) ||
-        (raw_os_n == 1'b1) ||
+        (!os_match) ||
         (!a11 && a12 && !a13 && a14 && a15 && ref_n) ||
         (!ref_n)
     )) ? 1'b0 : 1'b1;
