@@ -64,6 +64,27 @@
   "//": "ERROR_ON_UNMAPPED_CELLS - Set to false to act as a fallback safety guardrail in case Yosys attempts to infer any sequential logic out of your stripped loops.",
   "ERROR_ON_UNMAPPED_CELLS": false,
 
+  "//": "PL_RESIZE_BUFFER_PERCENTAGE - Allocates 0% extra space for timing resizing. This instructs the placement resizer script to stop scaling logic gates for synchronous setup windows.",
+  "PL_RESIZE_BUFFER_PERCENTAGE": 0,
+
+  "//": "PL_RESIZER_DESIGN_OPTIMIZATIONS - Explicitly bars OpenROAD from altering your custom combinational cell structures or feedback nets to clear virtual setup margins.",
+  "PL_RESIZER_DESIGN_OPTIMIZATIONS": false,
+
+  "//": "PL_RESIZER_TIMING_OPTIMIZATIONS - Turns off timing-driven placement optimization loops globally inside the RePlAce engine profile.",
+  "PL_RESIZER_TIMING_OPTIMIZATIONS": false,
+
+  "//": "GLB_RESIZER_TIMING_OPTIMIZATIONS - Stops the global routing pass optimizer from attempting to resize your cell gates across your module boundaries.",
+  "GLB_RESIZER_TIMING_OPTIMIZATIONS": false,
+
+  "//": "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT - Drops your hold fixing area allowance directly down to 0. This structurally forbids the OpenROAD resizer script from inserting delay buffers into your clockless macro wires, preserving your 100% pure asynchronous delays!",
+  "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT": 0,
+
+  "//": "SKIP_STEPS - Instructs the pipeline sequencer to skip running the late-stage physical design timing repair modules entirely, preventing deferred corner errors from stopping the flow run.",
+  "SKIP_STEPS": [
+    "Resizer.DesignRepair",
+    "Resizer.TimingRepair"
+  ],
+
   "_SYNTH_FLAT_TOP": true,
   "_SYNTH_NO_VOLTAGE_CELLS": true,
   "_QUIT_ON_UNMAPPED_CELLS": false,
