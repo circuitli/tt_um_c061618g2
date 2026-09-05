@@ -49,6 +49,10 @@ jobs:
         env:
           PDK_ROOT: ${{ env.PDK_ROOT }}
         run: |
+          set -eo pipefail
+
+          export PDK_ROOT="${{ github.workspace }}/pdk"
+
           # 1. Install ciel (the open-source IHP PDK version manager)
           python3 -m pip install ciel
           
