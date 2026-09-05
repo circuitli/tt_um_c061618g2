@@ -1,7 +1,7 @@
 {
   "DESIGN_NAME": "c061618g2",
   "VERILOG_FILES": [
-    "dir::src/module/c061618g2.sv"
+    "dir::../../src/module/c061618g2.sv"
   ],
   "VERILOG_INCLUDE_DIRS": [
     "dir::"
