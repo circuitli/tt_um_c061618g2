@@ -35,8 +35,8 @@
   "SYNTH_STRATEGY": "DELAY 0",
 
   "//": "SYNTH_ABC_BUFFERING - Explicitly disables late combinational resizing hooks so ABC passes the gate netlist down to OpenROAD without trying to apply sequential constraints.",
-  "SYNTH_ABC_BUFFERING": false
-}
+  "SYNTH_ABC_BUFFERING": false,
+
   "//": "SYNTH_ABC_LEGACY_FLOW - Forces the ABC logic mapping engine to use its pure structural legacy flow, which drops timing-retime checks. This completely prevents ABC from throwing 'The network is combinational' crashes!",
   "SYNTH_ABC_LEGACY_FLOW": true,
 
