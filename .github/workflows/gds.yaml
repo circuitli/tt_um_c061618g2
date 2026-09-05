@@ -15,6 +15,9 @@ jobs:
   # STEP 1: Independent job to build your macro abstracts
   build_macros:
     runs-on: ubuntu-latest
+    # This automatically includes the openlane binary and mounts the workspace paths cleanly!
+    container:
+      image: efabless/openlane:v2
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -27,16 +30,25 @@ jobs:
         uses: The-OpenROAD-Project/actions/openlane_run@main
         with:
           pdk: "ihp-sg13g2"
-          config_path: "macros/c061618g2/config.json"
-
-      # Move the compiled abstract views into your tracked macros/ path
-      - name: 🚚 Stage Macro View Artifacts
+          config_path: "macros/c061618g2/config.json"- name: 🔨 Compile Internal Hard Macros Natively
         shell: bash
         run: |
+          set -eo pipefail
+          echo "🚀 Compiling macro blocks directly in the tool environment..."
+          
+          # Force the container to resolve its local PDK root path
+          export PDK_ROOT="/pdk"
+          
+          # Call openlane directly with no special wrapper blocks or complex variables
+          openlane --pdk ihp-sg13g2 macros/c061618g2/config.json
+          
+          # Stage the compiled views directly to your expected _build folder matrix
           mkdir -p _build/macros/gds _build/macros/lef _build/macros/lib
           cp macros/c061618g2/runs/*/final/gds/*.gds _build/macros/gds/c061618g2.gds
           cp macros/c061618g2/runs/*/final/lef/*.lef _build/macros/lef/c061618g2.lef
           cp macros/c061618g2/runs/*/final/lib/*.lib _build/macros/lib/c061618g2.lib
+          
+          echo "✅ Macros compiled successfully."
 
       - name: 💾 Upload Macro Abstract Views for Top-Level Assembly
         uses: actions/upload-artifact@v4
