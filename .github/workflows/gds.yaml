@@ -89,6 +89,13 @@ jobs:
           # Some OpenLane 2 configurations look for an explicit python environment map 
           # to inject legacy global variables back into the inner TCL interpreters.
           export OPENLANE_PDK_ROOT="${{ github.workspace }}/pdk"
+
+          # Ciel extracts to 'libs.tech/librelane'. We link that folder directly 
+          # to 'libs.tech/openlane' so the toolchain finds the real IHP foundry variables!
+          IHP_TECH_DIR="$PDK_ROOT/ihp-sg13g2/libs.tech"
+          if [ -d "$IHP_TECH_DIR/librelane" ] && [ ! -d "$IHP_TECH_DIR/openlane" ]; then
+              ln -s "$IHP_TECH_DIR/librelane" "$IHP_TECH_DIR/openlane"
+          fi
           
           # Invoke openlane directly via python3 -m. This targets ONLY your isolated
           # macro config file, leaving the top-level project untouched!
