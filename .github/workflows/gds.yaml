@@ -111,8 +111,8 @@ jobs:
             -v "$LOCAL_PDK_ROOT":"$LOCAL_PDK_ROOT" \
             -e PDK_ROOT="$LOCAL_PDK_ROOT" \
             -w /work \
-            ghcr.io/chipfoundry/openlane2:latest \
-            openlane --manual-pdk --pdk-root "$LOCAL_PDK_ROOT" --pdk ihp-sg13g2 openlane/c061618g2/config.json
+            ghcr.io/librelane/librelane:latest \
+            librelane --manual-pdk --pdk-root "$LOCAL_PDK_ROOT" --pdk ihp-sg13g2 openlane/c061618g2/config.json
       
           # Stage the compiled views directly to your expected _build folder matrix
           #mkdir -p _build/macros/gds _build/macros/lef _build/macros/lib
