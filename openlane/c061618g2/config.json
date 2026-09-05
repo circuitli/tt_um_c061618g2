@@ -22,13 +22,11 @@
   "GRT_ALLOW_CONGESTION": false,
 
   "// -------------------------------------------------------------------------": "",
-  "// 1. Changing 'dir::' to 'vtop::' treats the path as a single global file. ": "",
-  "// 2. Disabling 'SYNTH_READ_BLACKBOX_LIB' stops LibreLane from ever compiling ": "",
-  "//    or injecting the legacy directory search '-y' flag into Yosys!": "",
+  "// Forcing only elaboration tells LibreLane to pass raw file scopes, ": "",
+  "// completely stripping the broken automated '-y' includes from JSON headers!": "",
   "// -------------------------------------------------------------------------": "",
+  "SYNTH_ELABORATE_ONLY": true,
   "SYNTH_READ_BLACKBOX_LIB": false,
-  "SYNTH_NO_VOLTAGE_CELLS": true,
-  "SYNTH_ELABORATE_ONLY": false,
 
   "// -------------------------------------------------------------------------": "",
   "// Overrides the native linter options to tell Verilator to skip missing ": "",
