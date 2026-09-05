@@ -11,21 +11,29 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
-# This ensures GitHub instantiates the string on the host BEFORE any script steps evaluate.
-env:
-  PDK_ROOT: /pdk
 jobs:
   # STEP 1: Independent job to build your macro abstracts
   build_macros:
     runs-on: ubuntu-latest
-    # This automatically includes the openlane binary and mounts the workspace paths cleanly!
-    container:
-      image: ghcr.io/the-openroad-project/openlane:latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           submodules: recursive
+
+      - name: ⚙️ Install Tiny Tapeout Environment Natively
+        shell: bash
+        run: |
+          set -eo pipefail
+          echo "📥 Fetching and setting up native compiler tools..."
+          
+          # 1. Download and run the official Tiny Tapeout python environment setup tool
+          pip install --upgrade tinytapeout
+          tt_tool setup --pdk ihp-sg13g2
+          
+          # 2. Expose the generated paths to subsequent execution blocks
+          echo "PDK_ROOT=${{ github.workspace }}/pdk" >> $GITHUB_ENV
+          echo "OPENLANE_ROOT=${{ github.workspace }}/openlane" >> $GITHUB_ENV
 
       # 🌟 THE COMPILATION STEP: Hardens your macro sub-config natively using 
       # to build your macro sub-config inside your branch natively!
@@ -34,11 +42,7 @@ jobs:
         run: |
           set -eo pipefail
           echo "🚀 Compiling macro blocks directly in the tool environment..."
-          
-          # We use GitHub's expression context directly on line 8. 
-          # This replaces raw host '$PDK_ROOT' references completely, satisfying 'set -u'!
-          SAFE_PDK_ROOT: "${{ env.PDK_ROOT }}"
-          
+
           # Call openlane directly with no special wrapper blocks or complex variables
           openlane --pdk ihp-sg13g2 macros/c061618g2/config.json
           
