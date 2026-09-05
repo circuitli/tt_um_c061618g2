@@ -44,6 +44,10 @@ jobs:
           echo "OPENLANE_ROOT=${{ github.workspace }}/openlane" >> $GITHUB_ENV
 
       - name: Install and Run PDK Downloader Directly
+        shell: bash
+        # Forward the path definitions directly into this step execution block
+        env:
+          PDK_ROOT: ${{ env.PDK_ROOT }}
         run: |
           # 1. Install ciel (the open-source IHP PDK version manager)
           python3 -m pip install ciel
