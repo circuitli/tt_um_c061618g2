@@ -33,12 +33,6 @@
   "RUN_CTS": false,
   "//": "EXTRA_SYNTH_ARGS - Removes the underscore! This forces Yosys to split all arrayed vector wires and ports into individual scalar nodes early, completely stopping the tool from running DFF mapping loops on your glitch filter banks.",
   "EXTRA_SYNTH_ARGS": "-run co:; splitnets -ports; -run co:",
-
-  "//": "SYNTH_PARAMETERS - Inject compilation variables directly down to your module parameters, commanding the synthesis script to treat all retention paths purely as combinational logic blocks.",
-  "SYNTH_PARAMETERS": [
-    "NO_LATCHES=1"
-  ],
-
   "//": "SYNTH_YOSYS_OPTIONS - Passes the nolatch switch globally to fully strip flip-flop inference profiles from mmu_core and the filter blocks.",
   "SYNTH_YOSYS_OPTIONS": [ "-nolatch" ],
   "_SYNTH_FLAT_TOP": true,
