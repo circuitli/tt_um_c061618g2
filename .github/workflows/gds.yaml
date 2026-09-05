@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     # This automatically includes the openlane binary and mounts the workspace paths cleanly!
     container:
-      image: ghcr.io/efabless/volare:latest
+      image: ghcr.io/efabless/openlane2:latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
