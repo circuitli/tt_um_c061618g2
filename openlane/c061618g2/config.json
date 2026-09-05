@@ -3,9 +3,6 @@
   "VERILOG_FILES": [
     "dir::../../src/module/c061618g2.sv"
   ],
-  "VERILOG_INCLUDE_DIRS": [
-    "dir::"
-  ],
 
   "// -------------------------------------------------------------------------": "",
   "// 1. HARD MACRO BLOCK DESIGNATION (Stops Top-Level Pad Grid Inference)": "",
@@ -25,14 +22,13 @@
   "GRT_ALLOW_CONGESTION": false,
 
   "// -------------------------------------------------------------------------": "",
-  "// Setting these switches forces LibreLane to treat the design as flat. ": "",
-  "// This stops the engine from generating internal '-y' directory hooks ": "",
-  "// during BOTH the JsonHeader and Synthesis execution routines!": "",
+  "// 1. Changing 'dir::' to 'vtop::' treats the path as a single global file. ": "",
+  "// 2. Disabling 'SYNTH_READ_BLACKBOX_LIB' stops LibreLane from ever compiling ": "",
+  "//    or injecting the legacy directory search '-y' flag into Yosys!": "",
   "// -------------------------------------------------------------------------": "",
   "SYNTH_READ_BLACKBOX_LIB": false,
-  "SYNTH_AUTONAME": false,
-  "SYNTH_SHARE_RESOURCES": false,
   "SYNTH_NO_VOLTAGE_CELLS": true,
+  "SYNTH_ELABORATE_ONLY": false,
 
   "// -------------------------------------------------------------------------": "",
   "// Overrides the native linter options to tell Verilator to skip missing ": "",
