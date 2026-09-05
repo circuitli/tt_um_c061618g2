@@ -55,14 +55,6 @@ module mmu_core #(
     assign {rd5, rd4, map_n} = core_ctrl;
     assign {a15, a14, a13, a12, a11} = core_addr;
 
-        // =========================================================================
-    // 1. DIRECT WIRE SPLICING
-    // =========================================================================
-    wire a11, a12, a13, a14, a15, map_n, rd4, rd5;
-    
-    assign {rd5, rd4, map_n} = core_ctrl;
-    assign {a15, a14, a13, a12, a11} = core_addr;
-
     // =========================================================================
     // 2. CHIP DECODING MATRIX (PURE CONTINUOUS HARDWARE NETS)
     // By calculating the expressions completely flatly as continuous wires,
