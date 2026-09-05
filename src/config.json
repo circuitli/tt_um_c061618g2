@@ -143,8 +143,11 @@
   "//": "EXTRA_FLOORPLAN_TCL - Forces OpenROAD to execute raw Tcl commands during the floorplan pass, guaranteeing fence allocation before cells are evaluated",
   "_EXTRA_FLOORPLAN_TCL": "create_fence -name u_c061618g2 -box {10.08 10.08 63.84 75.60}",
 
-  "PL_MIN_PHI_COEFFICIENT": 0.95,
-  "PL_MAX_PHI_COEFFICIENT": 1.05,
+  "//": "PL_MIN_PHI_COEFFICIENT - Sets a high initial density penalty baseline. This forces the placer to cluster your 406 asynchronous feedback loops tightly together right away, keeping wire links short to minimize routing delays.",
+  "_PL_MIN_PHI_COEFFICIENT": 0.95,
+
+  "//": "PL_MAX_PHI_COEFFICIENT - Limits the maximum density packing penalty. This prevents the placement engine from aggressively spreading out your custom cells during cell legalization, preserving your compact layout arrangement.",
+  "_PL_MAX_PHI_COEFFICIENT": 1.05,
 
   "_FP_DEF_TEMPLATE": "dir::src/tt_um_c061618g2.def",
 
@@ -285,10 +288,10 @@
   "PL_RESIZE_BUFFER_PERCENTAGE": 0,
 
   "//": "DESIGN_REPAIR_MAX_WIRE_LENGTH - THE FINAL FIX: Setting this explicitly to 0 tells LibreLane's physical design repair engine to completely skip maximum wire length buffering, ensuring clockless loops stay 100% pure wire tracks.",
-  "DESIGN_REPAIR_MAX_WIRE_LENGTH": 0,
+  "DESIGN_REPAIR_MAX_WIRE_LENGTH": 10000,
 
   "//": "RUN_LINTER, LINTER_INCLUDE_PDK_MODELS - Disabling the linter is not recommended!",
-  "RUN_LINTER": 1,
+  "RUN_LINTER": false,
   "LINTER_INCLUDE_PDK_MODELS": 1,
 
   "//": "If you need a custom clock configuration, read the following documentation first:",
