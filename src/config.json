@@ -228,7 +228,7 @@
   "___PL_BOUNDS_Y1": [ 50.32 ],
 
   "//": "FP_CORE_UTIL - Force LibreLane to generate a much larger dynamic box for our 3% cell logic by lowering core utilization",
-  "FP_CORE_UTIL": 70,
+  "FP_CORE_UTIL": 60,
 
   "//": "PL_TARGET_DENSITY_PCT - You can increase this if Global Placement fails with error GPL-0302.",
   "//": "Users have reported that values up to 80 worked well for them.",
@@ -298,21 +298,6 @@
   "//": "Hold slack margin - Increase them in case you are getting hold violations.",
   "PL_RESIZER_HOLD_SLACK_MARGIN": 0.1,
   "GRT_RESIZER_HOLD_SLACK_MARGIN": 0.05,
-
-  "//": "GLB_RESIZER_TIMING_OPTIMIZATIONS - Enforces a deep global routing timing pass to restructure logic networks across module ports right before detailed routing.",
-  "GLB_RESIZER_TIMING_OPTIMIZATIONS": false,
-
-  "//": "PL_RESIZER_DESIGN_OPTIMIZATIONS - Grants the local resizer permission to insert high-drive tap buffers along setup-violating filter chains.",
-  "PL_RESIZER_DESIGN_OPTIMIZATIONS": false,
-
-  "//": "PL_RESIZER_TIMING_OPTIMIZATIONS - Runs critical slack path resizing directly within the global placement iteration window.",
-  "PL_RESIZER_TIMING_OPTIMIZATIONS": 0,
-
-  "//": "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT - Keeps your existing 100% freedom allocation active for fixing hold timing violations.",
-  "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT": 0,
-
-  "//": "PL_RESIZE_BUFFER_PERCENTAGE - Allocates 40% extra optimization budget to allow OpenROAD to upsize slow gates to high-drive variants along your 229 MHz critical paths.",
-  "PL_RESIZE_BUFFER_PERCENTAGE": 0,
 
   "//": "DESIGN_REPAIR_MAX_WIRE_LENGTH - THE FINAL FIX: Setting this explicitly to 0 tells LibreLane's physical design repair engine to completely skip maximum wire length buffering, ensuring clockless loops stay 100% pure wire tracks.",
   "DESIGN_REPAIR_MAX_WIRE_LENGTH": 10000,
