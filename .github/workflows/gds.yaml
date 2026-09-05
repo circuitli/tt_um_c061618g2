@@ -24,6 +24,7 @@ jobs:
       # Uses the authentic manager wrapper block to inject yosys, openroad, 
       # and verilator straight into your path variables securely!
       - name: ⚙️ Provision Complete Silicon Toolchain
+        if: false
         uses: YosysHQ/setup-oss-cad-suite@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -36,7 +37,11 @@ jobs:
           # Fetch the actual C-binary Tk bindings for Python
           sudo apt-get update
 
-          sudo apt-get install -y python3-tk yosys
+          sudo apt-get install -y python3-tk yosys verilator
+
+          # 2. Fetch the standalone OpenROAD binary matching your platform
+          sudo wget -q -O /usr/local/bin/openroad https://github.com
+          sudo chmod +x /usr/local/bin/openroad
           
           # Pull the authentic compiled EDA binary executables directly through pip!
           pip install openlane librelane ciel
@@ -85,8 +90,8 @@ jobs:
 
           # OpenLane 2 / LibreLane utilizes 'SYNTH_BIN' to route the synthesis engine!
           # This forces all phases (JsonHeader, Synthesis, etc.) to use /usr/bin/yosys natively.
-          export SYNTH_BIN="/usr/bin/yosys"
-          echo "Overriding LibreLane synthesis path context to: $SYNTH_BIN"
+          #export SYNTH_BIN="/usr/bin/yosys"
+          #echo "Overriding LibreLane synthesis path context to: $SYNTH_BIN"
           
           # Invoke openlane directly via python3 -m. This targets ONLY your isolated
           # macro config file, leaving the top-level project untouched!
