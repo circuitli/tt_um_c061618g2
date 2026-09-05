@@ -28,7 +28,7 @@ module async_glitch_filter #(
 )(
     input  wire  rst_n,
     input  wire  async_in,
-    output logic async_out
+    output wire  async_out
 );
 
     wire [STAGES:0] delay_chain;
