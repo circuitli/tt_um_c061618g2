@@ -77,7 +77,7 @@ jobs:
           
           # Invoke openlane directly via python3 -m. This targets ONLY your isolated
           # macro config file, leaving the top-level project untouched!
-          python3 -m openlane --pdk ihp-sg13g2 openlane/c061618g2/config.json
+          python3 -m openlane --manual-pdk --pdk ihp-sg13g2 macros/c061618g2/config.json
           
           # Stage the compiled views directly to your expected _build folder matrix
           #mkdir -p _build/macros/gds _build/macros/lef _build/macros/lib
