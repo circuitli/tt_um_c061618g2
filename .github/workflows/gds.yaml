@@ -11,14 +11,17 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+# This ensures GitHub instantiates the string on the host BEFORE any script steps evaluate.
+env:
+  PDK_ROOT: /pdk
 jobs:
   # STEP 1: Independent job to build your macro abstracts
   build_macros:
     runs-on: ubuntu-latest
     # This automatically includes the openlane binary and mounts the workspace paths cleanly!
     container:
-      image: efabless/openlane:v2
-    steps:
+      image: efabless/tt-tools-v2:latest
+      steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
@@ -32,8 +35,9 @@ jobs:
           set -eo pipefail
           echo "🚀 Compiling macro blocks directly in the tool environment..."
           
-          # Force the container to resolve its local PDK root path
-          export PDK_ROOT="/pdk"
+          # We use GitHub's expression context directly on line 8. 
+          # This replaces raw host '$PDK_ROOT' references completely, satisfying 'set -u'!
+          SAFE_PDK_ROOT="${{ env.PDK_ROOT }}"
           
           # Call openlane directly with no special wrapper blocks or complex variables
           openlane --pdk ihp-sg13g2 macros/c061618g2/config.json
