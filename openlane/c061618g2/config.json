@@ -25,11 +25,14 @@
   "GRT_ALLOW_CONGESTION": false,
 
   "// -------------------------------------------------------------------------": "",
-  "// Explicitly overrides the option array passed to the yosys binary, ": "",
-  "// dropping the broken '-y' library lookup string permanently! ": "",
+  "// Setting these switches forces LibreLane to treat the design as flat. ": "",
+  "// This stops the engine from generating internal '-y' directory hooks ": "",
+  "// during BOTH the JsonHeader and Synthesis execution routines!": "",
   "// -------------------------------------------------------------------------": "",
-  "SYNTH_YOSYS_OPTIONS": [ "-X" ],
   "SYNTH_READ_BLACKBOX_LIB": false,
+  "SYNTH_AUTONAME": false,
+  "SYNTH_SHARE_RESOURCES": false,
+  "SYNTH_NO_VOLTAGE_CELLS": true,
 
   "// -------------------------------------------------------------------------": "",
   "// Overrides the native linter options to tell Verilator to skip missing ": "",
