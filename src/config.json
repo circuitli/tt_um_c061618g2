@@ -116,7 +116,7 @@
   "RUN_SYNTH_CHECKS": 0,
 
   "//": "QUIT_ON_SYNTH_CHECKS - Forces Yosys to bypass design failures on multi-driver nets or combinational latching loops, permitting custom asynchronous paths.",
-  "QUIT_ON_SYNTH_CHECKS": false,
+  "_QUIT_ON_SYNTH_CHECKS": false,
 
   "//": "MAX_FANOUT_CONSTRAINT - Clamps internal signal fanout, forcing the tool to clone sluggish data lines and restore crisp transitions.",
   "MAX_FANOUT_CONSTRAINT": 100,
