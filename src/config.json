@@ -201,8 +201,8 @@
       "lef": [ "dir::macros/lef/c061618g2.lef" ],
       "nl": [ "dir::macros/nl/c061618g2.nl.v" ],
       "spef": {
-        "min*": [ "dir::macros/spef/min/c061618g2.spef" ],
-        "max*": [ "dir::macros/spef/max/c061618g2.spef" ]
+        "min*": [ "dir::macros/spef/min/c061618g2*slow*.spef" ],
+        "max*": [ "dir::macros/spef/max/c061618g2*fast*.spef" ]
       },
       "instances": {
         "u_c061618g2": {
