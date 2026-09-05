@@ -21,17 +21,19 @@ jobs:
         with:
           submodules: recursive
 
-      - name: ⚙️ Install Tiny Tapeout Environment Natively
+      - name: ⚙️ Install Tiny Tapeout Support Environment Natively
         shell: bash
         run: |
           set -eo pipefail
-          echo "📥 Fetching and setting up native compiler tools..."
+          echo "📥 Cloning authentic Tiny Tapeout hardware support scripts..."
           
-          # 1. Download and run the official Tiny Tapeout python environment setup tool
-          pip install --upgrade tinytapeout
-          tt_tool setup --pdk ihp-sg13g2
+          # 1. Fetch the actual orchestration tool library from the repository
+          git clone --depth=1 https://github.com/TinyTapeout/tt-support-tools.git tt
           
-          # 2. Expose the generated paths to subsequent execution blocks
+          # 2. Install the true layout dependencies natively on the host machine
+          pip install -r tt/requirements.txt
+          
+          # 3. Securely set up the explicit local path targets for the next block
           echo "PDK_ROOT=${{ github.workspace }}/pdk" >> $GITHUB_ENV
           echo "OPENLANE_ROOT=${{ github.workspace }}/openlane" >> $GITHUB_ENV
 
@@ -41,10 +43,11 @@ jobs:
         shell: bash
         run: |
           set -eo pipefail
-          echo "🚀 Compiling macro blocks directly in the tool environment..."
-
-          # Call openlane directly with no special wrapper blocks or complex variables
-          openlane --pdk ihp-sg13g2 macros/c061618g2/config.json
+          echo "🚀 Initialising native macro hardening loop via tt_tool..."
+          mkdir -p "$PDK_ROOT"
+          
+          # 1. Execute the actual python compiler script to build your block
+          python3 tt/tt_tool.py --harden --ihp macros/c061618g2/config.json
           
           # Stage the compiled views directly to your expected _build folder matrix
           mkdir -p _build/macros/gds _build/macros/lef _build/macros/lib
