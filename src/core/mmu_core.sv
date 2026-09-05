@@ -59,7 +59,7 @@ module mmu_core #(
     // 2. CHIP DECODING MATRIX
     // =========================================================================
     wire [5:0] clean_signals;
-    wire [5:0] raw_signals;
+    bit  [5:0] raw_signals;
     bit      raw_s4_n, raw_s5_n, raw_basic_n, raw_io_n, raw_os_n, raw_ci_n, local_os_n;
 
     always_comb begin
