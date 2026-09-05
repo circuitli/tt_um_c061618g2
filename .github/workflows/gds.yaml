@@ -83,10 +83,10 @@ jobs:
               ln -s "$IHP_TECH_DIR/librelane" "$IHP_TECH_DIR/openlane"
           fi
 
-          # Direct LibreLane to use Ubuntu's stable yosys binary (/usr/bin/yosys), 
-          # completely bypassing the crashing nightly OSS CAD Suite executable!
-          export YOSYS_BIN="/usr/bin/yosys"
-          echo "Using alternative yosys binary track overridden at: $YOSYS_BIN"
+          # OpenLane 2 / LibreLane utilizes 'SYNTH_BIN' to route the synthesis engine!
+          # This forces all phases (JsonHeader, Synthesis, etc.) to use /usr/bin/yosys natively.
+          export SYNTH_BIN="/usr/bin/yosys"
+          echo "Overriding LibreLane synthesis path context to: $SYNTH_BIN"
           
           # Invoke openlane directly via python3 -m. This targets ONLY your isolated
           # macro config file, leaving the top-level project untouched!
