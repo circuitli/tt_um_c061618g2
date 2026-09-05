@@ -45,10 +45,9 @@ jobs:
           sudo chmod +x /usr/local/bin/openroad
           
           # Pull the authentic compiled EDA binary executables directly through pip!
-          pip install openlane librelane ciel
+          pip install openlane librelane
 
       - name: Install and Run PDK Downloader Directly
-        if: false
         shell: bash
         # Forward the path definitions directly into this step execution block
         env:
@@ -57,7 +56,9 @@ jobs:
           set -eo pipefail
 
           export PDK_ROOT="${{ github.workspace }}/pdk"
-          
+
+          pip install ciel
+
           # 2. Automatically retrieve the latest available version hash from IHP-Open-PDK
           # This extracts the latest commit tracking string dynamically
           LATEST_HASH=$(python3 -m ciel ls-remote --pdk-family ihp-sg13g2 | head -n 1 | awk '{print $1}')
@@ -78,7 +79,7 @@ jobs:
 
           # Establish an absolute, local workspace destination folder path
           LOCAL_PDK_ROOT="${{ github.workspace }}/pdk"
-          mkdir -p "$LOCAL_PDK_ROOT"
+          #mkdir -p "$LOCAL_PDK_ROOT"
 
           # This ensures python3 -m openlane can instantly read it, clearing the TclError!
           #export PDK_ROOT="${{ github.workspace }}/pdk"
@@ -112,10 +113,6 @@ jobs:
             -w /work \
             ghcr.io/the-openroad-project/openlane:latest \
             bash -c "
-              echo 'Fetching verified PDK data via Ciel...' && \
-              pip install ciel && \
-              LATEST_HASH=\$(python3 -m ciel ls-remote --pdk-family ihp-sg13g2 | head -n 1 | awk '{print \$1}') && \
-              python3 -m ciel enable --pdk-root $LOCAL_PDK_ROOT --pdk-family ihp-sg13g2 \"\$LATEST_HASH\" && \
               echo 'Compiling macro block layout rules cleanly...' && \
               python3 -m openlane --manual-pdk --pdk-root $LOCAL_PDK_ROOT --pdk ihp-sg13g2 openlane/c061618g2/config.json
             "
