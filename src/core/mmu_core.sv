@@ -118,25 +118,17 @@ module mmu_core #(
     wire s4_filtered, io_filtered, ci_filtered, os_filtered, basic_filtered, s5_filtered;
     assign {s4_filtered, io_filtered, ci_filtered, os_filtered, basic_filtered, s5_filtered} = clean_signals;
 
-    wire out_s4    = rst_n ? s4_filtered    : 1'b1;
-    wire out_io    = rst_n ? io_filtered    : 1'b1;
-    wire out_ci    = rst_n ? ci_filtered    : 1'b1;
-    wire out_os    = rst_n ? os_filtered    : 1'b1;
-    wire out_basic = rst_n ? basic_filtered : 1'b1;
-    wire out_s5    = rst_n ? s5_filtered    : 1'b1;
-
-    // Assign the entire packed struct ATOMICALLY 
-    // in one single shot. This prevents Yosys from parsing field slices 
-    // and eliminates register inference completely!
+    // Direct, atomic structural assignment mapping straight to the output pins.
+    // If rst_n falls to 0, (~rst_n) becomes 1, cleanly driving the active-low channels high!
     assign core_out = {
-        1'b0,          // unused_p3_b7
-        1'b1,          // FLG_n
-        out_s4,        // s4_n
-        out_io,        // io_n
-        out_ci,        // ci_n
-        out_os,        // os_n
-        out_basic,     // basic_n
-        out_s5         // s5_n
+        1'b0,                           // unused_p3_b7
+        1'b1,                           // FLG_n
+        (s4_filtered    | ~rst_n),      // s4_n
+        (io_filtered    | ~rst_n),      // io_n
+        (ci_filtered    | ~rst_n),      // ci_n
+        (os_filtered    | ~rst_n),      // os_n
+        (basic_filtered | ~rst_n),      // basic_n
+        (s5_filtered    | ~rst_n)       // s5_n
     };
         
 endmodule
