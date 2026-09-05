@@ -25,10 +25,11 @@
   "GRT_ALLOW_CONGESTION": false,
 
   "// -------------------------------------------------------------------------": "",
-  "// Forces LibreLane to use a basic option string that YosysHQ accepts, ": "",
-  "// completely removing the unrecognized option option crashes!": "",
+  "// Disabling black-box library extraction prevents LibreLane from passing ": "",
+  "// the unrecognized '-y' search flag down to OpenROAD's command parsing engine!": "",
   "// -------------------------------------------------------------------------": "",
-  "SYNTH_YOSYS_OPTIONS": [ "-X" ],
+  "SYNTH_READ_BLACKBOX_LIB": false,
+  "SYNTH_USE_PG_PINS_DEFINES": "none",
 
   "// -------------------------------------------------------------------------": "",
   "// 3. TARGET ENVIRONMENT ENVELOPE SEEDING (Cross-PDK Platform Controls)": "",
