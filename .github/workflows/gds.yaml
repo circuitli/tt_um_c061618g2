@@ -27,10 +27,6 @@ jobs:
       # 🌟 THE COMPILATION STEP: Hardens your macro sub-config natively using 
       # to build your macro sub-config inside your branch natively!
       - name: 🔨 Compile Internal Hard Macros Natively
-        uses: The-OpenROAD-Project/actions/openlane_run@main
-        with:
-          pdk: "ihp-sg13g2"
-          config_path: "macros/c061618g2/config.json"- name: 🔨 Compile Internal Hard Macros Natively
         shell: bash
         run: |
           set -eo pipefail
