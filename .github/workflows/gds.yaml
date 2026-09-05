@@ -29,7 +29,15 @@ jobs:
           # Fetch the actual C-binary Tk bindings for Python
           sudo apt-get update
 
-          sudo apt-get install -y python3-tk verilator yosys openroad
+          sudo apt-get install -y python3-tk
+          
+          echo "Fetching official pre-compiled OSS CAD Suite..."
+          # Download and unpack the complete, self-contained EDA environment
+          wget -q https://github.com
+          tar -zxf oss-cad-suite-linux-x64-20250101.tgz -C ${{ github.workspace }}
+          
+          # Bind all tools (yosys, openroad, verilator) directly to the system path!
+          echo "${{ github.workspace }}/oss-cad-suite/bin" >> $GITHUB_PATH
           
           # 1. Fetch the actual orchestration tool library from the repository
           echo "Cloning authentic Tiny Tapeout hardware support scripts..."
