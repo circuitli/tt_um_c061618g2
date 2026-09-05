@@ -26,18 +26,18 @@ module c061618g2 (
     /* verilator lint_on UNUSEDSIGNAL */
     input  wire        rst_n,    // Part of the strict wrapper standard!
     input  wire  [7:0] ui_in,    // Dedicated hardware inputs
-    output logic [7:0] uo_out,   // Dedicated hardware outputs
+    output wire  [7:0] uo_out,   // Dedicated hardware outputs
     input  wire  [7:0] uio_in,   // Bidirectional bus input network
-    output logic [7:0] uio_out,  // Bidirectional bus output network
-    output logic [7:0] uio_oe,   // Safe output enablement bus mapping
+    output wire  [7:0] uio_out,  // Bidirectional bus output network
+    output wire  [7:0] uio_oe,   // Safe output enablement bus mapping
     input  wire        ena       // Tiny Tapeout macro environment block enable signal
 );
 
     // =========================================================================
     // 1. PURE 2-STATE VARIABLE FIREWALL
     // =========================================================================
-    logic [7:0] safe_ui;
-    logic [7:0] safe_uio;
+    wire [7:0] safe_ui;
+    wire [7:0] safe_uio;
 
     // =========================================================================
     // HAZARD-FREE & WARNING-FREE ATOMIC VECTOR INPUT SHIELD
@@ -146,7 +146,7 @@ module c061618g2 (
     // Packs your structural pmod3 outputs directly into the flat bus vector
     // matching the exact indices declared in your pmod3_outputs_t struct.
     // -------------------------------------------------------------------------
-    logic [7:0] raw_uo_out;
+    wire [7:0] raw_uo_out;
     
     always_comb begin
         if (system_disabled) begin

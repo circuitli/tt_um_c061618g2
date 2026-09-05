@@ -29,16 +29,16 @@
 module clock_synchronizer #(
     parameter int STAGES = 2
 ) (
-    input  logic rst,        // Asynchronous system reset input
-    input  logic raw_clk,    // Asynchronous or raw input clock source
+    input  wire rst,        // Asynchronous system reset input
+    input  wire raw_clk,    // Asynchronous or raw input clock source
     // Applying the attribute directly to the output port is 100% legal in SBY 
     // and forces Yosys to lock the outer boundary pin name for OpenROAD
-    (* keep = 1, dont_touch = 1 *) output logic sync_clk // Stabilized, glitch-free synchronized clock output
+    (* keep = 1, dont_touch = 1 *) output wire sync_clk // Stabilized, glitch-free synchronized clock output
 );
 
     // Multi-stage synchronization array vector with synthesis attributes
     // to prevent primitive remapping and minimize physical routing delay.
-    (* async_reg = "true" *) logic [STAGES-1:0] sync_stages;
+    (* async_reg = "true" *) wire [STAGES-1:0] sync_stages;
 
     // ---------------------------------------------------------------------
     // Sequential Gating Logic

@@ -28,10 +28,10 @@
 module clock_sybchronizer_formal #(
     parameter int STAGES = 2
 ) (
-    input logic rst,
-    input logic raw_clk,
-    input logic sync_clk,
-    input logic [STAGES-1:0] sync_stages
+    input wire rst,
+    input wire raw_clk,
+    input wire sync_clk,
+    input wire [STAGES-1:0] sync_stages
 );
 
     // ---------------------------------------------------------------------

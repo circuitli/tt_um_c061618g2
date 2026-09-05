@@ -113,7 +113,7 @@ module async_glitch_filter #(
     // =========================================================================
     // LATCH LOOP BOUNDARY
     // =========================================================================
-    logic  latch_raw_out;
+    wire latch_raw_out;
 
     (* keep = "true" *)
     async_latch_cell u_latch_inst (

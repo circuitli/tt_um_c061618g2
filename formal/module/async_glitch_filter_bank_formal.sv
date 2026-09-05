@@ -28,7 +28,7 @@ module async_glitch_filter_bank_formal #(
 )(
     input wire                rst_n,      
     input wire  [WIDTH-1:0]   async_in,   
-    input logic [WIDTH-1:0]   async_out   
+    input wire  [WIDTH-1:0]   async_out   
 );
 
     // =========================================================================

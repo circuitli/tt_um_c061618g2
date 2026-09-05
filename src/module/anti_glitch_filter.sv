@@ -24,11 +24,11 @@ module async_glitch_filter #(
 )(
     input  wire rst_n,       // Pure combinational reset line
     input  wire async_in,    // Raw asynchronous input signal
-    output logic async_out   // Glitch-filtered asynchronous output
+    output wire async_out   // Glitch-filtered asynchronous output
 );
 
     // Array to hold the delayed versions of the signal
-    (* keep = "true" *) logic [STAGES-1:0] delay_chain;
+    (* keep = "true" *) wire [STAGES-1:0] delay_chain;
 
     // Stage 0 ONLY takes the raw input
     assign delay_chain[0] = async_in;
@@ -43,7 +43,7 @@ module async_glitch_filter #(
     // =========================================================================
     // CODE-LEVEL LANGUAGE BREAK TO ELIMINATE SBY PARSER HACKS
     // =========================================================================
-    logic loop_feedback;
+    wire loop_feedback;
 
     // In normal production synthesis (ASIC/OpenLane), compile the pure,
     // instantaneous clockless hardware continuous assignment loops directly to silicon.

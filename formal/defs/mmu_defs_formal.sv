@@ -21,10 +21,10 @@
 `include "src/defs/mmu_defs.sv"
 
 module mmu_defs_formal(
-    input logic [7:0] ui_in,
-    input logic [7:0] uio_in,
-    input logic [7:0] uio_out,
-    input logic [7:0] uo_out
+    input wire [7:0] ui_in,
+    input wire [7:0] uio_in,
+    input wire [7:0] uio_out,
+    input wire [7:0] uo_out
 );
 
     // ---------------------------------------------------------------------

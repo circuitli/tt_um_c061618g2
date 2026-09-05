@@ -19,15 +19,15 @@
 `default_nettype none
 
 module signal_divider_by_4_formal (
-    input  logic clk,
-    input  logic rst_n,
-    input  logic signal_in,
-    input  logic signal_out,
-    input  logic [1:0] sample_cnt
+    input  wire clk,
+    input  wire rst_n,
+    input  wire signal_in,
+    input  wire signal_out,
+    input  wire [1:0] sample_cnt
 );
 
     // Track initialization step to skip cycle 0 checks
-    logic f_past_valid = 1'b0;
+    wire f_past_valid = 1'b0;
     always_ff @(posedge clk) begin
         f_past_valid <= 1'b1;
     end

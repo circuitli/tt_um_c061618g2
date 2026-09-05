@@ -33,13 +33,13 @@ module anti_glitch_filter_formal (
     (* formal_anyconst *) reg formal_active_low;
     
     // Dynamic parameterization evaluates seamlessly without synthesis errors
-    logic safe_state;
+    wire safe_state;
     assign safe_state = formal_active_low ? 1'b1 : 1'b0;
 
     // =========================================================================
     // PAST CYCLE VALIDITY TRACKING
     // =========================================================================
-    logic f_past_valid = 1'b0;
+    wire f_past_valid = 1'b0;
 
     always_ff @(posedge clk) begin
         f_past_valid <= 1'b1;

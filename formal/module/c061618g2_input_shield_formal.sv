@@ -25,8 +25,8 @@
 module c061618g2_input_shield_formal (
     input  wire  [7:0] raw_ui,
     input  wire  [7:0] raw_uio,
-    input  logic [7:0] safe_ui,
-    input  logic [7:0] safe_uio
+    input  wire  [7:0] safe_ui,
+    input  wire  [7:0] safe_uio
 );
 
     // Unchecked verification assumptions helper macro

@@ -20,15 +20,15 @@
 
 (* keep_hierarchy = 1 *)
 module signal_divider_by_4 (
-    input  logic clk,              // Master reference clock
-    input  logic rst_n,            // Active-low global system reset
-    input  logic signal_in,        // Raw data input stream
-    output logic signal_out        // Sampled, stable data output (Held for 4 cycles)
+    input  wire clk,              // Master reference clock
+    input  wire rst_n,            // Active-low global system reset
+    input  wire signal_in,        // Raw data input stream
+    output wire signal_out        // Sampled, stable data output (Held for 4 cycles)
 );
 
     // 2-bit counter tracks 4 distinct cycles safely
-    (* keep = 1, dont_touch = 1 *) logic [1:0] sample_cnt;
-    (* keep = 1, dont_touch = 1 *) logic       data_out_reg;
+    (* keep = 1, dont_touch = 1 *) wire [1:0] sample_cnt;
+    (* keep = 1, dont_touch = 1 *) wire       data_out_reg;
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin

@@ -23,7 +23,7 @@ module safe_async_mux (
     input  wire  a0,    // Selected data channel when s == 0
     input  wire  a1,    // Selected data channel when s == 1
     input  wire  s,     // Active select control line
-    output logic y      // Glitch-free, type-isolated output net
+    output wire  y      // Glitch-free, type-isolated output net
 );
 
     // 1. Declare an internal wire with preservation pragmas to lock the gates
