@@ -78,12 +78,12 @@ jobs:
           cat << 'EOF' > "$PDK_ROOT/ihp-sg13g2/libs.tech/openlane/config.tcl"
           set ::env(STD_CELL_LIBRARY) "sg13g2_stdcell"
           set ::env(PROCESS) "sg13g2"
-EOF
+          EOF
 
           # Create a matching stub for the stdcell tracking block directory to clear inner checks
           cat << 'EOF' > "$PDK_ROOT/ihp-sg13g2/libs.tech/openlane/sg13g2_stdcell/config.tcl"
           # Standard library tracking definitions
-EOF
+          EOF
           echo "✅ PDK tracks successfully populated with configurations."
 
       # 🌟 THE COMPILATION STEP: Hardens your macro sub-config natively using 
