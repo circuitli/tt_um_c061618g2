@@ -109,8 +109,8 @@
     "KEEP_HIERARCHY=1"
   ],
 
-  "//": "EXTRA_SYNTH_ARGS - Forces Yosys to skip automatic insbuf insertion on cross-coupled loops, while unrolling multi-bit vectors into clean scalar ports to clear out Workcraft token errors",
-  "_EXTRA_SYNTH_ARGS": "-run co:; splitnets -ports; -run co:",
+  "//": "EXTRA_SYNTH_ARGS - Overrides the front-end compiler passes! Running 'proc -nodff -nolatch' explicitly strips out the dff/latch extraction scripts during process translation. This intercepts the compilation loop and stops Yosys from generating ANY sequential storage elements in your glitch filters or mmu_core right from the start!",
+  "EXTRA_SYNTH_ARGS": "-run co:; proc -nodff -nolatch; splitnets -ports; -run co:",
 
   "//": "RUN_SYNTH_CHECKS - Controls the strict automated post-synthesis verification script checker. Disabling this to 0 prevents the Tiny Tapeout build harness from misinterpreting ABC combinational logic messages as fatal errors.",
   "RUN_SYNTH_CHECKS": 0,
