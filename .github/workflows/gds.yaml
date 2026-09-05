@@ -89,6 +89,12 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Download Precompiled Macro Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: precompiled-macros
+          path: macros/  # Pulls the files right back into the root workspace folder
+
       - name: Install and Run PDK Downloader Directly
         if: false
         run: |
