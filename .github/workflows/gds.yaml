@@ -78,6 +78,7 @@ jobs:
           echo "🪄 Auto-generating missing OpenLane configuration directories..."
           # 🌟 Create the folder tracks that OpenLane 2 demands!
           mkdir -p "$PDK_ROOT/ihp-sg13g2/libs.tech/openlane"
+          mkdir -p "$PDK_ROOT/ihp-sg13g2/libs.tech/openlane/sg13g2_stdcell"
           
           # Create a valid, compliant config.tcl stub file to satisfy OpenLane's start-time validation check
           cat << 'EOF' > "$PDK_ROOT/ihp-sg13g2/libs.tech/openlane/config.tcl"
