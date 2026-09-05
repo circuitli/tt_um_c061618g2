@@ -197,15 +197,13 @@
         }
       }
     }
-  },
+  ],
   "// Timing is the only external aspect that must be explicitly loaded at root": "",
   "EXTRA_LIBS": [
     "dir::_build/macros/lib/c061618g2.lib"
   ],
 
-    "_MACRO_PLACEMENT",
-    :,
-    {
+    "_MACRO_PLACEMENT": {
       "u_c061618g2": {
         "location": [ 10.0, 10.0 ],
         "orientation": "N",
