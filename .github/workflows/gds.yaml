@@ -26,12 +26,15 @@ jobs:
         run: |
           set -eo pipefail
           echo "📥 Installing system-level Tkinter GUI dependencies..."
-          # 🌟 THE SYSTEM-LEVEL FIX: Fetch the actual C-binary Tk bindings for Python
+          # Fetch the actual C-binary Tk bindings for Python
           sudo apt-get update
           sudo apt-get install -y python3-tk
+
+          # Add verilator right here to clear the system command check
+          sudo apt-get install -y python3-tk verilator
           
           # 1. Fetch the actual orchestration tool library from the repository
-          echo "📥 Cloning authentic Tiny Tapeout hardware support scripts..."
+          echo "Cloning authentic Tiny Tapeout hardware support scripts..."
           git clone --depth=1 https://github.com/TinyTapeout/tt-support-tools.git tt
           
           # 2. Install the true layout dependencies natively on the host machine
