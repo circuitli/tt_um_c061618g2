@@ -55,71 +55,59 @@ module mmu_core #(
     assign {rd5, rd4, map_n} = core_ctrl;
     assign {a15, a14, a13, a12, a11} = core_addr;
 
+        // =========================================================================
+    // 1. DIRECT WIRE SPLICING
     // =========================================================================
-    // 2. CHIP DECODING MATRIX
+    wire a11, a12, a13, a14, a15, map_n, rd4, rd5;
+    
+    assign {rd5, rd4, map_n} = core_ctrl;
+    assign {a15, a14, a13, a12, a11} = core_addr;
+
     // =========================================================================
-    wire [5:0] clean_signals;
-    bit  [5:0] raw_signals;
-    bit      raw_s4_n, raw_s5_n, raw_basic_n, raw_io_n, raw_os_n, raw_ci_n, local_os_n;
+    // 2. CHIP DECODING MATRIX (PURE CONTINUOUS HARDWARE NETS)
+    // By calculating the expressions completely flatly as continuous wires,
+    // Yosys is structurally forbidden from inferring sequential logic!
+    // =========================================================================
+    wire raw_s4_n, raw_s5_n, raw_basic_n, raw_io_n, raw_os_n, raw_ci_n;
 
-    always_comb begin
-        // Hardwired Active-Low Pull-Up Baselines (Deasserted / High)
-        raw_s4_n    = 1'b1;
-        raw_s5_n    = 1'b1;
-        raw_basic_n = 1'b1;
-        raw_io_n    = 1'b1;
-        raw_os_n    = 1'b1; 
-        raw_ci_n    = 1'b1; 
-        local_os_n  = 1'b1;
+    // /S4 Expansion Right Cartridge Select ($8000-$9FFF)
+    assign raw_s4_n = (rst_n && (!a13 && !a14 && a15 && rd4 && ref_n)) ? 1'b0 : 1'b1;
 
-        if (rst_n) begin
-            // /S4 Expansion Right Cartridge Select ($8000-$9FFF)
-            if (!a13 && !a14 && a15 && rd4 && ref_n) begin
-                raw_s4_n = 1'b0;
-            end
+    // /S5 Expansion Left Cartridge Select ($A000-$BFFF)
+    assign raw_s5_n = (rst_n && (a13 && !a14 && a15 && rd5 && ref_n)) ? 1'b0 : 1'b1;
 
-            // /S5 Expansion Left Cartridge Select ($A000-$BFFF)
-            if (a13 && !a14 && a15 && rd5 && ref_n) begin
-                raw_s5_n = 1'b0;
-            end
+    // /BASIC ROM Select ($A000-$BFFF)
+    assign raw_basic_n = (rst_n && (a13 && !a14 && a15 && !rd5 && !be_n && ref_n)) ? 1'b0 : 1'b1;
 
-            // /BASIC ROM Select ($A000-$BFFF) - Hardware-gated to block if Left Cartridge (rd5) is active
-            if (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) begin
-                raw_basic_n = 1'b0;
-            end
+    // /IO Hardware Peripheral Block Select ($D400-$D7FF)
+    assign raw_io_n = (rst_n && (!a11 && a12 && !a13 && a14 && a15 && ref_n)) ? 1'b0 : 1'b1;
 
-            // /IO Hardware Peripheral Block Select ($D400-$D7FF - Custom chip Shadow Range)
-            if (!a11 && a12 && !a13 && a14 && a15 && ref_n) begin
-                raw_io_n = 1'b0;
-            end
+    // /OS ROM Controller Matrix ($E000-$FFFF & Shadows)
+    assign raw_os_n = (rst_n && (
+        (a13 && a14 && a15 && ren && ref_n) ||
+        (!a12 && a14 && a15 && ren && ref_n) ||
+        (a11 && a12 && !a13 && a14 && a15 && ren && mpd_n && ref_n) ||
+        (!a11 && a12 && !a13 && a14 && !a15 && ren && !map_n && ref_n)
+    )) ? 1'b0 : 1'b1;
 
-            // /OS ROM Controller Matrix: Decodes Upper OS Space ($E000-$FFFF) and Aliases Self-Test Code into Low RAM ($5400-$57FF)
-            if ( (a13 && a14 && a15 && ren && ref_n) ||
-                 (!a12 && a14 && a15 && ren && ref_n) ||
-                 (a11 && a12 && !a13 && a14 && a15 && ren && mpd_n && ref_n) ||
-                 (!a11 && a12 && !a13 && a14 && !a15 && ren && !map_n && ref_n) ) begin
-                local_os_n  = 1'b0;
-            end
-            raw_os_n = local_os_n;
+    // /CI Active-Low Fallback
+    assign raw_ci_n = (rst_n && (
+        (!a13 && !a14 && a15 && rd4 && ref_n) ||
+        (a13 && !a14 && a15 && rd5 && ref_n) ||
+        (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) ||
+        (raw_os_n == 1'b1) ||
+        (!a11 && a12 && !a13 && a14 && a15 && ref_n) ||
+        (!ref_n)
+    )) ? 1'b0 : 1'b1;
 
-             // /CI Active-Low Fallback: Acts as a structural default mask whenever the OS is inactive or refresh drops
-            if ( (!a13 && !a14 && a15 && rd4 && ref_n) ||
-                    (a13 && !a14 && a15 && rd5 && ref_n) ||
-                    (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) ||
-                    (local_os_n == 1'b1) ||
-                    (!a11 && a12 && !a13 && a14 && a15 && ref_n) ||
-                    (!ref_n) ) begin
-                raw_ci_n = 1'b0;
-            end
-        end
-
-        // Safe procedural packing
-        raw_signals = {raw_s4_n, raw_io_n, raw_ci_n, raw_os_n, raw_basic_n, raw_s5_n};
-    end
+    wire [5:0] raw_signals;
+    assign raw_signals = {raw_s4_n, raw_io_n, raw_ci_n, raw_os_n, raw_basic_n, raw_s5_n};
 
     // =========================================================================
     // 3. PHYSICAL GLITCH ISOLATION LAYER (BANK INTEGRATION)
     // =========================================================================
+    wire [5:0] clean_signals;
+
     async_glitch_filter_bank #(
         .WIDTH(6), 
         .STAGES(FILTER_STAGES)
