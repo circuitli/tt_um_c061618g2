@@ -43,8 +43,14 @@
   "//": "W_VERILOG_OPTIONS - Passing -noattr strips backslashes, while -nodec forces Yosys to expand vector array ports into independent, flat wire nodes. This stops Workcraft from crashing without altering your hierarchical module structures",
   "W_VERILOG_OPTIONS": "-noattr -nodec",
 
-  "//": "SYNTH_STRATEGY - Restores the stable balanced logic restructuring formula to keep sequential steering paths clean and routable at high speeds.",
-  "SYNTH_STRATEGY": "AREA 0",
+  "//": "SYNTH_STRATEGY - Changing this option over to an area or raw delay strategy rewrites ABC's optimization profile, completely stripping out the crashing sequential timing sub-commands (like scorr)!",
+  "SYNTH_STRATEGY": "DELAY 0",
+
+  "//": "SYNTH_ABC_BUFFERING - Explicitly disables late combinational resizing hooks so ABC passes the gate netlist down to OpenROAD without trying to apply sequential constraints.",
+  "SYNTH_ABC_BUFFERING": false,
+
+  "//": "SYNTH_ABC_LEGACY_FLOW - Forces OpenLane to drop the modern abc9 flow (which assumes structural sequential cell paths) and drop back to the standard legacy ABC string matching architecture.",
+  "SYNTH_ABC_LEGACY_FLOW": 1,
 
   "//": "SYNTH_SIZING - Enables aggressive pre-placement cell sizing to scale up internal logic gates to high-performance variations early.",
   "SYNTH_SIZING": 0,
@@ -91,9 +97,6 @@
 
   "//": "SYNTH_TIMING_DERATING - Controls whether synchronous design flows calculation margin offsets for clock boundaries. Setting this to 0 prevents clock-skew analysis tools from complaining about your clockless layout.",
   "SYNTH_TIMING_DERATING": 0,
-
-  "//": "SYNTH_ABC_LEGACY_FLOW - Forces OpenLane to drop the modern abc9 flow (which assumes structural sequential cell paths) and drop back to the standard legacy ABC string matching architecture.",
-  "SYNTH_ABC_LEGACY_FLOW": 1,
 
   "//": "SYNTH_EXPLORE_MODE - Instructs Yosys to process custom structural combinational feedbacks natively without generating lint exceptions.",
   "SYNTH_EXPLORE_MODE": 1,

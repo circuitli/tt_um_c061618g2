@@ -31,22 +31,36 @@
   "CLOCK_PERIOD": 0,
   "CLOCK_PORT": "",
   "RUN_CTS": false,
+  "//": "SYNTH_STRATEGY - Changing this option over to an area or raw delay strategy rewrites ABC's optimization profile, completely stripping out the crashing sequential timing sub-commands (like scorr)!",
+  "SYNTH_STRATEGY": "DELAY 0",
+
+  "//": "SYNTH_ABC_BUFFERING - Explicitly disables late combinational resizing hooks so ABC passes the gate netlist down to OpenROAD without trying to apply sequential constraints.",
+  "SYNTH_ABC_BUFFERING": false
+}
   "//": "SYNTH_ABC_LEGACY_FLOW - Forces the ABC logic mapping engine to use its pure structural legacy flow, which drops timing-retime checks. This completely prevents ABC from throwing 'The network is combinational' crashes!",
   "SYNTH_ABC_LEGACY_FLOW": true,
+
   "//": "EXTRA_SYNTH_ARGS - Overrides the front-end compiler passes! Running 'proc -nodff -nolatch' explicitly strips out the dff/latch extraction scripts during process translation. This intercepts the compilation loop and stops Yosys from generating ANY sequential storage elements in your glitch filters or mmu_core right from the start!",
   "EXTRA_SYNTH_ARGS": "-run co:; proc -nodff -nolatch; splitnets -ports; -run co:",
+
   "//": "SYNTH_NO_FLIP_FLOPS - Explicitly commands the LibreLane synthesis controller that this layout houses zero sequential registers. This completely strips the DFFLEGALIZE script step out of the automated compilation pipeline!",
   "SYNTH_NO_FLIP_FLOPS": true,
+
   "//": "SYNTH_YOSYS_OPTIONS - Passes global parameters to completely freeze sequential mapping tracking, forcing Yosys to evaluate all internal loops flatly as discrete standard logic gates.",
   "SYNTH_YOSYS_OPTIONS": [ "-nolatch", "-noinit_dff" ],
+
   "//": "SYNTH_GATES_REMAP - Explicitly forces Yosys and ABC to preserve your explicit structural standard cell instantiations exactly as written, stopping the optimizer from collapsing your delay chains or altering loops.",
   "SYNTH_GATES_REMAP": false,
+
   "//": "SYNTH_BUFFERING - Disables the global pre-placement sizing and buffer insertion passes on combinational nets. This ensures that the physical inverters and buffers inside your filters remain completely untouched.",
   "SYNTH_BUFFERING": false,
+
   "//": "SYNTH_SIZING - Turns off the early automated cell scaling pass to prevent the tool from swapping out your carefully chosen gate sizes.",
   "SYNTH_SIZING": 0,
+
   "//": "ERROR_ON_UNMAPPED_CELLS - Set to false to act as a fallback safety guardrail in case Yosys attempts to infer any sequential logic out of your stripped loops.",
   "ERROR_ON_UNMAPPED_CELLS": false,
+
   "_SYNTH_FLAT_TOP": true,
   "_SYNTH_NO_VOLTAGE_CELLS": true,
   "_QUIT_ON_UNMAPPED_CELLS": false,
