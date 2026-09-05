@@ -12,8 +12,41 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # STEP 1: Independent job to build your macro abstracts
+  build_macros:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # 🌟 THE COMPILATION STEP: Hardens your macro sub-config natively using 
+      # the verified openlane action block before your main chip pass triggers!
+      - name: 🔨 Compile Internal Hard Macros Natively
+        uses: efabless/openlane-action@v2
+        with:
+          pdk: "ihp-sg13g2"
+          config_path: "macros/c061618g2/config.json"
+
+      # Move the compiled abstract views into your tracked macros/ path
+      - name: 🚚 Stage Macro View Artifacts
+        shell: bash
+        run: |
+          mkdir -p _build/macros/gds _build/macros/lef _build/macros/lib
+          cp macros/c061618g2/runs/*/final/gds/*.gds _build/macros/gds/c061618g2.gds
+          cp macros/c061618g2/runs/*/final/lef/*.lef _build/macros/lef/c061618g2.lef
+          cp macros/c061618g2/runs/*/final/lib/*.lib _build/macros/lib/c061618g2.lib
+
+      - name: 💾 Upload Macro Abstract Views for Top-Level Assembly
+        uses: actions/upload-artifact@v4
+        with:
+          name: precompiled-macros
+          path: _build/macros/
+
   gds:
     runs-on: ubuntu-24.04
+    needs: build_macros
     steps:
       - name: checkout repo
         uses: actions/checkout@v6
@@ -85,6 +118,7 @@ jobs:
           ls -la ${{ github.workspace }}/macro
 
       - name: ⚙️ Stub Macro Directory for OpenLane Validator
+        if: false
         shell: bash
         run: |
           set -eo pipefail
@@ -94,11 +128,6 @@ jobs:
           mkdir -p _build/macros/gds
           mkdir -p _build/macros/lef
           mkdir -p _build/macros/lib
-          
-          # Create empty placeholder files so OpenLane doesn't throw a path invalid crash
-          touch _build/macros/gds/c061618g2.gds
-          touch _build/macros/lef/c061618g2.lef
-          touch _build/macros/lib/c061618g2.lib
 
         # ========================================================
         # INSERT THE CUSTOM PATCH STEP RIGHT HERE:
