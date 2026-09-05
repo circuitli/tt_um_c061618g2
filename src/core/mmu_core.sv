@@ -56,42 +56,41 @@ module mmu_core #(
     assign {a15, a14, a13, a12, a11} = core_addr;
 
     // =========================================================================
-    // 2. CHIP DECODING MATRIX (PURE CONTINUOUS HARDWARE NETS)
-    // By calculating the expressions completely flatly as continuous wires,
-    // Yosys is structurally forbidden from inferring sequential logic!
+    // 2. CHIP DECODING MATRIX (PURE BITWISE STRIPPED BOOLEAN PRIMITIVES)
+    // No conditional 'if' statements, no 'always_comb' blocks, and no '? :' 
+    // ternary logic. This makes latch inference physically impossible in Yosys!
     // =========================================================================
     wire raw_s4_n, raw_s5_n, raw_basic_n, raw_io_n, raw_os_n, raw_ci_n;
 
     // /S4 Expansion Right Cartridge Select ($8000-$9FFF)
-    assign raw_s4_n = (rst_n && (!a13 && !a14 && a15 && rd4 && ref_n)) ? 1'b0 : 1'b1;
+    assign raw_s4_n = ~(rst_n & (~a13 & ~a14 & a15 & rd4 & ref_n));
 
     // /S5 Expansion Left Cartridge Select ($A000-$BFFF)
-    assign raw_s5_n = (rst_n && (a13 && !a14 && a15 && rd5 && ref_n)) ? 1'b0 : 1'b1;
+    assign raw_s5_n = ~(rst_n & (a13 & ~a14 & a15 & rd5 & ref_n));
 
     // /BASIC ROM Select ($A000-$BFFF)
-    assign raw_basic_n = (rst_n && (a13 && !a14 && a15 && !rd5 && !be_n && ref_n)) ? 1'b0 : 1'b1;
+    assign raw_basic_n = ~(rst_n & (a13 & ~a14 & a15 & ~rd5 & ~be_n & ref_n));
 
     // /IO Hardware Peripheral Block Select ($D400-$D7FF)
-    assign raw_io_n = (rst_n && (!a11 && a12 && !a13 && a14 && a15 && ref_n)) ? 1'b0 : 1'b1;
+    assign raw_io_n = ~(rst_n & (~a11 & a12 & ~a13 & a14 & a15 & ref_n));
 
     // /OS ROM Controller Matrix ($E000-$FFFF)
-    wire os_match = (a13 && a14 && a15 && ren && ref_n) ||
-                    (!a12 && a14 && a15 && ren && ref_n) ||
-                    (a11 && a12 && !a13 && a14 && a15 && ren && mpd_n && ref_n) ||
-                    (!a11 && a12 && !a13 && a14 && !a15 && ren && !map_n && ref_n);
+    wire os_match = (a13 & a14 & a15 & ren & ref_n) |
+                    (~a12 & a14 & a15 & ren & ref_n) |
+                    (a11 & a12 & ~a13 & a14 & a15 & ren & mpd_n & ref_n) |
+                    (~a11 & a12 & ~a13 & a14 & ~a15 & ren & ~map_n & ref_n);
                     
-    assign raw_os_n = (rst_n && os_match) ? 1'b0 : 1'b1;
+    assign raw_os_n = ~(rst_n & os_match);
 
-    // Instead of referencing the processed 'raw_os_n' wire, we use (!os_match).
-    // This removes the cyclic logic dependency, preventing Yosys from inferring a latch!
-    assign raw_ci_n = (rst_n && (
-        (!a13 && !a14 && a15 && rd4 && ref_n) ||
-        (a13 && !a14 && a15 && rd5 && ref_n) ||
-        (a13 && !a14 && a15 && !rd5 && !be_n && ref_n) ||
-        (!os_match) ||
-        (!a11 && a12 && !a13 && a14 && a15 && ref_n) ||
-        (!ref_n)
-    )) ? 1'b0 : 1'b1;
+    // /CI Active-Low Fallback: Complete independent address space decoder
+    wire ci_match = (~a13 & ~a14 & a15 & rd4 & ref_n) |
+                    (a13 & ~a14 & a15 & rd5 & ref_n) |
+                    (a13 & ~a14 & a15 & ~rd5 & ~be_n & ref_n) |
+                    (~os_match) |
+                    (~a11 & a12 & ~a13 & a14 & a15 & ref_n) |
+                    (~ref_n);
+
+    assign raw_ci_n = ~(rst_n & ci_match);
 
     wire [5:0] raw_signals;
     assign raw_signals = {raw_s4_n, raw_io_n, raw_ci_n, raw_os_n, raw_basic_n, raw_s5_n};
