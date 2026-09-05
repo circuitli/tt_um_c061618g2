@@ -88,7 +88,7 @@
   "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT": 0,
 
   "//": "SKIP_STEPS - Instructs the pipeline sequencer to skip running the late-stage physical design timing repair modules entirely, preventing deferred corner errors from stopping the flow run.",
-  "SKIP_STEPS": [
+  "_SKIP_STEPS": [
     "Resizer.DesignRepair",
     "Resizer.TimingRepair"
   ],
