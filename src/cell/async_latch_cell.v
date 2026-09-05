@@ -31,7 +31,7 @@ module async_latch_cell (
     // PRODUCTION HARDWARE SYNTHESIS ATTRIBUTES
     // Kept 100% active and untouched for your OpenLane layout synthesis runs.
     // =========================================================================
-    (* keep = 1, dont_touch = "true" *) wire latch_core;
+    (* keep = 1, dont_touch = "true", nolatches *) wire latch_core;
 
     // =========================================================================
     // 🛠️ WORKCRAFT LOOP-BREAKER STATE ANNOTATION
@@ -41,8 +41,7 @@ module async_latch_cell (
     // =========================================================================
     wire latch_feedback;
 
-    // STOP THE INFERENCE IN THE FEEDBACK BRIDGE:
-    (* nolatches *) assign latch_feedback = latch_core; //_break_
+    assign latch_feedback = latch_core; //_break_
 
     // =========================================================================
     // HAZARD-FREE UNCLOCKED SILICON LOGIC CROSS-COUPLED LAYOUT LOOP
