@@ -36,7 +36,7 @@ jobs:
           # Fetch the actual C-binary Tk bindings for Python
           sudo apt-get update
 
-          sudo apt-get install -y python3-tk
+          sudo apt-get install -y python3-tk yosys
           
           # Pull the authentic compiled EDA binary executables directly through pip!
           pip install openlane librelane ciel
@@ -83,9 +83,10 @@ jobs:
               ln -s "$IHP_TECH_DIR/librelane" "$IHP_TECH_DIR/openlane"
           fi
 
-          # Point the internal step manager directly to the authentic wrapper binary, 
-          # preventing LibreLane from executing the raw libexec sub-process that throws the '-y' error!
-          export YOSYS_BIN="${{ github.workspace }}/oss-cad-suite/bin/yosys"
+          # Direct LibreLane to use Ubuntu's stable yosys binary (/usr/bin/yosys), 
+          # completely bypassing the crashing nightly OSS CAD Suite executable!
+          export YOSYS_BIN="/usr/bin/yosys"
+          echo "Using alternative yosys binary track overridden at: $YOSYS_BIN"
           
           # Invoke openlane directly via python3 -m. This targets ONLY your isolated
           # macro config file, leaving the top-level project untouched!
