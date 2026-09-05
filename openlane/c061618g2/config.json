@@ -16,7 +16,7 @@
   "// 1. HARD MACRO BLOCK DESIGNATION (Stops Top-Level Pad Grid Inference)": "",
   "// -------------------------------------------------------------------------": "",
   "DESIGN_IS_CORE": false,
-  "FP_SIZING": "relative",
+  "FP_SIZING": "absolute",
   "FP_CORE_UTIL": 65,
   "PL_TARGET_DENSITY_PCT": 75,
 
@@ -115,7 +115,7 @@
   "// -------------------------------------------------------------------------": "",
   "pdk::ihp-sg13g2": {
     "VERILOG_DEFINES": [ "IHP_SG13G2" ],
-    "_DIE_AREA": [ 0, 0, 78.48, 61.56 ],
+    "DIE_AREA": [ 0.0, 0.0, 60.48, 55.44 ],
     "FP_TAP_DISTANCE": 15,
     "GLB_RT_MAX_DIODE_INS_ITERS": 0
   },
