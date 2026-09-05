@@ -46,8 +46,9 @@ jobs:
           echo "🚀 Initialising native macro hardening loop via tt_tool..."
           mkdir -p "$PDK_ROOT"
           
-          # 1. Execute the actual python compiler script to build your block
-          python3 tt/tt_tool.py --harden --ihp macros/c061618g2/config.json
+          # Call openlane directly! This completely bypasses tt_tool.py's argument limits
+          # and hardens your 406 asynchronous cells directly on the host machine.
+          openlane --pdk ihp-sg13g2 macros/c061618g2/config.json
           
           # Stage the compiled views directly to your expected _build folder matrix
           mkdir -p _build/macros/gds _build/macros/lef _build/macros/lib
