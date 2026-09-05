@@ -120,7 +120,7 @@ jobs:
           cp openlane/c061618g2/runs/*/final/lef/*.lef macros/lef
           #cp openlane/c061618g2/runs/*/final/lib/*.lib macros/lib
           cp openlane/c061618g2/runs/*/final/nl/*.v macros/nl
-          cp openlane/c061618g2/runs/*/final/spef/*.spef macros/spef
+          #cp openlane/c061618g2/runs/*/final/spef/*.spef macros/spef
           
           echo "✅ Macros compiled successfully."
 
