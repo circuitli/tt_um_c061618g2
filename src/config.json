@@ -197,13 +197,13 @@
   },
   "MACROS": {
     "c061618g2": {
-      "gds": [ "dir::macros/gds/c061618g2.gds" ],
-      "lef": [ "dir::macros/lef/c061618g2.lef" ],
-      "nl": [ "dir::macros/nl/c061618g2.nl.v" ],
+      "gds": [ "dir::../macros/gds/c061618g2.gds" ],
+      "lef": [ "dir::../macros/lef/c061618g2.lef" ],
+      "nl": [ "dir::../macros/nl/c061618g2.nl.v" ],
       "_spef": {
-        "min*": [ "dir::macros/spef/max/c061618g2*fast*.spef" ],
-        "nom": [ "dir::macros/spef/max/c061618g2*typ*.spef" ],
-        "max*": [ "dir::macros/spef/min/c061618g2*slow*.spef" ]
+        "min*": [ "dir::../macros/spef/max/c061618g2*fast*.spef" ],
+        "nom": [ "dir::../macros/spef/max/c061618g2*typ*.spef" ],
+        "max*": [ "dir::../macros/spef/min/c061618g2*slow*.spef" ]
       },
       "instances": {
         "u_c061618g2": {
@@ -214,7 +214,7 @@
     }
   },
   "// Timing is the only external aspect that must be explicitly loaded at root": "",
-  "_EXTRA_LIBS": [ "dir::macros/lib/c061618g2.lib" ],
+  "_EXTRA_LIBS": [ "dir::../macros/lib/c061618g2.lib" ],
 
   "_MACRO_PLACEMENT": {
     "u_c061618g2": {

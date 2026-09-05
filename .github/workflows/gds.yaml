@@ -21,32 +21,6 @@ jobs:
         with:
           submodules: recursive
 
-      # Uses the authentic manager wrapper block to inject yosys, openroad, 
-      # and verilator straight into your path variables securely!
-      - name: ⚙️ Provision Complete Silicon Toolchain
-        if: false
-        uses: YosysHQ/setup-oss-cad-suite@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Install Tkinter and Toolchain Natively
-        if: false
-        shell: bash
-        run: |
-          set -eo pipefail
-          echo "Installing system-level Tkinter GUI dependencies..."
-          # Fetch the actual C-binary Tk bindings for Python
-          sudo apt-get update
-
-          sudo apt-get install -y python3-tk yosys verilator
-
-          # 2. Fetch the standalone OpenROAD binary matching your platform
-          sudo wget -q -O /usr/local/bin/openroad https://github.com
-          sudo chmod +x /usr/local/bin/openroad
-          
-          # Pull the authentic compiled EDA binary executables directly through pip!
-          pip install openlane librelane
-
       - name: Install and Run PDK Downloader Directly
         shell: bash
         # Forward the path definitions directly into this step execution block
@@ -79,30 +53,6 @@ jobs:
 
           # Establish an absolute, local workspace destination folder path
           LOCAL_PDK_ROOT="${{ github.workspace }}/pdk"
-          #mkdir -p "$LOCAL_PDK_ROOT"
-
-          # This ensures python3 -m openlane can instantly read it, clearing the TclError!
-          #export PDK_ROOT="${{ github.workspace }}/pdk"
-
-          # Some OpenLane 2 configurations look for an explicit python environment map 
-          # to inject legacy global variables back into the inner TCL interpreters.
-          #export OPENLANE_PDK_ROOT="${{ github.workspace }}/pdk"
-
-          # Ciel extracts to 'libs.tech/librelane'. We link that folder directly 
-          # to 'libs.tech/openlane' so the toolchain finds the real IHP foundry variables!
-          #IHP_TECH_DIR="$PDK_ROOT/ihp-sg13g2/libs.tech"
-          #if [ -d "$IHP_TECH_DIR/librelane" ] && [ ! -d "$IHP_TECH_DIR/openlane" ]; then
-          #    ln -s "$IHP_TECH_DIR/librelane" "$IHP_TECH_DIR/openlane"
-          #fi
-
-          # OpenLane 2 / LibreLane utilizes 'SYNTH_BIN' to route the synthesis engine!
-          # This forces all phases (JsonHeader, Synthesis, etc.) to use /usr/bin/yosys natively.
-          #export SYNTH_BIN="/usr/bin/yosys"
-          #echo "Overriding LibreLane synthesis path context to: $SYNTH_BIN"
-          
-          # Invoke openlane directly via python3 -m. This targets ONLY your isolated
-          # macro config file, leaving the top-level project untouched!
-          #python3 -m librelane --pdk-root "$PDK_ROOT" --pdk ihp-sg13g2 openlane/c061618g2/config.json
 
           # Execute the official OpenROAD/OpenLane image. 
           # This maps your workspace directory and forces Yosys to process flags natively!
