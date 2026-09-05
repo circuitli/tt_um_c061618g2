@@ -21,7 +21,7 @@ jobs:
         with:
           submodules: recursive
 
-      - name: ⚙️ Install Tkinter and Tiny Tapeout Environment Natively
+      - name: Install Tkinter and Toolchain Natively
         shell: bash
         run: |
           set -eo pipefail
@@ -38,7 +38,7 @@ jobs:
           pip install -r tt/requirements.txt
 
           # 2. Force install modern openlane 2 python library utilities straight to host
-          pip install openlane
+          pip install openlane librelane ciel
           
           # 3. Securely set up the explicit local path targets for the next block
           echo "OPENLANE_ROOT=${{ github.workspace }}/openlane" >> $GITHUB_ENV
@@ -52,9 +52,6 @@ jobs:
           set -eo pipefail
 
           export PDK_ROOT="${{ github.workspace }}/pdk"
-
-          # 1. Install ciel (the open-source IHP PDK version manager)
-          python3 -m pip install ciel
           
           # 2. Automatically retrieve the latest available version hash from IHP-Open-PDK
           # This extracts the latest commit tracking string dynamically
@@ -63,13 +60,6 @@ jobs:
           
           # 3. Instruct ciel to pull down and enable the target build using that hash
           python3 -m ciel enable --pdk-root "$PDK_ROOT" --pdk-family ihp-sg13g2 "$LATEST_HASH"
-          
-          # 4. Create the flat path layout required by your simulations
-          #mkdir -p /home/runner/pdk
-          
-          # 5. Locate where ciel placed the versioned directory assets and symlink it
-          #CIEL_DIR=$(find /home/runner/.ciel/ciel/ihp-sg13g2/versions/ -maxdepth 2 -name "ihp-sg13g2" | head -n 1)
-          #ln -s "$CIEL_DIR" /home/runner/pdk/ihp-sg13g2
                 
           echo "✅ PDK tracks successfully populated with configurations."
 
