@@ -42,6 +42,47 @@
     "u_c061618g2 VDD VSS VPWR VGND"
   ],
 
+  "FP_PDN_MACROS": [
+    "u_c061618g2"
+  ],
+
+  "QUIT_ON_PDN_VIOLATIONS": true,
+  "FP_PDN_CHECK_NODES": true,
+
+  "MACROS": {
+    "c061618g2": {
+      "gds": [ "dir::../macros/gds/c061618g2.gds" ],
+      "lef": [ "dir::../macros/lef/c061618g2.lef" ],
+      "nl": [ "dir::../macros/nl/c061618g2.nl.v" ],
+      "instances": {
+        "u_c061618g2": {
+          "location": [ 20.16, 20.16 ],
+          "orientation": "N"
+        }
+      }
+    }
+  },
+  "_MACROS": {
+    "c061618g2": {
+      "gds": [ "dir::../macros/gds/c061618g2.gds" ],
+      "lef": [ "dir::../macros/lef/c061618g2.lef" ],
+      "nl": [ "dir::../macros/nl/c061618g2.nl.v" ],
+      "spef": {
+        "min*": [ "dir::../macros/spef/max/c061618g2*fast*.spef" ],
+        "nom": [ "dir::../macros/spef/max/c061618g2*typ*.spef" ],
+        "max*": [ "dir::../macros/spef/min/c061618g2*slow*.spef" ]
+      },
+      "instances": {
+        "u_c061618g2": {
+          "location": [ 20.16, 20.16 ],
+          "orientation": "N"
+        }
+      }
+    }
+  },
+  "// Timing is the only external aspect that must be explicitly loaded at root": "",
+  "_EXTRA_LIBS": [ "dir::../macros/lib/c061618g2.lib" ],
+
   "//": "CLOCK_PERIOD - Increase this in case you are getting setup time violations.",
   "//": "The value is in nanoseconds, so 20ns == 50MHz.",
   "//_comment_speed": "HARDENED TIMING: Hardcode period to 11.64ns to natively support 24x master crystal multiplier (85.91 MHz)",
@@ -202,39 +243,6 @@
       "box": [ 0, 0, 45.36, 15.12 ]
     }
   },
-  "MACROS": {
-    "c061618g2": {
-      "gds": [ "dir::../macros/gds/c061618g2.gds" ],
-      "lef": [ "dir::../macros/lef/c061618g2.lef" ],
-      "nl": [ "dir::../macros/nl/c061618g2.nl.v" ],
-      "instances": {
-        "u_c061618g2": {
-          "location": [ 10.0, 10.0 ],
-          "orientation": "N"
-        }
-      }
-    }
-  },
-  "_MACROS": {
-    "c061618g2": {
-      "gds": [ "dir::../macros/gds/c061618g2.gds" ],
-      "lef": [ "dir::../macros/lef/c061618g2.lef" ],
-      "nl": [ "dir::../macros/nl/c061618g2.nl.v" ],
-      "spef": {
-        "min*": [ "dir::../macros/spef/max/c061618g2*fast*.spef" ],
-        "nom": [ "dir::../macros/spef/max/c061618g2*typ*.spef" ],
-        "max*": [ "dir::../macros/spef/min/c061618g2*slow*.spef" ]
-      },
-      "instances": {
-        "u_c061618g2": {
-          "location": [ 10.0, 10.0 ],
-          "orientation": "N"
-        }
-      }
-    }
-  },
-  "// Timing is the only external aspect that must be explicitly loaded at root": "",
-  "_EXTRA_LIBS": [ "dir::../macros/lib/c061618g2.lib" ],
 
   "_MACRO_PLACEMENT": {
     "u_c061618g2": {
