@@ -107,6 +107,10 @@ jobs:
 
           # This ensures python3 -m openlane can instantly read it, clearing the TclError!
           export PDK_ROOT="${{ github.workspace }}/pdk"
+
+          # Some OpenLane 2 configurations look for an explicit python environment map 
+          # to inject legacy global variables back into the inner TCL interpreters.
+          export OPENLANE_PDK_ROOT="${{ github.workspace }}/pdk"
           
           # Invoke openlane directly via python3 -m. This targets ONLY your isolated
           # macro config file, leaving the top-level project untouched!
