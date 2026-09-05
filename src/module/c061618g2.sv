@@ -146,7 +146,7 @@ module c061618g2 (
     // Packs your structural pmod3 outputs directly into the flat bus vector
     // matching the exact indices declared in your pmod3_outputs_t struct.
     // -------------------------------------------------------------------------
-    wire [7:0] raw_uo_out;
+    bit [7:0] raw_uo_out;
     
     always_comb begin
         if (system_disabled) begin
