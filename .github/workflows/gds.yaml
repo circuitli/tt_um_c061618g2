@@ -104,6 +104,9 @@ jobs:
         run: |
           set -eo pipefail
           echo "🚀 Initialising native macro hardening loop via tt_tool..."
+
+          # This ensures python3 -m openlane can instantly read it, clearing the TclError!
+          export PDK_ROOT="${{ github.workspace }}/pdk"
           
           # Invoke openlane directly via python3 -m. This targets ONLY your isolated
           # macro config file, leaving the top-level project untouched!
