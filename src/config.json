@@ -95,16 +95,16 @@
   "W_VERILOG_OPTIONS": "-noattr -nodec",
 
   "//": "SYNTH_STRATEGY - changing this option over to an area or raw delay strategy rewrites ABC's optimization profile, completely stripping out the crashing sequential timing sub-commands (like scorr)!",
-  "SYNTH_STRATEGY": "AREA 3",
+  "SYNTH_STRATEGY": "AREA 0",
 
   "//": "SYNTH_ABC_BUFFERING - Explicitly disables late combinational resizing hooks so ABC passes the gate netlist down to OpenROAD without trying to apply sequential constraints.",
   "SYNTH_ABC_BUFFERING": false,
 
   "//": "SYNTH_ABC_LEGACY_FLOW - Forces OpenLane to drop the modern abc9 flow (which assumes structural sequential cell paths) and drop back to the standard legacy ABC string matching architecture.",
-  "SYNTH_ABC_LEGACY_FLOW": 1,
+  "SYNTH_ABC_LEGACY_FLOW": true,
 
   "//": "SYNTH_SIZING - Enables aggressive pre-placement cell sizing to scale up internal logic gates to high-performance variations early.",
-  "SYNTH_SIZING": 0,
+  "SYNTH_SIZING": false,
 
   "//": "SYNTH_HIER_PASS - Directs Yosys to perform synthesis hierarchically, locking down local submodule ports before physical cell mapping.",
   "SYNTH_HIER_PASS": true,
@@ -125,10 +125,10 @@
   "_SYNTH_WRITE_NOATTR": false,
 
   "//": "SYNTH_SHARE_RESOURCES - Dictates whether Yosys forces resource sharing by actively identifying matching algebraic sub-expressions (like duplicated multiplexers or address decoders) and merging them into unified gate networks. For purely combinational macros, leaving this enabled or disabled changes area footprint without breaking function.",
-  "SYNTH_SHARE_RESOURCES": 0,
+  "SYNTH_SHARE_RESOURCES": false,
 
   "//": "SYNTH_NO_FLIP_FLOPS - Explicitly tells Yosys that the design does not contain structural sequential memory elements. This halts structural latched-path mapping loops.",
-  "SYNTH_NO_FLIP_FLOPS": 1,
+  "SYNTH_NO_FLIP_FLOPS": true,
 
   "//": "=========================================================================",
   "//": "ASYNCHRONOUS LOOP & GATES PROTECTION (RESTORED UPPERCASE)",
@@ -147,7 +147,7 @@
   "SYNTH_BUFFERING": false,
 
   "//": "SYNTH_TIMING_DERATING - Controls whether synchronous design flows calculation margin offsets for clock boundaries. Setting this to 0 prevents clock-skew analysis tools from complaining about your clockless layout.",
-  "SYNTH_TIMING_DERATING": 0,
+  "SYNTH_TIMING_DERATING": false,
 
   "//": "SYNTH_EXPLORE_MODE - Instructs Yosys to process custom structural combinational feedbacks natively without generating lint exceptions.",
   "SYNTH_EXPLORE_MODE": 1,
@@ -278,7 +278,7 @@
   "_PL_REPAIR_TIMING_SETUP_MARGIN": 0.06,
 
   "//": "PL_RESIZE_BUFFER_PERCENTAGE - Allocates 0% extra space for timing resizing. This instructs the placement resizer script to stop scaling logic gates for synchronous setup windows.",
-  "PL_RESIZE_BUFFER_PERCENTAGE": 0,
+  "PL_RESIZE_BUFFER_PERCENTAGE": 0.0,
 
   "//": "PL_RESIZER_DESIGN_OPTIMIZATIONS - Explicitly bars OpenROAD from altering your custom combinational cell structures or feedback nets to clear virtual setup margins.",
   "PL_RESIZER_DESIGN_OPTIMIZATIONS": false,
@@ -290,7 +290,7 @@
   "GLB_RESIZER_TIMING_OPTIMIZATIONS": false,
 
   "//": "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT - Drops your hold fixing area allowance directly down to 0. This structurally forbids the OpenROAD resizer script from inserting delay buffers into your clockless macro wires, preserving your 100% pure asynchronous delays!",
-  "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT": 0,
+  "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT": 0.0,
 
   "//": "SKIP_STEPS - Instructs the pipeline sequencer to skip running the late-stage physical design timing repair modules entirely, preventing deferred corner errors from stopping the flow run.",
   "SKIP_STEPS": [
@@ -327,7 +327,7 @@
   "RUN_POST_GRT_DESIGN_REPAIR": false,
 
   "//": "CELL_PAD - Increase cell padding to force the tool to leave empty space around every single logic gate",
-  "CELL_PAD": 0,
+  "_CELL_PAD": 0,
 
   "//": "RUN_POST_GRT - Direct the global router to optimize timing routes with maximum iterations",
   "RUN_POST_GRT": true,
@@ -335,6 +335,9 @@
   "//": "Hold slack margin - Increase them in case you are getting hold violations.",
   "PL_RESIZER_HOLD_SLACK_MARGIN": 0.1,
   "GRT_RESIZER_HOLD_SLACK_MARGIN": 0.05,
+
+  "GLB_RESIZER_HOLD_MAX_BUFFER_PERCENT": 0.0,
+  "GLB_RESIZER_DESIGN_OPTIMIZATIONS": false,
 
   "//": "DESIGN_REPAIR_MAX_WIRE_LENGTH - THE FINAL FIX: Setting this explicitly to 0 tells LibreLane's physical design repair engine to completely skip maximum wire length buffering, ensuring clockless loops stay 100% pure wire tracks.",
   "DESIGN_REPAIR_MAX_WIRE_LENGTH": 10000,
