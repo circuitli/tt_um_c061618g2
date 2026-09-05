@@ -197,8 +197,8 @@
   },
   "MACROS": {
     "c061618g2": {
-      "gds": [ "dir::openlane/c061618g2/runs/foo/final/gds/c061618g2.gds" ],
-      "lef": [ "dir::openlane/c061618g2/runs/foo/final/lef/c061618g2.lef" ],
+      "gds": [ "dir::macros/gds/c061618g2.gds" ],
+      "lef": [ "dir::macros/lef/c061618g2.lef" ],
       "instances": {
         "u_c061618g2": {
           "location": [ 10.0, 10.0 ],
@@ -208,7 +208,7 @@
     }
   },
   "// Timing is the only external aspect that must be explicitly loaded at root": "",
-  "EXTRA_LIBS": [ "dir::openlane/c061618g2/runs/foo/final/lib/c061618g2.lib" ],
+  "EXTRA_LIBS": [ "dir::macros/lib/c061618g2.lib" ],
 
   "_MACRO_PLACEMENT": {
     "u_c061618g2": {
