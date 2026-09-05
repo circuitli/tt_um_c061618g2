@@ -25,6 +25,12 @@
   "GRT_ALLOW_CONGESTION": false,
 
   "// -------------------------------------------------------------------------": "",
+  "// Forces LibreLane to use a basic option string that YosysHQ accepts, ": "",
+  "// completely removing the unrecognized option option crashes!": "",
+  "// -------------------------------------------------------------------------": "",
+  "SYNTH_YOSYS_OPTIONS": [ "-X" ],
+
+  "// -------------------------------------------------------------------------": "",
   "// 3. TARGET ENVIRONMENT ENVELOPE SEEDING (Cross-PDK Platform Controls)": "",
   "// -------------------------------------------------------------------------": "",
   "pdk::ihp-sg13g2": {
