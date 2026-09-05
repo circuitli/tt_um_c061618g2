@@ -100,13 +100,6 @@ jobs:
           touch _build/macros/lef/c061618g2.lef
           touch _build/macros/lib/c061618g2.lib
 
-      - name: 🔨 Compile Internal Hard Macros Natively
-        uses: TinyTapeout/tt-gds-action/.github/actions/run-openlane@main
-        with:
-          pdk: "ihp-sg13g2"
-          config: "macros/c061618g2/config.json"
-          output_dir: "_build/macros"
-
         # ========================================================
         # INSERT THE CUSTOM PATCH STEP RIGHT HERE:
         # ========================================================
