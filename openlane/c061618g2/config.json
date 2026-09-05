@@ -62,7 +62,7 @@
   "ERROR_ON_SYNTH_CHECKS": false,
 
   "//": "ERROR_ON_UNMAPPED_CELLS - Set to false to act as a fallback safety guardrail in case Yosys attempts to infer any sequential logic out of your stripped loops.",
-  "_ERROR_ON_UNMAPPED_CELLS": false,
+  "ERROR_ON_UNMAPPED_CELLS": false,
 
   "_SYNTH_FLAT_TOP": true,
   "_SYNTH_NO_VOLTAGE_CELLS": true,

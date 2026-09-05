@@ -122,7 +122,7 @@
   "ERROR_ON_SYNTH_CHECKS": false,
 
   "//": "ERROR_ON_UNMAPPED_CELLS - Set to false to act as a fallback safety guardrail in case Yosys attempts to infer any sequential logic out of your stripped loops.",
-  "_ERROR_ON_UNMAPPED_CELLS": false,
+  "ERROR_ON_UNMAPPED_CELLS": false,
 
   "//": "MAX_FANOUT_CONSTRAINT - Clamps internal signal fanout, forcing the tool to clone sluggish data lines and restore crisp transitions.",
   "MAX_FANOUT_CONSTRAINT": 100,
