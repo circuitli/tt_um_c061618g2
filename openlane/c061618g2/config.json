@@ -25,11 +25,17 @@
   "GRT_ALLOW_CONGESTION": false,
 
   "// -------------------------------------------------------------------------": "",
-  "// Disabling black-box library extraction prevents LibreLane from passing ": "",
-  "// the unrecognized '-y' search flag down to OpenROAD's command parsing engine!": "",
+  "// Explicitly overrides the option array passed to the yosys binary, ": "",
+  "// dropping the broken '-y' library lookup string permanently! ": "",
   "// -------------------------------------------------------------------------": "",
+  "SYNTH_YOSYS_OPTIONS": [ "-X" ],
   "SYNTH_READ_BLACKBOX_LIB": false,
-  "SYNTH_USE_PG_PINS_DEFINES": "none",
+
+  "// -------------------------------------------------------------------------": "",
+  "// Overrides the native linter options to tell Verilator to skip missing ": "",
+  "// timescale warnings, allowing your compile script to pass flawlessly!": "",
+  "// -------------------------------------------------------------------------": "",
+  "LINT_OPTIONS": [ "-Wno-TIMESCALEMOD" ],
 
   "// -------------------------------------------------------------------------": "",
   "// 3. TARGET ENVIRONMENT ENVELOPE SEEDING (Cross-PDK Platform Controls)": "",
