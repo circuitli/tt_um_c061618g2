@@ -15,7 +15,6 @@ jobs:
   # STEP 1: Independent job to build your macro abstracts
   build_macros:
     runs-on: ubuntu-latest
-    if: false 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -53,6 +52,10 @@ jobs:
           set -eo pipefail
           echo "🚀 Initialising native macro hardening loop via tt_tool..."
           mkdir -p "$PDK_ROOT"
+
+           # Tell Volare to force-enable a verified stable release tag of the IHP PDK 
+          # directly into your local folder path. This bypasses the broken commit check completely!
+          python3 -m volare enable --pdk ihp-sg13g2 --pdk-root "$PDK_ROOT"
           
           # Invoke openlane directly via python3 -m. This targets ONLY your isolated
           # macro config file, leaving the top-level project untouched!
@@ -74,7 +77,7 @@ jobs:
 
   gds:
     runs-on: ubuntu-24.04
-    #needs: build_macros
+    needs: build_macros
     steps:
       - name: checkout repo
         uses: actions/checkout@v6
