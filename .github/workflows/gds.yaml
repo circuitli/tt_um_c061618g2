@@ -116,9 +116,9 @@ jobs:
       
           # Stage the compiled views directly to your expected _build folder matrix
           mkdir -p macros/gds macros/lef macros/lib
-          cp openlane/c061618g2/runs/*/final/gds/*.gds macros/gds
-          cp openlane/c061618g2/runs/*/final/lef/*.lef macros/lef
-          cp openlane/c061618g2/runs/*/final/lib/*.lib macros/lib
+          cp /work/openlane/c061618g2/runs/*/final/gds/*.gds macros/gds
+          cp /work/openlane/c061618g2/runs/*/final/lef/*.lef macros/lef
+          cp /work/openlane/c061618g2/runs/*/final/lib/*.lib macros/lib
           
           echo "✅ Macros compiled successfully."
 
