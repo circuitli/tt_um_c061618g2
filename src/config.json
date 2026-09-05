@@ -38,8 +38,8 @@
   "VDD_NETS": [ "VDD" ],
   "GND_NETS": [ "VSS" ],
 
-  "FP_PDN_MACRO_HOOKS": [
-    "u_c061618g2 VDD VSS"
+  "PDN_MACRO_CONNECTIONS": [
+    "u_c061618g2 VDD VSS VDD VSS"
   ],
 
   "//": "CLOCK_PERIOD - Increase this in case you are getting setup time violations.",
