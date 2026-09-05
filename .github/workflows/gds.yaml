@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     # This automatically includes the openlane binary and mounts the workspace paths cleanly!
     container:
-      image: efabless/tt-tools-v2:latest
+      image: ghcr.io/efabless/volare:latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -37,7 +37,7 @@ jobs:
           
           # We use GitHub's expression context directly on line 8. 
           # This replaces raw host '$PDK_ROOT' references completely, satisfying 'set -u'!
-          SAFE_PDK_ROOT="${{ env.PDK_ROOT }}"
+          SAFE_PDK_ROOT: "${{ env.PDK_ROOT }}"
           
           # Call openlane directly with no special wrapper blocks or complex variables
           openlane --pdk ihp-sg13g2 macros/c061618g2/config.json
