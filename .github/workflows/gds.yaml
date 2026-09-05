@@ -70,9 +70,7 @@ jobs:
           # 5. Locate where ciel placed the versioned directory assets and symlink it
           #CIEL_DIR=$(find /home/runner/.ciel/ciel/ihp-sg13g2/versions/ -maxdepth 2 -name "ihp-sg13g2" | head -n 1)
           #ln -s "$CIEL_DIR" /home/runner/pdk/ihp-sg13g2
-          
-          echo '# Standard library tracking definitions' > "$PDK_ROOT/ihp-sg13g2/libs.tech/openlane/sg13g2_stdcell/config.tcl"
-      
+                
           echo "✅ PDK tracks successfully populated with configurations."
 
       # 🌟 THE COMPILATION STEP: Hardens your macro sub-config natively using 
