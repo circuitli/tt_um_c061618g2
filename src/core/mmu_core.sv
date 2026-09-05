@@ -131,35 +131,23 @@ module mmu_core #(
 
     // ---------------------------------------------------------------------
     // HAZARD-FREE SIMULATION STRUCT MAPPING
-    // Unpacks fields procedures inside always_comb to guarantee the simulator
-    // resolves the port assignments atomically, eliminating pin skew.
-    // ---------------------------------------------------------------------
-    pmod3_outputs_t sim_out_struct;
-        
-    always_comb begin
-        if (rst_n) begin
-            sim_out_struct.unused_p3_b7 = 1'b0;
-            sim_out_struct.FLG_n        = 1'b1;
-            {sim_out_struct.s4_n,    
-                sim_out_struct.io_n,    
-                sim_out_struct.ci_n,    
-                sim_out_struct.os_n,    
-                sim_out_struct.basic_n, 
-                sim_out_struct.s5_n}       = clean_signals;
-        end else begin
-            sim_out_struct.unused_p3_b7 = 1'b0;
-            sim_out_struct.FLG_n        = 1'b1;
-            sim_out_struct.s4_n         = 1'b1;
-            sim_out_struct.io_n         = 1'b1;
-            sim_out_struct.ci_n         = 1'b1;
-            sim_out_struct.os_n         = 1'b1;
-            sim_out_struct.basic_n      = 1'b1;
-            sim_out_struct.s5_n         = 1'b1;
-        end
-    end
-        
-    assign core_out = sim_out_struct;
+    // We assign everything through continuous 'assign' nets!
+    // This strips out procedural struct block state retention and completely 
+    // forces Yosys to view the output as a pure combinational wire grid.
+    // =========================================================================
+    wire s4_filtered, io_filtered, ci_filtered, os_filtered, basic_filtered, s5_filtered;
+    assign {s4_filtered, io_filtered, ci_filtered, os_filtered, basic_filtered, s5_filtered} = clean_signals;
 
+    assign core_out.unused_p3_b7 = 1'b0;
+    assign core_out.FLG_n        = 1'b1;
+    
+    assign core_out.s4_n    = rst_n ? s4_filtered    : 1'b1;
+    assign core_out.io_n    = rst_n ? io_filtered    : 1'b1;
+    assign core_out.ci_n    = rst_n ? ci_filtered    : 1'b1;
+    assign core_out.os_n    = rst_n ? os_filtered    : 1'b1;
+    assign core_out.basic_n = rst_n ? basic_filtered : 1'b1;
+    assign core_out.s5_n    = rst_n ? s5_filtered    : 1'b1;
+        
 endmodule
 
 `default_nettype wire
