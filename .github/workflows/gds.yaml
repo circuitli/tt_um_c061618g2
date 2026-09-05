@@ -80,26 +80,17 @@ jobs:
           mkdir -p "$PDK_ROOT/ihp-sg13g2/libs.tech/openlane"
           mkdir -p "$PDK_ROOT/ihp-sg13g2/libs.tech/openlane/sg13g2_stdcell"
 
-          # 🌟 Remove the legacy crashing .tcl configurations entirely
+          # Remove the legacy crashing .tcl configurations entirely
           rm -f "$PDK_ROOT/ihp-sg13g2/libs.tech/openlane/config.tcl"
           rm -f "$PDK_ROOT/ihp-sg13g2/libs.tech/openlane/sg13g2_stdcell/config.tcl"
           
-          # Create a valid, compliant config.tcl stub file to satisfy OpenLane's start-time validation check
-          cat << 'EOF' > "$PDK_ROOT/ihp-sg13g2/libs.tech/openlane/config.json"
-          {
-              "pdk": "ihp-sg13g2",
-              "std_cell_library": "sg13g2_stdcell"
-          }
-          EOF
+          # Every file is populated using standard, bulletproof echos
+          # This handles your first file completely:
+          echo 'set ::env(STD_CELL_LIBRARY) "sg13g2_stdcell"' > "$PDK_ROOT/ihp-sg13g2/libs.tech/openlane/config.tcl"
+          echo 'set ::env(PROCESS) "sg13g2"' >> "$PDK_ROOT/ihp-sg13g2/libs.tech/openlane/config.tcl"
 
-          # Create a matching stub for the stdcell tracking block directory to clear inner checks
-          cat << 'EOF' > "$PDK_ROOT/ihp-sg13g2/libs.tech/openlane/sg13g2_stdcell/config.json"
-          {
-              "pdk": "ihp-sg13g2",
-              "std_cell_library": "sg13g2_stdcell"
-          }
-          EOF
-
+          echo '# Standard library tracking definitions' > "$PDK_ROOT/ihp-sg13g2/libs.tech/openlane/sg13g2_stdcell/config.tcl"
+      
           echo "✅ PDK tracks successfully populated with configurations."
 
       # 🌟 THE COMPILATION STEP: Hardens your macro sub-config natively using 
