@@ -28,10 +28,8 @@ jobs:
           echo "📥 Installing system-level Tkinter GUI dependencies..."
           # Fetch the actual C-binary Tk bindings for Python
           sudo apt-get update
-          sudo apt-get install -y python3-tk
 
-          # Add verilator right here to clear the system command check
-          sudo apt-get install -y python3-tk verilator
+          sudo apt-get install -y python3-tk verilator yosys openroad
           
           # 1. Fetch the actual orchestration tool library from the repository
           echo "Cloning authentic Tiny Tapeout hardware support scripts..."
