@@ -82,6 +82,10 @@ jobs:
           if [ -d "$IHP_TECH_DIR/librelane" ] && [ ! -d "$IHP_TECH_DIR/openlane" ]; then
               ln -s "$IHP_TECH_DIR/librelane" "$IHP_TECH_DIR/openlane"
           fi
+
+          # Point the internal step manager directly to the authentic wrapper binary, 
+          # preventing LibreLane from executing the raw libexec sub-process that throws the '-y' error!
+          export YOSYS_BIN="${{ github.workspace }}/oss-cad-suite/bin/yosys"
           
           # Invoke openlane directly via python3 -m. This targets ONLY your isolated
           # macro config file, leaving the top-level project untouched!
