@@ -21,7 +21,7 @@ jobs:
     # This automatically includes the openlane binary and mounts the workspace paths cleanly!
     container:
       image: efabless/tt-tools-v2:latest
-      steps:
+    steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
