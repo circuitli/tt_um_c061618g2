@@ -21,26 +21,25 @@ jobs:
         with:
           submodules: recursive
 
+      # Uses the authentic manager wrapper block to inject yosys, openroad, 
+      # and verilator straight into your path variables securely!
+      - name: ⚙️ Provision Complete Silicon Toolchain
+        uses: YosysHQ/setup-oss-cad-suite@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Install Tkinter and Toolchain Natively
         shell: bash
         run: |
           set -eo pipefail
-          echo "📥 Installing system-level Tkinter GUI dependencies..."
+          echo "Installing system-level Tkinter GUI dependencies..."
           # Fetch the actual C-binary Tk bindings for Python
           sudo apt-get update
 
           sudo apt-get install -y python3-tk
           
-          # 1. Fetch the actual orchestration tool library from the repository
-          echo "Cloning authentic Tiny Tapeout hardware support scripts..."
-          git clone --depth=1 https://github.com/TinyTapeout/tt-support-tools.git tt
-          
-          # 2. Install the true layout dependencies natively on the host machine
-          pip install -r tt/requirements.txt
-
           # Pull the authentic compiled EDA binary executables directly through pip!
-          # This registers yosys, openroad, and klayout straight to your execution path.
-          pip install openlane librelane ciel yosys openroad klayout
+          pip install openlane librelane ciel
 
       - name: Install and Run PDK Downloader Directly
         shell: bash
