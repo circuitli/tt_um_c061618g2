@@ -31,14 +31,6 @@ jobs:
 
           sudo apt-get install -y python3-tk
           
-          echo "Fetching official pre-compiled OSS CAD Suite..."
-          # Download and unpack the complete, self-contained EDA environment
-          wget -q https://github.com
-          tar -zxf oss-cad-suite-linux-x64-20250101.tgz -C ${{ github.workspace }}
-          
-          # Bind all tools (yosys, openroad, verilator) directly to the system path!
-          echo "${{ github.workspace }}/oss-cad-suite/bin" >> $GITHUB_PATH
-          
           # 1. Fetch the actual orchestration tool library from the repository
           echo "Cloning authentic Tiny Tapeout hardware support scripts..."
           git clone --depth=1 https://github.com/TinyTapeout/tt-support-tools.git tt
@@ -46,11 +38,9 @@ jobs:
           # 2. Install the true layout dependencies natively on the host machine
           pip install -r tt/requirements.txt
 
-          # 2. Force install modern openlane 2 python library utilities straight to host
-          pip install openlane librelane ciel
-          
-          # 3. Securely set up the explicit local path targets for the next block
-          echo "OPENLANE_ROOT=${{ github.workspace }}/openlane" >> $GITHUB_ENV
+          # Pull the authentic compiled EDA binary executables directly through pip!
+          # This registers yosys, openroad, and klayout straight to your execution path.
+          pip install openlane librelane ciel yosys openroad klayout
 
       - name: Install and Run PDK Downloader Directly
         shell: bash
