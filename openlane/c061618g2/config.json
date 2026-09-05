@@ -22,11 +22,10 @@
   "GRT_ALLOW_CONGESTION": false,
 
   "// -------------------------------------------------------------------------": "",
-  "// Forcing only elaboration tells LibreLane to pass raw file scopes, ": "",
-  "// completely stripping the broken automated '-y' includes from JSON headers!": "",
+  "// Forces OpenLane 2 / LibreLane to use the stable ": "",
+  "// system package instead of the crashing nightly binary suite!": "",
   "// -------------------------------------------------------------------------": "",
-  "SYNTH_ELABORATE_ONLY": true,
-  "SYNTH_READ_BLACKBOX_LIB": false,
+  "SYNTH_BIN": "/usr/bin/yosys",
 
   "// -------------------------------------------------------------------------": "",
   "// Overrides the native linter options to tell Verilator to skip missing ": "",
