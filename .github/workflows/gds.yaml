@@ -30,6 +30,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install Tkinter and Toolchain Natively
+        if: false
         shell: bash
         run: |
           set -eo pipefail
@@ -47,6 +48,7 @@ jobs:
           pip install openlane librelane ciel
 
       - name: Install and Run PDK Downloader Directly
+        if: false
         shell: bash
         # Forward the path definitions directly into this step execution block
         env:
@@ -74,19 +76,23 @@ jobs:
           set -eo pipefail
           echo "🚀 Initialising native macro hardening loop via tt_tool..."
 
+          # Establish an absolute, local workspace destination folder path
+          LOCAL_PDK_ROOT="${{ github.workspace }}/pdk"
+          mkdir -p "$LOCAL_PDK_ROOT"
+
           # This ensures python3 -m openlane can instantly read it, clearing the TclError!
-          export PDK_ROOT="${{ github.workspace }}/pdk"
+          #export PDK_ROOT="${{ github.workspace }}/pdk"
 
           # Some OpenLane 2 configurations look for an explicit python environment map 
           # to inject legacy global variables back into the inner TCL interpreters.
-          export OPENLANE_PDK_ROOT="${{ github.workspace }}/pdk"
+          #export OPENLANE_PDK_ROOT="${{ github.workspace }}/pdk"
 
           # Ciel extracts to 'libs.tech/librelane'. We link that folder directly 
           # to 'libs.tech/openlane' so the toolchain finds the real IHP foundry variables!
-          IHP_TECH_DIR="$PDK_ROOT/ihp-sg13g2/libs.tech"
-          if [ -d "$IHP_TECH_DIR/librelane" ] && [ ! -d "$IHP_TECH_DIR/openlane" ]; then
-              ln -s "$IHP_TECH_DIR/librelane" "$IHP_TECH_DIR/openlane"
-          fi
+          #IHP_TECH_DIR="$PDK_ROOT/ihp-sg13g2/libs.tech"
+          #if [ -d "$IHP_TECH_DIR/librelane" ] && [ ! -d "$IHP_TECH_DIR/openlane" ]; then
+          #    ln -s "$IHP_TECH_DIR/librelane" "$IHP_TECH_DIR/openlane"
+          #fi
 
           # OpenLane 2 / LibreLane utilizes 'SYNTH_BIN' to route the synthesis engine!
           # This forces all phases (JsonHeader, Synthesis, etc.) to use /usr/bin/yosys natively.
@@ -95,7 +101,24 @@ jobs:
           
           # Invoke openlane directly via python3 -m. This targets ONLY your isolated
           # macro config file, leaving the top-level project untouched!
-          python3 -m librelane --pdk-root "$PDK_ROOT" --pdk ihp-sg13g2 openlane/c061618g2/config.json
+          #python3 -m librelane --pdk-root "$PDK_ROOT" --pdk ihp-sg13g2 openlane/c061618g2/config.json
+
+          # Execute the official OpenROAD/OpenLane image. 
+          # This maps your workspace directory and forces Yosys to process flags natively!
+          docker run --rm \
+            -v ${{ github.workspace }}:/work \
+            -v "$LOCAL_PDK_ROOT":"$LOCAL_PDK_ROOT" \
+            -e PDK_ROOT="$LOCAL_PDK_ROOT" \
+            -w /work \
+            ghcr.io/the-openroad-project/openlane:latest \
+            bash -c "
+              echo 'Fetching verified PDK data via Ciel...' && \
+              pip install ciel && \
+              LATEST_HASH=\$(python3 -m ciel ls-remote --pdk-family ihp-sg13g2 | head -n 1 | awk '{print \$1}') && \
+              python3 -m ciel enable --pdk-root $LOCAL_PDK_ROOT --pdk-family ihp-sg13g2 \"\$LATEST_HASH\" && \
+              echo 'Compiling macro block layout rules cleanly...' && \
+              python3 -m openlane --manual-pdk --pdk-root $LOCAL_PDK_ROOT --pdk ihp-sg13g2 openlane/c061618g2/config.json
+            "
       
           # Stage the compiled views directly to your expected _build folder matrix
           #mkdir -p _build/macros/gds _build/macros/lef _build/macros/lib
