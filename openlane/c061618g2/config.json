@@ -10,12 +10,14 @@
 
   "PNR_SDC_FILE": "dir::../../src/mmu_constraints.sdc",
 
+  "RUN_SPEF_EXTRACTION": true,
+
   "// -------------------------------------------------------------------------": "",
   "// 1. HARD MACRO BLOCK DESIGNATION (Stops Top-Level Pad Grid Inference)": "",
   "// -------------------------------------------------------------------------": "",
   "DESIGN_IS_CORE": false,
   "FP_SIZING": "relative",
-  "FP_CORE_UTIL": 70,
+  "FP_CORE_UTIL": 65,
   "PL_TARGET_DENSITY_PCT": 75,
 
   "// -------------------------------------------------------------------------": "",
