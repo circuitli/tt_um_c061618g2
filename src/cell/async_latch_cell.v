@@ -40,7 +40,9 @@ module async_latch_cell (
     // asynchronous state memory boundary, resolving the unbroken cycle warning.
     // =========================================================================
     wire latch_feedback;
-    assign latch_feedback = latch_core; //_break_
+
+    // STOP THE INFERENCE IN THE FEEDBACK BRIDGE:
+    (* nolatches *) assign latch_feedback = latch_core; //_break_
 
     // =========================================================================
     // HAZARD-FREE UNCLOCKED SILICON LOGIC CROSS-COUPLED LAYOUT LOOP

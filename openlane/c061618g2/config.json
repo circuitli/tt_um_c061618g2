@@ -27,9 +27,9 @@
   "CLOCK_PERIOD": 0,
   "CLOCK_PORT": "",
   "RUN_CTS": false,
-  "SYNTH_FLAT_TOP": true,
-  "SYNTH_NO_VOLTAGE_CELLS": true,
-  "QUIT_ON_UNMAPPED_CELLS": false,
+  "_SYNTH_FLAT_TOP": true,
+  "_SYNTH_NO_VOLTAGE_CELLS": true,
+  "_QUIT_ON_UNMAPPED_CELLS": false,
 
   "// -------------------------------------------------------------------------": "",
   "// Overrides the native linter options to tell Verilator to skip missing ": "",
