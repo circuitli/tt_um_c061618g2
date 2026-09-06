@@ -90,5 +90,5 @@ jobs:
       - name: Run SymbiYosys Main Checks
         working-directory: formal
         run: |
-          sby -f tt_um_c061618g2.sby
+          sby -f project.sby
 

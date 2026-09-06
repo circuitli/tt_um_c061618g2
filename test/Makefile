@@ -6,7 +6,7 @@ SIM ?= icarus
 FST ?= -fst # Use more efficient FST format
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
-PROJECT_SOURCES = tt_um_c061618g2.sv
+PROJECT_SOURCES = project.v
 #COMPILE_ARGS += -g2012
 # =========================================================================
 # PRECISE SYSTEMVERILOG EXTENSION SCAN FIX

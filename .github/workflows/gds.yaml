@@ -428,7 +428,7 @@ jobs:
           # Creates a unified classpath including the core launcher and all plugin jars
           CLASSPATH=$(find . -type f -name "*.jar" | tr '\n' ':')
 
-          ./gradlew :WorkcraftRunner:run --args="-nogui -config:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.xml -exec:$GITHUB_WORKSPACE/formal/tt_um_c061618g2.js"
+          ./gradlew :WorkcraftRunner:run --args="-nogui -config:$GITHUB_WORKSPACE/formal/project.xml -exec:$GITHUB_WORKSPACE/formal/project.js"
     
           echo "✅ Workcraft verification completed."
 
