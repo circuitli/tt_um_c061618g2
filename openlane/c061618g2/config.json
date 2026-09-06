@@ -36,6 +36,8 @@
 
   "FP_CORE_UTIL": 65,
   "PL_TARGET_DENSITY_PCT": 75,
+  "FP_WELLTAP_CELL": null,
+  "FP_ENDCAP_CELL": null,
 
   "// -------------------------------------------------------------------------": "",
   "// 2. ROUTING AND RESOLUTION OPTIMIZATIONS FOR ASYNCHRONOUS LOOPS": "",
