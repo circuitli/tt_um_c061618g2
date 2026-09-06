@@ -13,9 +13,11 @@
   "RUN_SPEF_EXTRACTION": true,
 
   "//2": "Margin Shaving - Drop core halos to 0.0 inside the macro block so your cells can use the entire physical canvas",
-  "CORE_MARGIN": 0.0,
-  "X_MARGIN": 0.0,
-  "Y_MARGIN": 0.0,
+  "_CORE_MARGIN": 0.0,
+  "_X_MARGIN": 0.0,
+  "_Y_MARGIN": 0.0,
+  "GPL_ALLOW_OVERFLOW": true,
+
 
   "// -------------------------------------------------------------------------": "",
   "// 1. HARD MACRO BLOCK DESIGNATION (Stops Top-Level Pad Grid Inference)": "",
@@ -179,6 +181,7 @@
   "_GLB_REPAIR_TIMING_SETUP_MARGIN": 0.05,
   "PL_RESIZER_HOLD_SLACK_MARGIN": 0.1,
   "GRT_RESIZER_HOLD_SLACK_MARGIN": 0.05,
+  "GPL_CELL_PADDING": 0,
 
   "//": "SKIP_STEPS - Instructs the pipeline sequencer to skip running the late-stage physical design timing repair modules entirely, preventing deferred corner errors from stopping the flow run.",
   "_SKIP_STEPS": [

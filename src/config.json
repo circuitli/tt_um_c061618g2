@@ -53,6 +53,7 @@
   "PL_MACRO_HALO": "10.08 11.34",
   "PL_MACRO_CHANNEL": "10.08 11.34",
 
+  "// Absolute Placement": "Perfect grid steps (21 * 0.48) and (3 * 3.78) that respect the guard halos",
   "MACROS": {
     "c061618g2": {
       "gds": [ "dir::../macros/gds/c061618g2.gds" ],
@@ -60,7 +61,6 @@
       "nl": [ "dir::../macros/nl/c061618g2.nl.v" ],
       "instances": {
         "u_c061618g2": {
-          "// Absolute Placement": "Perfect grid steps (21 * 0.48) and (3 * 3.78) that respect the guard halos",
           "location": [ 10.08, 11.34 ],
           "orientation": "N"
         }
@@ -79,7 +79,6 @@
       },
       "instances": {
         "u_c061618g2": {
-          "// Absolute Placement": "Perfect grid steps (21 * 0.48) and (3 * 3.78) that respect the guard halos",
           "location": [ 10.08, 11.34 ],
           "orientation": "N"
         }
