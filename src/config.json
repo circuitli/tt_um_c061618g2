@@ -28,8 +28,14 @@
     ],
     "MACROS": {
       "c061618g2": {
+        "gds": [ "dir::../macros/gds/c061618g2.gds" ],
+        "lef": [ "dir::../macros/lef/c061618g2.lef" ],
+        "nl": [ "dir::../macros/nl/c061618g2.nl.v" ],
         "instances": {
-          "u_c061618g2": { "location": [ 16.32, 3.78 ] }
+          "u_c061618g2": {
+            "location": [ 16.32, 3.78 ],
+            "orientation": "N"
+          }
         }
       }
     }
@@ -72,18 +78,6 @@
   "FP_MACRO_VERTICAL_HALO": 0.0,
 
   "// Absolute Placement": "Perfect grid steps (21 * 0.48) and (3 * 3.78) that respect the guard halos",
-  "MACROS": {
-    "c061618g2": {
-      "gds": [ "dir::../macros/gds/c061618g2.gds" ],
-      "lef": [ "dir::../macros/lef/c061618g2.lef" ],
-      "nl": [ "dir::../macros/nl/c061618g2.nl.v" ],
-      "instances": {
-        "u_c061618g2": {
-          "orientation": "N"
-        }
-      }
-    }
-  },
   "_MACROS": {
     "c061618g2": {
       "gds": [ "dir::../macros/gds/c061618g2.gds" ],
