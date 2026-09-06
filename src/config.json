@@ -70,7 +70,7 @@
       "nl": [ "dir::../macros/nl/c061618g2.nl.v" ],
       "instances": {
         "u_c061618g2": {
-          "location": [ "ref::macro_x_1", "ref::macro_y_1" ],
+          "location": [ "$macro_x_1", "$macro_y_1" ],
           "orientation": "N"
         }
       }
