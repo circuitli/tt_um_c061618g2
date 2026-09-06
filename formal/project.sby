@@ -249,4 +249,4 @@ module/async_glitch_filter_formal.sv       module/async_glitch_filter_formal.sv
 module/async_glitch_filter_bank_formal.sv  module/async_glitch_filter_bank_formal.sv
 #module/c061618g2_input_shield_formal.sv   module/c061618g2_input_shield_formal.sv
 module/c061618g2_formal.sv                 module/c061618g2_formal.sv
-projeect_formal.sv                         projectt_formal.sv
+projeect_formal.sv                         project_formal.sv
