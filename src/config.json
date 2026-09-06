@@ -89,7 +89,6 @@
       },
       "instances": {
         "u_c061618g2": {
-          "location": [ "ref::macro_x_1", "ref::macro_y_1" ],
           "orientation": "N"
         }
       }
