@@ -12,7 +12,6 @@
 
   "RUN_SPEF_EXTRACTION": true,
 
-  "RT_MAX_LAYER": "met3",
   "FP_PDN_CORE_RING": false,
 
   "//": "Explicit Power Pin Export - Force OpenLane to bind and cleanly expose VPWR and VGND as visible physical connection pins on the macro boundary",
@@ -216,6 +215,7 @@
   "// -------------------------------------------------------------------------": "",
   "pdk::ihp-sg13g2": {
     "VERILOG_DEFINES": [ "IHP_SG13G2" ],
+    "RT_MAX_LAYER": "Metal3",
     "DIE_AREA": [ 0.0, 0.0, 56.64, 143.64 ],
     "FP_TAP_DISTANCE": 15,
     "GLB_RT_MAX_DIODE_INS_ITERS": 0
