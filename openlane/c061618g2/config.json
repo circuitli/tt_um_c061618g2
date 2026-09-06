@@ -12,6 +12,14 @@
 
   "RUN_SPEF_EXTRACTION": true,
 
+  "//1": "Explicit Power Pin Export": "Force OpenLane to bind and cleanly expose VPWR and VGND as visible physical connection pins on the macro boundary",
+  "VDD_NETS": [ "VPWR" ],
+  "GND_NETS": [ "VGND" ],
+
+  "//2": "Pin Layer Targeting": "Ensure macro pins are generated on standard routing metals so the top-level global power straps can reach them",
+  "FP_PDN_UPPER_LAYER": "Metal3",
+  "FP_PDN_LOWER_LAYER": "Metal1",
+
   "//2": "Margin Shaving - Drop core halos to 0.0 inside the macro block so your cells can use the entire physical canvas",
   "_CORE_MARGIN": 0.0,
   "_X_MARGIN": 0.0,
