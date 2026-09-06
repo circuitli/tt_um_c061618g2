@@ -35,11 +35,11 @@
     "STD_CELL_LIBRARY": "gf180mcu_fd_sc_mcu7t5v0"
   },
 
-  "VDD_NETS": [ "VDD" ],
-  "GND_NETS": [ "VSS" ],
+  "_VDD_NETS": [ "VPWR" ],
+  "_GND_NETS": [ "VGND" ],
 
   "PDN_MACRO_CONNECTIONS": [
-    "u_c061618g2 VDD VSS VPWR VGND"
+    "u_c061618g2 VPWR VGND VPWR VGND"
   ],
 
   "FP_PDN_MACROS": [
