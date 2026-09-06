@@ -16,9 +16,10 @@
   "VDD_NETS": [ "VPWR" ],
   "GND_NETS": [ "VGND" ],
 
-  "//": "Pin Layer Targeting - Ensure macro pins are generated on standard routing metals so the top-level global power straps can reach them",
-  "FP_PDN_UPPER_LAYER": "Metal3",
-  "FP_PDN_LOWER_LAYER": "Metal1",
+  "//2": "True IHP Node Power Layer Assignments",
+  "FP_PDN_RAIL_LAYER": "Metal4",
+  "FP_PDN_VERTICAL_LAYER": "Metal4",
+  "FP_PDN_HORIZONTAL_LAYER": "Metal5",
 
   "//2": "Margin Shaving - Drop core halos to 0.0 inside the macro block so your cells can use the entire physical canvas",
   "_CORE_MARGIN": 0.0,
