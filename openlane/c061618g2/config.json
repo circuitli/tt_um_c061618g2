@@ -219,7 +219,7 @@
   "pdk::ihp-sg13g2": {
     "VERILOG_DEFINES": [ "IHP_SG13G2" ],
     "RT_MAX_LAYER": "Metal3",
-    "DIE_AREA": [ 0.0, 0.0, 52.80, 139.86 ],
+    "DIE_AREA": [ 0.0, 0.0, 53.76, 139.86 ],
     "FP_TAP_DISTANCE": 15,
     "GLB_RT_MAX_DIODE_INS_ITERS": 0
   },
