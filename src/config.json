@@ -55,8 +55,10 @@
   "FP_PDN_CHECK_NODES": true,
 
   "// Spacing Blocks": "X aligns to 21 * 0.48 = 10.08, Y aligns to 3 * 3.78 = 11.34 to prevent off-grid row clipping",
-  "PL_MACRO_HALO": "10.08 11.34",
-  "PL_MACRO_CHANNEL": "10.08 11.34",
+  "_PL_MACRO_HALO": "10.08 11.34",
+  "_PL_MACRO_CHANNEL": "10.08 11.34",
+  "FP_MACRO_HORIZONTAL_HALO": 10.08,
+  "FP_MACRO_VERTICAL_HALO": 11.34,
 
   "// Absolute Placement": "Perfect grid steps (21 * 0.48) and (3 * 3.78) that respect the guard halos",
   "MACROS": {
