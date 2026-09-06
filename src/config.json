@@ -49,8 +49,9 @@
   "QUIT_ON_PDN_VIOLATIONS": true,
   "FP_PDN_CHECK_NODES": true,
 
-  "PL_MACRO_HALO": "10.08 10.08",
-  "PL_MACRO_CHANNEL": "10.08 10.08",
+  "// Spacing Blocks": "X aligns to 21 * 0.48 = 10.08, Y aligns to 3 * 3.78 = 11.34 to prevent off-grid row clipping",
+  "PL_MACRO_HALO": "10.08 11.34",
+  "PL_MACRO_CHANNEL": "10.08 11.34",
 
   "MACROS": {
     "c061618g2": {
@@ -59,7 +60,8 @@
       "nl": [ "dir::../macros/nl/c061618g2.nl.v" ],
       "instances": {
         "u_c061618g2": {
-          "location": [ 20.16, 20.16 ],
+          "// Absolute Placement": "Perfect grid steps (21 * 0.48) and (3 * 3.78) that respect the guard halos",
+          "location": [ 10.08, 11.34 ],
           "orientation": "N"
         }
       }
@@ -77,7 +79,8 @@
       },
       "instances": {
         "u_c061618g2": {
-          "location": [ 20.16, 20.16 ],
+          "// Absolute Placement": "Perfect grid steps (21 * 0.48) and (3 * 3.78) that respect the guard halos",
+          "location": [ 10.08, 11.34 ],
           "orientation": "N"
         }
       }
