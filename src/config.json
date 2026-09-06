@@ -47,7 +47,7 @@
   ],
 
   "QUIT_ON_PDN_VIOLATIONS": true,
-  "FP_PDN_CHECK_NODES": false,
+  "FP_PDN_CHECK_NODES": true,
 
   "// Spacing Blocks": "X aligns to 21 * 0.48 = 10.08, Y aligns to 3 * 3.78 = 11.34 to prevent off-grid row clipping",
   "PL_MACRO_HALO": "10.08 11.34",
