@@ -22,7 +22,17 @@
   "// STRICT PROCESS-SPECIFIC OVERRIDES ONLY": "",
   "// -------------------------------------------------------------------------": "",
   "pdk::ihp-sg13g2": {
-    "VERILOG_DEFINES": [ "IHP_SG13G2" ]
+    "VERILOG_DEFINES": [ "IHP_SG13G2" ],
+    "FP_PLACEMENT_BLOCKAGES": [
+      [ 0.0, 0.0, 16.32, 143.64 ]
+    ],
+    "MACROS": {
+      "c061618g2": {
+        "instances": {
+          "u_c061618g2": { "location": [ 16.32, 3.78 ] }
+        }
+      }
+    }
   },
 
   "pdk::sky130*": {
@@ -69,7 +79,6 @@
       "nl": [ "dir::../macros/nl/c061618g2.nl.v" ],
       "instances": {
         "u_c061618g2": {
-          "location": [ 16.32, 3.78 ],
           "orientation": "N"
         }
       }
@@ -87,7 +96,6 @@
       },
       "instances": {
         "u_c061618g2": {
-          "location": [ 16.32, 3.78 ],
           "orientation": "N"
         }
       }
