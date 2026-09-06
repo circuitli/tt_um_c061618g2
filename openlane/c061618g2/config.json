@@ -12,6 +12,9 @@
 
   "RUN_SPEF_EXTRACTION": true,
 
+  "RT_MAX_LAYER": "met3",
+  "FP_PDN_CORE_RING": false,
+
   "//": "Explicit Power Pin Export - Force OpenLane to bind and cleanly expose VPWR and VGND as visible physical connection pins on the macro boundary",
   "_VDD_NETS": [ "VPWR" ],
   "_GND_NETS": [ "VGND" ],
