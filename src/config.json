@@ -71,7 +71,7 @@
     }
   ],
   "_STA_MACRO_PRIORITIZE_NL": true,
-  "MACROS": {
+  "_MACROS": {
     "c061618g2": {
       "gds": [ "dir::../macros/gds/c061618g2.gds" ],
       "lef": [ "dir::../macros/lef/c061618g2.lef" ],
@@ -85,19 +85,19 @@
     }
   },
   "// Absolute Placement": "Perfect grid steps (21 * 0.48) and (3 * 3.78) that respect the guard halos",
-  "_MACROS": {
+  "MACROS": {
     "c061618g2": {
       "gds": [ "dir::../macros/gds/c061618g2.gds" ],
       "lef": [ "dir::../macros/lef/c061618g2.lef" ],
-      "nl": [ "dir::../macros/nl/c061618g2.nl.v" ],
+      "nl": [ "dir::../macros/nl/c061618g2.pnl.v" ],
       "spef": {
-        "min*": [ "dir::../macros/spef/max/c061618g2*fast*.spef" ],
-        "nom": [ "dir::../macros/spef/max/c061618g2*typ*.spef" ],
-        "max*": [ "dir::../macros/spef/min/c061618g2*slow*.spef" ]
+        "min*": [ "dir::../macros/spef/c061618g2*fast*.spef" ],
+        "nom": [ "dir::../macros/spef/c061618g2*typ*.spef" ],
+        "max*": [ "dir::../macros/spef/c061618g2*slow*.spef" ]
       },
       "instances": {
         "u_c061618g2": {
-          "location": [ 20.16, 3.78 ],
+          "location": [ 5.76, 3.78 ],
           "orientation": "N"
         }
       }
