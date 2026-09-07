@@ -91,9 +91,9 @@
       "lef": [ "dir::../macros/lef/c061618g2.lef" ],
       "nl": [ "dir::../macros/nl/c061618g2.pnl.v" ],
       "spef": {
-        "min*": [ "dir::../macros/spef/c061618g2*fast*.spef" ],
-        "nom": [ "dir::../macros/spef/c061618g2*typ*.spef" ],
-        "max*": [ "dir::../macros/spef/c061618g2*slow*.spef" ]
+        "min*": [ "dir::../macros/spef/c061618g2*min*.spef" ],
+        "nom": [ "dir::../macros/spef/c061618g2*nom*.spef" ],
+        "max": [ "dir::../macros/spef/c061618g2*max*.spef" ]
       },
       "instances": {
         "u_c061618g2": {
