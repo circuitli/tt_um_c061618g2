@@ -34,7 +34,7 @@
   "DESIGN_IS_CORE": false,
 
   "// Sizing Strategy": "Use absolute sizing to prevent OpenLane from guessing and failing with channel errors",
-  "FP_SIZING": "absolute",
+  "FP_SIZING": "relative",
 
   "FP_CORE_UTIL": 65,
   "PL_TARGET_DENSITY_PCT": 75,
