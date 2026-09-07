@@ -34,7 +34,7 @@
   "DESIGN_IS_CORE": false,
 
   "// Sizing Strategy": "Use absolute sizing to prevent OpenLane from guessing and failing with channel errors",
-  "FP_SIZING": "relative",
+  "FP_SIZING": "absolute",
 
   "FP_CORE_UTIL": 65,
   "PL_TARGET_DENSITY_PCT": 75,
@@ -224,8 +224,8 @@
     "FP_PDN_RAIL_LAYER": "Metal1",
     "FP_PDN_VERTICAL_LAYER": "Metal4",
     "FP_PDN_HORIZONTAL_LAYER": "Metal5",
-    "_DIE_AREA": [ 0.00, 0.00, 63.84, 145.62 ],
-    "_CORE_AREA": [ 5.76, 15.12, 58.08, 139.86 ],
+    "DIE_AREA": [ 0.00, 0.00, 63.84, 145.62 ],
+    "CORE_AREA": [ 5.76, 15.12, 58.08, 139.86 ],
     "FP_TAP_DISTANCE": 15,
     "GLB_RT_MAX_DIODE_INS_ITERS": 0
   },
