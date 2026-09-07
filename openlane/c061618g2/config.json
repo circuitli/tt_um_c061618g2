@@ -36,8 +36,8 @@
 
   "FP_CORE_UTIL": 65,
   "PL_TARGET_DENSITY_PCT": 75,
-  "_FP_WELLTAP_CELL": null,
-  "_FP_ENDCAP_CELL": null,
+  "FP_WELLTAP_CELL": null,
+  "FP_ENDCAP_CELL": null,
 
   "// -------------------------------------------------------------------------": "",
   "// 2. ROUTING AND RESOLUTION OPTIMIZATIONS FOR ASYNCHRONOUS LOOPS": "",
@@ -219,7 +219,7 @@
   "pdk::ihp-sg13g2": {
     "VERILOG_DEFINES": [ "IHP_SG13G2" ],
     "RT_MAX_LAYER": "Metal3",
-    "DIE_AREA": [ 0.0, 0.0, 57.12, 139.86 ],
+    "DIE_AREA": [ 0.0, 0.0, 63.36, 124.74 ],
     "FP_TAP_DISTANCE": 15,
     "GLB_RT_MAX_DIODE_INS_ITERS": 0
   },
