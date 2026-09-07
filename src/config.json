@@ -37,17 +37,17 @@
     "STD_CELL_LIBRARY": "gf180mcu_fd_sc_mcu7t5v0"
   },
 
-  "_VDD_NETS": [ "VPWR" ],
-  "_GND_NETS": [ "VGND" ],
+  "VDD_NETS": [ "VDD" ],
+  "GND_NETS": [ "VSS" ],
 
   "FP_PDN_CORE_RING": false,
   "_FP_PDN_ENABLE_MACROS_GRID": true,
   "FP_PDN_MACRO_HOOKS": [
-    "u_c061618g2 VPWR VGND VDPWR VGND"
+    "u_c061618g2 VDD VSS VDPWR VGND"
   ],
   "_PDN_CONNECT_MACROS_TO_GRID": true,
   "PDN_MACRO_CONNECTIONS": [
-    ".*u_c061618g2 VPWR VGND VPWR VGND"
+    ".*u_c061618g2 VDD VSS VPWR VGND"
   ],
 
   "FP_PDN_MACROS": [
