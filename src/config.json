@@ -48,10 +48,10 @@
   ],
   "_PDN_CONNECT_MACROS_TO_GRID": true,
   "PDN_MACRO_CONNECTIONS": [
-    ".*u_c061618g2 VDD VSS VPWR VGND"
+    ".*u_c061618g2 VPWR VGND VDD VSS"
   ],
 
-  "FP_PDN_MACROS": [
+  "_FP_PDN_MACROS": [
     "u_c061618g2"
   ],
 
