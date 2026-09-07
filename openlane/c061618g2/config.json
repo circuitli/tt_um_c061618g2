@@ -20,6 +20,8 @@
   "//": "Explicit Power Pin Export - Force OpenLane to bind and cleanly expose VPWR and VGND as visible physical connection pins on the macro boundary",
   "VDD_NETS": [ "VDD" ],
   "GND_NETS": [ "VSS" ],
+
+  "RCX_CORNERS": [ "min", "nom", "max" ],
   "SAVE_FINAL_VIEWS": true,
 
   "//2": "Margin Shaving - Drop core halos to 0.0 inside the macro block so your cells can use the entire physical canvas",
