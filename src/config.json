@@ -43,7 +43,7 @@
   "FP_PDN_CORE_RING": false,
   "_FP_PDN_ENABLE_MACROS_GRID": true,
   "_FP_PDN_MACRO_HOOKS": [
-    "u_c061618g2 VDD VSS VDPWR VGND"
+    "u_c061618g2 VPWR VGND VDPWR VGND"
   ],
   "PDN_CONNECT_MACROS_TO_GRID": true,
   "PDN_MACRO_CONNECTIONS": [
@@ -69,11 +69,12 @@
       "bbox": [ 0.0, 0.0, 24.96, 143.64 ]
     }
   ],
+  "STA_MACRO_PRIORITIZE_NL": true,
   "MACROS": {
     "c061618g2": {
       "gds": [ "dir::../macros/gds/c061618g2.gds" ],
       "lef": [ "dir::../macros/lef/c061618g2.lef" ],
-      "nl": [ "dir::../macros/nl/c061618g2.nl.v" ],
+      "nl": [ "dir::../macros/nl/c061618g2.pnl.v" ],
       "instances": {
         "u_c061618g2": {
           "location": [ 24.96, 15.12 ],
