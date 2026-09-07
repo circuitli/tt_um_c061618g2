@@ -48,7 +48,7 @@
   ],
   "_PDN_CONNECT_MACROS_TO_GRID": true,
   "PDN_MACRO_CONNECTIONS": [
-    ".*u_c061618g2 VDD VSS VDPWR VGND"
+    ".*u_c061618g2 VDD VSS VDD VSS"
   ],
 
   "_FP_PDN_MACROS": [
@@ -70,7 +70,7 @@
       "bbox": [ 0.0, 0.0, 24.96, 143.64 ]
     }
   ],
-  "STA_MACRO_PRIORITIZE_NL": true,
+  "_STA_MACRO_PRIORITIZE_NL": true,
   "MACROS": {
     "c061618g2": {
       "gds": [ "dir::../macros/gds/c061618g2.gds" ],
