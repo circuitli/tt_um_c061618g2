@@ -10,8 +10,6 @@
 
   "PNR_SDC_FILE": "dir::../../src/mmu_constraints.sdc",
 
-  "RUN_SPEF_EXTRACTION": true,
-
   "FP_PDN_CORE_RING": false,
   "FP_PDN_MULTILAYER": false,
   "FP_PDN_ENABLE_RAILS": true,
@@ -21,8 +19,15 @@
   "VDD_NETS": [ "VDD" ],
   "GND_NETS": [ "VSS" ],
 
+  "RUN_SPEF_EXTRACTION": true,
   "RCX_CORNERS": [ "min", "nom", "max" ],
   "SAVE_FINAL_VIEWS": true,
+
+  "SKIP_STEPS": [
+    "GeneratePDN"
+  ],
+
+  "RUN_POST_MACRO_GENERATION_PDN": true,
 
   "//2": "Margin Shaving - Drop core halos to 0.0 inside the macro block so your cells can use the entire physical canvas",
   "_CORE_MARGIN": 0.0,
