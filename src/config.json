@@ -48,7 +48,7 @@
   ],
   "_PDN_CONNECT_MACROS_TO_GRID": true,
   "PDN_MACRO_CONNECTIONS": [
-    ".*u_c061618g2 VPWR VGND VDD VSS"
+    ".*u_c061618g2 VDD VSS VDPWR VGND"
   ],
 
   "_FP_PDN_MACROS": [
@@ -78,7 +78,7 @@
       "nl": [ "dir::../macros/nl/c061618g2.pnl.v" ],
       "instances": {
         "u_c061618g2": {
-          "location": [ 0.00, 15.12 ],
+          "location": [ 5.76, 3.78 ],
           "orientation": "N"
         }
       }
