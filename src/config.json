@@ -43,7 +43,7 @@
   "GND_NETS": [ "VSS" ],
 
   "FP_PDN_CORE_RING": false,
-  "FP_PDN_ENABLE_RAILS": true,
+  "FP_PDN_ENABLE_RAILS": false,
   "FP_PDN_ENABLE_MACROS_GRID": true,
   "FP_PDN_MACRO_HOOKS": [
     "u_c061618g2 VDD VSS VDD VSS"
