@@ -241,8 +241,8 @@
     "_BOTTOM_MARGIN_MULT": 1,
     "_LEFT_MARGIN_MULT": 6,
     "_RIGHT_MARGIN_MULT": 6,
-    "DIE_AREA": [ 0.0, 0.0, 85.56, 86.94 ],
-    "CORE_AREA": [ 2.76, 3.78, 82.8, 83.16 ],
+    "DIE_AREA": [ 0.0, 0.0, 46.08, 147.42 ],
+    "CORE_AREA": [ 2.88, 3.78, 43.20, 143.64 ],
     "FP_TAP_DISTANCE": 15,
     "GLB_RT_MAX_DIODE_INS_ITERS": 0
   },
