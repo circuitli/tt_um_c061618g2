@@ -30,18 +30,18 @@ set_voltage_domain -name CORE -power $::env(VDD_NET) -ground $::env(GND_NET) \
     -secondary_power $secondary
 
 # -----------------------------------------------------------------------------
-# 2. Define the Baseline Standard Cell Power Grid (Bypasses Channel Failures)
+# 2. Define the Baseline Standard Cell Power Grid
 # -----------------------------------------------------------------------------
 define_pdn_grid \
     -name stdcell_grid \
     -starts_with POWER \
     -voltage_domain CORE \
-    -pins "Metal3"
+    -pins Metal3
 
-# Draw the vertical Metal3 mesh stripes and force them flush to the outer boundary walls
+# Draw the vertical Metal3 mesh stripes and force them flush to the boundary box
 add_pdn_stripe \
     -grid stdcell_grid \
-    -layer "Metal3" \
+    -layer Metal3 \
     -width $::env(PDN_VWIDTH) \
     -pitch $::env(PDN_VPITCH) \
     -offset $::env(PDN_VOFFSET) \
@@ -49,11 +49,11 @@ add_pdn_stripe \
     -starts_with POWER \
     -extend_to boundary
 
-# Map the logical standard cell row rail positions using the followpins command
+# Map the logical standard cell row rail positions using followpins
 if { $::env(PDN_ENABLE_RAILS) == 1 } {
     add_pdn_stripe \
         -grid stdcell_grid \
-        -layer "Metal1" \
+        -layer Metal1 \
         -width 0.44 \
         -followpins \
         -extend_to boundary
@@ -72,7 +72,7 @@ define_pdn_grid \
     -name macro_grid \
     -starts_with POWER
 
-# Physically bridge your local vertical Metal3 stripes up to the heavy horizontal Metal4 trunks
+# Physically bridge your local vertical Metal3 stripes up to the horizontal Metal4 trunks
 add_pdn_connect \
     -grid macro_grid \
     -layers "Metal3 Metal4"
