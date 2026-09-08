@@ -80,7 +80,7 @@
       "nl": [ "dir::../macros/nl/c061618g2.pnl.v" ],
       "instances": {
         "u_c061618g2": {
-          "location": [ 5.76, 3.78 ],
+          "location": [ 0.0, 0.0 ],
           "orientation": "N"
         }
       }
