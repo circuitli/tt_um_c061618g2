@@ -25,18 +25,32 @@ foreach vdd $::env(VDD_NETS) gnd $::env(GND_NETS) {
 
 set_voltage_domain -name CORE -power $::env(VDD_NET) -ground $::env(GND_NET) -secondary_power $secondary
 
+# =============================================================================
+# DYNAMIC STANDARD CELL ROW PITCH EXTRACTION (100% TECHNOLOGY INDEPENDENT)
+# =============================================================================
+# Grabs the first physical cell row structure initialized in the layout engine memory model
+set first_layout_row [lindex [[ord::get_db_block] getRows] 0]
+set row_site_object  [$first_layout_row getSite]
+
+# Extracts the height constraint and converts the internal db units to physical microns
+set calculated_rail_pitch [expr {double([$row_site_object getHeight]) / [[ord::get_db_tech] getDbUnitsPerMicron]}]
+
+# Print the dynamic calculation straight to stdout so you can verify it in the logs
+utl::report "DYNAMIC PDN CONFIG CHECK: The calculated standard cell row rail pitch is -> ${calculated_rail_pitch} um"
+# =============================================================================
+
 define_pdn_grid -name stdcell_grid -starts_with POWER -voltage_domains CORE
 
-# 1. Vertical Metal3 power stripes extended fully to the boundary walls
+# 1. Vertical power stripes pulling numerical parameters dynamically from the JSON block
 add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $::env(PDN_VOFFSET) -spacing $::env(PDN_VSPACING) -starts_with POWER -extend_to_boundary
 
-# 2. Manual Horizontal Metal1 power rails extended fully to the boundary walls (Dynamic JSON overrides!)
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $::env(PLACE_SITE_HEIGHT) -offset $::env(PDN_RAIL_OFFSET) -starts_with POWER -extend_to_boundary
+# 2. Manual Horizontal power rails using the calculated database micron pitch value (Completely free of followpins!)
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $calculated_rail_pitch -offset $::env(PDN_RAIL_OFFSET) -starts_with POWER -extend_to_boundary
 
-# 3. Connect Metal1 directly to your vertical Metal3 mesh stripes
+# 3. Connect the rails directly to the vertical mesh stripes
 add_pdn_connect -grid stdcell_grid -layers "$::env(PDN_RAIL_LAYER) $::env(PDN_VERTICAL_LAYER)"
 
 define_pdn_grid -macro -default -name macro_grid -starts_with POWER
 
-# 4. Bridge vertical Metal3 up to your horizontal Metal4 macro power trunks
+# 4. Bridge the vertical stripes up to the horizontal macro power trunks
 add_pdn_connect -grid macro_grid -layers "$::env(PDN_VERTICAL_LAYER) $::env(PDN_HORIZONTAL_LAYER)"
