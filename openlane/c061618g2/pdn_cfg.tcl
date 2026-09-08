@@ -1,4 +1,4 @@
-source $::env(SCRIPTS_DIR)/openroad/common/set_global_connections.tcl
+tclsource $::env(SCRIPTS_DIR)/openroad/common/set_global_connections.tcl
 set_global_connections
 
 set secondary []
@@ -39,22 +39,26 @@ set interleaved_pitch  [expr {$calculated_rail_pitch * 2.0}]
 set interleaved_offset [expr {$calculated_rail_pitch * 1.0}]
 # =============================================================================
 
-define_pdn_grid -name stdcell_grid -starts_with POWER -voltage_domains CORE
+#Change grid base initialization token match rule to GROUND to allow VSS row baseline loading
+define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 
 # 1. Vertical power stripes pulling numerical parameters dynamically from the JSON block
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $::env(PDN_VOFFSET) -spacing $::env(PDN_VSPACING) -starts_with POWER -extend_to_boundary
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $::env(PDN_VOFFSET) -spacing $::env(PDN_VSPACING) -starts_with GROUND -extend_to_boundary
 
-# 2. Dynamic Alternating Horizontal power rails (Bypasses polarity clashes and via trimmings)
-# VDD rails on every even row boundary
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset 0.0 -starts_with POWER -extend_to_boundary
+# =============================================================================
+# REALIGNED POLARITY MATRIX MATCHING NATIVE IHP CELL INSTANCES (VSS AT Y=0)
+# =============================================================================
+# Row 0 (Even) -> Drops VSS (GROUND) tracks at y=0.0, 7.56, 15.12...
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset 0.0 -starts_with GROUND -extend_to_boundary
 
-# VSS rails on every odd row boundary
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset $interleaved_offset -starts_with GROUND -extend_to_boundary
+# Row 1 (Odd) -> Drops VDD (POWER) tracks shifted by exactly one row height at y=3.78, 11.34, 18.90...
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset $interleaved_offset -starts_with POWER -extend_to_boundary
+# =============================================================================
 
 # 3. Connect the rails directly to the vertical mesh stripes
 add_pdn_connect -grid stdcell_grid -layers "$::env(PDN_RAIL_LAYER) $::env(PDN_VERTICAL_LAYER)"
 
-define_pdn_grid -macro -default -name macro_grid -starts_with POWER
+define_pdn_grid -macro -default -name macro_grid -starts_with GROUND
 
 # 4. Bridge the vertical stripes up to the horizontal macro power trunks
 add_pdn_connect -grid macro_grid -layers "$::env(PDN_VERTICAL_LAYER) $::env(PDN_HORIZONTAL_LAYER)"
