@@ -234,7 +234,7 @@
     "PDN_VERTICAL_LAYER": "Metal5",
     "PDN_VWIDTH": 0.46,
     "PDN_VOFFSET": 11.04,
-    "PDN_VPITCH": 11.04,
+    "PDN_VPITCH": 5.52,
     "PDN_VSPACING": 1.38,
     "_PDN_RAIL_OFFSET": 0.22,
     "PDN_EXTEND_TO": "boundary",
