@@ -15,6 +15,7 @@
   "PDN_ENABLE_RAILS": true,
   "PDN_ENABLE_MACROS_GRID": false,
   "PDN_ENABLE_PINS": true,
+  "PDN_TRIM_STRIPES": false,
 
   "//": "Explicit Power Pin Export - Force OpenLane to bind and cleanly expose VPWR and VGND as visible physical connection pins on the macro boundary",
   "VDD_NETS": [ "VDD" ],
@@ -237,7 +238,7 @@
     "PDN_VPITCH": 5.52,
     "PDN_VSPACING": 1.38,
     "_PDN_RAIL_OFFSET": 0.22,
-    "PDN_EXTEND_TO": "boundary",
+    "_PDN_EXTEND_TO": "boundary",
     "PDN_CONNECT": [
       [ "Metal1", "Metal3" ],
       [ "Metal3", "Metal4" ]
