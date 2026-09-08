@@ -60,7 +60,7 @@ if { $::env(PDN_ENABLE_RAILS) == 1 } {
 
     add_pdn_connect \
         -grid stdcell_grid \
-        -layers {Metal1 Metal3}
+        -layers "Metal1 Metal3"
 }
 
 # -----------------------------------------------------------------------------
@@ -75,4 +75,4 @@ define_pdn_grid \
 # Physically bridge your local vertical Metal3 stripes up to the horizontal Metal4 trunks
 add_pdn_connect \
     -grid macro_grid \
-    -layers {Metal3 Metal4}
+    -layers "Metal3 Metal4"
