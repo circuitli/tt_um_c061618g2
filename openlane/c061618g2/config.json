@@ -10,10 +10,10 @@
 
   "PNR_SDC_FILE": "dir::../../src/mmu_constraints.sdc",
 
-  "PDN_CORE_RING": false,
+  "_PDN_CORE_RING": false,
   "PDN_MULTILAYER": false,
-  "PDN_ENABLE_RAILS": true,
-  "PDN_ENABLE_MACROS_GRID": false,
+  "_PDN_ENABLE_RAILS": true,
+  "_PDN_ENABLE_MACROS_GRID": false,
 
   "//": "Explicit Power Pin Export - Force OpenLane to bind and cleanly expose VPWR and VGND as visible physical connection pins on the macro boundary",
   "VDD_NETS": [ "VDD" ],
@@ -42,7 +42,7 @@
   "DESIGN_IS_CORE": false,
 
   "// Sizing Strategy": "Use absolute sizing to prevent OpenLane from guessing and failing with channel errors",
-  "FP_SIZING": "absolute",
+  "FP_SIZING": "relative",
 
   "FP_CORE_UTIL": 65,
   "PL_TARGET_DENSITY_PCT": 75,
@@ -229,11 +229,11 @@
   "pdk::ihp-sg13g2": {
     "VERILOG_DEFINES": [ "IHP_SG13G2" ],
     "RT_MAX_LAYER": "Metal3",
-    "PDN_RAIL_LAYER": "Metal1",
-    "PDN_VERTICAL_LAYER": "Metal4",
-    "PDN_HORIZONTAL_LAYER": "Metal3",
-    "DIE_AREA": [ 0.00, 0.00, 63.84, 145.62 ],
-    "CORE_AREA": [ 5.76, 15.12, 58.08, 139.86 ],
+    "_PDN_RAIL_LAYER": "Metal1",
+    "_PDN_VERTICAL_LAYER": "Metal4",
+    "_PDN_HORIZONTAL_LAYER": "Metal3",
+    "_DIE_AREA": [ 0.00, 0.00, 63.84, 145.62 ],
+    "_CORE_AREA": [ 5.76, 15.12, 58.08, 139.86 ],
     "FP_TAP_DISTANCE": 15,
     "GLB_RT_MAX_DIODE_INS_ITERS": 0
   },
