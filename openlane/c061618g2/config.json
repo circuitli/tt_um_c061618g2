@@ -45,8 +45,6 @@
   "// Sizing Strategy": "Use absolute sizing to prevent OpenLane from guessing and failing with channel errors",
   "FP_SIZING": "absolute",
 
-  "FP_CORE_UTIL": 65,
-  "PL_TARGET_DENSITY_PCT": 75,
   "FP_WELLTAP_CELL": null,
   "FP_ENDCAP_CELL": null,
 
@@ -60,6 +58,8 @@
   "// -------------------------------------------------------------------------": "",
   "pdk::ihp-sg13g2": {
     "VERILOG_DEFINES": [ "IHP_SG13G2" ],
+    "FP_CORE_UTIL": 93,
+    "PL_TARGET_DENSITY_PCT": 94,
     "RT_MAX_LAYER": "Metal3",
     "PDN_RAIL_LAYER": "Metal1",
     "PDN_HORIZONTAL_LAYER": "Metal4",
