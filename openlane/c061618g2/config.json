@@ -4,13 +4,11 @@
     "dir::../../src/module/c061618g2.sv"
   ],
 
-  "PDN_CFG": "dir::pdn_cfg.tcl",
-
-  "VERILOG_DEFINES": [
-    "IHP_SG13G2=1"
-  ],
-
   "PNR_SDC_FILE": "dir::../../src/mmu_constraints.sdc",
+
+  "FP_PIN_ORDER_CFG": "dir::pin_order.cfg",
+
+  "PDN_CFG": "dir::pdn_cfg.tcl",
 
   "PDN_CORE_RING": false,
   "PDN_MULTILAYER": false,
