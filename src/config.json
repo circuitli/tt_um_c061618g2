@@ -48,9 +48,10 @@
   "_FP_PDN_MACRO_HOOKS": [
     "u_c061618g2 VDD VSS VDD VSS"
   ],
-  "_PDN_CORE_RING": false,
-  "_PDN_ENABLE_RAILS": true,
-  "_PDN_CONNECT_MACROS_TO_GRID": true,
+  "PDN_CORE_RING": false,
+  "PDN_ENABLE_RAILS": true,
+  "_PDN_ENABLE_MACROS_GRID": false
+  "PDN_CONNECT_MACROS_TO_GRID": false,
   "_PDN_MACRO_CONNECTIONS": [
     ".*u_c061618g2 VDD VSS VDD VSS"
   ],

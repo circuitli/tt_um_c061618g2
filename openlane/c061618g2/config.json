@@ -10,10 +10,10 @@
 
   "PNR_SDC_FILE": "dir::../../src/mmu_constraints.sdc",
 
-  "_PDN_CORE_RING": false,
+  "PDN_CORE_RING": false,
   "PDN_MULTILAYER": false,
-  "_PDN_ENABLE_RAILS": true,
-  "_PDN_ENABLE_MACROS_GRID": false,
+  "PDN_ENABLE_RAILS": true,
+  "PDN_ENABLE_MACROS_GRID": false,
 
   "//": "Explicit Power Pin Export - Force OpenLane to bind and cleanly expose VPWR and VGND as visible physical connection pins on the macro boundary",
   "VDD_NETS": [ "VDD" ],
