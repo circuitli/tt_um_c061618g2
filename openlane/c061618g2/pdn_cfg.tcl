@@ -28,15 +28,15 @@ set_voltage_domain -name CORE -power $::env(VDD_NET) -ground $::env(GND_NET) -se
 # =============================================================================
 # DYNAMIC STANDARD CELL ROW PITCH EXTRACTION (100% TECHNOLOGY INDEPENDENT)
 # =============================================================================
-# Grabs the first physical cell row structure initialized in the layout engine memory model
 set first_layout_row [lindex [[ord::get_db_block] getRows] 0]
 set row_site_object  [$first_layout_row getSite]
-
-# Extracts the height constraint and converts the internal db units to physical microns
 set calculated_rail_pitch [expr {double([$row_site_object getHeight]) / [[ord::get_db_tech] getDbUnitsPerMicron]}]
 
-# Print the dynamic calculation straight to stdout so you can verify it in the logs
 utl::report "DYNAMIC PDN CONFIG CHECK: The calculated standard cell row rail pitch is -> ${calculated_rail_pitch} um"
+
+# Compute the alternating double-pitch grid parameters dynamically from the cell site profile
+set interleaved_pitch  [expr {$calculated_rail_pitch * 2.0}]
+set interleaved_offset [expr {$calculated_rail_pitch * 1.0}]
 # =============================================================================
 
 define_pdn_grid -name stdcell_grid -starts_with POWER -voltage_domains CORE
@@ -44,8 +44,12 @@ define_pdn_grid -name stdcell_grid -starts_with POWER -voltage_domains CORE
 # 1. Vertical power stripes pulling numerical parameters dynamically from the JSON block
 add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $::env(PDN_VOFFSET) -spacing $::env(PDN_VSPACING) -starts_with POWER -extend_to_boundary
 
-# 2. Manual Horizontal power rails using the calculated database micron pitch value (Completely free of followpins!)
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $calculated_rail_pitch -offset $::env(PDN_RAIL_OFFSET) -starts_with POWER -extend_to_boundary
+# 2. Dynamic Alternating Horizontal power rails (Bypasses polarity clashes and via trimmings)
+# VDD rails on every even row boundary
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset 0.0 -starts_with POWER -extend_to_boundary
+
+# VSS rails on every odd row boundary
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset $interleaved_offset -starts_with GROUND -extend_to_boundary
 
 # 3. Connect the rails directly to the vertical mesh stripes
 add_pdn_connect -grid stdcell_grid -layers "$::env(PDN_RAIL_LAYER) $::env(PDN_VERTICAL_LAYER)"
