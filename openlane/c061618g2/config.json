@@ -4,6 +4,8 @@
     "dir::../../src/module/c061618g2.sv"
   ],
 
+  "PDN_CFG": "dir::pdn_cfg.tcl",
+
   "VERILOG_DEFINES": [
     "IHP_SG13G2=1"
   ],
@@ -63,11 +65,11 @@
     "RT_MAX_LAYER": "Metal3",
     "PDN_RAIL_LAYER": "Metal1",
     "PDN_HORIZONTAL_LAYER": "Metal4",
-    "PDN_VERTICAL_LAYER": "Metal3",
-    "PDN_VWIDTH": 0.46,
-    "PDN_VOFFSET": 11.04,
-    "PDN_VPITCH": 5.52,
-    "PDN_VSPACING": 1.38,
+    "_PDN_VERTICAL_LAYER": "Metal3",
+    "_PDN_VWIDTH": 0.46,
+    "_PDN_VOFFSET": 11.04,
+    "_PDN_VPITCH": 5.52,
+    "_PDN_VSPACING": 1.38,
     "_PDN_RAIL_OFFSET": 0.22,
     "_PDN_EXTEND_TO": "boundary",
     "PDN_CONNECT": [
