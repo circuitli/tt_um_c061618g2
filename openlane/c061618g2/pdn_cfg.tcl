@@ -31,7 +31,7 @@ define_pdn_grid -name stdcell_grid -starts_with POWER -voltage_domains CORE
 add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $::env(PDN_VOFFSET) -spacing $::env(PDN_VSPACING) -starts_with POWER -extend_to_boundary
 
 # 2. Manual Horizontal Metal1 power rails extended fully to the boundary walls (Dynamic JSON overrides!)
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $::env(PDN_RAIL_PITCH) -offset $::env(PDN_RAIL_OFFSET) -starts_with POWER -extend_to_boundary
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $::env(PLACE_SITE_YLAMBDA) -offset $::env(PDN_RAIL_OFFSET) -starts_with POWER -extend_to_boundary
 
 # 3. Connect Metal1 directly to your vertical Metal3 mesh stripes
 add_pdn_connect -grid stdcell_grid -layers "$::env(PDN_RAIL_LAYER) $::env(PDN_VERTICAL_LAYER)"
