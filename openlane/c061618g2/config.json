@@ -232,7 +232,7 @@
     "PDN_RAIL_LAYER": "Metal1",
     "PDN_VERTICAL_LAYER": "Metal3",
     "PDN_HORIZONTAL_LAYER": "Metal4",
-    "PDN_VWIDTH": 0.48,
+    "PDN_VWIDTH": 0.92,
     "PDN_VPITCH": 13.44,
     "PDN_VOFFSET": 2.88,
     "PDN_VSPACING": 1.6,
