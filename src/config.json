@@ -43,14 +43,14 @@
   "GND_NETS": [ "VSS" ],
 
   "_FP_PDN_CORE_RING": false,
-  "_FP_PDN_ENABLE_RAILS": false,
-  "_FP_PDN_ENABLE_MACROS_GRID": true,
+  "_FP_PDN_ENABLE_RAILS": true,
+  "_FP_PDN_ENABLE_MACROS_GRID": false,
   "_FP_PDN_MACRO_HOOKS": [
     "u_c061618g2 VDD VSS VDD VSS"
   ],
   "PDN_CORE_RING": false,
-  "PDN_ENABLE_RAILS": false,
-  "PDN_CONNECT_MACROS_TO_GRID": true,
+  "PDN_ENABLE_RAILS": true
+  "PDN_CONNECT_MACROS_TO_GRID": false,
   "PDN_MACRO_CONNECTIONS": [
     ".*u_c061618g2 VDD VSS VDD VSS"
   ],
