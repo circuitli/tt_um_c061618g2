@@ -231,7 +231,7 @@
     "RT_MAX_LAYER": "Metal3",
     "PDN_RAIL_LAYER": "Metal1",
     "PDN_VERTICAL_LAYER": "Metal4",
-    "PDN_HORIZONTAL_LAYER": "Metal5",
+    "PDN_HORIZONTAL_LAYER": "Metal3",
     "DIE_AREA": [ 0.00, 0.00, 63.84, 145.62 ],
     "CORE_AREA": [ 5.76, 15.12, 58.08, 139.86 ],
     "FP_TAP_DISTANCE": 15,
