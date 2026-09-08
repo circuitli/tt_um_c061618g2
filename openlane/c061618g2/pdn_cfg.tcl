@@ -36,7 +36,7 @@ define_pdn_grid \
     -name stdcell_grid \
     -starts_with POWER \
     -voltage_domain CORE \
-    -pins Metal3
+    -pins "Metal3"
 
 # Draw the vertical Metal3 mesh stripes and force them flush to the boundary box
 add_pdn_stripe \
@@ -55,8 +55,7 @@ if { $::env(PDN_ENABLE_RAILS) == 1 } {
         -grid stdcell_grid \
         -layer Metal1 \
         -width 0.44 \
-        -followpins \
-        -extend_to boundary
+        -followpins
 
     add_pdn_connect \
         -grid stdcell_grid \
