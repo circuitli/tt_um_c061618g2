@@ -1,6 +1,3 @@
-# -----------------------------------------------------------------------------
-# 1. Initialize Global Core Power Infrastructure & Voltage Domains
-# -----------------------------------------------------------------------------
 source $::env(SCRIPTS_DIR)/openroad/common/set_global_connections.tcl
 set_global_connections
 
@@ -26,52 +23,17 @@ foreach vdd $::env(VDD_NETS) gnd $::env(GND_NETS) {
     }
 }
 
-set_voltage_domain -name CORE -power $::env(VDD_NET) -ground $::env(GND_NET) \
-    -secondary_power $secondary
+set_voltage_domain -name CORE -power $::env(VDD_NET) -ground $::env(GND_NET) -secondary_power $secondary
 
-# -----------------------------------------------------------------------------
-# 2. Define the Baseline Standard Cell Power Grid
-# -----------------------------------------------------------------------------
-define_pdn_grid \
-    -name stdcell_grid \
-    -starts_with POWER \
-    -voltage_domain CORE \
-    -pins "Metal3"
+define_pdn_grid -name stdcell_grid -starts_with POWER -voltage_domain CORE -pins "Metal3"
 
-# Draw the vertical Metal3 mesh stripes and force them flush to the boundary box
-add_pdn_stripe \
-    -grid stdcell_grid \
-    -layer Metal3 \
-    -width $::env(PDN_VWIDTH) \
-    -pitch $::env(PDN_VPITCH) \
-    -offset $::env(PDN_VOFFSET) \
-    -spacing $::env(PDN_VSPACING) \
-    -starts_with POWER \
-    -extend_to boundary
+add_pdn_stripe -grid stdcell_grid -layer Metal3 -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $::env(PDN_VOFFSET) -spacing $::env(PDN_VSPACING) -starts_with POWER -extend_to boundary
 
-# Map the logical standard cell row rail positions using followpins
 if { $::env(PDN_ENABLE_RAILS) == 1 } {
-    add_pdn_stripe \
-        -grid stdcell_grid \
-        -layer Metal1 \
-        -width 0.44 \
-        -followpins
-
-    add_pdn_connect \
-        -grid stdcell_grid \
-        -layers "Metal1 Metal3"
+    add_pdn_stripe -grid stdcell_grid -layer Metal1 -followpins
+    add_pdn_connect -grid stdcell_grid -layers "Metal1 Metal3"
 }
 
-# -----------------------------------------------------------------------------
-# 3. Define the Macro Grid Workspace & Custom Cross-Layer Bridge Connections
-# -----------------------------------------------------------------------------
-define_pdn_grid \
-    -macro \
-    -default \
-    -name macro_grid \
-    -starts_with POWER
+define_pdn_grid -macro -default -name macro_grid -starts_with POWER
 
-# Physically bridge your local vertical Metal3 stripes up to the horizontal Metal4 trunks
-add_pdn_connect \
-    -grid macro_grid \
-    -layers "Metal3 Metal4"
+add_pdn_connect -grid macro_grid -layers "Metal3 Metal4"
