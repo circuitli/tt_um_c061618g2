@@ -232,7 +232,7 @@
     "PDN_RAIL_LAYER": "Metal1",
     "PDN_VERTICAL_LAYER": "Metal3",
     "PDN_VWIDTH": 0.46,
-    "PDN_VOFFSET": 5.52,
+    "PDN_VOFFSET": 11.04,
     "PDN_VPITCH": 11.04,
     "PDN_VSPACING": 1.38,
     "_PDN_RAIL_OFFSET": 0.22,
@@ -242,7 +242,7 @@
     "_LEFT_MARGIN_MULT": 6,
     "_RIGHT_MARGIN_MULT": 6,
     "DIE_AREA": [ 0.0, 0.0, 55.20, 143.64 ],
-    "CORE_AREA": [ 5.52, 3.78, 49.68, 139.86 ],
+    "CORE_AREA": [ 11.04, 3.78, 44.16, 139.86 ],
     "FP_TAP_DISTANCE": 15,
     "GLB_RT_MAX_DIODE_INS_ITERS": 0
   },
