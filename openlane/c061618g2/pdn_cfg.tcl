@@ -25,10 +25,10 @@ foreach vdd $::env(VDD_NETS) gnd $::env(GND_NETS) {
 
 set_voltage_domain -name CORE -power $::env(VDD_NET) -ground $::env(GND_NET) -secondary_power $secondary
 
-# Fixed: Removed the invalid -pins token completely from the standard cell declaration
 define_pdn_grid -name stdcell_grid -starts_with POWER -voltage_domains CORE
 
-add_pdn_stripe -grid stdcell_grid -layer Metal3 -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $::env(PDN_VOFFSET) -spacing $::env(PDN_VSPACING) -starts_with POWER -extend_to_boundary
+# Hard-coded: Clean values matching the 0.46 µm IHP track grid increments perfectly
+add_pdn_stripe -grid stdcell_grid -layer Metal3 -width 0.46 -pitch 5.52 -offset 11.04 -spacing 1.38 -starts_with POWER -extend_to_boundary
 
 if { $::env(PDN_ENABLE_RAILS) == 1 } {
     add_pdn_stripe -grid stdcell_grid -layer Metal1 -followpins
@@ -37,4 +37,4 @@ if { $::env(PDN_ENABLE_RAILS) == 1 } {
 
 define_pdn_grid -macro -default -name macro_grid -starts_with POWER
 
-add_pdn_connect -grid macro_grid -layers "Metal3 Metal4"l3 Metal4"
+add_pdn_connect -grid macro_grid -layers "Metal3 Metal4"
