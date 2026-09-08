@@ -25,40 +25,18 @@ foreach vdd $::env(VDD_NETS) gnd $::env(GND_NETS) {
 
 set_voltage_domain -name CORE -power $::env(VDD_NET) -ground $::env(GND_NET) -secondary_power $secondary
 
-# =============================================================================
-# DYNAMIC STANDARD CELL ROW PITCH EXTRACTION (100% TECHNOLOGY INDEPENDENT)
-# =============================================================================
-set first_layout_row [lindex [[ord::get_db_block] getRows] 0]
-set row_site_object  [$first_layout_row getSite]
-set calculated_rail_pitch [expr {double([$row_site_object getHeight]) / [[ord::get_db_tech] getDbUnitsPerMicron]}]
+define_pdn_grid -name stdcell_grid -starts_with POWER -voltage_domains CORE -pins $::env(PDN_VERTICAL_LAYER)
 
-utl::report "DYNAMIC PDN CONFIG CHECK: The calculated standard cell row rail pitch is -> ${calculated_rail_pitch} um"
+# 1. Vertical Metal3 power stripes extended fully to the boundary walls
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $::env(PDN_VOFFSET) -spacing $::env(PDN_VSPACING) -starts_with POWER -extend_to_boundary
 
-# Compute the alternating double-pitch grid parameters dynamically from the cell site profile
-set interleaved_pitch  [expr {$calculated_rail_pitch * 2.0}]
-set interleaved_offset [expr {$calculated_rail_pitch * 1.0}]
-# =============================================================================
+# 2. Native Standard Cell follow-rails (OpenROAD auto-detects alternating VDD/VSS patterns flawlessly)
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -followpins
 
-#Change grid base initialization token match rule to GROUND to allow VSS row baseline loading
-define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
-
-# 1. Vertical power stripes pulling numerical parameters dynamically from the JSON block
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $::env(PDN_VOFFSET) -spacing $::env(PDN_VSPACING) -starts_with GROUND -extend_to_boundary
-
-# =============================================================================
-# REALIGNED POLARITY MATRIX MATCHING NATIVE IHP CELL INSTANCES (VSS AT Y=0)
-# =============================================================================
-# Row 0 (Even) -> Drops VSS (GROUND) tracks at y=0.0, 7.56, 15.12...
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset 0.0 -starts_with GROUND -extend_to_boundary
-
-# Row 1 (Odd) -> Drops VDD (POWER) tracks shifted by exactly one row height at y=3.78, 11.34, 18.90...
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset $interleaved_offset -starts_with POWER -extend_to_boundary
-# =============================================================================
-
-# 3. Connect the rails directly to the vertical mesh stripes
+# 3. Connect the native rails directly to your vertical Metal3 mesh stripes
 add_pdn_connect -grid stdcell_grid -layers "$::env(PDN_RAIL_LAYER) $::env(PDN_VERTICAL_LAYER)"
 
-define_pdn_grid -macro -default -name macro_grid -starts_with GROUND
+define_pdn_grid -macro -default -name macro_grid -starts_with POWER
 
-# 4. Bridge the vertical stripes up to the horizontal macro power trunks
+# 4. Bridge vertical Metal3 up to your horizontal Metal4 macro power trunks
 add_pdn_connect -grid macro_grid -layers "$::env(PDN_VERTICAL_LAYER) $::env(PDN_HORIZONTAL_LAYER)"
