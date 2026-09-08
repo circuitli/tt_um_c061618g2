@@ -49,7 +49,7 @@
     "u_c061618g2 VDD VSS VDD VSS"
   ],
   "PDN_CORE_RING": false,
-  "PDN_ENABLE_RAILS": true
+  "PDN_ENABLE_RAILS": true,
   "PDN_CONNECT_MACROS_TO_GRID": false,
   "PDN_MACRO_CONNECTIONS": [
     ".*u_c061618g2 VDD VSS VDD VSS"
