@@ -17,7 +17,7 @@
   "PDN_ENABLE_RAILS": true,
   "PDN_ENABLE_MACROS_GRID": false,
   "PDN_ENABLE_PINS": true,
-  "PDN_SKIPTRIM": true,
+  "_PDN_SKIPTRIM": true,
 
   "//": "Explicit Power Pin Export - Force OpenLane to bind and cleanly expose VPWR and VGND as visible physical connection pins on the macro boundary",
   "VDD_NETS": [ "VDD" ],
