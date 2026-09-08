@@ -230,7 +230,7 @@
     "VERILOG_DEFINES": [ "IHP_SG13G2" ],
     "RT_MAX_LAYER": "Metal3",
     "PDN_RAIL_LAYER": "Metal1",
-    "PDN_VERTICAL_LAYER": "Metal3",
+    "PDN_VERTICAL_LAYER": "Metal5",
     "PDN_VWIDTH": 0.46,
     "PDN_VOFFSET": 11.04,
     "PDN_VPITCH": 11.04,
