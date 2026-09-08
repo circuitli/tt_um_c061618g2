@@ -236,7 +236,8 @@
     "PDN_VOFFSET": 11.04,
     "PDN_VPITCH": 11.04,
     "PDN_VSPACING": 1.38,
-    "PDN_RAIL_OFFSET": 0.22,
+    "_PDN_RAIL_OFFSET": 0.22,
+    "PDN_EXTEND_TO": "boundary",
     "PDN_CONNECT": [
       [ "Metal1", "Metal5" ],
       [ "Metal5", "Metal4" ]
