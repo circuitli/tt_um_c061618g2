@@ -25,11 +25,11 @@
   "RCX_CORNERS": [ "min", "nom", "max" ],
   "SAVE_FINAL_VIEWS": true,
 
-  "SKIP_STEPS": [
+  "_SKIP_STEPS": [
     "GeneratePDN"
   ],
 
-  "RUN_POST_MACRO_GENERATION_PDN": true,
+  "_RUN_POST_MACRO_GENERATION_PDN": true,
 
   "//2": "Margin Shaving - Drop core halos to 0.0 inside the macro block so your cells can use the entire physical canvas",
   "_CORE_MARGIN": 0.0,
@@ -54,6 +54,52 @@
   "// 2. ROUTING AND RESOLUTION OPTIMIZATIONS FOR ASYNCHRONOUS LOOPS": "",
   "// -------------------------------------------------------------------------": "",
   "GRT_ALLOW_CONGESTION": false,
+
+  "// -------------------------------------------------------------------------": "",
+  "// 3. TARGET ENVIRONMENT ENVELOPE SEEDING (Cross-PDK Platform Controls)": "",
+  "// -------------------------------------------------------------------------": "",
+  "pdk::ihp-sg13g2": {
+    "VERILOG_DEFINES": [ "IHP_SG13G2" ],
+    "RT_MAX_LAYER": "Metal3",
+    "PDN_RAIL_LAYER": "Metal1",
+    "PDN_HORIZONTAL_LAYER": "Metal4",
+    "PDN_VERTICAL_LAYER": "Metal3",
+    "PDN_VWIDTH": 0.46,
+    "PDN_VOFFSET": 11.04,
+    "PDN_VPITCH": 5.52,
+    "PDN_VSPACING": 1.38,
+    "_PDN_RAIL_OFFSET": 0.22,
+    "_PDN_EXTEND_TO": "boundary",
+    "PDN_CONNECT": [
+      [ "Metal1", "Metal3" ],
+      [ "Metal3", "Metal4" ]
+    ],
+    "_FP_IO_MIN_DISTANCE": 1.84,
+    "_TOP_MARGIN_MULT": 1,
+    "_BOTTOM_MARGIN_MULT": 1,
+    "_LEFT_MARGIN_MULT": 6,
+    "_RIGHT_MARGIN_MULT": 6,
+    "DIE_AREA": [ 0.0, 0.0, 55.20, 143.64 ],
+    "CORE_AREA": [ 11.04, 3.78, 44.16, 139.86 ],
+    "FP_TAP_DISTANCE": 15,
+    "GLB_RT_MAX_DIODE_INS_ITERS": 0
+  },
+
+  "pdk::sky130*": {
+    "VERILOG_DEFINES": [ "SKY130" ],
+    "STD_CELL_LIBRARY": "sky130_fd_sc_hd",
+    "_DIE_AREA": [ 0, 0, 55.76, 43.52 ],
+    "FP_TAP_DISTANCE": 14,
+    "DIODE_INSERTION_STRATEGY": 0
+  },
+
+  "pdk::gf180mcu*": {
+    "VERILOG_DEFINES": [ "GF180MCU" ],
+    "STD_CELL_LIBRARY": "gf180mcu_fd_sc_mcu7t5v0",
+    "_DIE_AREA": [ 0, 0, 91.44, 78.40 ],
+    "FP_TAP_DISTANCE": 16,
+    "DIODE_INSERTION_STRATEGY": 0
+  },
 
   "// -------------------------------------------------------------------------": "",
   "// 1. Force the toolchain to treat the layout flatly with no clock trees.": "",
@@ -222,51 +268,6 @@
   "RUN_LINTER": false,
   "LINTER_ERROR_ON_LATCH": false,
   "LINTER_ERROR_ON_MULTIDRIVEN": false,
-  "LINT_OPTIONS": [ "-Wno-TIMESCALEMOD" ],
+  "LINT_OPTIONS": [ "-Wno-TIMESCALEMOD" ]
 
-  "// -------------------------------------------------------------------------": "",
-  "// 3. TARGET ENVIRONMENT ENVELOPE SEEDING (Cross-PDK Platform Controls)": "",
-  "// -------------------------------------------------------------------------": "",
-  "pdk::ihp-sg13g2": {
-    "VERILOG_DEFINES": [ "IHP_SG13G2" ],
-    "RT_MAX_LAYER": "Metal3",
-    "PDN_RAIL_LAYER": "Metal1",
-    "PDN_HORIZONTAL_LAYER": "Metal4",
-    "PDN_VERTICAL_LAYER": "Metal3",
-    "PDN_VWIDTH": 0.46,
-    "PDN_VOFFSET": 11.04,
-    "PDN_VPITCH": 5.52,
-    "PDN_VSPACING": 1.38,
-    "_PDN_RAIL_OFFSET": 0.22,
-    "_PDN_EXTEND_TO": "boundary",
-    "PDN_CONNECT": [
-      [ "Metal1", "Metal3" ],
-      [ "Metal3", "Metal4" ]
-    ],
-    "_FP_IO_MIN_DISTANCE": 1.84,
-    "_TOP_MARGIN_MULT": 1,
-    "_BOTTOM_MARGIN_MULT": 1,
-    "_LEFT_MARGIN_MULT": 6,
-    "_RIGHT_MARGIN_MULT": 6,
-    "DIE_AREA": [ 0.0, 0.0, 55.20, 143.64 ],
-    "CORE_AREA": [ 11.04, 3.78, 44.16, 139.86 ],
-    "FP_TAP_DISTANCE": 15,
-    "GLB_RT_MAX_DIODE_INS_ITERS": 0
-  },
-
-  "pdk::sky130*": {
-    "VERILOG_DEFINES": [ "SKY130" ],
-    "STD_CELL_LIBRARY": "sky130_fd_sc_hd",
-    "_DIE_AREA": [ 0, 0, 55.76, 43.52 ],
-    "FP_TAP_DISTANCE": 14,
-    "DIODE_INSERTION_STRATEGY": 0
-  },
-
-  "pdk::gf180mcu*": {
-    "VERILOG_DEFINES": [ "GF180MCU" ],
-    "STD_CELL_LIBRARY": "gf180mcu_fd_sc_mcu7t5v0",
-    "_DIE_AREA": [ 0, 0, 91.44, 78.40 ],
-    "FP_TAP_DISTANCE": 16,
-    "DIODE_INSERTION_STRATEGY": 0
-  }
 }
