@@ -14,6 +14,7 @@
   "PDN_MULTILAYER": false,
   "PDN_ENABLE_RAILS": true,
   "PDN_ENABLE_MACROS_GRID": false,
+  "PDN_ENABLE_PINS": true,
 
   "//": "Explicit Power Pin Export - Force OpenLane to bind and cleanly expose VPWR and VGND as visible physical connection pins on the macro boundary",
   "VDD_NETS": [ "VDD" ],
@@ -229,9 +230,9 @@
   "pdk::ihp-sg13g2": {
     "VERILOG_DEFINES": [ "IHP_SG13G2" ],
     "RT_MAX_LAYER": "Metal3",
-    "_PDN_RAIL_LAYER": "Metal1",
-    "_PDN_VERTICAL_LAYER": "Metal4",
-    "_PDN_HORIZONTAL_LAYER": "Metal3",
+    "PDN_RAIL_LAYER": "Metal1",
+    "PDN_VERTICAL_LAYER": "Metal4",
+    "PDN_HORIZONTAL_LAYER": "Metal3",
     "_DIE_AREA": [ 0.00, 0.00, 63.84, 145.62 ],
     "_CORE_AREA": [ 5.76, 15.12, 58.08, 139.86 ],
     "FP_TAP_DISTANCE": 15,

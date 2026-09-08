@@ -39,8 +39,8 @@
     "STD_CELL_LIBRARY": "gf180mcu_fd_sc_mcu7t5v0"
   },
 
-  "VDD_NETS": [ "VDD" ],
-  "GND_NETS": [ "VSS" ],
+  "_VDD_NETS": [ "VDD" ],
+  "_GND_NETS": [ "VSS" ],
 
   "_FP_PDN_CORE_RING": false,
   "_FP_PDN_ENABLE_RAILS": true,
@@ -49,12 +49,15 @@
     "u_c061618g2 VDD VSS VDD VSS"
   ],
   "PDN_CORE_RING": false,
-  "PDN_ENABLE_RAILS": true,
-  "PDN_ENABLE_MACROS_GRID": false,
-  "PDN_CONNECT_MACROS_TO_GRID": false,
-  "_PDN_MACRO_CONNECTIONS": [
-    ".*u_c061618g2 VDD VSS VDD VSS"
+  "_PDN_ENABLE_RAILS": true,
+  "_PDN_ENABLE_MACROS_GRID": false,
+  "_PDN_CONNECT_MACROS_TO_GRID": false,
+  "PDN_MACRO_CONNECTIONS": [
+    "u_c061618g2 VPWR VGND VDD VSS"
   ],
+
+  "//": "Custom PDN config: SRAM power pins are on Metal4, need Metal4↔TopMetal1 connection",
+  "PDN_CFG": "dir::pdn_cfg.tcl",
 
   "_FP_PDN_MACROS": [
     "u_c061618g2"
