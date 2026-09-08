@@ -79,20 +79,6 @@
     }
   ],
   "_STA_MACRO_PRIORITIZE_NL": true,
-  "_MACROS": {
-    "c061618g2": {
-      "gds": [ "dir::../macros/gds/c061618g2.gds" ],
-      "lef": [ "dir::../macros/lef/c061618g2.lef" ],
-      "nl": [ "dir::../macros/nl/c061618g2.pnl.v" ],
-      "instances": {
-        "u_c061618g2": {
-          "location": [ 0.0, 0.0 ],
-          "orientation": "N"
-        }
-      }
-    }
-  },
-  "// Absolute Placement": "Perfect grid steps (21 * 0.48) and (3 * 3.78) that respect the guard halos",
   "MACROS": {
     "c061618g2": {
       "gds": [ "dir::../macros/gds/c061618g2.gds" ],
@@ -105,7 +91,7 @@
       },
       "instances": {
         "u_c061618g2": {
-          "location": [ 5.76, 3.78 ],
+          "location": [ 10.12, 3.78 ],
           "orientation": "N"
         }
       }
