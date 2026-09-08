@@ -38,7 +38,7 @@ define_pdn_grid \
     -voltage_domain CORE \
     -pins "Metal3"
 
-# Draw the vertical Metal3 mesh stripes and extend them to prevent trimming loops
+# Draw the vertical Metal3 mesh stripes and force them flush to the outer boundary walls
 add_pdn_stripe \
     -grid stdcell_grid \
     -layer "Metal3" \
@@ -47,15 +47,16 @@ add_pdn_stripe \
     -offset $::env(PDN_VOFFSET) \
     -spacing $::env(PDN_VSPACING) \
     -starts_with POWER \
-    -extend_to_boundary
+    -extend_to boundary
 
-# Core Standard Cell follow-rails on Metal1
+# Map the logical standard cell row rail positions using the followpins command
 if { $::env(PDN_ENABLE_RAILS) == 1 } {
     add_pdn_stripe \
         -grid stdcell_grid \
         -layer "Metal1" \
         -width 0.44 \
-        -followpins
+        -followpins \
+        -extend_to boundary
 
     add_pdn_connect \
         -grid stdcell_grid \
@@ -63,16 +64,15 @@ if { $::env(PDN_ENABLE_RAILS) == 1 } {
 }
 
 # -----------------------------------------------------------------------------
-# 3. Define the Macro Grid Workspace with explicit halos to mirror the SRAM logic
+# 3. Define the Macro Grid Workspace & Custom Cross-Layer Bridge Connections
 # -----------------------------------------------------------------------------
 define_pdn_grid \
     -macro \
     -default \
-    -name macro \
-    -starts_with POWER \
-    -halo "0.0 0.0"
+    -name macro_grid \
+    -starts_with POWER
 
-# Connect Metal4 down to your vertical Metal3 stripes natively
+# Physically bridge your local vertical Metal3 stripes up to the heavy horizontal Metal4 trunks
 add_pdn_connect \
-    -grid macro \
+    -grid macro_grid \
     -layers "Metal3 Metal4"
