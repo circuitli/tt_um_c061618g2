@@ -9,7 +9,6 @@ set row_site_object  [$first_layout_row getSite]
 set db_units         [[ord::get_db_tech] getDbUnitsPerMicron]
 
 set calculated_rail_pitch [expr {double([$row_site_object getHeight]) / $db_units}]
-set site_width            [expr {double([$row_site_object getWidth]) / $db_units}]
 
 set interleaved_pitch  [expr {$calculated_rail_pitch * 2.0}]
 
@@ -28,16 +27,16 @@ utl::report "DYNAMIC PDN CONFIG CHECK: Core left and stripe offset locked to -> 
 
 define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 
-# 1. Unified Vertical Stripes (Uses environment arguments for width, pitch, and spacing)
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $true_on_grid_offset -spacing $::env(PDN_VSPACING) -nets "$::env(GND_NET) $::env(VDD_NET)" -extend_to boundary
+# 1. Unified Vertical Stripes (Uses explicit FP_ environment variables)
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(FP_PDN_VWIDTH) -pitch $::env(FP_PDN_VPITCH) -offset $true_on_grid_offset -spacing $::env(FP_PDN_VSPACING) -nets "$::env(GND_NET) $::env(VDD_NET)" -extend_to_boundary
 
-# 2. Interleaved Horizontal Power Rails (Uses environment arguments for layer and width)
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset $interleaved_offset_gnd -nets $::env(GND_NET) -extend_to core_ring
+# 2. Interleaved Horizontal Power Rails (Uses standard PDK rail layer and width keys)
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset $interleaved_offset_gnd -nets $::env(GND_NET) -extend_to_core_ring
 
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset $interleaved_offset_vdd -nets $::env(VDD_NET) -extend_to core_ring
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset $interleaved_offset_vdd -nets $::env(VDD_NET) -extend_to_core_ring
 
-# 3. Horizontal Mesh Power Landing Pads (Uses environment arguments for horizontal network sizing)
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_HORIZONTAL_LAYER) -width $::env(PDN_HWIDTH) -pitch $::env(PDN_HPITCH) -offset $::env(PDN_HOFFSET) -spacing $::env(PDN_HSPACING) -nets "$::env(GND_NET) $::env(VDD_NET)" -extend_to boundary
+# 3. Horizontal Mesh Power Landing Pads (Uses explicit FP_ environment variables)
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_HORIZONTAL_LAYER) -width $::env(FP_PDN_HWIDTH) -pitch $::env(FP_PDN_HPITCH) -offset $::env(FP_PDN_HOFFSET) -spacing $::env(FP_PDN_HSPACING) -nets "$::env(GND_NET) $::env(VDD_NET)" -extend_to_boundary
 
 # 4. Connect the rails directly via native layer connectivity strings
 add_pdn_connect -grid stdcell_grid -layers "$::env(PDN_RAIL_LAYER) $::env(PDN_VERTICAL_LAYER)"
