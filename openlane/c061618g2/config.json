@@ -31,11 +31,10 @@
 
   "_RUN_POST_MACRO_GENERATION_PDN": true,
 
-  "//2": "Margin Shaving - Drop core halos to 0.0 inside the macro block so your cells can use the entire physical canvas",
-  "_CORE_MARGIN": 0.0,
-  "_X_MARGIN": 0.0,
-  "_Y_MARGIN": 0.0,
-  "GPL_ALLOW_OVERFLOW": true,
+  "GPL_ALLOW_OVERFLOW": false,
+  "GRT_ALLOW_CONGESTION": false,
+  "FP_WELLTAP_CELL": null,
+  "FP_ENDCAP_CELL": null,
 
   "// -------------------------------------------------------------------------": "",
   "// 1. HARD MACRO BLOCK DESIGNATION (Stops Top-Level Pad Grid Inference)": "",
@@ -45,14 +44,6 @@
   "// Sizing Strategy": "Use absolute sizing to prevent OpenLane from guessing and failing with channel errors",
   "FP_SIZING": "absolute",
 
-  "FP_WELLTAP_CELL": null,
-  "FP_ENDCAP_CELL": null,
-
-  "// -------------------------------------------------------------------------": "",
-  "// 2. ROUTING AND RESOLUTION OPTIMIZATIONS FOR ASYNCHRONOUS LOOPS": "",
-  "// -------------------------------------------------------------------------": "",
-  "GRT_ALLOW_CONGESTION": false,
-
   "// -------------------------------------------------------------------------": "",
   "// 3. TARGET ENVIRONMENT ENVELOPE SEEDING (Cross-PDK Platform Controls)": "",
   "// -------------------------------------------------------------------------": "",
@@ -60,7 +51,7 @@
     "VERILOG_DEFINES": [ "IHP_SG13G2" ],
     "FP_CORE_UTIL": 70,
     "PL_TARGET_DENSITY_PCT": 80,
-    "RT_MAX_LAYER": "Metal3",
+    "RT_MAX_LAYER": "Metal4",
     "PDN_RAIL_LAYER": "Metal1",
     "PDN_HORIZONTAL_LAYER": "Metal4",
     "PDN_VERTICAL_LAYER": "Metal3",
