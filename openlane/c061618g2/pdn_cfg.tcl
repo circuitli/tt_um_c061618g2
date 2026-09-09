@@ -39,35 +39,29 @@ set site_width            [expr {double([$row_site_object getWidth]) / $db_units
 set interleaved_pitch  [expr {$calculated_rail_pitch * 2.0}]
 set interleaved_offset [expr {$calculated_rail_pitch * 1.0}]
 
-# 2. Extract Core Left Boundary via flat row coordinates to prevent method crashes
+# 2. Extract snapped core left boundary to safely center the stripes inside the rows
 set row_origin [$first_layout_row getOrigin]
 set actual_core_left [expr {double([lindex $row_origin 0]) / $db_units}]
+set half_pitch_shift [expr {double($::env(PDN_VPITCH)) / 2.0}]
 
-# Calculate matching track offsets for the double-pitched vertical mesh stripes
-set double_v_pitch [expr {double($::env(PDN_VPITCH)) * 2.0}]
-set v_shift        [expr {double($::env(PDN_VPITCH)) * 1.0}]
+# Centers the initial vertical track loop perfectly inside the snapped boundary bounds
+set centered_v_offset [expr {$actual_core_left + $half_pitch_shift}]
 
-set vss_v_offset   [expr {$actual_core_left + ($double_v_pitch / 4.0)}]
-set vdd_v_offset   [expr {$vss_v_offset + $v_shift}]
-
-utl::report "DYNAMIC PDN CONFIG CHECK: Core left is ${actual_core_left} um"
-utl::report "DYNAMIC PDN CONFIG CHECK: VSS vertical offset -> ${vss_v_offset} um, VDD vertical offset -> ${vdd_v_offset} um"
+utl::report "DYNAMIC PDN CONFIG CHECK: Detected actual core left boundary at ${actual_core_left} um"
+utl::report "DYNAMIC PDN CONFIG CHECK: Setting verified vertical stripe offset -> ${centered_v_offset} um"
 # =============================================================================
 
 define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 
 # =============================================================================
-# FIXED: GENERATE BOTH VSS AND VDD VERTICAL METAL3 STRIPES
+# FIXED: NATIVE ALTERNATING STRIPE GENERATION USING THE -NETS APPARATUS
 # =============================================================================
-# Vertical VSS (GROUND) stripes
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $double_v_pitch -offset $vss_v_offset -starts_with GROUND -extend_to_boundary
+# 1. Single vertical command that handles BOTH power supply nets automatically
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $centered_v_offset -spacing $::env(PDN_VSPACING) -nets "$::env(GND_NET) $::env(VDD_NET)" -extend_to_boundary
 
-# Vertical VDD (POWER) stripes 
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $double_v_pitch -offset $vdd_v_offset -starts_with POWER -extend_to_boundary
-
-# Interleaved Horizontal Power Rails (Row 0 = VSS, Row 1 = VDD) Clamped to Core
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset $interleaved_offset -starts_with GROUND -extend_to_core_ring
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset 0.0 -starts_with POWER -extend_to_core_ring
+# 2. Interleaved Horizontal Power Rails (Row 0 = VSS, Row 1 = VDD) Clamped to Core Area
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset $interleaved_offset -nets $::env(GND_NET) -extend_to_core_ring
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset 0.0 -nets $::env(VDD_NET) -extend_to_core_ring
 # =============================================================================
 
 # 3. Connect the rails directly to the vertical mesh stripes
@@ -78,5 +72,4 @@ add_pdn_connect -grid stdcell_grid -layers "$::env(PDN_RAIL_LAYER) $::env(PDN_VE
 # =============================================================================
 define_pdn_grid -macro -default -name macro_grid -starts_with GROUND
 
-# Bridge your vertical Metal3 stripes up to the top-level tile design's horizontal Metal4 connection trunks
 add_pdn_connect -grid macro_grid -layers "$::env(PDN_VERTICAL_LAYER) $::env(PDN_HORIZONTAL_LAYER)"
