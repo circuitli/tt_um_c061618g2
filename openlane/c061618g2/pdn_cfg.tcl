@@ -51,13 +51,14 @@ utl::report "DYNAMIC PDN CONFIG CHECK: Detected actual core left boundary at ${a
 utl::report "DYNAMIC PDN CONFIG CHECK: Setting verified vertical stripe offset -> ${centered_v_offset} um"
 # =============================================================================
 
+# Define grid base starting with GROUND to match the row 0 substrate conditions
 define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 
 # =============================================================================
-# FIXED: NATIVE ALTERNATING STRIPE GENERATION USING THE -NETS APPARATUS
+# FIXED: ALIGNED SYMMETRICAL POWER NET MATRIX MATCHIVE COOPER STACKS
 # =============================================================================
-# 1. Single vertical command that handles BOTH power supply nets automatically
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $centered_v_offset -spacing $::env(PDN_VSPACING) -nets "$::env(GND_NET) $::env(VDD_NET)" -extend_to_boundary
+# 1. Single vertical command starting with POWER (VDD) to cross horizontal rails cleanly
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $centered_v_offset -spacing $::env(PDN_VSPACING) -nets "$::env(VDD_NET) $::env(GND_NET)" -extend_to_boundary
 
 # 2. Interleaved Horizontal Power Rails (Row 0 = VSS, Row 1 = VDD) Clamped to Core Area
 add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset $interleaved_offset -nets $::env(GND_NET) -extend_to_core_ring
