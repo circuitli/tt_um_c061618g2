@@ -2,7 +2,7 @@
 set_voltage_domain -name CORE -power $::env(VDD_NET) -ground $::env(GND_NET)
 
 # =============================================================================
-# DYNAMIC GEOMETRY MATRIX CALCULATION (100% TECHNOLOGY INDEPENDENT)
+# MATRIX CALCULATION (TRACK EDGE ALIGNED)
 # =============================================================================
 set first_layout_row [lindex [[ord::get_db_block] getRows] 0]
 set row_site_object  [$first_layout_row getSite]
@@ -11,18 +11,16 @@ set db_units         [[ord::get_db_tech] getDbUnitsPerMicron]
 set calculated_rail_pitch [expr {double([$row_site_object getHeight]) / $db_units}]
 
 set interleaved_pitch  [expr {$calculated_rail_pitch * 2.0}]
-
-# Fixes the Y-axis inversion by shifting off the 0.0 margin zone
 set interleaved_offset_gnd [expr {$calculated_rail_pitch * 1.0}]
 set interleaved_offset_vdd [expr {$calculated_rail_pitch * 2.0}]
 
 set row_origin [$first_layout_row getOrigin]
 set actual_core_left [expr {double([lindex $row_origin 0]) / $db_units}]
 
-# Removes the cell_grid_center_shift to align center-lines to the layout window
+# REMOVED THE HALF-SITE CENTER SHIFT ENTITY COMPLETELY
 set true_on_grid_offset $actual_core_left
 
-utl::report "DYNAMIC PDN CONFIG CHECK: Core left and stripe offset locked to -> ${true_on_grid_offset} um"
+utl::report "DYNAMIC PDN CONFIG CHECK: Stripe offset realigned to track edge -> ${true_on_grid_offset} um"
 # =============================================================================
 
 define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
