@@ -67,7 +67,7 @@
     "FP_PDN_VWIDTH": 0.48,
     "FP_PDN_VSPACING": 0.48,
     "FP_PDN_VOFFSET": 2.88,
-    "FP_PDN_VPITCH": 11.52,
+    "FP_PDN_VPITCH": 23.04,
 
     "PDN_EXTEND_TO": "boundary",
     "PDN_CONNECT": [
@@ -81,8 +81,8 @@
     "_LEFT_MARGIN_MULT": 6,
     "_RIGHT_MARGIN_MULT": 6,
     "DIE_AREA": [ 0.0, 0.0, 138.72, 38.24 ],
-    "_CORE_AREA": [ 5.76, 3.56, 132.96, 34.68 ],
-    "CORE_MARGIN": [ 5.76, 3.78 ],
+    "CORE_AREA": [ 5.76, 3.78, 132.48, 34.02 ],
+    "_CORE_MARGIN": [ 5.76, 3.78 ],
     "GLB_RT_MAX_DIODE_INS_ITERS": 0
   },
 
