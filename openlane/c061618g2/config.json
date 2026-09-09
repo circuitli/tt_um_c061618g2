@@ -54,17 +54,21 @@
     "PDN_RAIL_LAYER": "Metal1",
     "PDN_HORIZONTAL_LAYER": "Metal4",
     "PDN_VERTICAL_LAYER": "Metal3",
+
     "PDN_RAIL_WIDTH": 0.44,
-    "_PDN_RAIL_PITCH": 3.78,
     "PDN_RAIL_OFFSET": 0.0,
-    "PDN_HWIDTH": 1.80,
-    "PDN_HSPACING": 1.80,
-    "PDN_HOFFSET": 7.56,
-    "PDN_HPITCH": 15.12,
-    "PDN_VWIDTH": 0.46,
-    "PDN_VSPACING": 1.38,
-    "PDN_VOFFSET": 5.76,
-    "PDN_VPITCH": 11.52,
+    "_PDN_RAIL_PITCH": 3.78,
+
+    "FP_PDN_HWIDTH": 1.80,
+    "FP_PDN_HSPACING": 1.80,
+    "FP_PDN_HOFFSET": 7.56,
+    "FP_PDN_HPITCH": 15.12,
+
+    "FP_PDN_VWIDTH": 0.48,
+    "FP_PDN_VSPACING": 0.48,
+    "FP_PDN_VOFFSET": 5.76,
+    "FP_PDN_VPITCH": 11.52,
+
     "_PDN_EXTEND_TO": "boundary",
     "PDN_CONNECT": [
       [ "Metal1", "Metal3" ],
