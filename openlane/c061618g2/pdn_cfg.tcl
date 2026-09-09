@@ -38,13 +38,20 @@ utl::report "DYNAMIC PDN CONFIG CHECK: The calculated standard cell row rail pit
 set interleaved_pitch  [expr {$calculated_rail_pitch * 2.0}]
 set interleaved_offset [expr {$calculated_rail_pitch * 1.0}]
 
-# 2. Centered Vertical Stripe Offset Calculation (Prevents boundary via dropping errors)
-set centered_v_offset [expr {double($::env(PDN_VPITCH)) / 2.0}]
+# 2. Snapped Core-Relative Vertical Stripe Offset Calculation (Prevents out-of-bounds crashes)
+set core_bbox [[ord::get_db_block] getCoreBBox]
+set actual_core_left [expr {double([$core_bbox xMin]) / [[ord::get_db_tech] getDbUnitsPerMicron]}]
+set half_pitch_shift [expr {double($::env(PDN_VPITCH)) / 2.0}]
+
+# Always locks the first trunk exactly half a pitch inside the actual core bounds
+set centered_v_offset [expr {$actual_core_left + $half_pitch_shift}]
+
+utl::report "DYNAMIC PDN CONFIG CHECK: Core left is ${actual_core_left} um, locking first stripe to -> ${centered_v_offset} um"
 # =============================================================================
 
 define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 
-# 1. Vertical Metal3 power stripes using the dynamically computed centered offset value
+# 1. Vertical Metal3 power stripes using the dynamically computed core-relative offset
 add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $centered_v_offset -spacing $::env(PDN_VSPACING) -starts_with GROUND -extend_to_boundary
 
 # 2. Interleaved Horizontal Power Rails (Row 0 = VSS, Row 1 = VDD) Clamped to Core

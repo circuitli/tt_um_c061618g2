@@ -60,7 +60,7 @@
     "PDN_RAIL_OFFSET": 0.0,
     "PDN_HWIDTH": 1.80,
     "PDN_VWIDTH": 0.46,
-    "PDN_VOFFSET": 5.52,
+    "_PDN_VOFFSET": 5.52,
     "PDN_VPITCH": 5.52,
     "PDN_VSPACING": 1.38,
     "_PDN_EXTEND_TO": "boundary",
