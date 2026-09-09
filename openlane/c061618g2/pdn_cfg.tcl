@@ -39,12 +39,12 @@ set site_width            [expr {double([$row_site_object getWidth]) / $db_units
 set interleaved_pitch  [expr {$calculated_rail_pitch * 2.0}]
 set interleaved_offset [expr {$calculated_rail_pitch * 1.0}]
 
-# 2. PURE NATIVE API BOUNDARY READING (Bypasses all JSON environment lookups)
+# 2. FIXED: Authentic OpenROAD C++ Tcl Accessor Syntax for Bounding Boxes
 set core_bbox [[ord::get_db_block] getCoreBBox]
-set actual_core_left [expr {double([$core_bbox xMin]) / $db_units}]
+set actual_core_left [expr {double([odb::Rect_xMin $core_bbox]) / $db_units}]
 set half_pitch_shift [expr {double($::env(PDN_VPITCH)) / 2.0}]
 
-# Centers the first track perfectly inside the snapped boundary
+# Always locks the first trunk exactly half a pitch inside the actual core bounds
 set centered_v_offset [expr {$actual_core_left + $half_pitch_shift}]
 
 utl::report "DYNAMIC PDN CONFIG CHECK: Extracted site width is ${site_width} um"
