@@ -8,7 +8,9 @@
 
   "FP_PIN_ORDER_CFG": "dir::pin_order.cfg",
 
-  "PDN_CFG": "dir::pdn_cfg.tcl",
+  "PDN_CFG": "dir::pdn_cfg.tcl,
+
+  "TRACKS_INFO_FILE_PROCESSED": true,
 
   "FP_PDN_MULTILAYER": 1,
   "PDN_CORE_RING": false,
@@ -76,7 +78,6 @@
       [ "Metal3", "Metal4" ]
     ],
     "FP_TAP_DISTANCE": 30,
-    "_FP_IO_MIN_DISTANCE": 1.84,
     "_TOP_MARGIN_MULT": 1,
     "_BOTTOM_MARGIN_MULT": 1,
     "_LEFT_MARGIN_MULT": 6,
@@ -84,7 +85,9 @@
     "DIE_AREA": [ 0.0, 0.0, 177.12, 38.24 ],
     "CORE_AREA": [ 5.76, 3.78, 171.36, 34.02 ],
     "_CORE_MARGIN": [ 5.76, 3.78 ],
-    "GLB_RT_MAX_DIODE_INS_ITERS": 0
+    "GLB_RT_MAX_DIODE_INS_ITERS": 0,
+    "FP_IO_VEXTEND": 0,
+    "FP_IO_MIN_DISTANCE": 2.4
   },
 
   "pdk::sky130*": {
