@@ -18,8 +18,8 @@
   "_PDN_SKIPTRIM": true,
 
   "//": "Explicit Power Pin Export - Force OpenLane to bind and cleanly expose VPWR and VGND as visible physical connection pins on the macro boundary",
-  "VDD_NETS": [ "VDD" ],
-  "GND_NETS": [ "VSS" ],
+  "VDD_NETS": [ "VDD", "VPWR" ],
+  "GND_NETS": [ "VSS", "VGND" ],
 
   "RUN_SPEF_EXTRACTION": true,
   "RCX_CORNERS": [ "min", "nom", "max" ],
