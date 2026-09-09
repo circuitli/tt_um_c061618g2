@@ -56,17 +56,18 @@ utl::report "DYNAMIC PDN CONFIG CHECK: Locking VSS track to -> ${vss_on_grid_off
 define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 
 # =============================================================================
-# SYMMETRICAL PAIR MESH SEPARATION
+# UNIFIED STRIPE MESH WITH INDEPENDENT PARALLEL VIA CONNECTORS
 # =============================================================================
-# Ground (VSS) Vertical Mesh System (Sits on even columns: 6.00 um, 17.04 um...)
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $vss_on_grid_offset -nets $::env(GND_NET) -extend_to_boundary
+# 1. Single vertical trunk generation processing BOTH nets symmetrically on the grid lines
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $synchronized_v_offset -spacing $::env(PDN_VSPACING) -nets "$::env(VDD_NET) $::env(GND_NET)" -extend_to_boundary
 
-# Power (VDD) Vertical Mesh System (Sits on odd columns: 6.48 um, 17.52 um...)
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $vdd_on_grid_offset -nets $::env(VDD_NET) -extend_to_boundary
-
-# Interleaved Horizontal Power Rails (Row 0 = VSS, Row 1 = VDD) Clamped to Core
+# 2. Interleaved Horizontal Power Rails (Row 0 = VSS, Row 1 = VDD) Clamped to Core
 add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset $interleaved_offset -nets $::env(GND_NET) -extend_to_core_ring
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset 0.0 -nets $::env(VDD_NET) -extend_to_core_ring [1.2]
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset 0.0 -nets $::env(VDD_NET) -extend_to_core_ring
+
+# 3. Clean atomic via connectivity layers call utilizing explicit net isolation
+add_pdn_connect -grid stdcell_grid -layers "$::env(PDN_RAIL_LAYER) $::env(PDN_VERTICAL_LAYER)" -nets "$::env(VDD_NET)"
+add_pdn_connect -grid stdcell_grid -layers "$::env(PDN_RAIL_LAYER) $::env(PDN_VERTICAL_LAYER)" -nets "$::env(GND_NET)"
 # =============================================================================
 
 # Connect the horizontal rails directly to your vertical mesh stripes
