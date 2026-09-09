@@ -67,8 +67,8 @@
 
     "FP_PDN_VWIDTH": 0.48,
     "FP_PDN_VSPACING": 0.48,
-    "FP_PDN_VOFFSET": 5.52,
-    "FP_PDN_VPITCH": 22.08,
+    "FP_PDN_VOFFSET": 5.76,
+    "FP_PDN_VPITCH": 11.52,
 
     "PDN_EXTEND_TO": "boundary",
     "PDN_CONNECT": [
