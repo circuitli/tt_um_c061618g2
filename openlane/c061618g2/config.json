@@ -8,7 +8,7 @@
 
   "FP_PIN_ORDER_CFG": "dir::pin_order.cfg",
 
-  "_PDN_CFG": "dir::pdn_cfg.tcl",
+  "PDN_CFG": "dir::pdn_cfg.tcl",
 
   "FP_PDN_MULTILAYER": 1,
   "PDN_CORE_RING": false,
@@ -56,9 +56,9 @@
     "PDN_HORIZONTAL_LAYER": "Metal4",
     "PDN_VERTICAL_LAYER": "Metal3",
 
-    "_PDN_RAIL_WIDTH": 0.44,
+    "PDN_RAIL_WIDTH": 0.44,
     "PDN_RAIL_OFFSET": 3.78,
-    "_PDN_RAIL_PITCH": 3.78,
+    "PDN_RAIL_PITCH": 3.78,
 
     "FP_PDN_HWIDTH": 0.72,
     "FP_PDN_HSPACING": 0.72,
