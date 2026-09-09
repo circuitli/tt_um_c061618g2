@@ -26,8 +26,9 @@ foreach vdd $::env(VDD_NETS) gnd $::env(GND_NETS) {
 set_voltage_domain -name CORE -power $::env(VDD_NET) -ground $::env(GND_NET) -secondary_power $secondary
 
 # =============================================================================
-# DYNAMIC STANDARD CELL ROW PITCH EXTRACTION (100% TECHNOLOGY INDEPENDENT)
+# DYNAMIC GEOMETRY MATRIX CALCULATION (100% TECHNOLOGY INDEPENDENT)
 # =============================================================================
+# 1. Standard Cell Row Pitch Extraction straight from the loaded tech database
 set first_layout_row [lindex [[ord::get_db_block] getRows] 0]
 set row_site_object  [$first_layout_row getSite]
 set calculated_rail_pitch [expr {double([$row_site_object getHeight]) / [[ord::get_db_tech] getDbUnitsPerMicron]}]
@@ -36,22 +37,19 @@ utl::report "DYNAMIC PDN CONFIG CHECK: The calculated standard cell row rail pit
 
 set interleaved_pitch  [expr {$calculated_rail_pitch * 2.0}]
 set interleaved_offset [expr {$calculated_rail_pitch * 1.0}]
+
+# 2. Centered Vertical Stripe Offset Calculation (Prevents boundary via dropping errors)
+set centered_v_offset [expr {double($::env(PDN_VPITCH)) / 2.0}]
 # =============================================================================
 
 define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 
-# 1. Vertical Metal3 power stripes extended fully to the boundary walls
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $::env(PDN_VOFFSET) -spacing $::env(PDN_VSPACING) -starts_with GROUND -extend_to_boundary
+# 1. Vertical Metal3 power stripes using the dynamically computed centered offset value
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $centered_v_offset -spacing $::env(PDN_VSPACING) -starts_with GROUND -extend_to_boundary
 
-# =============================================================================
-# FIXED: SHIFTED OFFSETS TO MATCH CORE_AREA STARTING AT Y=3.78
-# =============================================================================
-# GROUND (VSS) -> Matches Y = 3.78, 11.34, 18.90 (Bottom rail of your core rows)
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset $interleaved_offset -starts_with GROUND -extend_to_boundary
-
-# POWER (VDD) -> Matches Y = 7.56, 15.12, 22.68 (Top rail of your first core row)
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset 0.0 -starts_with POWER -extend_to_boundary
-# =============================================================================
+# 2. Interleaved Horizontal Power Rails (Row 0 = VSS, Row 1 = VDD) Clamped to Core
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset $interleaved_offset -starts_with GROUND -extend_to_core_ring
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset 0.0 -starts_with POWER -extend_to_core_ring
 
 # 3. Connect the rails directly to the vertical mesh stripes
 add_pdn_connect -grid stdcell_grid -layers "$::env(PDN_RAIL_LAYER) $::env(PDN_VERTICAL_LAYER)"
