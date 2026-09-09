@@ -53,7 +53,7 @@
   "_PDN_ENABLE_MACROS_GRID": false,
   "_PDN_CONNECT_MACROS_TO_GRID": false,
   "PDN_MACRO_CONNECTIONS": [
-    "u_c061618g2 VPWR VGND VDD VSS"
+    "u_c061618g2 VPWR VGND VPWR VGND"
   ],
 
   "//": "Custom PDN config: SRAM power pins are on Metal4, need Metal4↔TopMetal1 connection",

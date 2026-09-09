@@ -18,8 +18,8 @@
   "PDN_VTRACK_ASSIGN": "direct",
   "_PDN_SKIPTRIM": true,
 
-  "VDD_NETS": [ "VPWR", "VDD" ],
-  "GND_NETS": [ "VGND", "VSS" ],
+  "VDD_NETS": [ "VPWR" ],
+  "GND_NETS": [ "VGND" ],
 
   "RUN_SPEF_EXTRACTION": true,
   "RCX_CORNERS": [ "min", "nom", "max" ],
