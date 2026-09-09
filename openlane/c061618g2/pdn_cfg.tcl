@@ -28,30 +28,35 @@ set_voltage_domain -name CORE -power $::env(VDD_NET) -ground $::env(GND_NET) -se
 # =============================================================================
 # DYNAMIC GEOMETRY MATRIX CALCULATION (100% TECHNOLOGY INDEPENDENT)
 # =============================================================================
-# 1. Standard Cell Row Pitch Extraction straight from the loaded tech database
+# 1. Standard Cell Site Dimension Extraction (Safe database lookups)
 set first_layout_row [lindex [[ord::get_db_block] getRows] 0]
 set row_site_object  [$first_layout_row getSite]
-set calculated_rail_pitch [expr {double([$row_site_object getHeight]) / [[ord::get_db_tech] getDbUnitsPerMicron]}]
+set db_units         [[ord::get_db_tech] getDbUnitsPerMicron]
 
-utl::report "DYNAMIC PDN CONFIG CHECK: The calculated standard cell row rail pitch is -> ${calculated_rail_pitch} um"
+set calculated_rail_pitch [expr {double([$row_site_object getHeight]) / $db_units}]
+set site_width            [expr {double([$row_site_object getWidth]) / $db_units}]
 
 set interleaved_pitch  [expr {$calculated_rail_pitch * 2.0}]
 set interleaved_offset [expr {$calculated_rail_pitch * 1.0}]
 
-# 2. Snapped Core-Relative Vertical Stripe Offset Calculation (Prevents out-of-bounds crashes)
-set core_bbox [[ord::get_db_block] getCoreBBox]
-set actual_core_left [expr {double([$core_bbox xMin]) / [[ord::get_db_tech] getDbUnitsPerMicron]}]
+# 2. PURE TCL MATHEMATICAL SNAPPING (Replicates OpenROAD C++ Snapping Exactly)
+# Grabs the requested 5.52 left coordinate directly from your JSON environment context
+set requested_core_left [lindex $::env(CORE_AREA) 0]
+
+# Forces the coordinate to ceil-snap to the next highest integer multiple of the site width (5.52 -> 5.76)
+set actual_core_left [expr {ceil($requested_core_left / $site_width) * $site_width}]
 set half_pitch_shift [expr {double($::env(PDN_VPITCH)) / 2.0}]
 
-# Always locks the first trunk exactly half a pitch inside the actual core bounds
+# Centers the first track perfectly inside the snapped boundary
 set centered_v_offset [expr {$actual_core_left + $half_pitch_shift}]
 
-utl::report "DYNAMIC PDN CONFIG CHECK: Core left is ${actual_core_left} um, locking first stripe to -> ${centered_v_offset} um"
+utl::report "DYNAMIC PDN CONFIG CHECK: Extracted site width is ${site_width} um"
+utl::report "DYNAMIC PDN CONFIG CHECK: Snapped core left to ${actual_core_left} um, setting stripe offset -> ${centered_v_offset} um"
 # =============================================================================
 
 define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 
-# 1. Vertical Metal3 power stripes using the dynamically computed core-relative offset
+# 1. Vertical Metal3 power stripes using the mathematically calculated core-relative offset
 add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $centered_v_offset -spacing $::env(PDN_VSPACING) -starts_with GROUND -extend_to_boundary
 
 # 2. Interleaved Horizontal Power Rails (Row 0 = VSS, Row 1 = VDD) Clamped to Core
