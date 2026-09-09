@@ -38,19 +38,16 @@ set site_width            [expr {double([$row_site_object getWidth]) / $db_units
 set interleaved_pitch  [expr {$calculated_rail_pitch * 2.0}]
 set interleaved_offset [expr {$calculated_rail_pitch * 1.0}]
 
-# 1. Extract the actual snapped core left boundary coordinate
+# Extract the actual snapped core left boundary coordinate
 set row_origin [$first_layout_row getOrigin]
 set actual_core_left [expr {double([lindex $row_origin 0]) / $db_units}]
 
-# 2. Snaps perfectly onto the internal cell site grid track column
+# Snaps perfectly onto the internal cell site grid track column center (6.00 um)
 set cell_grid_center_shift [expr {$site_width / 2.0}]
-set vss_on_grid_offset     [expr {$actual_core_left + $cell_grid_center_shift}]
-
-# 3. FIXED: Shift VDD by exactly ONE vertical cell track pitch to catch an odd VDD column
-set vdd_on_grid_offset     [expr {$vss_on_grid_offset + $site_width}]
+set centered_v_offset      [expr {$actual_core_left + $cell_grid_center_shift}]
 
 utl::report "DYNAMIC PDN CONFIG CHECK: Detected actual core left boundary at ${actual_core_left} um"
-utl::report "DYNAMIC PDN CONFIG CHECK: Locking VSS track to -> ${vss_on_grid_offset} um, VDD track to -> ${vdd_on_grid_offset} um"
+utl::report "DYNAMIC PDN CONFIG CHECK: Launching unified on-grid stripe layout at -> ${centered_v_offset} um"
 # =============================================================================
 
 define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
@@ -59,7 +56,7 @@ define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 # UNIFIED STRIPE MESH WITH INDEPENDENT PARALLEL VIA CONNECTORS
 # =============================================================================
 # 1. Single vertical trunk generation processing BOTH nets symmetrically on the grid lines
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $synchronized_v_offset -spacing $::env(PDN_VSPACING) -nets "$::env(VDD_NET) $::env(GND_NET)" -extend_to_boundary
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $centered_v_offset -spacing $::env(PDN_VSPACING) -nets "$::env(VDD_NET) $::env(GND_NET)" -extend_to_boundary
 
 # 2. Interleaved Horizontal Power Rails (Row 0 = VSS, Row 1 = VDD) Clamped to Core
 add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset $interleaved_offset -nets $::env(GND_NET) -extend_to_core_ring
@@ -70,8 +67,6 @@ add_pdn_connect -grid stdcell_grid -layers "$::env(PDN_RAIL_LAYER) $::env(PDN_VE
 add_pdn_connect -grid stdcell_grid -layers "$::env(PDN_RAIL_LAYER) $::env(PDN_VERTICAL_LAYER)" -nets "$::env(GND_NET)"
 # =============================================================================
 
-# Connect the horizontal rails directly to your vertical mesh stripes
-add_pdn_connect -grid stdcell_grid -layers "$::env(PDN_RAIL_LAYER) $::env(PDN_VERTICAL_LAYER)"
-
 define_pdn_grid -macro -default -name macro_grid -starts_with GROUND
-add_pdn_connect -grid macro_grid -layers "$::env(PDN_VERTICAL_LAYER) $::env(PDN_HORIZONTAL_LAYER)"
+add_pdn_connect -grid macro_grid -layers "$::env(PDN_VERTICAL_LAYER) $::env(PDN_HORIZONTAL_LAYER)" -nets "$::env(VDD_NET)"
+add_pdn_connect -grid macro_grid -layers "$::env(PDN_VERTICAL_LAYER) $::env(PDN_HORIZONTAL_LAYER)" -nets "$::env(GND_NET)"
