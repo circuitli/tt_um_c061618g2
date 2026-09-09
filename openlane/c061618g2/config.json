@@ -57,7 +57,7 @@
 
     "PDN_RAIL_WIDTH": 0.44,
     "PDN_RAIL_OFFSET": 0.0,
-    "_PDN_RAIL_PITCH": 3.78,
+    "PDN_RAIL_PITCH": 3.78,
 
     "FP_PDN_HWIDTH": 1.80,
     "FP_PDN_HSPACING": 1.80,
@@ -69,7 +69,7 @@
     "FP_PDN_VOFFSET": 2.88,
     "FP_PDN_VPITCH": 11.52,
 
-    "_PDN_EXTEND_TO": "boundary",
+    "PDN_EXTEND_TO": "boundary",
     "PDN_CONNECT": [
       [ "Metal1", "Metal3" ],
       [ "Metal3", "Metal4" ]
