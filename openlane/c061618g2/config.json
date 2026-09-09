@@ -58,8 +58,8 @@
   "// -------------------------------------------------------------------------": "",
   "pdk::ihp-sg13g2": {
     "VERILOG_DEFINES": [ "IHP_SG13G2" ],
-    "FP_CORE_UTIL": 65,
-    "PL_TARGET_DENSITY_PCT": 75,
+    "FP_CORE_UTIL": 70,
+    "PL_TARGET_DENSITY_PCT": 80,
     "RT_MAX_LAYER": "Metal3",
     "PDN_RAIL_LAYER": "Metal1",
     "PDN_HORIZONTAL_LAYER": "Metal4",
