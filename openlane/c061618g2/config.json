@@ -56,12 +56,12 @@
     "PDN_HORIZONTAL_LAYER": "Metal4",
     "PDN_VERTICAL_LAYER": "Metal3",
 
-    "PDN_RAIL_WIDTH": 0.44,
-    "PDN_RAIL_OFFSET": 0.0,
-    "PDN_RAIL_PITCH": 3.78,
+    "_PDN_RAIL_WIDTH": 0.44,
+    "_PDN_RAIL_OFFSET": 0.0,
+    "_PDN_RAIL_PITCH": 3.78,
 
-    "FP_PDN_HWIDTH": 0.90,
-    "FP_PDN_HSPACING": 0.90,
+    "FP_PDN_HWIDTH": 0.96,
+    "FP_PDN_HSPACING": 0.96,
     "FP_PDN_HOFFSET": 7.56,
     "FP_PDN_HPITCH": 7.56,
 
