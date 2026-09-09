@@ -15,6 +15,7 @@
   "PDN_ENABLE_RAILS": true,
   "PDN_ENABLE_MACROS_GRID": false,
   "PDN_ENABLE_PINS": true,
+  "PDN_VTRACK_ASSIGN": "direct",
   "_PDN_SKIPTRIM": true,
 
   "VDD_NETS": [ "VPWR", "VDD" ],
@@ -64,10 +65,10 @@
     "FP_PDN_HOFFSET": 7.56,
     "FP_PDN_HPITCH": 15.12,
 
-    "FP_PDN_VWIDTH": 0.48,
-    "FP_PDN_VSPACING": 0.48,
-    "FP_PDN_VOFFSET": 2.88,
-    "FP_PDN_VPITCH": 23.04,
+    "FP_PDN_VWIDTH": 0.96,
+    "FP_PDN_VSPACING": 0.96,
+    "FP_PDN_VOFFSET": 5.76,
+    "FP_PDN_VPITCH": 115.20,
 
     "PDN_EXTEND_TO": "boundary",
     "PDN_CONNECT": [
