@@ -10,8 +10,8 @@
 
   "_PDN_CFG": "dir::pdn_cfg.tcl",
 
+  "FP_PDN_MULTILAYER": 1,
   "PDN_CORE_RING": false,
-  "PDN_MULTILAYER": false,
   "PDN_ENABLE_RAILS": true,
   "PDN_ENABLE_MACROS_GRID": false,
   "PDN_ENABLE_PINS": true,
@@ -58,10 +58,13 @@
     "_PDN_RAIL_PITCH": 3.78,
     "PDN_RAIL_OFFSET": 0.0,
     "PDN_HWIDTH": 1.80,
+    "PDN_HSPACING": 1.80,
+    "PDN_HOFFSET": 7.56,
+    "PDN_HPITCH": 15.12,
     "PDN_VWIDTH": 0.46,
-    "_PDN_VOFFSET": 5.52,
-    "PDN_VPITCH": 11.52,
     "PDN_VSPACING": 1.38,
+    "PDN_VOFFSET": 5.76,
+    "PDN_VPITCH": 11.52,
     "_PDN_EXTEND_TO": "boundary",
     "PDN_CONNECT": [
       [ "Metal1", "Metal3" ],
@@ -245,14 +248,12 @@
   "FP_RESIZER_CELL_PADDING": 1,
 
   "//": "SKIP_STEPS - Instructs the pipeline sequencer to skip running the late-stage physical design timing repair modules entirely, preventing deferred corner errors from stopping the flow run.",
-  "_SKIP_STEPS": [
+  "__SKIP_STEPS": [
     "Resizer.DesignRepair",
     "Resizer.TimingRepair"
   ],
 
   "_SYNTH_FLAT_TOP": true,
-  "_SYNTH_NO_VOLTAGE_CELLS": true,
-  "_QUIT_ON_UNMAPPED_CELLS": false,
 
   "// -------------------------------------------------------------------------": "",
   "// Overrides the native linter options to tell Verilator to skip missing ": "",
