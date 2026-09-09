@@ -28,7 +28,6 @@ set_voltage_domain -name CORE -power $::env(VDD_NET) -ground $::env(GND_NET) -se
 # =============================================================================
 # DYNAMIC GEOMETRY MATRIX CALCULATION (100% TECHNOLOGY INDEPENDENT)
 # =============================================================================
-# 1. Standard Cell Site Dimension Extraction (Safe database lookups)
 set first_layout_row [lindex [[ord::get_db_block] getRows] 0]
 set row_site_object  [$first_layout_row getSite]
 set db_units         [[ord::get_db_tech] getDbUnitsPerMicron]
@@ -39,41 +38,37 @@ set site_width            [expr {double([$row_site_object getWidth]) / $db_units
 set interleaved_pitch  [expr {$calculated_rail_pitch * 2.0}]
 set interleaved_offset [expr {$calculated_rail_pitch * 1.0}]
 
-# 2. Extract snapped core left boundary directly from row coordinates
+# Extract snapped core left boundary directly from row coordinates
 set row_origin [$first_layout_row getOrigin]
 set actual_core_left [expr {double([lindex $row_origin 0]) / $db_units}]
 
-# 3. FIXED: Aligns the stripe centerline perfectly to the internal cell site grid track
+# Aligns the stripe centerline perfectly to the internal cell site grid track (6.00 um)
 set cell_grid_center_shift [expr {$site_width / 2.0}]
 set true_on_grid_offset    [expr {$actual_core_left + $cell_grid_center_shift}]
 
 utl::report "DYNAMIC PDN CONFIG CHECK: Detected actual core left boundary at ${actual_core_left} um"
-utl::report "DYNAMIC PDN CONFIG CHECK: Site width is ${site_width} um, centering track offset -> ${true_on_grid_offset} um"
+utl::report "DYNAMIC PDN CONFIG CHECK: Centering vertical tracks perfectly on -> ${true_on_grid_offset} um"
 # =============================================================================
 
 define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 
 # =============================================================================
-# SEPARATED EXPLICIT STRIPES LOCKING PERCECT TRACKS NATIVELY
+# EXPANDED MANUAL GRID ELIMINATING CHANEL REPAIR FAILURES
 # =============================================================================
-# Ground (VSS) Vertical Mesh System (Starts on the first site track center)
+# Ground (VSS) Vertical Mesh System (Lands exactly on the 6.00 um track center column)
 add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $true_on_grid_offset -nets $::env(GND_NET) -extend_to_boundary
 
-# Power (VDD) Vertical Mesh System (Shifted by exactly one routing grid track pitch)
+# Power (VDD) Vertical Mesh System (Shifted by exactly half a pitch interval step)
 set vdd_stripe_offset [expr {$true_on_grid_offset + (double($::env(PDN_VPITCH)) / 2.0)}]
 add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $vdd_stripe_offset -nets $::env(VDD_NET) -extend_to_boundary
 
-# Interleaved Horizontal Power Rails (Row 0 = VSS, Row 1 = VDD) Clamped to Core
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset $interleaved_offset -nets $::env(GND_NET) -extend_to_core_ring
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset 0.0 -nets $::env(VDD_NET) -extend_to_core_ring
+# Change from -extend_to_core_ring to -extend_to_boundary to avoid edge-trimming channel crashes
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset $interleaved_offset -nets $::env(GND_NET) -extend_to_boundary
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset 0.0 -nets $::env(VDD_NET) -extend_to_boundary
 # =============================================================================
 
-# 3. Connect the rails directly to the vertical mesh stripes
+# Connect the horizontal rails directly to your vertical mesh stripes
 add_pdn_connect -grid stdcell_grid -layers "$::env(PDN_RAIL_LAYER) $::env(PDN_VERTICAL_LAYER)"
 
-# =============================================================================
-# TOP-LEVEL INTEGRATION CONNECTIVITY FOR TILING IN THE CHIP BLOCK
-# =============================================================================
 define_pdn_grid -macro -default -name macro_grid -starts_with GROUND
-
 add_pdn_connect -grid macro_grid -layers "$::env(PDN_VERTICAL_LAYER) $::env(PDN_HORIZONTAL_LAYER)"
