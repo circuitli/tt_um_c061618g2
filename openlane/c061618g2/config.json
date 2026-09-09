@@ -74,6 +74,7 @@
       [ "Metal1", "Metal3" ],
       [ "Metal3", "Metal4" ]
     ],
+    "FP_TAP_DISTANCE": 30,
     "_FP_IO_MIN_DISTANCE": 1.84,
     "_TOP_MARGIN_MULT": 1,
     "_BOTTOM_MARGIN_MULT": 1,
@@ -82,7 +83,6 @@
     "DIE_AREA": [ 0.0, 0.0, 138.72, 38.24 ],
     "_CORE_AREA": [ 5.76, 3.56, 132.96, 34.68 ],
     "CORE_MARGIN": [ 5.76, 3.78 ],
-    "FP_TAP_DISTANCE": 15,
     "GLB_RT_MAX_DIODE_INS_ITERS": 0
   },
 
