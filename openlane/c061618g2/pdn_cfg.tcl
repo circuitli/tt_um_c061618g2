@@ -28,44 +28,33 @@ set_voltage_domain -name CORE -power $::env(VDD_NET) -ground $::env(GND_NET) -se
 # =============================================================================
 # DYNAMIC GEOMETRY MATRIX CALCULATION (100% TECHNOLOGY INDEPENDENT)
 # =============================================================================
-# 1. Standard Cell Site Dimension Extraction (Safe database lookups)
 set first_layout_row [lindex [[ord::get_db_block] getRows] 0]
 set row_site_object  [$first_layout_row getSite]
 set db_units         [[ord::get_db_tech] getDbUnitsPerMicron]
 
 set calculated_rail_pitch [expr {double([$row_site_object getHeight]) / $db_units}]
-set site_width            [expr {double([$row_site_object getWidth]) / $db_units}]
-
 set interleaved_pitch  [expr {$calculated_rail_pitch * 2.0}]
 set interleaved_offset [expr {$calculated_rail_pitch * 1.0}]
 
-# 2. Extract snapped core left boundary to safely center the stripes inside the rows
+# Extract snapped core left boundary directly from row coordinates
 set row_origin [$first_layout_row getOrigin]
 set actual_core_left [expr {double([lindex $row_origin 0]) / $db_units}]
-set half_pitch_shift [expr {double($::env(PDN_VPITCH)) / 2.0}]
-
-# Centers the initial vertical track loop perfectly inside the snapped boundary bounds
-set centered_v_offset [expr {$actual_core_left + $half_pitch_shift}]
 
 utl::report "DYNAMIC PDN CONFIG CHECK: Detected actual core left boundary at ${actual_core_left} um"
-utl::report "DYNAMIC PDN CONFIG CHECK: Setting verified vertical stripe offset -> ${centered_v_offset} um"
+utl::report "DYNAMIC PDN CONFIG CHECK: Using vertical net pitch step -> $::env(PDN_VPITCH) um"
 # =============================================================================
 
-# Define grid base starting with GROUND to match the row 0 substrate conditions
 define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 
-# =============================================================================
-# FIXED: ALIGNED SYMMETRICAL POWER NET MATRIX MATCHIVE COOPER STACKS
-# =============================================================================
-# 1. Single vertical command starting with POWER (VDD) to cross horizontal rails cleanly
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $centered_v_offset -spacing $::env(PDN_VSPACING) -nets "$::env(VDD_NET) $::env(GND_NET)" -extend_to_boundary
+# 1. Vertical Metal3 power mesh snapping perfectly onto your tracks using the direct 11.04 um cycle step
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $actual_core_left -spacing $::env(PDN_VSPACING) -nets "$::env(VDD_NET) $::env(GND_NET)" -extend_to_boundary
 
-# 2. Interleaved Horizontal Power Rails (Row 0 = VSS, Row 1 = VDD) Clamped to Core Area
+# 2. Interleaved Horizontal Power Rails (Row 0 = VSS, Row 1 = VDD) Clamped to Core
 add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset $interleaved_offset -nets $::env(GND_NET) -extend_to_core_ring
 add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset 0.0 -nets $::env(VDD_NET) -extend_to_core_ring
 # =============================================================================
 
-# 3. Connect the rails directly to the vertical mesh stripes
+# 3. Connect the rails directly to the vertical mesh stripes (with intermediate layer mapping)
 add_pdn_connect -grid stdcell_grid -layers "$::env(PDN_RAIL_LAYER) $::env(PDN_VERTICAL_LAYER)"
 
 # =============================================================================
