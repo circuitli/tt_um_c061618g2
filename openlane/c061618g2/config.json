@@ -49,8 +49,8 @@
   "// -------------------------------------------------------------------------": "",
   "pdk::ihp-sg13g2": {
     "VERILOG_DEFINES": [ "IHP_SG13G2" ],
-    "FP_CORE_UTIL": 70,
-    "PL_TARGET_DENSITY_PCT": 80,
+    "FP_CORE_UTIL": 75,
+    "PL_TARGET_DENSITY_PCT": 85,
     "RT_MAX_LAYER": "Metal4",
     "PDN_RAIL_LAYER": "Metal1",
     "PDN_HORIZONTAL_LAYER": "Metal4",
@@ -81,8 +81,8 @@
     "_BOTTOM_MARGIN_MULT": 1,
     "_LEFT_MARGIN_MULT": 6,
     "_RIGHT_MARGIN_MULT": 6,
-    "DIE_AREA": [ 0.0, 0.0, 138.72, 38.24 ],
-    "CORE_AREA": [ 5.76, 3.78, 132.48, 34.02 ],
+    "DIE_AREA": [ 0.0, 0.0, 171.36, 38.24 ],
+    "CORE_AREA": [ 5.76, 3.78, 165.60, 34.02 ],
     "_CORE_MARGIN": [ 5.76, 3.78 ],
     "GLB_RT_MAX_DIODE_INS_ITERS": 0
   },
