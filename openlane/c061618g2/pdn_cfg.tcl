@@ -39,19 +39,17 @@ set site_width            [expr {double([$row_site_object getWidth]) / $db_units
 set interleaved_pitch  [expr {$calculated_rail_pitch * 2.0}]
 set interleaved_offset [expr {$calculated_rail_pitch * 1.0}]
 
-# 2. PURE TCL MATHEMATICAL SNAPPING (Replicates OpenROAD C++ Snapping Exactly)
-# Grabs the requested 5.52 left coordinate directly from your JSON environment context
-set requested_core_left [lindex $::env(CORE_AREA) 0]
-
-# Forces the coordinate to ceil-snap to the next highest integer multiple of the site width (5.52 -> 5.76)
-set actual_core_left [expr {ceil($requested_core_left / $site_width) * $site_width}]
+# 2. PURE NATIVE API BOUNDARY READING (Bypasses all JSON environment lookups)
+set core_bbox [[ord::get_db_block] getCoreBBox]
+set actual_core_left [expr {double([$core_bbox xMin]) / $db_units}]
 set half_pitch_shift [expr {double($::env(PDN_VPITCH)) / 2.0}]
 
 # Centers the first track perfectly inside the snapped boundary
 set centered_v_offset [expr {$actual_core_left + $half_pitch_shift}]
 
 utl::report "DYNAMIC PDN CONFIG CHECK: Extracted site width is ${site_width} um"
-utl::report "DYNAMIC PDN CONFIG CHECK: Snapped core left to ${actual_core_left} um, setting stripe offset -> ${centered_v_offset} um"
+utl::report "DYNAMIC PDN CONFIG CHECK: Detected actual core left boundary at ${actual_core_left} um"
+utl::report "DYNAMIC PDN CONFIG CHECK: Setting vertical stripe offset -> ${centered_v_offset} um"
 # =============================================================================
 
 define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
