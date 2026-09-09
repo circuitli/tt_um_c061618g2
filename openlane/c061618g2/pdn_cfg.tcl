@@ -46,17 +46,20 @@ set actual_core_left [expr {double([lindex $row_origin 0]) / $db_units}]
 set cell_grid_center_shift [expr {$site_width / 2.0}]
 set true_on_grid_offset    [expr {$actual_core_left + $cell_grid_center_shift}]
 
-utl::report "DYNAMIC PDN CONFIG CHECK: Core left is ${actual_core_left} um"
-utl::report "DYNAMIC PDN CONFIG CHECK: Building unified track mesh at -> ${true_on_grid_offset} um using pitch $::env(PDN_VPITCH) um"
+# FIXED: Automatically compute the multi-net group cycle pitch by multiplying the 5.52 env value by 2.0
+set pattern_group_pitch [expr {double($::env(PDN_VPITCH)) * 2.0}]
+
+utl::report "DYNAMIC PDN CONFIG CHECK: Detected base pitch variable at $::env(PDN_VPITCH) um"
+utl::report "DYNAMIC PDN CONFIG CHECK: Calculated multi-net cycle pitch -> ${pattern_group_pitch} um"
 # =============================================================================
 
 define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 
 # =============================================================================
-# UNIFIED GEOMETRIC PAIR STRIPE ARRAYS (NO HARDCODED PARAMETERS)
+# UNIFIED GEOMETRIC PAIR STRIPE ARRAYS (AUTO-SCALED INTERLEAVING)
 # =============================================================================
-# 1. Single vertical command alternating nets natively across the whole width using the live env pitch parameter
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $true_on_grid_offset -spacing $::env(PDN_VSPACING) -nets "$::env(GND_NET) $::env(VDD_NET)" -extend_to_boundary
+# 1. Single vertical command alternating nets natively across the whole width using the dynamically scaled pitch value
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(PDN_VWIDTH) -pitch $pattern_group_pitch -offset $true_on_grid_offset -spacing $::env(PDN_VSPACING) -nets "$::env(GND_NET) $::env(VDD_NET)" -extend_to_boundary
 
 # 2. Interleaved Horizontal Power Rails Clamped to Core Bounding Box bounds
 add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset $interleaved_offset -nets $::env(GND_NET) -extend_to_core_ring
