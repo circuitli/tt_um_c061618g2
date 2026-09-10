@@ -65,12 +65,12 @@
 
     "FP_PDN_HWIDTH": 0.72,
     "FP_PDN_HSPACING": 0.72,
-    "FP_PDN_HOFFSET": 7.56,
+    "FP_PDN_HOFFSET": 0.0,
     "FP_PDN_HPITCH": 7.56,
 
     "FP_PDN_VWIDTH": 0.48,
     "FP_PDN_VSPACING": 0.48,
-    "FP_PDN_VOFFSET": 5.76,
+    "FP_PDN_VOFFSET": 0.0,
     "FP_PDN_VPITCH": 11.04,
 
     "PDN_EXTEND_TO": "core_ring",
