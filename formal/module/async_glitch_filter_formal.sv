@@ -19,6 +19,11 @@
  
 `include "src/module/async_glitch_filter.sv"
 
+`include "formal/tech/and2_1_formal.sv"
+`include "formal/tech/inv_1_formal.sv"
+`include "formal/tech/buf_4_formal.sv"
+`include "formal/cell/async_latch_cell_formal.sv"
+
 `default_nettype none
 
 // =============================================================================

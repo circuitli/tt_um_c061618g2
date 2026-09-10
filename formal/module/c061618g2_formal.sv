@@ -18,6 +18,9 @@
 `define C061618G2_FORMAL_SV
 
 `include "src/module/c061618g2.sv"
+
+`include "formal/core/mmu_core_formal.sv"
+
 `default_nettype none
 
 module c061618g2_formal (
@@ -66,11 +69,6 @@ module c061618g2_formal (
         asm_core_clean_uio_oe: assert (uio_oe == 8'b00100000 || uio_oe == 8'b00000000);
 
     end
-
-endmodule
-
-`default_nettype wire
-Use code with caution.Now that the formal module perfectly mirrors the corrected hardware state, run SymbiYosys once more to verify everything compiles cleanly.Let me know if both Cocotb and SBY are completely green and PASSED!
 
 endmodule
 

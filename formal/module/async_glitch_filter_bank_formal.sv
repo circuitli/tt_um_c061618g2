@@ -19,6 +19,8 @@
 
 `include "src/module/async_glitch_filter_bank.sv"
 
+`include "formal/module/async_glitch_filter_formal.sv"
+
 `default_nettype none
 
 // =============================================================================

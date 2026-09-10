@@ -19,6 +19,9 @@
 
 `include "src/core/mmu_core.sv"
 
+`include "formal/defs/mmu_defs_formal.sv"
+`include "formal/module/async_glitch_filter_bank_formal.sv"
+
 `default_nettype none
 
 module mmu_core_formal #(
