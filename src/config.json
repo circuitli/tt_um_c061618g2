@@ -108,6 +108,8 @@
   "//": "W_VERILOG_OPTIONS - Passing -noattr strips backslashes, while -nodec forces Yosys to expand vector array ports into independent, flat wire nodes. This stops Workcraft from crashing without altering your hierarchical module structures",
   "W_VERILOG_OPTIONS": "-noattr -nodec",
 
+  "SYNTH_READ_SYSTEMVERILOG": true,
+
   "//": "SYNTH_STRATEGY - changing this option over to an area or raw delay strategy rewrites ABC's optimization profile, completely stripping out the crashing sequential timing sub-commands (like scorr)!",
   "SYNTH_STRATEGY": "AREA 0",
 
