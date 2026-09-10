@@ -12,8 +12,8 @@
   "//": "Here are some of the variables you may want to change:",
 
   "DESIGN_NAME": "tt_um_c061618g2",
-  "VERBOSE": 2,
-  "LOG_LEVEL": "DEBUG",
+  "_VERBOSE": 2,
+  "_LOG_LEVEL": "DEBUG",
 
   "// -------------------------------------------------------------------------": "",
   "// GLOBAL EXTRA MACRO FILE INTEGRATION (Evaluated Once Globally)": "",
@@ -48,7 +48,7 @@
   "_FP_PDN_MACRO_HOOKS": [
     "u_c061618g2 VDD VSS VDD VSS"
   ],
-  "PDN_CORE_RING": false,
+  "_PDN_CORE_RING": false,
   "_PDN_ENABLE_RAILS": true,
   "_PDN_ENABLE_MACROS_GRID": false,
   "_PDN_CONNECT_MACROS_TO_GRID": false,
@@ -63,14 +63,14 @@
     "u_c061618g2"
   ],
 
-  "QUIT_ON_PDN_VIOLATIONS": true,
-  "FP_PDN_CHECK_NODES": true,
+  "_QUIT_ON_PDN_VIOLATIONS": true,
+  "_FP_PDN_CHECK_NODES": true,
 
   "// Spacing Blocks": "X aligns to 21 * 0.48 = 10.08, Y aligns to 3 * 3.78 = 11.34 to prevent off-grid row clipping",
   "_PL_MACRO_HALO": "10.08 11.34",
   "_PL_MACRO_CHANNEL": "10.08 11.34",
-  "FP_MACRO_HORIZONTAL_HALO": 5.52,
-  "FP_MACRO_VERTICAL_HALO": 3.78,
+  "_FP_MACRO_HORIZONTAL_HALO": 5.52,
+  "_FP_MACRO_VERTICAL_HALO": 3.78,
 
   "_PLACEMENT_CONSTRAINTS": [
     {
@@ -224,7 +224,7 @@
 
   "_FP_DEF_TEMPLATE": "dir::src/tt_um_c061618g2.def",
 
-  "FP_REGIONS_EXCLUSIVE": true,
+  "_FP_REGIONS_EXCLUSIVE": true,
   "// === Physical Grid Compliant Subregion Constraints ===": "",
   "_FP_REGIONS": {
     "u_c061618g2": [ 10.08, 10.08, 63.84, 75.60 ]
