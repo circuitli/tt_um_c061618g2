@@ -45,7 +45,7 @@ verilog_defaults -add -I.
 # This forces Yosys to see real internal assign structures, 
 # completely removing the "is a blackbox/whitebox module" compilation error.
 # -------------------------------------------------------------------------
-read_verilog -sv lib/cells_formal.sv
+read -sv lib/cells_formal.sv
 
 # 1. Read standard design RTL files normally as SystemVerilog
 read_verilog -formal tech/and2_1.v                          
