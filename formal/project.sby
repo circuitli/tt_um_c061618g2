@@ -63,17 +63,17 @@ read -sv module/c061618g2.sv
 read -formal project.v
 
 # 2. Read all three exhaustive formal verification layers
-read -formal tech/and2_1_formal.sv                         
-read -formal tech/inv_1_formal.sv                       
-read -formal tech/buf_4_formal.sv 
-read -formal defs/mmu_defs_formal.sv
-read -formal core/mmu_core_formal.sv
-#read -formal cell/safe_async_mux_formal.sv
-read -formal cell/async_latch_cell_formal.sv
-read -formal module/async_glitch_filter_formal.sv
-read -formal module/async_glitch_filter_bank_formal.sv
-#read -formal module/c061618g2_input_shield_formal.sv
-read -formal project_formal.sv
+read -sv tech/and2_1_formal.sv                         
+read -sv tech/inv_1_formal.sv                       
+read -sv tech/buf_4_formal.sv 
+read -sv defs/mmu_defs_formal.sv
+read -sv core/mmu_core_formal.sv
+#read -sv cell/safe_async_mux_formal.sv
+read -sv cell/async_latch_cell_formal.sv
+read -sv module/async_glitch_filter_formal.sv
+read -sv module/async_glitch_filter_bank_formal.sv
+#read -sv module/c061618g2_input_shield_formal.sv
+read -sv project_formal.sv
 
 # Standard, clean, un-hacked macro elaboration pass
 #prep -top tt_um_c061618g2

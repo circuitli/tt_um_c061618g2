@@ -35,4 +35,4 @@ __pycache__/
 formal/sg13g2_stdcell.v
 
 # SymbiYosys Proof Output Directory
-formal/tt_um_c061618g2/
+formal/project/
