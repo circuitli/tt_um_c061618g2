@@ -94,7 +94,7 @@ read -sv module/async_glitch_filter_bank.sv
 #read -sv module/c061618g2_input_shield.sv
 read -sv module/c061618g2.sv
 
-read_verilog -formal project.v
+read_verilog -formal project.sv
 
 # 2. Read all three exhaustive formal verification layers
 read -sv techmap/and2_1_formal.sv                         
@@ -262,7 +262,7 @@ module/async_glitch_filter.sv          ../src/module/async_glitch_filter.sv
 module/async_glitch_filter_bank.sv     ../src/module/async_glitch_filter_bank.sv
 #module/c061618g2_input_shield.sv       ../src/module/c061618g2_input_shield.sv
 module/c061618g2.sv                    ../src/module/c061618g2.sv
-project.v                              ../src/project.v
+project.sv                              ../src/project.sv
 src/techmap/and2_1.v                      ../src/techmap/and2_1.v
 src/techmap/inv_1.v                       ../src/techmap/inv_1.v
 src/techmap/buf_4.v                       ../src/techmap/buf_4.v
