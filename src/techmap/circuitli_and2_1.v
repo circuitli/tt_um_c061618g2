@@ -14,36 +14,36 @@
  * limitations under the License.
  */
  
-`ifndef circuitli_and2_1_V
-`define circuitli_and2_1_V
+`ifndef AND2_1_V
+`define AND2_1_V
 `default_nettype none
 
 // =========================================================================
 // UNIVERSAL MULTI-PDK 2-INPUT AND GATE CELL ABSTRACTION LAYER (Drive 1)
 // =========================================================================
 
-module circuitli_and2_1 (
+module and2_1 (
     input wire A,   // Input operand A
     input wire B,   // Input operand B
     output wire X   // Output (A AND B)
 );
 `ifdef IHP_SG13G2
-    // IHP SG13G2 Open-Source 130nm circuitli_and2_1
-    sg13g2_circuitli_and2_1 u_cell (
+    // IHP SG13G2 Open-Source 130nm AND2_1
+    sg13g2_and2_1 u_cell (
         .A(A), 
         .B(B), 
         .X(X)
     );
 `elsif SKY130
-    // SkyWater Sky130 High-Density circuitli_and2_1
-    sky130_fd_sc_hd__circuitli_and2_1 u_cell (
+    // SkyWater Sky130 High-Density AND2_1
+    sky130_fd_sc_hd__and2_1 u_cell (
         .A(A), 
         .B(B), 
         .X(X) // Maps SkyWater's internal X output port to top level Y
     );
 `elsif GF180MCU
-    // GlobalFoundries GF180MCU 7-track 5V circuitli_and2_1
-    gf180mcu_fd_sc_mcu7t5v0__circuitli_and2_1 u_cell (
+    // GlobalFoundries GF180MCU 7-track 5V AND2_1
+    gf180mcu_fd_sc_mcu7t5v0__and2_1 u_cell (
         .I0(A), // GF naming convention uses I0/I1 for logic gate inputs
         .I1(B), 
         .Z(X)   // Maps GF's internal Z output port to top level Y

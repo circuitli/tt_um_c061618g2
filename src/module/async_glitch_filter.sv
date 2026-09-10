@@ -17,7 +17,7 @@
 `ifndef ASYNC_GLITCH_FILTER_SV
 `define ASYNC_GLITCH_FILTER_SV
 
-`include "src/techmap/circuitli_and2_1.v"
+`include "src/techmap/and2_1.v"
 `include "src/techmap/inv_1.v"
 `include "src/techmap/buf_4.v"
 `include "src/cell/async_latch_cell.v"
@@ -38,7 +38,7 @@ module async_glitch_filter #(
     // INPUT AND RESET GATE
     // -------------------------------------------------------------------------
     (* keep = "true" *)
-    circuitli_and2_1 u_input_reset_gate (
+    and2_1 u_input_reset_gate (
         .A (async_in),
         .B (rst_n),
         .X (delay_chain[0])

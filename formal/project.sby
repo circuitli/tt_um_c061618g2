@@ -49,8 +49,8 @@ verilog_defaults -add -I.
 read -sv -formal lib/cells_formal.sv
 
 # 1. Read standard design RTL files normally as SystemVerilog
-#read_verilog -D$ENV(PDK_DEFINE) techmap/circuitli_and2_1.v       
-#read -sv -D$ENV(PDK_DEFINE) techmap/circuitli_and2_1.v techmap/circuitli_and2_1_formal.sv
+#read_verilog -D$ENV(PDK_DEFINE) techmap/and2_1.v       
+#read -sv -D$ENV(PDK_DEFINE) techmap/and2_1.v techmap/and2_1_formal.sv
 #read_verilog -D$ENV(PDK_DEFINE) techmap/inv_1.v                        
 #read_verilog -D$ENV(PDK_DEFINE) techmap/buf_4.v                          
 #read -sv defs/mmu_defs.sv
@@ -65,7 +65,7 @@ read -sv -formal lib/cells_formal.sv
 #read_verilog project.sv
 
 # 2. Read all three exhaustive formal verification layers
-#read -sv -formal -D$ENV(PDK_DEFINE) techmap/circuitli_and2_1_formal.sv                         
+#read -sv -formal -D$ENV(PDK_DEFINE) techmap/and2_1_formal.sv                         
 #read -sv -formal -D$ENV(PDK_DEFINE) techmap/inv_1_formal.sv                       
 #read -sv -formal -D$ENV(PDK_DEFINE) techmap/buf_4_formal.sv 
 #read -sv -formal -D$ENV(PDK_DEFINE) defs/mmu_defs_formal.sv
@@ -216,7 +216,7 @@ check
 [files]
 # Target Destination Path              # Local Source Repository Path
 #sg13g2_stdcell_clean.v                 
-techmap/circuitli_and2_1.v                          ../src/techmap/circuitli_and2_1.v
+techmap/and2_1.v                          ../src/techmap/and2_1.v
 techmap/inv_1.v                           ../src/techmap/inv_1.v
 techmap/buf_4.v                           ../src/techmap/buf_4.v
 cell/safe_async_mux.sv                 ../src/cell/safe_async_mux.sv
@@ -228,7 +228,7 @@ module/async_glitch_filter_bank.sv     ../src/module/async_glitch_filter_bank.sv
 #module/c061618g2_input_shield.sv       ../src/module/c061618g2_input_shield.sv
 module/c061618g2.sv                    ../src/module/c061618g2.sv
 project.sv                              ../src/project.sv
-src/techmap/circuitli_and2_1.v                      ../src/techmap/circuitli_and2_1.v
+src/techmap/and2_1.v                      ../src/techmap/and2_1.v
 src/techmap/inv_1.v                       ../src/techmap/inv_1.v
 src/techmap/buf_4.v                       ../src/techmap/buf_4.v
 src/cell/async_latch_cell.v            ../src/cell/async_latch_cell.v
@@ -241,7 +241,7 @@ src/module/async_glitch_filter_bank.sv ../src/module/async_glitch_filter_bank.sv
 src/module/c061618g2.sv                ../src/module/c061618g2.sv
 src/project.sv                         ../src/project.sv
 lib/cells_formal.sv                        lib/cells_formal.sv
-techmap/circuitli_and2_1_formal.sv                      techmap/circuitli_and2_1_formal.sv 
+techmap/and2_1_formal.sv                      techmap/and2_1_formal.sv 
 techmap/inv_1_formal.sv                       techmap/inv_1_formal.sv 
 techmap/buf_4_formal.sv                       techmap/buf_4_formal.sv
 cell/safe_async_mux_formal.sv              cell/safe_async_mux_formal.sv
@@ -254,7 +254,7 @@ module/async_glitch_filter_bank_formal.sv  module/async_glitch_filter_bank_forma
 module/c061618g2_formal.sv                 module/c061618g2_formal.sv
 project_formal.sv                          project_formal.sv
 formal/lib/cells_formal.sv                        lib/cells_formal.sv
-formal/techmap/circuitli_and2_1_formal.sv                      techmap/circuitli_and2_1_formal.sv 
+formal/techmap/and2_1_formal.sv                      techmap/and2_1_formal.sv 
 formal/techmap/inv_1_formal.sv                       techmap/inv_1_formal.sv 
 formal/techmap/buf_4_formal.sv                       techmap/buf_4_formal.sv 
 formal/cell/safe_async_mux_formal.sv              cell/safe_async_mux_formal.sv
