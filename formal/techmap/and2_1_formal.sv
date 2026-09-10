@@ -16,9 +16,10 @@
 
 `ifndef AND2_1_FORMAL_SV
 `define AND2_1_FORMAL_SV
-`default_nettype none
 
 `include "src/techmap/and2_1.v"
+
+`default_nettype none
 
 module and2_1_formal (
     input wire A,
