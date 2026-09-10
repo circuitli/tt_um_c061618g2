@@ -43,7 +43,7 @@ add_pdn_stripe -grid stdcell_grid \
 
 # 2. Interleaved Horizontal Power Rails (Metal1) -> USING NATIVE FOLLOWPINS
 add_pdn_stripe -grid stdcell_grid \
-               -layer $::env(PDN_RAIL_LAYER) 
+               -layer $::env(PDN_RAIL_LAYER) \
                -width $native_pdk_width \
                -followpins \
                -nets "$::env(GND_NET) $::env(VDD_NET)" \
