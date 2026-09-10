@@ -37,7 +37,7 @@ add_pdn_stripe -grid stdcell_grid \
                -pitch $interleaved_pitch \
                -offset $interleaved_offset_gnd \
                -nets $::env(GND_NET) \
-               -extend_to_boundary
+               -extend_to_core_ring
 
 add_pdn_stripe -grid stdcell_grid \
                -layer $::env(PDN_RAIL_LAYER) \
@@ -45,7 +45,7 @@ add_pdn_stripe -grid stdcell_grid \
                -pitch $interleaved_pitch \
                -offset $interleaved_offset_vdd \
                -nets $::env(VDD_NET) \
-               -extend_to_boundary
+               -extend_to_core_ring
 
 # 3. Horizontal Mesh Power Landing Pads (Metal4) -> EXTEND_TO_BOUNDARY
 add_pdn_stripe -grid stdcell_grid \
