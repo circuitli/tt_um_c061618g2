@@ -8,7 +8,7 @@
 
   "FP_PIN_ORDER_CFG": "dir::pin_order.cfg",
 
-  "_PDN_CFG": "dir::pdn_cfg.tcl",
+  "PDN_CFG": "dir::pdn_cfg.tcl",
 
   "_RUN_IR_DROP_REPORT": false,
   "_FP_PDN_CHECK_NODES": 0,
