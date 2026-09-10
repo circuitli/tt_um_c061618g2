@@ -8,6 +8,15 @@ set db_block         [ord::get_db_block]
 set db_tech          [ord::get_db_tech]
 set db_units         [$db_tech getDbUnitsPerMicron]
 
+# 1. Extract the physical hard boundaries of your macro canvas
+set core_box  [$db_block getDieArea]
+set core_left [expr {double([$core_box xMin]) / $db_units}]
+
+# 2. DYNAMICALLY QUERY THE PDK TECH LAYER FOR THE REAL COPRER WIDTH
+# This pulls the true manufacturing physical width rule straight from the tech database
+set rail_layer_obj [$db_tech findLayer $::env(PDN_RAIL_LAYER)]
+set native_pdk_width [expr {double([$rail_layer_obj getWidth]) / $db_units}]
+
 # Dynamically extract standard cell row spacing directly from the live layout
 set first_layout_row [lindex [$db_block getRows] 0]
 set row_site_object  [$first_layout_row getSite]
@@ -35,6 +44,7 @@ add_pdn_stripe -grid stdcell_grid \
 # 2. Horizontal Power Rails (Metal1) 
 add_pdn_stripe -grid stdcell_grid \
                -layer $::env(PDN_RAIL_LAYER) \
+               -width $native_pdk_width \
                -followpins \
                -nets "$::env(GND_NET) $::env(VDD_NET)"
 
