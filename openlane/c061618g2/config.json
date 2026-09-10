@@ -14,7 +14,9 @@
   "_FP_PDN_CHECK_NODES": 0,
   "_PDN_CHECK_NODES": false,
 
+  "FILL_INSERTION": "tru",
   "FP_PDN_MULTILAYER": 1,
+  "PDN_MULTILAYER": 1,
   "PDN_CORE_RING": true,
   "PDN_ENABLE_RAILS": true,
   "PDN_ENABLE_MACROS_GRID": false,
@@ -79,7 +81,9 @@
       [ "Metal1", "Metal3" ],
       [ "Metal3", "Metal4" ]
     ],
-    "FP_TAP_DISTANCE": 30,
+    "FP_TAPCELL_DIST": 55.2,
+    "TAP_CELL_NAME": "sg13g2_tapcell",
+    "FP_WELLTAP_CELL": "sg13g2_tapcell",
     "_TOP_MARGIN_MULT": 1,
     "_BOTTOM_MARGIN_MULT": 1,
     "_LEFT_MARGIN_MULT": 6,
