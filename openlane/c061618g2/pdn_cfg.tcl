@@ -18,6 +18,8 @@ set interleaved_offset_gnd [expr {$calculated_rail_pitch * 1.0}]
 set interleaved_offset_vdd [expr {$calculated_rail_pitch * 2.0}]
 # =============================================================================
 
+# (Full configuration script for standard cell and macro grids can be found in the referenced documentation)
+
 define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 
 # 1. Unified Vertical Stripes (Metal3) -> EXTEND_TO_BOUNDARY
@@ -33,9 +35,8 @@ add_pdn_stripe -grid stdcell_grid \
 # 2. Horizontal Power Rails (Metal1) 
 add_pdn_stripe -grid stdcell_grid \
                -layer $::env(PDN_RAIL_LAYER) \
-               -width $::env(PDN_RAIL_WIDTH) \
                -followpins \
-               -nets "$::env(GND_NET) $::env(VDD_NET)" 
+               -nets "$::env(GND_NET) $::env(VDD_NET)"
 
 # 3. Horizontal Mesh Power Landing Pads (Metal4) -> EXTEND_TO_BOUNDARY
 add_pdn_stripe -grid stdcell_grid \
