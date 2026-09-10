@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-`ifndef AND2_1_FORMAL_SV
-`define AND2_1_FORMAL_SV
+`ifndef circuitli_and2_1_FORMAL_SV
+`define circuitli_and2_1_FORMAL_SV
 
-`include "src/techmap/and2_1.v"
+`include "src/techmap/circuitli_and2_1.v"
 
 `default_nettype none
 
-module and2_1_formal (
+module circuitli_and2_1_formal (
     input wire A,
     input wire B,
     input wire X
@@ -46,7 +46,7 @@ endmodule
 // =========================================================================
 // BIND STATEMENT
 // =========================================================================
-bind and2_1 and2_1_formal i_and2_1_formal (
+bind circuitli_and2_1 circuitli_and2_1_formal i_circuitli_and2_1_formal (
     .A(A),
     .B(B),
     .X(X)

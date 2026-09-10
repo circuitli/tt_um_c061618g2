@@ -20,7 +20,7 @@
 // to prevent the SMT2 backend tracker from creating a simplemap self-loop
 // =========================================================================
 
-module sg13g2_and2_1 (
+module sg13g2_circuitli_and2_1 (
     input  wire A,
     input  wire B,
     output wire X

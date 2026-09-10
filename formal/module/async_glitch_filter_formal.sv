@@ -19,7 +19,7 @@
  
 `include "src/module/async_glitch_filter.sv"
 
-`include "formal/techmap/and2_1_formal.sv"
+`include "formal/techmap/circuitli_and2_1_formal.sv"
 `include "formal/techmap/inv_1_formal.sv"
 `include "formal/techmap/buf_4_formal.sv"
 `include "formal/cell/async_latch_cell_formal.sv"
