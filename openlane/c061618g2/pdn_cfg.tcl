@@ -33,6 +33,7 @@ add_pdn_stripe -grid stdcell_grid \
 # 2. Horizontal Power Rails (Metal1) 
 add_pdn_stripe -grid stdcell_grid \
                -layer $::env(PDN_RAIL_LAYER) \
+               -width $::env(PDN_RAIL_WIDTH) \
                -followpins \
                -nets "$::env(GND_NET) $::env(VDD_NET)" 
 
