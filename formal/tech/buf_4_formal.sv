@@ -25,12 +25,12 @@ module buf_4_formal (
 );
 
     // =========================================================================
-    // UNCLOCKED COMBINATIONAL FORMAL PROPERTIES
+    // STATIC UNCLOCKED COMBINATIONAL PROPERTIES
     // =========================================================================
-    always_comb begin
-        // Property 1: Output X must strictly track input A immediately
-        assert_buffer_tracking: assert (X == A);
-    end
+    
+    // Property 1: Output X must strictly track input A immediately
+    // Unclocked concurrent assertion—proven instantly by the formal SAT solver
+    assert_buffer_tracking: assert property (X == A);
 
 endmodule
 

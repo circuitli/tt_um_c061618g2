@@ -24,23 +24,18 @@ module and2_1_formal (
     input wire X
 );
 
-    // =========================================================================
-    // UNCLOCKED COMBINATIONAL FORMAL PROPERTIES
-    // =========================================================================
-    always_comb begin
-        // Property 1: If either input is low, output Y must be low
-        if (!A || !B) begin
-            assert_low_dominance: assert (X == 1'b0);
-        end
+    // ======================================================================
+    // STATIC UNCLOCKED COMBINATIONAL PROPERTIES
+    // ======================================================================
+    
+    // Property 1: Safety logic boolean equivalence mapping
+    assert_boolean_equivalence: assert property (X == (A & B));
 
-        // Property 2: If both inputs are high, output Y must be high
-        if (A && B) begin
-            assert_high_condition: assert (X == 1'b1);
-        end
+    // Property 2: Low Dominance expressed via Boolean Or (!P || Q)
+    assert_low_dominance:    assert property ((A && B) || (X == 1'b0));
 
-        // Property 3: Safety logic equivalence equation mapping
-        assert_boolean_equivalence: assert (X == (A & B));
-    end
+    // Property 3: High Condition expressed via Boolean Or (!P || Q)
+    assert_high_condition:   assert property (!(A && B) || (X == 1'b1));
 
 endmodule
 

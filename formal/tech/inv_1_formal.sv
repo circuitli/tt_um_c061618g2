@@ -24,16 +24,16 @@ module inv_1_formal (
     input wire Y
 );
 
-    // =========================================================================
-    // UNCLOCKED COMBINATIONAL FORMAL PROPERTIES
-    // =========================================================================
-    always_comb begin
-        // Property 1: The output Y must never equal the input A
-        assert_inversion_state: assert (Y != A);
+    // ======================================================================
+    // STATIC UNCLOCKED COMBINATIONAL PROPERTIES
+    // ======================================================================
+    
+    // Property 1: The output Y must never equal the input A
+    assert_inversion_state: assert property (Y != A);
 
-        // Property 2: Strictly functional boolean inversion tracking
-        assert_boolean_logic: assert (Y == ~A);
-    end
+    // Property 2: Strictly functional boolean inversion tracking
+    assert_boolean_logic:   assert property (Y == ~A);
+
 
 endmodule
 

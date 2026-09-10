@@ -26,22 +26,21 @@ module mux2_1_formal (
 );
 
     // =========================================================================
-    // UNCLOCKED COMBINATIONAL FORMAL PROPERTIES
+    // STATIC UNCLOCKED COMBINATIONAL PROPERTIES
     // =========================================================================
-    always_comb begin
-        // Property 1: When select line S is low, output Y must match input A0
-        if (!S) begin
-            assert_select_a0: assert (Y == A0);
-        end
 
-        // Property 2: When select line S is high, output Y must match input A1
-        if (S) begin
-            assert_select_a1: assert (Y == A1);
-        end
+    // Property 1: When select line S is low, output Y must match input A0
+    // Rewritten from: (!S) -> (Y == A0) 
+    // Using Boolean identity: (!P || Q) => S || (Y == A0)
+    assert_select_a0:           assert property (S || (Y == A0));
 
-        // Property 3: Safety logic equivalence equation mapping
-        assert_boolean_equivalence: assert (Y == (S ? A1 : A0));
-    end
+    // Property 2: When select line S is high, output Y must match input A1
+    // Rewritten from: (S) -> (Y == A1)
+    // Using Boolean identity: (!P || Q) => !S || (Y == A1)
+    assert_select_a1:           assert property (!S || (Y == A1));
+
+    // Property 3: Safety logic equivalence equation mapping
+    assert_boolean_equivalence: assert property (Y == (S ? A1 : A0));
 
 endmodule
 
