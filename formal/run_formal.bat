@@ -23,7 +23,7 @@ set PDK_DEFINE=%2
 set "PATH=C:\Windows\system32;C:\Windows"
 
 :: Change the active directory to the folder containing the .sby file
-cd /d "%~dp1"
+cd /d "%~dp3"
 
 :: 2. Initialize the official internal variables via the suite's environment profile
 call "C:\oss-cad-suite\environment.bat"
