@@ -48,7 +48,8 @@ verilog_defaults -add -I.
 read -sv lib/cells_formal.sv
 
 # 1. Read standard design RTL files normally as SystemVerilog
-read_verilog -formal tech/and2_1.v                          
+#read_verilog -formal tech/and2_1.v       
+read -sv tech/and2_1.v tech/and2_1_formal.sv
 read_verilog -formal tech/inv_1.v                        
 read_verilog -formal tech/buf_4.v                          
 read -sv defs/mmu_defs.sv
@@ -63,7 +64,7 @@ read -sv module/c061618g2.sv
 read_verilog -formal project.v
 
 # 2. Read all three exhaustive formal verification layers
-read -sv tech/and2_1_formal.sv                         
+#read -sv tech/and2_1_formal.sv                         
 read -sv tech/inv_1_formal.sv                       
 read -sv tech/buf_4_formal.sv 
 read -sv defs/mmu_defs_formal.sv
