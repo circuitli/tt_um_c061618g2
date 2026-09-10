@@ -64,6 +64,7 @@ jobs:
         uses: YosysHQ/setup-oss-cad-suite@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          python-override: true # <-- FORCES SBY PYTHON TO INHERIT ALL RUNNER VARIABLES
 
       # =========================================================================
       # THE COMPLIANT PDK CLEANING STEP
