@@ -18,6 +18,8 @@
 `define AND2_1_FORMAL_SV
 `default_nettype none
 
+`include "src/tech/and2_1.v"
+
 module and2_1_formal (
     input wire A,
     input wire B,
