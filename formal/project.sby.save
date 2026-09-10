@@ -71,19 +71,19 @@ read -sv lib/cells_formal.sv
 workspace_root = os.environ.get("SBY_WORKFLOW_DIR") or os.getcwd()
 
 # The output() method natively injects the commands back into the SBY engine queue
-#output(f"read -sv {define_flag} tech/and2_1.v tech/and2_1_formal.sv")
-#output(f"read -sv {define_flag} tech/inv_1.v tech/inv_1_formal.sv")
-#output(f"read -sv {define_flag} tech/buf_4.v tech/buf_4_formal.sv")
+#output(f"read -sv {define_flag} techmap/and2_1.v techmap/and2_1_formal.sv")
+#output(f"read -sv {define_flag} techmap/inv_1.v techmap/inv_1_formal.sv")
+#output(f"read -sv {define_flag} techmap/buf_4.v techmap/buf_4_formal.sv")
 #--pycode-end--
 # =============================================================================
 
 # 1. Read standard design RTL files normally as SystemVerilog
-read_verilog -formal -D$ENV(PDK_DEFINE) tech/and2_1.v       
-read_verilog -formal -D$ENV(PDK_DEFINE) tech/inv_1.v                        
-read_verilog -formal -D$ENV(PDK_DEFINE) tech/buf_4.v  
-#read -sv -D$ENV(PDK_DEFINE) tech/and2_1.v tech/and2_1_formal.sv"
-#read -sv -D$ENV(PDK_DEFINE) tech/inv_1.v tech/inv_1_formal.sv"
-#read -sv -D$ENV(PDK_DEFINE) tech/buf_4.v tech/buf_4_formal.sv"
+read_verilog -formal -D$ENV(PDK_DEFINE) techmap/and2_1.v       
+read_verilog -formal -D$ENV(PDK_DEFINE) techmap/inv_1.v                        
+read_verilog -formal -D$ENV(PDK_DEFINE) techmap/buf_4.v  
+#read -sv -D$ENV(PDK_DEFINE) techmap/and2_1.v techmap/and2_1_formal.sv"
+#read -sv -D$ENV(PDK_DEFINE) techmap/inv_1.v techmap/inv_1_formal.sv"
+#read -sv -D$ENV(PDK_DEFINE) techmap/buf_4.v techmap/buf_4_formal.sv"
 #read -sv cell/safe_async_mux.sv
 #read_verilog -formal cell/async_latch_cell.v
 read -sv cell/async_latch_cell.v cell/async_latch_cell_formal.sv
@@ -97,9 +97,9 @@ read -sv module/c061618g2.sv
 read_verilog -formal project.v
 
 # 2. Read all three exhaustive formal verification layers
-read -sv tech/and2_1_formal.sv                         
-read -sv tech/inv_1_formal.sv                       
-read -sv tech/buf_4_formal.sv 
+read -sv techmap/and2_1_formal.sv                         
+read -sv techmap/inv_1_formal.sv                       
+read -sv techmap/buf_4_formal.sv 
 #read -sv cell/safe_async_mux_formal.sv
 #read -sv cell/async_latch_cell_formal.sv
 read -sv defs/mmu_defs_formal.sv
@@ -248,12 +248,12 @@ check
 [files]
 # Target Destination Path              # Local Source Repository Path
 #sg13g2_stdcell_clean.v                 
-tech/and2_1.v                         ../src/tech/and2_1.v
-tech/inv_1.v                          ../src/tech/inv_1.v
-tech/buf_4.v                          ../src/tech/buf_4.v
-#../src/tech/and2_1.v                          src/tech/and2_1.v
-#../src/tech/inv_1.v                           src/tech/inv_1.v
-#../src/tech/buf_4.v                           src/tech/buf_4.v
+techmap/and2_1.v                         ../src/techmap/and2_1.v
+techmap/inv_1.v                          ../src/techmap/inv_1.v
+techmap/buf_4.v                          ../src/techmap/buf_4.v
+#../src/techmap/and2_1.v                          src/techmap/and2_1.v
+#../src/techmap/inv_1.v                           src/techmap/inv_1.v
+#../src/techmap/buf_4.v                           src/techmap/buf_4.v
 defs/mmu_defs.sv                       ../src/defs/mmu_defs.sv
 core/mmu_core.sv                       ../src/core/mmu_core.sv
 cell/safe_async_mux.sv                 ../src/cell/safe_async_mux.sv
@@ -263,9 +263,9 @@ module/async_glitch_filter_bank.sv     ../src/module/async_glitch_filter_bank.sv
 #module/c061618g2_input_shield.sv       ../src/module/c061618g2_input_shield.sv
 module/c061618g2.sv                    ../src/module/c061618g2.sv
 project.v                              ../src/project.v
-src/tech/and2_1.v                      ../src/tech/and2_1.v
-src/tech/inv_1.v                       ../src/tech/inv_1.v
-src/tech/buf_4.v                       ../src/tech/buf_4.v
+src/techmap/and2_1.v                      ../src/techmap/and2_1.v
+src/techmap/inv_1.v                       ../src/techmap/inv_1.v
+src/techmap/buf_4.v                       ../src/techmap/buf_4.v
 src/defs/mmu_defs.sv                   ../src/defs/mmu_defs.sv
 src/core/mmu_core.sv                   ../src/core/mmu_core.sv
 src/cell/safe_async_mux.sv             ../src/cell/safe_async_mux.sv
@@ -274,9 +274,9 @@ src/module/async_glitch_filter.sv      ../src/module/async_glitch_filter.sv
 src/module/async_glitch_filter_bank.sv ../src/module/async_glitch_filter_bank.sv
 #src/module/c061618g2_input_shield.sv   ../src/module/c061618g2_input_shield.sv
 src/module/c061618g2.sv                ../src/module/c061618g2.sv
-tech/and2_1_formal.sv                      tech/and2_1_formal.sv 
-tech/inv_1_formal.sv                       tech/inv_1_formal.sv 
-tech/buf_4_formal.sv                       tech/buf_4_formal.sv 
+techmap/and2_1_formal.sv                      techmap/and2_1_formal.sv 
+techmap/inv_1_formal.sv                       techmap/inv_1_formal.sv 
+techmap/buf_4_formal.sv                       techmap/buf_4_formal.sv 
 defs/mmu_defs_formal.sv                    defs/mmu_defs_formal.sv
 core/mmu_core_formal.sv                    core/mmu_core_formal.sv
 lib/cells_formal.sv                        lib/cells_formal.sv

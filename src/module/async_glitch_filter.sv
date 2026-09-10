@@ -17,9 +17,9 @@
 `ifndef ASYNC_GLITCH_FILTER_SV
 `define ASYNC_GLITCH_FILTER_SV
 
-`include "src/tech/and2_1.v"
-`include "src/tech/inv_1.v"
-`include "src/tech/buf_4.v"
+`include "src/techmap/and2_1.v"
+`include "src/techmap/inv_1.v"
+`include "src/techmap/buf_4.v"
 `include "src/cell/async_latch_cell.v"
 
 `default_nettype none

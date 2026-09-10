@@ -49,10 +49,10 @@ verilog_defaults -add -I.
 read -sv -formal lib/cells_formal.sv
 
 # 1. Read standard design RTL files normally as SystemVerilog
-#read_verilog -D$ENV(PDK_DEFINE) tech/and2_1.v       
-#read -sv -D$ENV(PDK_DEFINE) tech/and2_1.v tech/and2_1_formal.sv
-#read_verilog -D$ENV(PDK_DEFINE) tech/inv_1.v                        
-#read_verilog -D$ENV(PDK_DEFINE) tech/buf_4.v                          
+#read_verilog -D$ENV(PDK_DEFINE) techmap/and2_1.v       
+#read -sv -D$ENV(PDK_DEFINE) techmap/and2_1.v techmap/and2_1_formal.sv
+#read_verilog -D$ENV(PDK_DEFINE) techmap/inv_1.v                        
+#read_verilog -D$ENV(PDK_DEFINE) techmap/buf_4.v                          
 #read -sv defs/mmu_defs.sv
 #read -sv core/mmu_core.sv
 #read -sv cell/safe_async_mux.sv
@@ -65,9 +65,9 @@ read -sv -formal lib/cells_formal.sv
 #read_verilog project.v
 
 # 2. Read all three exhaustive formal verification layers
-#read -sv -formal -D$ENV(PDK_DEFINE) tech/and2_1_formal.sv                         
-#read -sv -formal -D$ENV(PDK_DEFINE) tech/inv_1_formal.sv                       
-#read -sv -formal -D$ENV(PDK_DEFINE) tech/buf_4_formal.sv 
+#read -sv -formal -D$ENV(PDK_DEFINE) techmap/and2_1_formal.sv                         
+#read -sv -formal -D$ENV(PDK_DEFINE) techmap/inv_1_formal.sv                       
+#read -sv -formal -D$ENV(PDK_DEFINE) techmap/buf_4_formal.sv 
 #read -sv -formal -D$ENV(PDK_DEFINE) defs/mmu_defs_formal.sv
 #read -sv -formal -D$ENV(PDK_DEFINE) core/mmu_core_formal.sv
 #read -sv -formal -D$ENV(PDK_DEFINE) cell/safe_async_mux_formal.sv
@@ -216,9 +216,9 @@ check
 [files]
 # Target Destination Path              # Local Source Repository Path
 #sg13g2_stdcell_clean.v                 
-tech/and2_1.v                          ../src/tech/and2_1.v
-tech/inv_1.v                           ../src/tech/inv_1.v
-tech/buf_4.v                           ../src/tech/buf_4.v
+techmap/and2_1.v                          ../src/techmap/and2_1.v
+techmap/inv_1.v                           ../src/techmap/inv_1.v
+techmap/buf_4.v                           ../src/techmap/buf_4.v
 cell/safe_async_mux.sv                 ../src/cell/safe_async_mux.sv
 cell/async_latch_cell.v                ../src/cell/async_latch_cell.v
 defs/mmu_defs.sv                       ../src/defs/mmu_defs.sv
@@ -228,9 +228,9 @@ module/async_glitch_filter_bank.sv     ../src/module/async_glitch_filter_bank.sv
 #module/c061618g2_input_shield.sv       ../src/module/c061618g2_input_shield.sv
 module/c061618g2.sv                    ../src/module/c061618g2.sv
 project.v                              ../src/project.v
-src/tech/and2_1.v                      ../src/tech/and2_1.v
-src/tech/inv_1.v                       ../src/tech/inv_1.v
-src/tech/buf_4.v                       ../src/tech/buf_4.v
+src/techmap/and2_1.v                      ../src/techmap/and2_1.v
+src/techmap/inv_1.v                       ../src/techmap/inv_1.v
+src/techmap/buf_4.v                       ../src/techmap/buf_4.v
 src/cell/async_latch_cell.v            ../src/cell/async_latch_cell.v
 src/cell/safe_async_mux.sv             ../src/cell/safe_async_mux.sv
 src/defs/mmu_defs.sv                   ../src/defs/mmu_defs.sv
@@ -241,9 +241,9 @@ src/module/async_glitch_filter_bank.sv ../src/module/async_glitch_filter_bank.sv
 src/module/c061618g2.sv                ../src/module/c061618g2.sv
 src/project.v                         ../src/project.v
 lib/cells_formal.sv                        lib/cells_formal.sv
-tech/and2_1_formal.sv                      tech/and2_1_formal.sv 
-tech/inv_1_formal.sv                       tech/inv_1_formal.sv 
-tech/buf_4_formal.sv                       tech/buf_4_formal.sv
+techmap/and2_1_formal.sv                      techmap/and2_1_formal.sv 
+techmap/inv_1_formal.sv                       techmap/inv_1_formal.sv 
+techmap/buf_4_formal.sv                       techmap/buf_4_formal.sv
 cell/safe_async_mux_formal.sv              cell/safe_async_mux_formal.sv
 cell/async_latch_cell_formal.sv            cell/async_latch_cell_formal.sv
 defs/mmu_defs_formal.sv                    defs/mmu_defs_formal.sv
@@ -254,9 +254,9 @@ module/async_glitch_filter_bank_formal.sv  module/async_glitch_filter_bank_forma
 module/c061618g2_formal.sv                 module/c061618g2_formal.sv
 project_formal.sv                          project_formal.sv
 formal/lib/cells_formal.sv                        lib/cells_formal.sv
-formal/tech/and2_1_formal.sv                      tech/and2_1_formal.sv 
-formal/tech/inv_1_formal.sv                       tech/inv_1_formal.sv 
-formal/tech/buf_4_formal.sv                       tech/buf_4_formal.sv 
+formal/techmap/and2_1_formal.sv                      techmap/and2_1_formal.sv 
+formal/techmap/inv_1_formal.sv                       techmap/inv_1_formal.sv 
+formal/techmap/buf_4_formal.sv                       techmap/buf_4_formal.sv 
 formal/cell/safe_async_mux_formal.sv              cell/safe_async_mux_formal.sv
 formal/cell/async_latch_cell_formal.sv            cell/async_latch_cell_formal.sv
 formal/defs/mmu_defs_formal.sv                    defs/mmu_defs_formal.sv

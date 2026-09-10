@@ -17,8 +17,8 @@
 `ifndef MUELLER_INERTIAL_DELAY_FILTER_SV
 `define MUELLER_INERTIAL_DELAY_FILTER_SV
 
-`include "src/tech/dlygate4sd3.v"
-`include "src/tech/aoi21_1.v"
+`include "src/techmap/dlygate4sd3.v"
+`include "src/techmap/aoi21_1.v"
 
 `default_nettype none
 
