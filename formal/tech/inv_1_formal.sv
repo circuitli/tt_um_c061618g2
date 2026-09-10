@@ -17,6 +17,9 @@
 
 `ifndef INV_1_FORMAL_SV
 `define INV_1_FORMAL_SV
+
+`include "src/tech/inv_1.v"
+
 `default_nettype none
 
 module inv_1_formal (

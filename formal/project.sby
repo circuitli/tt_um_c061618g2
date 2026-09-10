@@ -50,31 +50,31 @@ read -sv -formal lib/cells_formal.sv
 # 1. Read standard design RTL files normally as SystemVerilog
 #read_verilog -D$ENV(PDK_DEFINE) tech/and2_1.v       
 #read -sv -D$ENV(PDK_DEFINE) tech/and2_1.v tech/and2_1_formal.sv
-read_verilog -D$ENV(PDK_DEFINE) tech/inv_1.v                        
-read_verilog -D$ENV(PDK_DEFINE) tech/buf_4.v                          
-read -sv defs/mmu_defs.sv
-read -sv core/mmu_core.sv
+#read_verilog -D$ENV(PDK_DEFINE) tech/inv_1.v                        
+#read_verilog -D$ENV(PDK_DEFINE) tech/buf_4.v                          
+#read -sv defs/mmu_defs.sv
+#read -sv core/mmu_core.sv
 #read -sv cell/safe_async_mux.sv
-read_verilog cell/async_latch_cell.v
-read -sv module/async_glitch_filter.sv
-read -sv module/async_glitch_filter_bank.sv
+#read_verilog -D$ENV(PDK_DEFINE) cell/async_latch_cell.v
+#read -sv module/async_glitch_filter.sv
+#read -sv module/async_glitch_filter_bank.sv
 #read -sv module/c061618g2_input_shield.sv
-read -sv module/c061618g2.sv
+#read -sv module/c061618g2.sv
 
-read_verilog project.v
+#read_verilog project.v
 
 # 2. Read all three exhaustive formal verification layers
-read -sv -formal tech/and2_1_formal.sv                         
-read -sv -formal tech/inv_1_formal.sv                       
-read -sv -formal tech/buf_4_formal.sv 
-read -sv -formal defs/mmu_defs_formal.sv
-read -sv -formal core/mmu_core_formal.sv
-#read -sv -formal cell/safe_async_mux_formal.sv
-read -sv -formal cell/async_latch_cell_formal.sv
-read -sv -formal module/async_glitch_filter_formal.sv
-read -sv -formal module/async_glitch_filter_bank_formal.sv
-#read -sv -formal module/c061618g2_input_shield_formal.sv
-read -sv -formal project_formal.sv
+read -sv -formal -D$ENV(PDK_DEFINE) tech/and2_1_formal.sv                         
+read -sv -formal -D$ENV(PDK_DEFINE) tech/inv_1_formal.sv                       
+read -sv -formal -D$ENV(PDK_DEFINE) tech/buf_4_formal.sv 
+read -sv -formal -D$ENV(PDK_DEFINE) defs/mmu_defs_formal.sv
+read -sv -formal -D$ENV(PDK_DEFINE) core/mmu_core_formal.sv
+#read -sv -formal -D$ENV(PDK_DEFINE) cell/safe_async_mux_formal.sv
+read -sv -formal -D$ENV(PDK_DEFINE) cell/async_latch_cell_formal.sv
+read -sv -formal -D$ENV(PDK_DEFINE) module/async_glitch_filter_formal.sv
+read -sv -formal-D$ENV(PDK_DEFINE)  module/async_glitch_filter_bank_formal.sv
+#read -sv -formal -D$ENV(PDK_DEFINE) module/c061618g2_input_shield_formal.sv
+read -sv -formal -D$ENV(PDK_DEFINE) project_formal.sv
 
 # Standard, clean, un-hacked macro elaboration pass
 #prep -top tt_um_c061618g2

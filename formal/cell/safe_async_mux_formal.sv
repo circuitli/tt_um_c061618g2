@@ -18,8 +18,6 @@
 `define SAFE_ASYNC_MUX_FORMAL_SVH
 `default_nettype none
 
-`default_nettype none
-
 module safe_async_mux_formal (
     input  wire  rst_n,
     input  wire  a0,

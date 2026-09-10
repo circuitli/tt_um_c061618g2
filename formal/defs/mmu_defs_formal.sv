@@ -17,8 +17,9 @@
 `ifndef MMU_DEFS_FORMAL_SV
 `define MMU_DEFS_FORMAL_SV
 
-`default_nettype none
 `include "src/defs/mmu_defs.sv"
+
+`default_nettype none
 
 module mmu_defs_formal(
     input wire [7:0] ui_in,

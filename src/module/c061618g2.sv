@@ -16,9 +16,10 @@
 
 `ifndef C061618G2_SV
 `define C061618G2_SV
-`default_nettype none
 
 `include "src/core/mmu_core.sv"
+
+`default_nettype none
 
 module c061618g2 (
     /* verilator lint_off UNUSEDSIGNAL */

@@ -17,6 +17,9 @@
 
 `ifndef BUF_4_FORMAL_SV
 `define BUF_4_FORMAL_SV
+
+`include "src/tech/buf_4.v"
+
 `default_nettype none
 
 module buf_4_formal (

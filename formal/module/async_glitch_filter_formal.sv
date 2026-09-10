@@ -17,13 +17,14 @@
 `ifndef ASYNC_GLITCH_FILTER_FORMAL_SV
 `define ASYNC_GLITCH_FILTER_FORMAL_SV
  
+`include "src/module/async_glitch_filter.sv"
+
 `default_nettype none
 
 // =============================================================================
 // Sub-Module Level Formal Checker: async_glitch_filter_formal
 // Now parameterized to match any configuration under test dynamically.
 // =============================================================================
-`default_nettype none
 
 module async_glitch_filter_formal #(
     parameter int STAGES = 3

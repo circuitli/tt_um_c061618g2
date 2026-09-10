@@ -17,8 +17,7 @@
 `ifndef MMU_CORE_FORMAL_SV
 `define MMU_CORE_FORMAL_SV
 
-`default_nettype none
-`include "src/defs/mmu_defs.sv"
+`include "src/core/mmu_core.sv"
 
 `default_nettype none
 

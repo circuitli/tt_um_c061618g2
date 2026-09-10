@@ -16,10 +16,11 @@
  
 `ifndef MMU_CORE_SVH
 `define MMU_CORE_SVH
-`default_nettype none
 
 `include "src/defs/mmu_defs.sv"
 `include "src/module/async_glitch_filter_bank.sv"
+
+`default_nettype none
 
 // =========================================================================
 // CUSTOM MMU DECODING MATRIX (INTERNAL CORE LAYER)

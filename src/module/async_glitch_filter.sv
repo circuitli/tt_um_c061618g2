@@ -16,12 +16,13 @@
 
 `ifndef ASYNC_GLITCH_FILTER_SV
 `define ASYNC_GLITCH_FILTER_SV
-`default_nettype none
 
 `include "src/tech/and2_1.v"
 `include "src/tech/inv_1.v"
 `include "src/tech/buf_4.v"
 `include "src/cell/async_latch_cell.v"
+
+`default_nettype none
 
 module async_glitch_filter #(
     parameter int STAGES = 3 // Number of double-inverter delay blocks

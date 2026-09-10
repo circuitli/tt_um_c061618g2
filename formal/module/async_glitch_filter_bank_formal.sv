@@ -16,6 +16,9 @@
 
 `ifndef ASYNC_GLITCH_FILTER_BANK_FORMAL_SVH
 `define ASYNC_GLITCH_FILTER_BANK_FORMAL_SVH
+
+`include "src/module/async_glitch_filter_bank.sv"
+
 `default_nettype none
 
 // =============================================================================

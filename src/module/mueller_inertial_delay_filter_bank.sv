@@ -16,9 +16,10 @@
 
 `ifndef MUELLER_INERTIAL_DELAY_FILTER_BANK_SV
 `define MUELLER_INERTIAL_DELAY_FILTER_BANK_SV
-`default_nettype none
 
 `include "src/module/mueller_inertial_delay_filter.sv"
+
+`default_nettype none
 
 // Variable-width filter bank that instantiates the mueller_inertial_delay_filter module
 module mueller_inertial_delay_filter_bank #(

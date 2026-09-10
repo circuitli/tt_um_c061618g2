@@ -20,7 +20,7 @@
 /// ==============================================================================
 // SECTION: TOP-LEVEL HARDWARE WRAPPER FORMAL PROPERTIES
 // ==============================================================================
-`default_nettype none
+`include "src/project.sv"
 
 `default_nettype none
 

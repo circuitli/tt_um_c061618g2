@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-// ==============================================================================
-// SECTION: TOP-LEVEL HARDWARE WRAPPER CONSTRAINTS
-// ==============================================================================
-`default_nettype none
-
 // =========================================================================
 // CONDITIONAL PDK INTERFACE RESOLUTION
 // If compiling for physical synthesis (OpenLane/Yosys), hide the source file 
@@ -29,6 +24,8 @@
 `ifndef SYNTHESIS_fdlkjsdfkjsdklf
     `include "src/module/c061618g2.sv"
 `endif
+
+`default_nettype none
 
 // =========================================================================
 // STRUCTURAL CELL ISOLATION BUFFER

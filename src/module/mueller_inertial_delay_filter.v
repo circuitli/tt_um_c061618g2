@@ -16,10 +16,11 @@
 
 `ifndef MUELLER_INERTIAL_DELAY_FILTER_SV
 `define MUELLER_INERTIAL_DELAY_FILTER_SV
-`default_nettype none
 
 `include "src/tech/dlygate4sd3.v"
 `include "src/tech/aoi21_1.v"
+
+`default_nettype none
 
 // =========================================================================
 // UNIVERSAL PORTABLE MUELLER INERTIAL DELAY FILTER

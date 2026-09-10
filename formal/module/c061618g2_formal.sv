@@ -17,6 +17,7 @@
 `ifndef C061618G2_FORMAL_SV
 `define C061618G2_FORMAL_SV
 
+`include "src/module/c061618g2.sv"
 `default_nettype none
 
 module c061618g2_formal (
