@@ -35,6 +35,8 @@ btor btormc
 
 [script]
 verilog_defaults -add -I.
+verilog_defaults -add -I..
+
 
 # 0. READ THE IHP STANDARD CELL BLACKBOXES FIRST
 # This macro tells Yosys to strip out specify/timing blocks from the primitives
@@ -47,15 +49,46 @@ verilog_defaults -add -I.
 # -------------------------------------------------------------------------
 read -sv lib/cells_formal.sv
 
+# =============================================================================
+# DYNAMIC PYTHON ENVIRONMENT PARSER (100% EXECUTABLE)
+# =============================================================================
+#--pycode-begin--
+#import os
+
+# Safely extract your VS Pro active workspace environment variable token
+#pdk_var = os.environ.get("PDK", "")
+
+# Determine if the target match requires the Verilog macro define flag
+#define_flag = "-DIHP_SG13G2" if pdk_var == "ihp-sg13g2" else ""
+
+# 2. DEBUG PRINT: Bypasses SBY's block and forces the text directly to your console terminal
+#sys.stderr.write(f"\n[SBY DEBUG] PDK active variable value is: '{pdk_var}'\n")
+#sys.stderr.write(f"\n[SBY DEBUG] PDK deefine is: '{define_flag}'\n")
+
+# 2. Extract SBY's native parent workspace directory tracking hook
+# When SBY runs, it stores the original path you launched from inside SBY_WORKFLOW_DIR
+# If that variable is absent, it cleanly falls back to the absolute project workspace
+workspace_root = os.environ.get("SBY_WORKFLOW_DIR") or os.getcwd()
+
+# The output() method natively injects the commands back into the SBY engine queue
+#output(f"read -sv {define_flag} tech/and2_1.v tech/and2_1_formal.sv")
+#output(f"read -sv {define_flag} tech/inv_1.v tech/inv_1_formal.sv")
+#output(f"read -sv {define_flag} tech/buf_4.v tech/buf_4_formal.sv")
+#--pycode-end--
+# =============================================================================
+
 # 1. Read standard design RTL files normally as SystemVerilog
 read_verilog -formal -D$ENV(PDK_DEFINE) tech/and2_1.v       
-#read -sv -D$ENV(PDK_DEFINE) tech/and2_1.v tech/and2_1_formal.sv
 read_verilog -formal -D$ENV(PDK_DEFINE) tech/inv_1.v                        
-read_verilog -formal -D$ENV(PDK_DEFINE) tech/buf_4.v                          
+read_verilog -formal -D$ENV(PDK_DEFINE) tech/buf_4.v  
+#read -sv -D$ENV(PDK_DEFINE) tech/and2_1.v tech/and2_1_formal.sv"
+#read -sv -D$ENV(PDK_DEFINE) tech/inv_1.v tech/inv_1_formal.sv"
+#read -sv -D$ENV(PDK_DEFINE) tech/buf_4.v tech/buf_4_formal.sv"
+#read -sv cell/safe_async_mux.sv
+#read_verilog -formal cell/async_latch_cell.v
+read -sv cell/async_latch_cell.v cell/async_latch_cell_formal.sv
 read -sv defs/mmu_defs.sv
 read -sv core/mmu_core.sv
-#read -sv cell/safe_async_mux.sv
-read_verilog -formal cell/async_latch_cell.v
 read -sv module/async_glitch_filter.sv
 read -sv module/async_glitch_filter_bank.sv
 #read -sv module/c061618g2_input_shield.sv
@@ -67,10 +100,10 @@ read_verilog -formal project.v
 read -sv tech/and2_1_formal.sv                         
 read -sv tech/inv_1_formal.sv                       
 read -sv tech/buf_4_formal.sv 
+#read -sv cell/safe_async_mux_formal.sv
+#read -sv cell/async_latch_cell_formal.sv
 read -sv defs/mmu_defs_formal.sv
 read -sv core/mmu_core_formal.sv
-#read -sv cell/safe_async_mux_formal.sv
-read -sv cell/async_latch_cell_formal.sv
 read -sv module/async_glitch_filter_formal.sv
 read -sv module/async_glitch_filter_bank_formal.sv
 #read -sv module/c061618g2_input_shield_formal.sv
@@ -215,9 +248,12 @@ check
 [files]
 # Target Destination Path              # Local Source Repository Path
 #sg13g2_stdcell_clean.v                 
-tech/and2_1.v                          ../src/tech/and2_1.v
-tech/inv_1.v                           ../src/tech/inv_1.v
-tech/buf_4.v                           ../src/tech/buf_4.v
+tech/and2_1.v                         ../src/tech/and2_1.v
+tech/inv_1.v                          ../src/tech/inv_1.v
+tech/buf_4.v                          ../src/tech/buf_4.v
+#../src/tech/and2_1.v                          src/tech/and2_1.v
+#../src/tech/inv_1.v                           src/tech/inv_1.v
+#../src/tech/buf_4.v                           src/tech/buf_4.v
 defs/mmu_defs.sv                       ../src/defs/mmu_defs.sv
 core/mmu_core.sv                       ../src/core/mmu_core.sv
 cell/safe_async_mux.sv                 ../src/cell/safe_async_mux.sv
