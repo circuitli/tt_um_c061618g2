@@ -82,8 +82,8 @@
       [ "Metal3", "Metal4" ]
     ],
     "FP_TAPCELL_DIST": 55.2,
-    "TAP_CELL_NAME": "sg13g2_decap",
-    "FP_WELLTAP_CELL": "sg13g2_decap",
+    "TAP_CELL_NAME": "sg13g2_stdcell_decap_1",
+    "FP_WELLTAP_CELL": "sg13g2_stdcell_decap_1",
     "_TOP_MARGIN_MULT": 1,
     "_BOTTOM_MARGIN_MULT": 1,
     "_LEFT_MARGIN_MULT": 6,
