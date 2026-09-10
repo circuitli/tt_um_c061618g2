@@ -17,17 +17,27 @@ set interleaved_pitch  [expr {$calculated_rail_pitch * 2.0}]
 set interleaved_offset_gnd [expr {$calculated_rail_pitch * 1.0}]
 set interleaved_offset_vdd [expr {$calculated_rail_pitch * 2.0}]
 
-# 2. Extract the exact internal routing tracks for the vertical layer
+# 2. Extract the track spacing pitch to dynamically snap the core boundary
 set vertical_layer_obj [$db_tech findLayer $::env(PDN_VERTICAL_LAYER)]
 set track_grid         [$db_block findTrackGrid $vertical_layer_obj]
-set first_routing_track_db [lindex [$track_grid getGridX] 0]
-set true_on_grid_offset    [expr {double($first_routing_track_db) / $db_units}]
+
+set track_pitch        [expr {double([$track_grid getSpaceX]) / $db_units}]
+set track_start        [expr {double([lindex [$track_grid getGridX] 0]) / $db_units}]
+
+# 3. Dynamic Snap Math: Locates the exact first track crossing after core left
+set row_origin [$first_layout_row getOrigin]
+set actual_core_left   [expr {double([lindex $row_origin 0]) / $db_units}]
+
+set track_count_floor  [expr {int(($actual_core_left - $track_start) / $track_pitch)}]
+set true_on_grid_offset [expr {$track_start + ($track_count_floor * $track_pitch)}]
+
+utl::report "DYNAMIC PDN CONFIG CHECK: Snapped core track edge locked to -> ${true_on_grid_offset} um"
 # =============================================================================
 
 define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 
 # 1. Unified Vertical Stripes (Metal3) -> EXTEND_TO_BOUNDARY
-add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(FP_PDN_VWIDTH) -pitch $::env(PDN_VPITCH) -offset $true_on_grid_offset -spacing $::env(FP_PDN_VSPACING) -nets "$::env(GND_NET) $::env(VDD_NET)" -extend_to_boundary
+add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_VERTICAL_LAYER) -width $::env(FP_PDN_VWIDTH) -pitch $::env(FP_PDN_VPITCH) -offset $true_on_grid_offset -spacing $::env(FP_PDN_VSPACING) -nets "$::env(GND_NET) $::env(VDD_NET)" -extend_to_boundary
 
 # 2. Interleaved Horizontal Power Rails (Metal1) -> EXTEND_TO_BOUNDARY
 add_pdn_stripe -grid stdcell_grid -layer $::env(PDN_RAIL_LAYER) -width $::env(PDN_RAIL_WIDTH) -pitch $interleaved_pitch -offset $interleaved_offset_gnd -nets $::env(GND_NET) -extend_to_boundary
