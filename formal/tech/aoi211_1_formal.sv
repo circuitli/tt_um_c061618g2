@@ -30,38 +30,42 @@ module aoi211_1_formal (
     // STATIC UNCLOCKED COMBINATIONAL PROPERTIES
     // =========================================================================
 
-    // -------------------------------------------------------------------------
-    // PROPERTY 1: Golden Model Logic Equivalence
-    // -------------------------------------------------------------------------
-    // Verifies that whatever internal gates are instantiated by the active 
-    // PDK branch, the physical output 'Y' matches the target mathematical 
-    // definition perfectly across all input states.
-    assert_logic_equivalence: assert property (Y == !((A1 && A2) || B1 || C1));
+    always @* begin
+        
+        // ---------------------------------------------------------------------
+        // PROPERTY 1: Golden Model Logic Equivalence
+        // ---------------------------------------------------------------------
+        // Verifies that whatever internal gates are instantiated by the active 
+        // PDK branch, the physical output 'Y' matches the target mathematical 
+        // definition perfectly across all input states.
+        assert_logic_equivalence: assert (Y == !((A1 && A2) || B1 || C1));
 
-    // -------------------------------------------------------------------------
-    // PROPERTY 2: Product Term Invalidation (AND branch dominance)
-    // -------------------------------------------------------------------------
-    // If either input to the product gate branch is low, the (A1 & A2) term 
-    // drops to 0, making the output purely dependent on the B1 and C1 rails.
-    // Rewritten from: (!A1 || !A2) -> (Y == !(B1 || C1))
-    // Using Boolean identity: (!P || Q) => (A1 && A2) || Q
-    assert_product_disabled: assert property ((A1 && A2) || (Y == !(B1 || C1)));
+        // ---------------------------------------------------------------------
+        // PROPERTY 2: Product Term Invalidation (AND branch dominance)
+        // ---------------------------------------------------------------------
+        // If either input to the product gate branch is low, the (A1 & A2) term 
+        // drops to 0, making the output purely dependent on the B1 and C1 rails.
+        // Rewritten from: (!A1 || !A2) -> (Y == !(B1 || C1))
+        // Using Boolean identity: (!P || Q) => (A1 && A2) || Q
+        assert_product_disabled: assert ((A1 && A2) || (Y == !(B1 || C1)));
 
-    // -------------------------------------------------------------------------
-    // PROPERTY 3: Safe Static Clear / Mask Dominance
-    // -------------------------------------------------------------------------
-    // If either of the independent direct-input terms (B1 or C1) is driven 
-    // high, the entire inner bracket evaluates to true. Because it is an inverted 
-    // gate, the output 'Y' must be driven hard to 0 regardless of the 'A' branch states.
-    // Rewritten from: (B1 || C1) -> (Y == 1'b0)
-    // Using Boolean identity: (!P || Q) => !(B1 || C1) || Q
-    assert_mask_dominance: assert property (!(B1 || C1) || (Y == 1'b0));
+        // ---------------------------------------------------------------------
+        // PROPERTY 3: Safe Static Clear / Mask Dominance
+        // ---------------------------------------------------------------------
+        // If either of the independent direct-input terms (B1 or C1) is driven 
+        // high, the entire inner bracket evaluates to true. Because it is an inverted 
+        // gate, the output 'Y' must be driven hard to 0 regardless of the 'A' branch states.
+        // Rewritten from: (B1 || C1) -> (Y == 1'b0)
+        // Using Boolean identity: (!P || Q) => !(B1 || C1) || Q
+        assert_mask_dominance: assert (!(B1 || C1) || (Y == 1'b0));
 
-    // =========================================================================
-    // SYSTEM COVERS: Ensure all boolean exit states are reachable by SymbiYosys
-    // =========================================================================
-    cover_output_high: cover property (Y == 1'b1);
-    cover_output_low:  cover property (Y == 1'b0);
+        // =====================================================================
+        // SYSTEM COVERS: Ensure all boolean exit states are reachable
+        // =====================================================================
+        cover_output_high: cover (Y == 1'b1);
+        cover_output_low:  cover (Y == 1'b0);
+
+    end
 
 endmodule
 

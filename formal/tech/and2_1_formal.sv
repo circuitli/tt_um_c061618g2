@@ -24,18 +24,19 @@ module and2_1_formal (
     input wire X
 );
 
-    // ======================================================================
-    // STATIC UNCLOCKED COMBINATIONAL PROPERTIES
-    // ======================================================================
-    
-    // Property 1: Safety logic boolean equivalence mapping
-    assert_boolean_equivalence: assert property (X == (A & B));
+    // =========================================================================
+    // CLOCKLESS CONTEXT FOR SYMBIVOSYS
+    // =========================================================================
+    always @* begin
+        // Property 1: Boolean equivalence equation mapping
+        assert (X == (A & B));
 
-    // Property 2: Low Dominance expressed via Boolean Or (!P || Q)
-    assert_low_dominance:    assert property ((A && B) || (X == 1'b0));
+        // Property 2: Low Dominance using pure boolean Or identity
+        assert ((A && B) || (X == 1'b0));
 
-    // Property 3: High Condition expressed via Boolean Or (!P || Q)
-    assert_high_condition:   assert property (!(A && B) || (X == 1'b1));
+        // Property 3: High Condition using pure boolean Or identity
+        assert (!(A && B) || (X == 1'b1));
+    end
 
 endmodule
 

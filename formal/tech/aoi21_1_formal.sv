@@ -32,20 +32,23 @@ module aoi21_1_formal (
     // ---------------------------------------------------------------------
     // FORMAL ASSERTION: Complete Boolean Combinational Verification
     // ---------------------------------------------------------------------
-    // Mathematically enforce that the cell output perfectly mirrors the 
-    // structural AOI21 Boolean truth function: Y = ~((A1 & A2) | B1)
-    property p_aoi21_logic_matrix;
-        (Y == !((A1 && A2) || B1));
-    endproperty
+   always @* begin
 
-    assert_boolean_truth_table: assert property (p_aoi21_logic_matrix);
+        // ---------------------------------------------------------------------
+        // FORMAL ASSERTION: Complete Boolean Combinational Verification
+        // ---------------------------------------------------------------------
+        // Mathematically enforce that the cell output perfectly mirrors the 
+        // structural AOI21 Boolean truth function: Y = ~((A1 & A2) | B1)
+        assert_boolean_truth_table: assert (Y == !((A1 && A2) || B1));
 
-    // ---------------------------------------------------------------------
-    // OPERATIONAL COVERAGE METRICS
-    // ---------------------------------------------------------------------
-    // Ensure all branches of the combined gate equation are fully reachable
-    cover_aoi_inverted:   cover property (!Y);
-    cover_aoi_pass_thru:  cover property (Y);
+        // ---------------------------------------------------------------------
+        // OPERATIONAL COVERAGE METRICS
+        // ---------------------------------------------------------------------
+        // Ensure all branches of the combined gate equation are fully reachable
+        cover_aoi_inverted:   cover (!Y);
+        cover_aoi_pass_thru:  cover (Y);
+
+    end
 
 endmodule
 
