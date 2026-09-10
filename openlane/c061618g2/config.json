@@ -62,7 +62,7 @@
     "PDN_HORIZONTAL_LAYER": "Metal4",
     "PDN_VERTICAL_LAYER": "Metal3",
 
-    "_PDN_RAIL_WIDTH": 0.44,
+    "PDN_RAIL_WIDTH": 0.44,
     "_PDN_RAIL_OFFSET": 3.78,
     "_PDN_RAIL_PITCH": 3.78,
 
