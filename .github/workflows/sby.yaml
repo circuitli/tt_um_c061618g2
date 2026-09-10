@@ -63,6 +63,8 @@ jobs:
       - name: Install OSS CAD Suite
         uses: YosysHQ/setup-oss-cad-suite@v4
         with:
+          # Pin an exact stable version release tag to avoid nightly parser regressions
+          version: '2025-12-03' 
           github-token: ${{ secrets.GITHUB_TOKEN }}
           python-override: true # <-- FORCES SBY PYTHON TO INHERIT ALL RUNNER VARIABLES
 
