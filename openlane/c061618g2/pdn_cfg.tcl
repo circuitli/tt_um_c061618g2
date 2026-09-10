@@ -47,7 +47,7 @@ add_pdn_stripe -grid stdcell_grid \
                -width $native_pdk_width \
                -followpins \
                -nets "$::env(GND_NET) $::env(VDD_NET)" \
-               -extend_to_boundary
+               -extend_to_core_ring
 
 # 3. Horizontal Mesh Power Landing Pads (Metal4) -> EXTEND_TO_BOUNDARY
 add_pdn_stripe -grid stdcell_grid \
