@@ -31,12 +31,13 @@ set interleaved_offset_vdd [expr {$calculated_rail_pitch * 2.0}]
 
 define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 
-# 1. Unified Vertical Stripes (Metal3) -> EXTEND_TO_BOUNDARY
+# 1. Unified Vertical Stripes (Metal3) -> INSIDE CORE ENVELOPE
+# Adds a 1-pitch tracking step offset to pull the vertical pillars inward
 add_pdn_stripe -grid stdcell_grid \
                -layer $::env(PDN_VERTICAL_LAYER) \
                -width $::env(FP_PDN_VWIDTH) \
                -pitch $::env(FP_PDN_VPITCH) \
-               -offset $::env(FP_PDN_VOFFSET) \
+               -offset [expr {$core_left + $::env(FP_PDN_VPITCH)}] \
                -spacing $::env(FP_PDN_VSPACING) \
                -nets "$::env(GND_NET) $::env(VDD_NET)" \
                -extend_to_boundary
