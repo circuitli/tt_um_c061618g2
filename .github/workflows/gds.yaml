@@ -14,6 +14,7 @@ concurrency:
 jobs:
   # STEP 1: Independent job to build your macro abstracts
   build_macros:
+    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -84,7 +85,7 @@ jobs:
 
   gds:
     runs-on: ubuntu-24.04
-    needs: build_macros
+    #needs: build_macros
     steps:
       - name: checkout repo
         uses: actions/checkout@v6
@@ -92,6 +93,7 @@ jobs:
           submodules: recursive
 
       - name: Download Precompiled Macro Artifacts
+        if: false
         uses: actions/download-artifact@v4
         with:
           name: precompiled-macros

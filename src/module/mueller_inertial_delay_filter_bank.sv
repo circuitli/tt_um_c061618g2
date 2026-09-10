@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-`ifndef ASYNC_GLITCH_FILTER_BANK_SV
-`define ASYNC_GLITCH_FILTER_BANK_SV
+`ifndef MUELLER_INERTIAL_DELAY_FILTER_BANK_SV
+`define MUELLER_INERTIAL_DELAY_FILTER_BANK_SV
 `default_nettype none
 
-`include "src/module/async_glitch_filter.sv"
+`include "src/module/mueller_inertial_delay_filter.sv"
 
-// Variable-width filter bank that instantiates the async_glitch_filter module
-module async_glitch_filter_bank #(
-    parameter int WIDTH = 13,
-    parameter int STAGES = 3
+// Variable-width filter bank that instantiates the mueller_inertial_delay_filter module
+module mueller_inertial_delay_filter_bank #(
+    parameter int WIDTH = 13
 )(
     input  wire             rst_n,
     input  wire [WIDTH-1:0] async_in,
@@ -32,9 +31,7 @@ module async_glitch_filter_bank #(
 
     generate
         for (genvar i = 0; i < WIDTH; i = i + 1) begin : gen_filter_bank
-            async_glitch_filter #(
-                .STAGES(STAGES)
-            ) u_filter (
+            mueller_inertial_delay_filter u_filter (
                 .rst_n    (rst_n),
                 .async_in (async_in[i]),
                 .async_out(async_out[i]) 
