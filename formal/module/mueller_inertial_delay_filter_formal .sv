@@ -18,6 +18,11 @@
 `define MUELLER_INERTIAL_DELAY_FILTER_FORMAL_SV
 `default_nettype none
 
+`include "src/module/mueller_inertial_delay_filter.sv"
+
+`include "formal/techmap/dlygate4sd3_formal.v"
+`include "formal/techmap/aoi21_1_formal.v"
+
 //=====================================================================
 // SYSTEMVERILOG FORMAL PROPERTIES FOR MUELLER INERTIAL DELAY FILTER
 // =========================================================================

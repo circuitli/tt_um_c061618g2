@@ -16,6 +16,11 @@
 
 `ifndef MUELLER_INERTIAL_DELAY_FILTER_BANK_FORMAL_SV
 `define MUELLER_INERTIAL_DELAY_FILTER_BANK_FORMAL_SV
+
+`include "src/module/mueller_inertial_delay_filter_bank.sv"
+
+`include "formal/module/mueller_inertial_delay_filter_formal.sv"
+
 `default_nettype none
 
 // =============================================================================
