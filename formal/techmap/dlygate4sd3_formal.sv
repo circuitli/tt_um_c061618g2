@@ -19,6 +19,9 @@
 
 `include "src/techmap/dlygate4sd3.v"
 
+`include "formal/techmap/inv_1_formal.v"
+`include "formal/techmap/buf_4_formal.v"
+
 `default_nettype none
 
 // =========================================================================

@@ -16,6 +16,10 @@
 
 `ifndef DLYGATE4SD3_V
 `define DLYGATE4SD3_V
+
+`include "src/techmap/inv_1.v"
+`include "src/techmap/buf_4.v"
+
 `default_nettype none
 
 module dlygate4sd3 (
@@ -23,26 +27,41 @@ module dlygate4sd3 (
     output wire X
 );
 `ifdef IHP_SG13G2
-    // ---------------------------------------------------------------------
-    // 4-STAGE CASCADED HARDWARE DELAY CHAIN
-    // ---------------------------------------------------------------------
-    (* dont_touch = "true" *) wire dly1;
-    (* dont_touch = "true" *) wire dly2;
-    (* dont_touch = "true" *) wire dly3;
 
     // ---------------------------------------------------------------------
-    // 8-STAGE STRUCTURAL BUFFER DELAY CHAIN (~1.2 ns window)
+    // HIGH-EFFICIENCY CAPACITIVE-LOADED INVERTER PAIR (~1.2 - 1.8 ns)
     // ---------------------------------------------------------------------
-    (* dont_touch = "true" *) wire dly1, dly2, dly3, dly4, dly5, dly6, dly7;
+    (* keep = "true" *) wire internal_inv_node;
+    (* keep = "true" *) wire scalar_cap_a;
+    (* keep = "true" *) wire scalar_cap_b;
 
-    sg13g2_buf_1 u_dly1 (.A(A),    .X(dly1));
-    sg13g2_buf_1 u_dly2 (.A(dly1), .X(dly2));
-    sg13g2_buf_1 u_dly3 (.A(dly2), .X(dly3));
-    sg13g2_buf_1 u_dly4 (.A(dly3), .X(dly4));
-    sg13g2_buf_1 u_dly5 (.A(dly4), .X(dly5));
-    sg13g2_buf_1 u_dly6 (.A(dly5), .X(dly6));
-    sg13g2_buf_1 u_dly7 (.A(dly6), .X(dly7));
-    sg13g2_buf_1 u_dly8 (.A(dly7), .X(X));
+    // --- FIRST HALF STAGE ---
+    (* keep = "true" *)
+    inv_1 u_inv_a (
+        .A (A),
+        .Y (internal_inv_node)
+    );
+    
+    // Attached gate-capacitance anchor 
+    (* keep = "true" *)
+    buf_4 u_load_cap_a (
+        .A (internal_inv_node),
+        .X (scalar_cap_a) 
+    );
+
+    // --- SECOND HALF STAGE (Restores Logic Phase Alignment) ---
+    (* keep = "true" *)
+    inv_1 u_inv_b (
+        .A (internal_inv_node),
+        .Y (X)
+    );
+
+    // Attached gate-capacitance anchor
+    (* keep = "true" *)
+    buf_4 u_load_cap_b (
+        .A (X),
+        .X (scalar_cap_b) 
+    );
 
 `elsif SKY130
     sky130_fd_sc_hd__dlygate4sd3 u_cell (.A(A), .X(X));
