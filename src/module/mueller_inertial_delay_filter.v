@@ -28,8 +28,8 @@
 
 module mueller_inertial_delay_filter (
     input  wire rst_n,  // Active-low global asynchronous reset
-    input  wire in,     // Asynchronous input signal
-    output wire out     // Clean, filtered output signal
+    input  wire async_in,     // Asynchronous input signal
+    output wire async_out     // Clean, filtered output signal
 );
 
     wire delayed_path;
@@ -37,7 +37,7 @@ module mueller_inertial_delay_filter (
 
     // 1. Direct structural instantiation of your universal delay gate macro
     dlygate4sd3 u_dly (
-        .A(in),
+        .A(async_in),
         .X(delayed_path)
     );
 
@@ -45,15 +45,15 @@ module mueller_inertial_delay_filter (
     // We pass rst_n into the equation so that when rst_n goes low, the output is forced low.
     // The structural boolean equation matches: Y = !((A1 & A2) | B1 | !rst_n)
     aoi211_1 u_mueller_latch (
-        .A1(in),
+        .A1(async_in),
         .A2(delayed_path),
         .B1(c_element_out),
         .C1(!rst_n),           // Active-high representation of reset to force the AOI low
-        .Y(out)
+        .Y(async_out)
     );
 
     // 3. Complete the physical feedback loop to lock the state memory
-    assign c_element_out = !out;
+    assign c_element_out = !async_out;
 
 endmodule
 
