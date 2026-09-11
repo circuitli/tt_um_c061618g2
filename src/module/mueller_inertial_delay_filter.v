@@ -34,7 +34,7 @@ module mueller_inertial_delay_filter (
 );
 
     wire delayed_path;
-    wire c_element_state;
+    wire aoi_out;
 
     // 1. Structural delay line (filters pulses shorter than this window)
     dlygate4sd3 u_dly (
