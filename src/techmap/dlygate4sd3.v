@@ -23,7 +23,18 @@ module dlygate4sd3 (
     output wire X
 );
 `ifdef IHP_SG13G2
-    sg13g2_dlygate_1 u_cell (.A(A), .X(X));
+    // ---------------------------------------------------------------------
+    // 4-STAGE CASCADED HARDWARE DELAY CHAIN
+    // ---------------------------------------------------------------------
+    (* dont_touch = "true" *) wire dly1;
+    (* dont_touch = "true" *) wire dly2;
+    (* dont_touch = "true" *) wire dly3;
+
+    sg13g2_dlygate_1 u_dly1 (.A(A),    .X(dly1));
+    sg13g2_dlygate_1 u_dly2 (.A(dly1), .X(dly2));
+    sg13g2_dlygate_1 u_dly3 (.A(dly2), .X(dly3));
+    sg13g2_dlygate_1 u_dly4 (.A(dly3), .X(X));
+
 `elsif SKY130
     sky130_fd_sc_hd__dlygate4sd3 u_cell (.A(A), .X(X));
 `elsif GF180MCU

@@ -20,7 +20,7 @@
 `include "src/module/mueller_inertial_delay_filter.v"
 
 `include "formal/techmap/dlygate4sd3_formal.sv"
-`include "formal/techmap/oai211_1_formal.sv"
+`include "formal/techmap/aoi211_1_formal.sv"
 `include "formal/techmap/inv_1_formal.sv"
 
 `default_nettype none
