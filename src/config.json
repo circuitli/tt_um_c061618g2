@@ -29,6 +29,9 @@
   "// -------------------------------------------------------------------------": "",
   "pdk::ihp-sg13g2": {
     "VERILOG_DEFINES": [ "IHP_SG13G2" ],
+    "VERILOG_FILES": [
+      "pdk_dir::libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v"
+    ],
     "_VERILOG_FILES_BLACKBOX": [
       "pdk_dir::libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v"
     ],
@@ -37,7 +40,7 @@
       "-v",
       "pdk_dir::libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v"
     ],
-    "VERILOG_INCLUDE_DIRS": [
+    "_VERILOG_INCLUDE_DIRS": [
       "pdk_dir::libs.ref/sg13g2_stdcell/verilog"
     ],
     "macro_y_1": 3.78,
