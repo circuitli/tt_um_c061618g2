@@ -89,7 +89,7 @@
     "_LEFT_MARGIN_MULT": 6,
     "_RIGHT_MARGIN_MULT": 6,
     "DIE_AREA": [ 0.0, 0.0, 166.08, 37.80 ],
-    "CORE_AREA": [ 5.76, 3.78, 160.32, 34.02 ],
+    "CORE_AREA": [ 5.76, 0.0, 160.32, 37.80 ],
     "_CORE_MARGIN": [ 5.76, 3.78 ],
     "GLB_RT_MAX_DIODE_INS_ITERS": 0,
     "FP_IO_MIN_DISTANCE": 2.4
