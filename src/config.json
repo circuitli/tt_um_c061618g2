@@ -14,7 +14,10 @@
   "DESIGN_NAME": "tt_um_c061618g2",
   "_VERBOSE": 2,
   "_LOG_LEVEL": "DEBUG",
+
+  "//": "RUN_LINTER, LINTER_INCLUDE_PDK_MODELS - Disabling the linter is not recommended!",
   "_RUN_LINTER": false,
+  "LINTER_INCLUDE_PDK_MODELS": 1,
 
   "// -------------------------------------------------------------------------": "",
   "// GLOBAL EXTRA MACRO FILE INTEGRATION (Evaluated Once Globally)": "",
@@ -26,6 +29,9 @@
   "// -------------------------------------------------------------------------": "",
   "pdk::ihp-sg13g2": {
     "VERILOG_DEFINES": [ "IHP_SG13G2" ],
+    "VERILOG_FILES_BLACKBOX": [
+      "dir::$PDK_ROOT/$PDK/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v"
+    ],
     "macro_y_1": 3.78,
     "macro_x_1": 20.16
   },
@@ -360,9 +366,6 @@
 
   "//": "DESIGN_REPAIR_MAX_WIRE_LENGTH - THE FINAL FIX: Setting this explicitly to 0 tells LibreLane's physical design repair engine to completely skip maximum wire length buffering, ensuring clockless loops stay 100% pure wire tracks.",
   "DESIGN_REPAIR_MAX_WIRE_LENGTH": 10000,
-
-  "//": "RUN_LINTER, LINTER_INCLUDE_PDK_MODELS - Disabling the linter is not recommended!",
-  "LINTER_INCLUDE_PDK_MODELS": 1,
 
   "//": "If you need a custom clock configuration, read the following documentation first:",
   "//": "https://tinytapeout.com/faq/#how-can-i-map-an-additional-external-clock-to-one-of-the-gpios",
