@@ -14,7 +14,7 @@
   "DESIGN_NAME": "tt_um_c061618g2",
   "_VERBOSE": 2,
   "_LOG_LEVEL": "DEBUG",
-  "RUN_LINT": false,
+  "_RUN_LINTER": false,
 
   "// -------------------------------------------------------------------------": "",
   "// GLOBAL EXTRA MACRO FILE INTEGRATION (Evaluated Once Globally)": "",
@@ -362,7 +362,6 @@
   "DESIGN_REPAIR_MAX_WIRE_LENGTH": 10000,
 
   "//": "RUN_LINTER, LINTER_INCLUDE_PDK_MODELS - Disabling the linter is not recommended!",
-  "RUN_LINTER": false,
   "LINTER_INCLUDE_PDK_MODELS": 1,
 
   "//": "If you need a custom clock configuration, read the following documentation first:",
