@@ -32,9 +32,13 @@
     "_VERILOG_FILES_BLACKBOX": [
       "pdk_dir::libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v"
     ],
-    "EXTRA_LINTER_ARGUMENTS": [
+    "_VERILATOR_LINT_ARGS": [
       "--verbose",
-      "-v pdk_dir::libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v"
+      "-v",
+      "pdk_dir::libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v"
+    ],
+    "VERILOG_INCLUDE_DIRS": [
+      "pdk_dir::libs.ref/sg13g2_stdcell/verilog"
     ],
     "macro_y_1": 3.78,
     "macro_x_1": 20.16
