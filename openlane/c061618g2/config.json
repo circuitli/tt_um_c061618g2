@@ -8,7 +8,7 @@
 
   "FP_PIN_ORDER_CFG": "dir::pin_order.cfg",
 
-  "PDN_CFG": "dir::pdn_cfg.tcl",
+  "_PDN_CFG": "dir::pdn_cfg.tcl",
 
   "_RUN_IR_DROP_REPORT": false,
   "_FP_PDN_CHECK_NODES": 0,
@@ -76,7 +76,7 @@
     "FP_PDN_VOFFSET": 0.0,
     "FP_PDN_VPITCH": 11.04,
 
-    "PDN_EXTEND_TO": "core_ring",
+    "PDN_EXTEND_TO": "all",
     "PDN_CONNECT": [
       [ "Metal1", "Metal3" ],
       [ "Metal3", "Metal4" ]
