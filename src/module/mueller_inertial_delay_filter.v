@@ -18,7 +18,7 @@
 `define MUELLER_INERTIAL_DELAY_FILTER_SV
 
 `include "src/techmap/dlygate4sd3.v"
-`include "src/techmap/aoi21_1.v"
+`include "src/techmap/aoi211_1.v"
 
 `default_nettype none
 
@@ -44,7 +44,7 @@ module mueller_inertial_delay_filter (
     // 2. Direct structural instantiation of a resettable AOI gate (e.g., aoi211_1 or similar)
     // We pass rst_n into the equation so that when rst_n goes low, the output is forced low.
     // The structural boolean equation matches: Y = !((A1 & A2) | B1 | !rst_n)
-    aoi21_1 u_mueller_latch (
+    aoi211_1 u_mueller_latch (
         .A1(in),
         .A2(delayed_path),
         .B1(c_element_out),

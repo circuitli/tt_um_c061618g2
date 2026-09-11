@@ -21,7 +21,7 @@
 `include "src/module/mueller_inertial_delay_filter.v"
 
 `include "formal/techmap/dlygate4sd3_formal.sv"
-`include "formal/techmap/aoi21_1_formal.sv"
+`include "formal/techmap/aoi211_1_formal.sv"
 
 //=====================================================================
 // SYSTEMVERILOG FORMAL PROPERTIES FOR MUELLER INERTIAL DELAY FILTER
