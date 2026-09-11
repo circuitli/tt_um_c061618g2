@@ -18,8 +18,7 @@
 `define ASYNC_GLITCH_FILTER_SV
 
 `include "src/techmap/and2_1.v"
-`include "src/techmap/inv_1.v"
-`include "src/techmap/buf_4.v"
+`include "src/techmap/dlygate4sd3.v"
 `include "src/cell/async_latch_cell.v"
 
 `default_nettype none
@@ -32,7 +31,7 @@ module async_glitch_filter #(
     output wire  async_out
 );
 
-    wire [STAGES:0] delay_chain;
+    (* keep = "true" *) wire [STAGES:0] delay_chain;
 
     // -------------------------------------------------------------------------
     // INPUT AND RESET GATE
@@ -44,72 +43,23 @@ module async_glitch_filter #(
         .X (delay_chain[0])
     );
 
-    // We declare a single tracking wire to accumulate the XOR properties safely
-    wire [STAGES:0] xor_accumulator;
-    assign xor_accumulator[0] = 1'b0;
-
     // =========================================================================
     // 1. STRUCTURAL ASYNCHRONOUS DELAY GENERATION WITH LOAD CAPACITORS
     // =========================================================================
     generate
         for (genvar i = 0; i < STAGES; i = i + 1) begin : gen_stages
-            (* keep = "true" *) wire internal_inv_node;
-            (* keep = "true" *) wire scalar_cap_a;
-            (* keep = "true" *) wire scalar_cap_b;
-
-            // --- FIRST HALF STAGE ---
             (* keep = "true" *)
-            inv_1 u_inv_a (
+            dlygate4sd3 u_dly (
                 .A (delay_chain[i]),
-                .Y (internal_inv_node)
+                .X (delay_chain[i+1])
             );
-            
-            // Attached capacitor load
-            (* keep = "true" *)
-            buf_4 u_load_cap_a (
-                .A (internal_inv_node),
-                .X (scalar_cap_a) 
-            );
-
-            // --- SECOND HALF STAGE ---
-            (* keep = "true" *)
-            inv_1 u_inv_b (
-                .A (internal_inv_node),
-                .Y (delay_chain[i+1])
-            );
-
-            // Attached capacitor load
-            (* keep = "true" *)
-            buf_4 u_load_cap_b (
-                .A (delay_chain[i+1]),
-                .X (scalar_cap_b) 
-            );
-
-            // Chain the scalar tracks into an unbroken line
-            assign xor_accumulator[i+1] = xor_accumulator[i] ^ scalar_cap_a ^ scalar_cap_b;
         end
     endgenerate
 
-    // =========================================================================
-    // GLITCH DETECTION WINDOWS (STRUCTURALLY LINKED TO DUMMY CAPS)
-    // By merging the cap outputs into the active equations, the tool cannot 
-    // call them floating or unconnected. They are permanently locked.
-    // =========================================================================
-    // Final un-optimizable anchor net
-    wire cap_anchor = xor_accumulator[STAGES];
-
-    // =========================================================================
-    // DYNAMIC ANCHOR WITH ZERO LOGICAL IMPACT
-    // =========================================================================
-    // (cap_anchor & ~cap_anchor) is mathematically ALWAYS 0.
-    // Unlike (A | ~A) which simplifies to 1 early, Yosys cannot optimize out an 
-    // AND-style contradiction block pass without routing the upstream network.
-    wire cap_safe_zero = cap_anchor & ~cap_anchor;
-
     // By ORing or adding a safe logical 0, your original, functional glitch 
     // filter logic is 100% restored, fixing all 15 testbench failures.
-    wire filter_set  = ((&delay_chain[STAGES:1]) & rst_n) | cap_safe_zero;
-    wire filter_hold = ((|delay_chain[STAGES:1]) & rst_n) | cap_safe_zero;
+    wire filter_set  = ((&delay_chain[STAGES:1]) & rst_n);
+    wire filter_hold = ((|delay_chain[STAGES:1]) & rst_n);
 
     // =========================================================================
     // LATCH LOOP BOUNDARY

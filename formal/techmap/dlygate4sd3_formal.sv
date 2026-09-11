@@ -19,8 +19,8 @@
 
 `include "src/techmap/dlygate4sd3.v"
 
-`include "formal/techmap/inv_1_formal.v"
-`include "formal/techmap/buf_4_formal.v"
+`include "formal/techmap/inv_1_formal.sv"
+`include "formal/techmap/buf_4_formal.sv"
 
 `default_nettype none
 
@@ -34,21 +34,36 @@ module dlygate4sd3_formal (
 );
 
     // ---------------------------------------------------------------------
-    // FORMAL ASSERTION: Non-Inverting Path Preservation Invariant
+    // UNIVERSAL STARTUP STATE DETECTOR (Tool-Agnostic Equivalent)
     // ---------------------------------------------------------------------
-    // The delay macro behaves natively as a single-stage buffer flag tracking line.
-    // Under stable DC conditions, the output state must track the source pin phase.
-    property p_buffer_equivalence;
-        (A == X);
-    endproperty
+    // An uninitialized register defaults to 1'b1 under formal evaluation 
+    // rules, then falls to 1'b0 on the first unclocked evaluation tick.
+    reg f_initstate = 1'b1;
+    always_comb begin
+        f_initstate = 1'b0;
+    end
 
-    assert_propagation_phase: assert property (p_buffer_equivalence);
+    // ---------------------------------------------------------------------
+    // COMBINATORIAL ASYNCHRONOUS ASSERTIONS
+    // ---------------------------------------------------------------------
+    always_comb begin
+        if (!f_initstate) begin
+            // Non-Inverting Path Preservation Invariant:
+            // Validates that under steady-state conditions, the output matches
+            // the input exactly across all target PDK variants.
+            assert_propagation_phase: assert (A == X);
+        end
+    end
 
     // ---------------------------------------------------------------------
     // OPERATIONAL COVERAGE METRICS
     // ---------------------------------------------------------------------
-    cover_state_high: cover property (A && X);
-    cover_state_low:  cover property (!A && !X);
+    always_comb begin
+        if (!f_initstate) begin
+            if (A && X)   cover_state_high: cover (1'b1);
+            if (!A && !X) cover_state_low:  cover (1'b1);
+        end
+    end
 
 endmodule
 

@@ -20,8 +20,7 @@
 `include "src/module/async_glitch_filter.sv"
 
 `include "formal/techmap/and2_1_formal.sv"
-`include "formal/techmap/inv_1_formal.sv"
-`include "formal/techmap/buf_4_formal.sv"
+`include "formal/techmap/dlygate4sd3_formal.sv"
 `include "formal/cell/async_latch_cell_formal.sv"
 
 `default_nettype none
@@ -37,9 +36,7 @@ module async_glitch_filter_formal #(
     input  wire  rst_n,
     input  wire  async_in,
     input  wire  async_out,
-    input  wire  [STAGES:0] delay_chain,
-    input  wire  [STAGES-1:0] cap_sink_a,
-    input  wire  [STAGES-1:0] cap_sink_b
+    input  wire  [STAGES:0] delay_chain
 );
 
     // =========================================================================
@@ -59,11 +56,8 @@ module async_glitch_filter_formal #(
         // Verifies the latch output is structurally bound to the identical
         // masked conditions mapped in the main filter module.
         if (rst_n && async_out) begin
-            wire cap_mask_a = &cap_sink_a;
-            wire cap_mask_b = |cap_sink_b;
-
-            wire filter_set  = (&delay_chain[STAGES:1]) & (cap_mask_a | ~cap_mask_a);
-            wire filter_hold = (|delay_chain[STAGES:1]) | (cap_mask_b & ~cap_mask_b);
+            wire filter_set  = (&delay_chain[STAGES:1]);
+            wire filter_hold = (|delay_chain[STAGES:1]);
             
             // The output can only remain high if the set or hold condition is active
             asm_filter_window_integrity_assert: assert (filter_set || filter_hold);
@@ -88,9 +82,7 @@ bind async_glitch_filter async_glitch_filter_formal #(
     .rst_n       (rst_n),
     .async_in    (async_in),
     .async_out   (async_out),
-    .delay_chain (delay_chain),
-    .cap_sink_a  (cap_sink_a),
-    .cap_sink_b  (cap_sink_b)
+    .delay_chain (delay_chain)
 );
 
 `default_nettype wire
