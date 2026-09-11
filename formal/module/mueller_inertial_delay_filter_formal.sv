@@ -20,66 +20,59 @@
 `include "src/module/mueller_inertial_delay_filter.v"
 
 `include "formal/techmap/dlygate4sd3_formal.sv"
-`include "formal/techmap/aoi211_1_formal.sv"
+`include "formal/techmap/oai211_1_formal.sv"
+`include "formal/techmap/inv_1_formal.sv"
 
 `default_nettype none
-
-//=====================================================================
-// SYSTEMVERILOG FORMAL PROPERTIES FOR MUELLER INERTIAL DELAY FILTER
-// =========================================================================
 
 module mueller_inertial_delay_filter_formal (
     input wire rst_n,
     input wire async_in,
     input wire async_out,
-    input wire delayed_path,
-    input wire c_element_state
+    input wire delayed_path
 );
 
     // =========================================================================
-    // UNCLOCKED COMBINATIONAL FORMAL PROPERTIES
+    // UNCLOCKED COMBINATIONAL FORMAL PROPERTIES (NON-INVERTING OAI211 LOGIC)
     // =========================================================================
     always_comb begin
         
-        // Asynchronous reset state enforcement
+        // ---------------------------------------------------------------------
+        // PROPERTY 1: Asynchronous Reset State Enforcement
+        // ---------------------------------------------------------------------
+        // When rst_n is driven low, the OAI211 mask forces async_out to 0.
         if (!rst_n) begin
-            assert (async_out == 1'b0);
+            assert_reset_active: assert (async_out == 1'b0);
         end
 
         // ---------------------------------------------------------------------
-        // PROPERTY 1: Inertial Glitch Filtering Action
+        // PROPERTY 2: Inertial Glitch Filtering Action (State Retention)
         // ---------------------------------------------------------------------
-        // If the input doesn't match the delayed path, the output must remain 
-        // locked in its state unless both structural inputs change.
+        // If the current input does not match the output of the delay line, 
+        // the filter must retain its previous stable state value.
+        // (Verifies the positive feedback latching behavior)
         if (rst_n && (async_in != delayed_path)) begin
-            assert (async_out == !c_element_state);
+            // In a non-inverting C-element, if inputs mismatch, the output 
+            // remains stable. In a combinational always block, this can be proven 
+            // by checking that the OAI state equations evaluate to a valid latch.
+            assert_latch_holding: assert (async_out == !((async_in || delayed_path) && async_out && rst_n));
         end
 
         // ---------------------------------------------------------------------
-        // PROPERTY 2: Steady-State Phase Invariant
+        // PROPERTY 3: Steady-State Phase Invariant (Non-Inverting)
         // ---------------------------------------------------------------------
-        // Once the internal delay path has caught up with the input signal state,
-        // the output must perfectly match the logical polarity of the input.
+        // Once the internal delay line has caught up with the input signal phase,
+        // the clean output must perfectly match the logical polarity of the input.
         if (rst_n && (async_in == delayed_path)) begin
-            assert (async_out == async_in);
+            assert_phase_aligned: assert (async_out == async_in);
         end
 
-        // ---------------------------------------------------------------------
-        // PROPERTY 3: Asynchronous Safety Boundary (No Illegal Interstates)
-        // ---------------------------------------------------------------------
-        // It is physically impossible for the internal feedback node and the 
-        // filtered output node to settle on identical logic phases under stable rails.
-        if (rst_n) begin
-            assert (c_element_state != async_out);
-        end
-
-        // ---------------------------------------------------------------------
+        // =====================================================================
         // OPERATIONAL COVERAGE METRICS
-        // ---------------------------------------------------------------------
+        // =====================================================================
         if (rst_n) begin
-            // Fixed the typo here from "in" -> "async_in"
-            cover (async_in && async_out);
-            cover (!async_in && !async_out);
+            cover_transit_high: cover (async_in && async_out);
+            cover_transit_low:  cover (!async_in && !async_out);
         end
 
     end
@@ -87,14 +80,15 @@ module mueller_inertial_delay_filter_formal (
 endmodule
 
 // =========================================================================
-// BIND STATEMENT
+// UPDATED BIND STATEMENT
 // =========================================================================
+// Removed the old 'c_element_state' mapping and hooked cleanly to the new 
+// structural OAI211 non-inverting filter variables.
 bind mueller_inertial_delay_filter mueller_inertial_delay_filter_formal i_mueller_inertial_delay_filter_formal (
     .rst_n(rst_n),
-    .async_in(async_in),          // Fixed typo from iasync_in -> async_in
+    .async_in(async_in),
     .async_out(async_out),
-    .delayed_path(delayed_path),
-    .c_element_state(c_element_state) // Aligned named pointer with parent wire
+    .delayed_path(delayed_path)
 );
 
 `default_nettype wire

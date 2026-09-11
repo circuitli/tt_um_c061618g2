@@ -219,6 +219,7 @@ src/techmap/buf_4.v                       ../src/techmap/buf_4.v
 src/techmap/dlygate4sd3.v                 ../src/techmap/dlygate4sd3.v
 src/techmap/aoi21_1.v                     ../src/techmap/aoi21_1.v
 src/techmap/aoi211_1.v                    ../src/techmap/aoi211_1.v
+src/techmap/oai211_1.v                    ../src/techmap/oai211_1.v
 src/cell/async_latch_cell.v            ../src/cell/async_latch_cell.v
 src/cell/safe_async_mux.sv             ../src/cell/safe_async_mux.sv
 src/defs/mmu_defs.sv                   ../src/defs/mmu_defs.sv
@@ -239,6 +240,7 @@ formal/techmap/buf_4_formal.sv                    techmap/buf_4_formal.sv
 formal/techmap/dlygate4sd3_formal.sv              techmap/dlygate4sd3_formal.sv
 formal/techmap/aoi21_1_formal.sv                  techmap/aoi21_1_formal.sv
 formal/techmap/aoi211_1_formal.sv                 techmap/aoi211_1_formal.sv
+formal/techmap/oai211_1_formal.sv                 techmap/oai211_1_formal.sv
 formal/cell/safe_async_mux_formal.sv              cell/safe_async_mux_formal.sv
 formal/cell/async_latch_cell_formal.sv            cell/async_latch_cell_formal.sv
 formal/defs/mmu_defs_formal.sv                    defs/mmu_defs_formal.sv
