@@ -33,6 +33,7 @@
       "pdk_dir::libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v"
     ],
     "EXTRA_LINTER_ARGUMENTS": [
+      "--verbose",
       "-v pdk_dir::libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v"
     ],
     "macro_y_1": 3.78,
