@@ -23,7 +23,7 @@ module dlygate4sd3 (
     output wire X
 );
 `ifdef IHP_SG13G2
-    sg13g2_dlygate4sd3 u_cell (.A(A), .X(X));
+    sg13g2_dlygate_1 u_cell (.A(A), .X(X));
 `elsif SKY130
     sky130_fd_sc_hd__dlygate4sd3 u_cell (.A(A), .X(X));
 `elsif GF180MCU

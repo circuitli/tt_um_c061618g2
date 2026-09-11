@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-`ifndef MUELLER_INERTIAL_DELAY_FILTER_SV
-`define MUELLER_INERTIAL_DELAY_FILTER_SV
+`ifndef MUELLER_INERTIAL_DELAY_FILTER_V
+`define MUELLER_INERTIAL_DELAY_FILTER_V
 
 `include "src/techmap/dlygate4sd3.v"
 `include "src/techmap/aoi211_1.v"
@@ -27,33 +27,33 @@
 // =========================================================================
 
 module mueller_inertial_delay_filter (
-    input  wire rst_n,  // Active-low global asynchronous reset
-    input  wire async_in,     // Asynchronous input signal
-    output wire async_out     // Clean, filtered output signal
+    input  wire rst_n,      // Active-low global asynchronous reset
+    input  wire async_in,   // Asynchronous input signal
+    output wire async_out   // Clean, filtered output signal
 );
 
     wire delayed_path;
-    wire c_element_out;
+    wire c_element_state;
 
-    // 1. Direct structural instantiation of your universal delay gate macro
+    // 1. Structural delay line (filters pulses shorter than this window)
     dlygate4sd3 u_dly (
         .A(async_in),
         .X(delayed_path)
     );
 
-    // 2. Direct structural instantiation of a resettable AOI gate (e.g., aoi211_1 or similar)
-    // We pass rst_n into the equation so that when rst_n goes low, the output is forced low.
-    // The structural boolean equation matches: Y = !((A1 & A2) | B1 | !rst_n)
+    // 2. Resettable Mueller C-Element core logic matrix
+    // By driving the OR-plane input (B1) with the inverted state register,
+    // we balance the output inversion of the AOI cell to establish positive storage.
     aoi211_1 u_mueller_latch (
         .A1(async_in),
         .A2(delayed_path),
-        .B1(c_element_out),
-        .C1(!rst_n),           // Active-high representation of reset to force the AOI low
+        .B1(c_element_state), // Inverted feedback state maintains the loop latch
+        .C1(!rst_n),          // High reset level forces AOI output low (Y=0)
         .Y(async_out)
     );
 
-    // 3. Complete the physical feedback loop to lock the state memory
-    assign c_element_out = !async_out;
+    // 3. Drive the internal feedback inversion to establish stable state retention
+    assign c_element_state = !async_out;
 
 endmodule
 

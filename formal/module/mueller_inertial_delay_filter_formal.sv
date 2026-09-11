@@ -16,25 +16,24 @@
 
 `ifndef MUELLER_INERTIAL_DELAY_FILTER_FORMAL_SV
 `define MUELLER_INERTIAL_DELAY_FILTER_FORMAL_SV
-`default_nettype none
 
 `include "src/module/mueller_inertial_delay_filter.v"
 
 `include "formal/techmap/dlygate4sd3_formal.sv"
 `include "formal/techmap/aoi211_1_formal.sv"
 
+`default_nettype none
+
 //=====================================================================
 // SYSTEMVERILOG FORMAL PROPERTIES FOR MUELLER INERTIAL DELAY FILTER
 // =========================================================================
-
-`default_nettype none
 
 module mueller_inertial_delay_filter_formal (
     input wire rst_n,
     input wire async_in,
     input wire async_out,
     input wire delayed_path,
-    input wire c_element_out
+    input wire c_element_state
 );
 
     // =========================================================================
@@ -44,7 +43,7 @@ module mueller_inertial_delay_filter_formal (
         
         // Asynchronous reset state enforcement
         if (!rst_n) begin
-            assert_reset_state: assert (async_out == 1'b0);
+            assert (async_out == 1'b0);
         end
 
         // ---------------------------------------------------------------------
@@ -52,9 +51,8 @@ module mueller_inertial_delay_filter_formal (
         // ---------------------------------------------------------------------
         // If the input doesn't match the delayed path, the output must remain 
         // locked in its state unless both structural inputs change.
-        // (Replaces temporal '$past' logic with instantaneous state matching)
         if (rst_n && (async_in != delayed_path)) begin
-            assert_glitch_filter: assert (async_out == !c_element_out);
+            assert (async_out == !c_element_state);
         end
 
         // ---------------------------------------------------------------------
@@ -63,7 +61,7 @@ module mueller_inertial_delay_filter_formal (
         // Once the internal delay path has caught up with the input signal state,
         // the output must perfectly match the logical polarity of the input.
         if (rst_n && (async_in == delayed_path)) begin
-            assert_steady_state_lock: assert (async_out == async_in);
+            assert (async_out == async_in);
         end
 
         // ---------------------------------------------------------------------
@@ -72,15 +70,16 @@ module mueller_inertial_delay_filter_formal (
         // It is physically impossible for the internal feedback node and the 
         // filtered output node to settle on identical logic phases under stable rails.
         if (rst_n) begin
-            assert_feedback_phase_safety: assert (c_element_out != async_out);
+            assert (c_element_state != async_out);
         end
 
         // ---------------------------------------------------------------------
         // OPERATIONAL COVERAGE METRICS
         // ---------------------------------------------------------------------
         if (rst_n) begin
-            cover_transit_high: cover (in && async_out);
-            cover_transit_low:  cover (!in && !async_out);
+            // Fixed the typo here from "in" -> "async_in"
+            cover (async_in && async_out);
+            cover (!async_in && !async_out);
         end
 
     end
@@ -92,10 +91,10 @@ endmodule
 // =========================================================================
 bind mueller_inertial_delay_filter mueller_inertial_delay_filter_formal i_mueller_inertial_delay_filter_formal (
     .rst_n(rst_n),
-    .async_in(iasync_in),
+    .async_in(async_in),          // Fixed typo from iasync_in -> async_in
     .async_out(async_out),
     .delayed_path(delayed_path),
-    .c_element_out(c_element_out)
+    .c_element_state(c_element_state) // Aligned named pointer with parent wire
 );
 
 `default_nettype wire

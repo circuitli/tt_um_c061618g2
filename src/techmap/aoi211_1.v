@@ -31,34 +31,33 @@ module aoi211_1 (
 );
 
 `ifdef IHP_SG13G2
-    // Actual IHP Library Map: Use the real AND-OR cell + an output inverter
+    // Corrected IHP Structural Compound Mapping
     wire ao_combined_net;
     wire or_bracket_net;
 
-    // 1. OR the feedback node (B1) and the reset trigger (C1) 
+    // 1. OR the feedback node (B1) and the reset trigger (C1)
     sg13g2_or2_1 u_ihp_or (
         .A(B1),
         .B(C1),
         .X(or_bracket_net)
     );
 
-    // 2. Map to the true, existing IHP AND-OR cell
-    // Library Equation: X = (A1 & A2) | B1
-    sg13g2_ao21_1 u_ihp_ao_core (
+    // 2. Map to the existing IHP AND-OR cell (X = (A1 & A2) | B1)
+    sg13g2_a21o_1 u_ihp_ao_core ( // IHP utilizes naming 'a21o' for AND2->OR1
         .A1(A1),
         .A2(A2),
         .B1(or_bracket_net),
         .X(ao_combined_net)
     );
 
-    // 3. Invert the result to complete the original AND-OR-Invert expression
+    // 3. Invert the result using exact IHP port names (.A -> .Y)
     sg13g2_inv_1 u_ihp_output_inv (
         .A(ao_combined_net),
-        .Y(Y)
+        .Y(Y) 
     );
 
 `elsif GF180MCU
-    // GlobalFoundries HAS a native AOI211 cell footprint
+    // GlobalFoundries Native 7-track 5V footprint
     gf180mcu_fd_sc_mcu7t5v0__aoi211_1 u_gf_aoi (
         .I0(A1),
         .I1(A2),
@@ -68,7 +67,7 @@ module aoi211_1 (
     );
 
 `elsif SKY130
-    // SkyWater Sky130 Native High-Density Library Cell
+    // SkyWater Sky130 Native High-Density Cell
     sky130_fd_sc_hd__aoi211_1 u_sky_aoi (
         .A1(A1),
         .A2(A2),
@@ -78,7 +77,7 @@ module aoi211_1 (
     );
 
 `else
-    // Pure behavioral fallback for local verification (Icarus / Verilator)
+    // Pure behavioral fallback for local verification (Verilator / SBY)
     assign Y = !((A1 && A2) || B1 || C1);
 `endif
 
