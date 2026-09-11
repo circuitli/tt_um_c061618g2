@@ -17,7 +17,7 @@
   "FILL_INSERTION": "tru",
   "FP_PDN_MULTILAYER": 1,
   "PDN_MULTILAYER": 1,
-  "PDN_CORE_RING": false,
+  "PDN_CORE_RING": true,
   "PDN_ENABLE_RAILS": true,
   "PDN_ENABLE_MACROS_GRID": false,
   "PDN_ENABLE_PINS": true,
@@ -89,7 +89,7 @@
     "_LEFT_MARGIN_MULT": 6,
     "_RIGHT_MARGIN_MULT": 6,
     "DIE_AREA": [ 0.0, 0.0, 166.08, 37.80 ],
-    "CORE_AREA": [ 5.76, 0.0, 160.32, 37.80 ],
+    "CORE_AREA": [ 5.76, 3.78, 160.32, 34.02 ],
     "_CORE_MARGIN": [ 5.76, 3.78 ],
     "GLB_RT_MAX_DIODE_INS_ITERS": 0,
     "FP_IO_MIN_DISTANCE": 2.4
