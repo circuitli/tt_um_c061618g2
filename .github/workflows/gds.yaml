@@ -85,7 +85,7 @@ jobs:
 
   gds:
     runs-on: ubuntu-24.04
-    #needs: build_macros
+    needs: build_macros
     steps:
       - name: checkout repo
         uses: actions/checkout@v6
