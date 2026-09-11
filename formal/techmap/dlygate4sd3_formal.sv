@@ -16,6 +16,9 @@
 
 `ifndef DLYGATE4SD3_FORMAL_SV
 `define DLYGATE4SD3_FORMAL_SV
+
+`include "src/techmap/dlygate4sd3.v"
+
 `default_nettype none
 
 // =========================================================================

@@ -16,6 +16,9 @@
 
 `ifndef AOI211_1_FORMAL_SV
 `define AOI211_1_FORMAL_SV
+
+`include "src/techmap/aoi21_1.v"
+
 `default_nettype none
 
 module aoi211_1_formal (

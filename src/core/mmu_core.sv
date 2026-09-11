@@ -18,7 +18,7 @@
 `define MMU_CORE_SVH
 
 `include "src/defs/mmu_defs.sv"
-`include "src/module/async_glitch_filter_bank.sv"
+`include "src/module/mueller_inertial_delay_filter_bank.sv"
 
 `default_nettype none
 
@@ -101,9 +101,8 @@ module mmu_core #(
     // =========================================================================
     wire [5:0] clean_signals;
 
-    async_glitch_filter_bank #(
-        .WIDTH(6), 
-        .STAGES(FILTER_STAGES)
+    mueller_inertial_delay_filter_bank #(
+        .WIDTH(6)
     ) u_mmu_filter_bank (
         .rst_n    (rst_n), 
         .async_in (raw_signals), 
