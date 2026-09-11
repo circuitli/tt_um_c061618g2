@@ -14,6 +14,7 @@
   "DESIGN_NAME": "tt_um_c061618g2",
   "_VERBOSE": 2,
   "_LOG_LEVEL": "DEBUG",
+  "RUN_LINT": false,
 
   "// -------------------------------------------------------------------------": "",
   "// GLOBAL EXTRA MACRO FILE INTEGRATION (Evaluated Once Globally)": "",
