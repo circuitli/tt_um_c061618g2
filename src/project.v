@@ -21,7 +21,7 @@
 // If compiling for local verification (Cocotb/Icarus), include the source
 // so the simulator doesn't throw an 'Unknown module type' crash.
 // =========================================================================
-`ifndef SYNTHESIS_fdlkjsdfkjsdklf
+`ifndef SYNTHESIS
     `include "src/module/c061618g2.sv"
 `endif
 

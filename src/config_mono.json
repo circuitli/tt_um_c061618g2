@@ -70,12 +70,12 @@
   "_PDN_ENABLE_RAILS": true,
   "_PDN_ENABLE_MACROS_GRID": false,
   "_PDN_CONNECT_MACROS_TO_GRID": false,
-  "PDN_MACRO_CONNECTIONS": [
+  "_PDN_MACRO_CONNECTIONS": [
     "u_c061618g2 VPWR VGND VPWR VGND"
   ],
 
   "//": "Custom PDN config: SRAM power pins are on Metal4, need Metal4↔TopMetal1 connection",
-  "PDN_CFG": "dir::pdn_cfg.tcl",
+  "_PDN_CFG": "dir::pdn_cfg.tcl",
 
   "_FP_PDN_MACROS": [
     "u_c061618g2"
@@ -97,7 +97,7 @@
     }
   ],
   "_STA_MACRO_PRIORITIZE_NL": true,
-  "MACROS": {
+  "_MACROS": {
     "c061618g2": {
       "gds": [ "dir::../macros/gds/c061618g2.gds" ],
       "lef": [ "dir::../macros/lef/c061618g2.lef" ],

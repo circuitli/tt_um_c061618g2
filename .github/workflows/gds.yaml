@@ -14,7 +14,7 @@ concurrency:
 jobs:
   # STEP 1: Independent job to build your macro abstracts
   build_macros:
-    if: false
+    #if: false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -93,7 +93,7 @@ jobs:
           submodules: recursive
 
       - name: Download Precompiled Macro Artifacts
-        if: false
+        #if: false
         uses: actions/download-artifact@v4
         with:
           name: precompiled-macros
