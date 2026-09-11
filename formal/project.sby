@@ -224,7 +224,7 @@ src/module/async_glitch_filter.sv      ../src/module/async_glitch_filter.sv
 src/module/async_glitch_filter_bank.sv ../src/module/async_glitch_filter_bank.sv
 #src/module/c061618g2_input_shield.sv   ../src/module/c061618g2_input_shield.sv
 src/module/c061618g2.sv                ../src/module/c061618g2.sv
-src/project.sv                         ../src/project.sv
+src/project.v                         ../src/project.v
 lib/cells_formal.sv                        lib/cells_formal.sv
 project_formal.sv                          project_formal.sv
 formal/lib/cells_formal.sv                        lib/cells_formal.sv

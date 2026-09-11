@@ -57,8 +57,6 @@ jobs:
           # 6. Export environment variables to expose paths to subsequent tools
           echo "PDK_ROOT=/home/runner/pdk" >> $GITHUB_ENV
           echo "PDK=ihp-sg13g2" >> $GITHUB_ENV
-          echo "PDK_DEFINE=IHP_SG13G2" >> $GITHUB_ENV
-
 
       - name: Install OSS CAD Suite
         uses: YosysHQ/setup-oss-cad-suite@v4

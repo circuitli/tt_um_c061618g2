@@ -20,7 +20,7 @@
 /// ==============================================================================
 // SECTION: TOP-LEVEL HARDWARE WRAPPER FORMAL PROPERTIES
 // ==============================================================================
-`include "src/project.sv"
+`include "src/project.v"
 
 `include "formal/module/c061618g2_formal.sv"
 
