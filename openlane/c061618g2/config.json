@@ -37,10 +37,10 @@
   "PDN_AUTO_CONNECT": true,
   "FP_PDN_ENABLE_PINS": true,
   "PDN_ENABLE_PINS": true,
-  "VDD_PIN": "VPWR",
-  "GND_PIN": "VGND",
-  "VDD_NETS": [ "VPWR VDD" ],
-  "GND_NETS": [ "VGND VSS" ],
+  "VDD_PIN": "VDD",
+  "GND_PIN": "VSS",
+  "VDD_NETS": [ "VDD" ],
+  "GND_NETS": [ "VSS" ],
   "_GLOBAL_CONNECT_RULES": [
     {
       "net": "VPWR",
