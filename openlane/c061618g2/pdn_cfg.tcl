@@ -29,8 +29,6 @@ set interleaved_offset_vdd [expr {$calculated_rail_pitch * 2.0}]
 
 # (Full configuration script for standard cell and macro grids can be found in the referenced documentation)
 
-define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
-
 # =============================================================================
 # FORCE OPENROAD TO GENERATE THE PDK'S AUTOMATIC RAILS IN THIS NEW GRID CONTEXT
 # =============================================================================
