@@ -12,7 +12,7 @@
   },
   "FP_PIN_ORDER_CFG": "dir::pin_order.cfg",
 
-  "__PDN_CFG": "dir::pdn_cfg.tcl",
+  "PDN_CFG": "dir::pdn_cfg.tcl",
 
   "__RUN_IRDROP_REPORT": false,
   "__FP_PDN_CHECK_NODES": 0,
@@ -69,7 +69,7 @@
     "PDN_HORIZONTAL_LAYER": "Metal4",
     "PDN_VERTICAL_LAYER": "Metal3",
 
-    "__PDN_RAIL_WIDTH": 0.44,
+    "PDN_RAIL_WIDTH": 0.44,
     "_PDN_RAIL_OFFSET": 3.78,
     "__PDN_RAIL_OFFSET": 0.0,
     "_PDN_RAIL_PITCH": 3.78,
