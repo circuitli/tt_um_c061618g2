@@ -41,8 +41,8 @@
 
     "FP_PDN_HWIDTH": 1.64,
     "FP_PDN_HSPACING": 1.64,
-    "FP_PDN_HOFFSET": 0.36,
-    "FP_PDN_HPITCH": 7.56,
+    "FP_PDN_HOFFSET": 0.82,
+    "FP_PDN_HPITCH": 15.12,
 
     "FP_PDN_VWIDTH": 0.48,
     "FP_PDN_VSPACING": 0.48,
