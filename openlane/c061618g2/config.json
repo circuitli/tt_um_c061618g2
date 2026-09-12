@@ -21,8 +21,10 @@
   "__FILL_INSERTION": "tru",
   "FP_PDN_SKIP_DRC_CHECKS": true,
   "PDN_SKIP_DRC_CHECKS": true,
-  "FP_PDN_MULTILAYER": 0,
-  "PDN_MULTILAYER": 0,
+  "FP_PDN_ENABLE_GLOBAL_CONNECTIONS": true,
+  "FP_PDN_AUTO_CONNECT": true,
+  "FP_PDN_MULTILAYER": 1,
+  "PDN_MULTILAYER": 1,
   "FP_PDN_CORE_RING": false,
   "PDN_CORE_RING": false,
   "PDN_ENABLE_RAILS": true,
@@ -30,7 +32,8 @@
   "PDN_ENABLE_PINS": true,
   "__PDN_VTRACK_ASSIGN": "direct",
   "_PDN_SKIPTRIM": true,
-
+  "VDD_PIN": "VPWR",
+  "GND_PIN": "VGND",
   "VDD_NETS": [ "VPWR" ],
   "GND_NETS": [ "VGND" ],
 
@@ -87,7 +90,6 @@
 
     "_FP_PDN_RAILS_EXT_TO_CORE_BOUNDARY": 1,
     "_PDN_EXTEND_TO": "boundary",
-    "FP_PDN_AUTO_CONNECT": true,
     "LVS_CONNECT_BY_NAME": true,
     "__PDN_CONNECT": [
       [ "Metal1", "Metal3" ],
