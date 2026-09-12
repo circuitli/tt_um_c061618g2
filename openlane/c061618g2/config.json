@@ -20,6 +20,7 @@
     "GND_NETS": [ "vss" ],
     "FP_CORE_UTIL": 65,
     "PL_TARGET_DENSITY_PCT": 75,
+    "DIE_AREA": [ 0.0, 0.0, 166.08, 37.80 ],
     "CORE_AREA": [ 5.76, 3.78, 160.32, 34.02 ]
   },
 
