@@ -44,7 +44,7 @@
       "pdk_dir::libs.ref/sg13g2_stdcell/verilog"
     ],
     "PDN_MACRO_CONNECTIONS": [
-      "u_c061618g2 VPWR VGND vdd vss"
+      "u_c061618g2 vdd vss vdd vss"
     ],
     "macro_y_1": 3.78,
     "macro_x_1": 20.16
