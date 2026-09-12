@@ -276,7 +276,7 @@ jobs:
           TEST_DIR="${{ github.workspace }}/test"
 
           shopt -s nullglob
-          MACRO_FILES=$(echo $GITHUB_WORKSPACE/macros/nl/*.v)
+          MACRO_FILES=$(echo $GITHUB_WORKSPACE/macros/*/nl/*.v)
           shopt -u nullglob
 
           if [ -z "$MACRO_FILES" ]; then
