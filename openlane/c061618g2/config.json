@@ -21,6 +21,7 @@
   "__FILL_INSERTION": "tru",
   "FP_PDN_MULTILAYER": 0,
   "PDN_MULTILAYER": 0,
+  "FP_PDN_CORE_RING": false,
   "PDN_CORE_RING": false,
   "PDN_ENABLE_RAILS": true,
   "__PDN_ENABLE_MACROS_GRID": false,
