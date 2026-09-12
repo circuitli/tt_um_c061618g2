@@ -25,7 +25,7 @@ set physical_inst     [lindex [$db_block getInsts] 0]
 set physical_bbox     [$physical_inst getBBox]
 set physical_y_center [expr {(double([$physical_bbox yMin]) + double([$physical_bbox yMax])) / 2.0 / $db_units}]
 
-# FIXED: Correctly map VDD directly to the baseline row center (Row 0, 2, 4, 6)
+# Correctly map VDD directly to the baseline row center (Row 0, 2, 4, 6)
 set interleaved_pitch  [expr {$calculated_rail_pitch * 2.0}]
 set interleaved_offset_vdd $physical_y_center
 set interleaved_offset_gnd [expr {$physical_y_center + $calculated_rail_pitch}]
