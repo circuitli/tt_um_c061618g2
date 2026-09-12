@@ -14,9 +14,6 @@
   "PDN_CORE_RING": false,
   "PDN_CONNECT_MACROS_TO_GRID": false,
   "PDN_ENABLE_RAILS": true,
-  "PDN_MACRO_CONNECTIONS": [
-    "vdd vss vdd vss"
-  ],
 
   "RUN_SPEF_EXTRACTION": true,
 
