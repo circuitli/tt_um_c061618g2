@@ -20,26 +20,38 @@ set first_layout_row [lindex [$db_block getRows] 0]
 set row_site_object  [$first_layout_row getSite]
 set calculated_rail_pitch [expr {double([$row_site_object getHeight]) / $db_units}]
 
-# 4. TRACK ALIGNMENT MATH: Subtract the precise 0.08 um pin shift to stop via removals
+# 4. DYNAMIC COORDINATE CALCULATION: Extract true layout box origin
+set live_row_bbox [$first_layout_row getBBox]
+set live_row_y_min [expr {double([lindex $live_row_bbox 1]) / $db_units}]
+
+# 5. AUTOMATED OFFSET MATH: Center track = layout boundary minus half-width overhang
+set dynamic_overhang_shift [expr {$native_pdk_width / 2.0}]
+set true_target_offset [expr {$live_row_y_min - $dynamic_overhang_shift}]
+
 set interleaved_pitch  [expr {$calculated_rail_pitch * 2.0}]
-set interleaved_offset_vdd [expr {$calculated_rail_pitch - 0.08}]
-set interleaved_offset_gnd [expr {($calculated_rail_pitch * 2.0) - 0.08}]
+set interleaved_offset_vdd $true_target_offset
+set interleaved_offset_gnd [expr {$true_target_offset + $calculated_rail_pitch}]
 # =============================================================================
 
 # Safely initialize your custom grid name to bypass the memory crash
-define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE \
-                -pins $::env(PDN_RAIL_LAYER)
+define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 
 # =============================================================================
-# DYNAMIC ALTERNATING RAILS (Perfectly centered on the -0.08 pin offset)
-# =============================================================================
-# =============================================================================
-# REPAIRED: NATIVE FOLLOWPINS ENGINE (Automatically handles true pin fractions)
+# AUTOMATED RAILS (NO FOLLOWPINS - PURELY DYNAMIC ALIGNMENT VIA OPENDB)
 # =============================================================================
 add_pdn_stripe -grid stdcell_grid \
                -layer $::env(PDN_RAIL_LAYER) \
-               -width $::env(PDN_RAIL_WIDTH) \
-               -followpins
+               -width $native_pdk_width \
+               -pitch $interleaved_pitch \
+               -offset $interleaved_offset_vdd \
+               -nets "$::env(VDD_NET)"
+
+add_pdn_stripe -grid stdcell_grid \
+               -layer $::env(PDN_RAIL_LAYER) \
+               -width $native_pdk_width \
+               -pitch $interleaved_pitch \
+               -offset $interleaved_offset_gnd \
+               -nets "$::env(GND_NET)"
 # =============================================================================
 
 # 1. Unified Vertical Stripes (Metal3) -> EXTEND_TO_BOUNDARY
