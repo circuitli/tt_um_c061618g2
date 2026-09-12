@@ -6,8 +6,15 @@
 
   "PNR_SDC_FILE": "dir::../../src/mmu_constraints.sdc",
 
-  "PDN_MULTILAYER": false,
+  "FP_PIN_ORDER_CFG": "dir::pin_order.cfg",
+
   "FP_SIZING": "absolute",
+
+  "PDN_MULTILAYER": false,
+  "FP_PDN_CORE_RING": false,
+  "PDN_CORE_RING": false,
+  "FP_PDN_ENABLE_MACROS_GRID": false,
+  "PDN_ENABLE_MACROS_GRID": false,
 
   "RUN_SPEF_EXTRACTION": true,
 
@@ -21,7 +28,8 @@
     "FP_CORE_UTIL": 65,
     "PL_TARGET_DENSITY_PCT": 75,
     "DIE_AREA": [ 0.0, 0.0, 144.00, 37.80 ],
-    "CORE_AREA": [ 5.76, 3.78, 138.24, 34.02 ]
+    "CORE_AREA": [ 5.76, 3.78, 138.24, 34.02 ],
+    "RT_MAX_LAYER": "Metal4"
   },
 
   "pdk::sky130*": {
