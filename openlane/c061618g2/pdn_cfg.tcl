@@ -24,32 +24,20 @@ set calculated_rail_pitch [expr {double([$row_site_object getHeight]) / $db_unit
 set physical_inst     [lindex [$db_block getInsts] 0]
 set physical_bbox     [$physical_inst getBBox]
 set physical_y_center [expr {(double([$physical_bbox yMin]) + double([$physical_bbox yMax])) / 2.0 / $db_units}]
-
-# FIXED: Correct the offset alignments so VDD lands precisely on the odd tracks (Row 1, 3, 5)
-set interleaved_pitch  [expr {$calculated_rail_pitch * 2.0}]
-set interleaved_offset_vdd $physical_y_center
-set interleaved_offset_gnd [expr {$physical_y_center + $calculated_rail_pitch}]
 # =============================================================================
 
 # Safely initialize your custom grid name to bypass the memory crash
 define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 
 # =============================================================================
-# AUTOMATED RAILS (NO FOLLOWPINS - PERFECTLY ALIGNED TO THE EXTRACTED CELL PINS)
+# AUTOMATED RAILS (NO FOLLOWPINS - DUAL NET INTERLEAVING ENGINE)
 # =============================================================================
 add_pdn_stripe -grid stdcell_grid \
                -layer $::env(PDN_RAIL_LAYER) \
                -width $native_pdk_width \
-               -pitch $interleaved_pitch \
-               -offset $interleaved_offset_vdd \
-               -nets "$::env(VDD_NET)"
-
-add_pdn_stripe -grid stdcell_grid \
-               -layer $::env(PDN_RAIL_LAYER) \
-               -width $native_pdk_width \
-               -pitch $interleaved_pitch \
-               -offset $interleaved_offset_gnd \
-               -nets "$::env(GND_NET)"
+               -pitch $calculated_rail_pitch \
+               -offset $physical_y_center \
+               -nets "$::env(VDD_NET) $::env(GND_NET)"
 # =============================================================================
 
 # 1. Unified Vertical Stripes (Metal3) -> EXTEND_TO_BOUNDARY
