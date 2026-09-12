@@ -41,18 +41,16 @@
   "GND_PIN": "VSS",
   "VDD_NETS": [ "VDD" ],
   "GND_NETS": [ "VSS" ],
-  "_GLOBAL_CONNECT_RULES": [
-    {
-      "net": "VPWR",
-      "pins": [ "VDD", "VPWR", "vccd", "vdd", "VCC", "vcc" ],
+  "FP_PDN_GLOBAL_CONNECTIONS": {
+    "VDD": {
+      "pins": [ "VDD", "vdd", "VCC", "vcc" ],
       "insts": [ "*" ]
     },
-    {
-      "net": "VGND",
-      "pins": [ "GND", "VGND", "vssd", "gnd", "VSS", "vss" ],
+    "VSS": {
+      "pins": [ "VSS", "vss", "GND", "gnd" ],
       "insts": [ "*" ]
     }
-  ],
+  },
 
   "RUN_SPEF_EXTRACTION": true,
   "RCX_CORNERS": [ "min", "nom", "max" ],
