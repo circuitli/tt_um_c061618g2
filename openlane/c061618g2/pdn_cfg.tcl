@@ -25,17 +25,17 @@ set physical_inst     [lindex [$db_block getInsts] 0]
 set physical_bbox     [$physical_inst getBBox]
 set physical_y_center [expr {(double([$physical_bbox yMin]) + double([$physical_bbox yMax])) / 2.0 / $db_units}]
 
-# Correctly map VDD directly to the baseline row center (Row 0, 2, 4, 6)
+# FIXED: Correct the offset alignments so VDD lands precisely on the odd tracks (Row 1, 3, 5)
 set interleaved_pitch  [expr {$calculated_rail_pitch * 2.0}]
-set interleaved_offset_vdd $physical_y_center
-set interleaved_offset_gnd [expr {$physical_y_center + $calculated_rail_pitch}]
+set interleaved_offset_gnd $physical_y_center
+set interleaved_offset_vdd [expr {$physical_y_center + $calculated_rail_pitch}]
 # =============================================================================
 
 # Safely initialize your custom grid name to bypass the memory crash
 define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 
 # =============================================================================
-# AUTOMATED RAILS (NO FOLLOWPINS - MATCHING NET TO LOGICAL OFFSET)
+# AUTOMATED RAILS (NO FOLLOWPINS - PERFECTLY ALIGNED TO THE EXTRACTED CELL PINS)
 # =============================================================================
 add_pdn_stripe -grid stdcell_grid \
                -layer $::env(PDN_RAIL_LAYER) \
