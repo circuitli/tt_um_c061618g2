@@ -19,6 +19,8 @@
   "__PDN_CHECK_NODES": false,
 
   "__FILL_INSERTION": "tru",
+  "FP_PDN_SKIP_DRC_CHECKS": true,
+  "PDN_SKIP_DRC_CHECKS": true,
   "FP_PDN_MULTILAYER": 0,
   "PDN_MULTILAYER": 0,
   "FP_PDN_CORE_RING": false,
