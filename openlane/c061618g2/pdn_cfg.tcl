@@ -15,7 +15,7 @@ set core_left [expr {double([$core_box xMin]) / $db_units}]
 # 2. DYNAMICALLY QUERY THE PDK TECH LAYER FOR THE REAL COPRER WIDTH
 # This pulls the true manufacturing physical width rule straight from the tech database
 set rail_layer_obj [$db_tech findLayer $::env(PDN_RAIL_LAYER)]
-set native_pdk_width [expr {double([$rail_layer_obj getWidth]) / $db_units}]
+set native_pdk_width $::env(PDN_RAIL_WIDTH)
 
 # Dynamically extract standard cell row spacing directly from the live layout
 set first_layout_row [lindex [$db_block getRows] 0]
