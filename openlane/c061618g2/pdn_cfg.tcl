@@ -36,21 +36,21 @@ set interleaved_offset_gnd [expr {$physical_y_center + $calculated_rail_pitch}]
 define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 
 # =============================================================================
-# AUTOMATED RAILS (NO FOLLOWPINS - PERFECTLY ALIGNED TO THE EXTRACTED CELL PINS)
+# AUTOMATED RAILS
 # =============================================================================
 add_pdn_stripe -grid stdcell_grid \
                -layer $::env(PDN_RAIL_LAYER) \
                -width $native_pdk_width \
                -pitch $interleaved_pitch \
                -offset $interleaved_offset_vdd \
-               -nets "$::env(VDD_NET)"
+               -nets "$::env(GND_NET)"
 
 add_pdn_stripe -grid stdcell_grid \
                -layer $::env(PDN_RAIL_LAYER) \
                -width $native_pdk_width \
                -pitch $interleaved_pitch \
                -offset $interleaved_offset_gnd \
-               -nets "$::env(GND_NET)"
+               -nets "$::env(VDD_NET)"
 # =============================================================================
 
 # 1. Unified Vertical Stripes (Metal3) -> EXTEND_TO_BOUNDARY
