@@ -33,12 +33,21 @@ set interleaved_offset_vdd [expr {$calculated_rail_pitch * 2.0}]
 define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 
 # =============================================================================
-# REPAIRED: GENERATE NATIVE RAILS WITH ZERO OVERRIDES OR HARDCODED SEPARATIONS
+# MANUAL ALTERNATING RAILS USING YOUR CALCULATED INTERLEAVED METRICS
 # =============================================================================
 add_pdn_stripe -grid stdcell_grid \
                -layer $::env(PDN_RAIL_LAYER) \
                -width $native_pdk_width \
-               -followpins
+               -pitch $interleaved_pitch \
+               -offset $interleaved_offset_gnd \
+               -nets "$::env(GND_NET)"
+
+add_pdn_stripe -grid stdcell_grid \
+               -layer $::env(PDN_RAIL_LAYER) \
+               -width $native_pdk_width \
+               -pitch $interleaved_pitch \
+               -offset $interleaved_offset_vdd \
+               -nets "$::env(VDD_NET)"
 # =============================================================================
 
 # 1. Unified Vertical Stripes (Metal3) -> EXTEND_TO_BOUNDARY
