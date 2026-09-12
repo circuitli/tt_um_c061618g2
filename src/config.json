@@ -45,6 +45,17 @@
     "_VERILOG_INCLUDE_DIRS": [
       "pdk_dir::libs.ref/sg13g2_stdcell/verilog"
     ],
+    "FP_PDN_MACROS": [
+      {
+        "instance": "u_c061618g2",
+        "layers": [ "Metal2", "Metal3" ],
+        "connect": [ "Metal1" ],
+        "width": 1.64,
+        "spacing": 1.64,
+        "pitch": 7.56,
+        "offset": 0.82
+      }
+    ],
     "PDN_MACRO_CONNECTIONS": [
       "u_c061618g2 VPWR VGND vdd vss"
     ],
