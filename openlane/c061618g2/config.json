@@ -64,7 +64,7 @@
   "CLOCK_PERIOD": 0,
   "CLOCK_PORT": null,
   "CLOCK_NET": null,
-  "RUN_CTS": false
+  "RUN_CTS": false,
 
   "//": "SYNTH_STRATEGY - Changing this option over to an area or raw delay strategy rewrites ABC's optimization profile, completely stripping out the crashing sequential timing sub-commands (like scorr)!",
   "SYNTH_STRATEGY": "AREA 0"
