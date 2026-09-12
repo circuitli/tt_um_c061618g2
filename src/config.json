@@ -24,6 +24,8 @@
   "// -------------------------------------------------------------------------": "",
   "_EXTRA_LEFS": [ "dir::macro/*.lef" ],
 
+  "_PDN_CFG": "dir::pdn_cfg.tcl",
+
   "// -------------------------------------------------------------------------": "",
   "// STRICT PROCESS-SPECIFIC OVERRIDES ONLY": "",
   "// -------------------------------------------------------------------------": "",
@@ -115,7 +117,7 @@
     }
   ],
   "_STA_MACRO_PRIORITIZE_NL": true,
- 
+
   "// Timing is the only external aspect that must be explicitly loaded at root": "",
   "_EXTRA_LIBS": [ "dir::../macros/lib/c061618g2.lib" ],
 

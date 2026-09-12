@@ -10,6 +10,7 @@
 
 
   "FP_SIZING": "absolute",
+  "PL_MACRO_HALO": 0,
   "PDN_MULTILAYER": false,
   "PDN_CORE_RING": false,
   "PDN_CONNECT_MACROS_TO_GRID": false,
@@ -37,7 +38,9 @@
     "FP_PDN_RAIL_LAYER": "Metal1",
     "FP_PDN_UPPER_LAYERS": [ "Metal2", "Metal3" ],
     "RT_CLOCK_MIN_LAYER": "Metal1",
-    "RT_CLOCK_MAX_LAYER": "Metal3"
+    "RT_CLOCK_MAX_LAYER": "Metal3",
+    "FP_PDN_VWIDTH": 0,
+    "FP_PDN_HWIDTH": 0
   },
 
   "pdk::sky130*": {
