@@ -36,7 +36,7 @@
     "PDN_VERTICAL_LAYER": "Metal3",
     "PDN_CONNECT": [
       [ "Metal1", "Metal3" ],
-      [ "Metal3", "Metal4" ],
+      [ "Metal3", "Metal4" ]
     ]
   },
 
