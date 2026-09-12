@@ -27,7 +27,8 @@ set interleaved_offset_gnd [expr {($calculated_rail_pitch * 2.0) - 0.08}]
 # =============================================================================
 
 # Safely initialize your custom grid name to bypass the memory crash
-define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
+define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE \
+                -pins $::env(PDN_RAIL_LAYER)
 
 # =============================================================================
 # DYNAMIC ALTERNATING RAILS (Perfectly centered on the -0.08 pin offset)
