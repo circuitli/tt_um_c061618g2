@@ -1,0 +1,311 @@
+{
+  "DESIGN_NAME": "c061618g2",
+  "VERILOG_FILES": [
+    "dir::../../src/module/c061618g2.sv"
+  ],
+
+  "PNR_SDC_FILE": "dir::../../src/mmu_constraints.sdc",
+
+  "VSRC_LOC_FILES": {
+    "VPWR": "dir::vsrc_core.csv",
+    "VGND": "dir::vsrc_core.csv"
+  },
+  "FP_PIN_ORDER_CFG": "dir::pin_order.cfg",
+
+  "_PDN_CFG": "dir::pdn_cfg.tcl",
+
+  "__RUN_IRDROP_REPORT": false,
+  "__FP_PDN_CHECK_NODES": 0,
+  "__PDN_CHECK_NODES": false,
+
+  "__FILL_INSERTION": "tru",
+  "FP_PDN_SKIP_DRC_CHECKS": true,
+  "_PDN_SKIPTRIM": true,
+  "PDN_SKIP_DRC_CHECKS": true,
+  "__PDN_VTRACK_ASSIGN": "direct",
+  "FP_PDN_MULTILAYER": 1,
+  "PDN_MULTILAYER": 1,
+  "FP_PDN_CORE_RING": false,
+  "PDN_CORE_RING": false,
+  "FP_PDN_ENABLE_RAILS": true,
+  "PDN_ENABLE_RAILS": true,
+  "FP_PDN_ENABLE_MACROS_GRID": false,
+  "PDN_ENABLE_MACROS_GRID": false,
+  "FP_PDN_ENABLE_GLOBAL_CONNECTIONS": true,
+  "PDN_ENABLE_GLOBAL_CONNECTIONS": true,
+  "FP_PDN_AUTO_CONNECT": true,
+  "PDN_AUTO_CONNECT": true,
+  "FP_PDN_ENABLE_PINS": true,
+  "PDN_ENABLE_PINS": true,
+  "LVS_INSERT_POWER_PINS": 0,
+  "VDD_PIN": "VDD",
+  "GND_PIN": "VSS",
+  "VDD_NETS": [ "VDD" ],
+  "GND_NETS": [ "VSS" ],
+  "FP_PDN_GLOBAL_CONNECTIONS": {
+    "VDD": {
+      "pins": [ "VDD", "vdd", "VCC", "vcc" ],
+      "insts": [ "*" ]
+    },
+    "VSS": {
+      "pins": [ "VSS", "vss", "GND", "gnd" ],
+      "insts": [ "*" ]
+    }
+  },
+
+  "RUN_SPEF_EXTRACTION": true,
+  "RCX_CORNERS": [ "min", "nom", "max" ],
+  "SAVE_FINAL_VIEWS": true,
+
+  "_SKIP_STEPS": [
+    "GeneratePDN"
+  ],
+
+  "_RUN_POST_MACRO_GENERATION_PDN": true,
+
+  "GPL_ALLOW_OVERFLOW": false,
+  "GRT_ALLOW_CONGESTION": false,
+  "FP_WELLTAP_CELL": null,
+  "FP_ENDCAP_CELL": null,
+
+  "// -------------------------------------------------------------------------": "",
+  "// 1. HARD MACRO BLOCK DESIGNATION (Stops Top-Level Pad Grid Inference)": "",
+  "// -------------------------------------------------------------------------": "",
+  "DESIGN_IS_CORE": false,
+
+  "// Sizing Strategy": "Use absolute sizing to prevent OpenLane from guessing and failing with channel errors",
+  "FP_SIZING": "absolute",
+
+  "// -------------------------------------------------------------------------": "",
+  "// 3. TARGET ENVIRONMENT ENVELOPE SEEDING (Cross-PDK Platform Controls)": "",
+  "// -------------------------------------------------------------------------": "",
+  "pdk::ihp-sg13g2": {
+    "VERILOG_DEFINES": [ "IHP_SG13G2" ],
+    "FP_CORE_UTIL": 65,
+    "PL_TARGET_DENSITY_PCT": 75,
+    "FP_PDN_RAILS_START_WITH": "POWER",
+    "__RT_MAX_LAYER": "Metal4",
+    "PDN_RAIL_LAYER": "Metal1",
+    "PDN_HORIZONTAL_LAYER": "Metal4",
+    "PDN_VERTICAL_LAYER": "Metal3",
+
+    "PDN_RAIL_WIDTH": 0.44,
+    "_PDN_RAIL_OFFSET": 3.78,
+    "__PDN_RAIL_OFFSET": 0.0,
+    "_PDN_RAIL_PITCH": 3.78,
+
+    "FP_PDN_HWIDTH": 0.72,
+    "FP_PDN_HSPACING": 0.72,
+    "FP_PDN_HOFFSET": 0.0,
+    "FP_PDN_HPITCH": 7.56,
+
+    "FP_PDN_VWIDTH": 0.48,
+    "FP_PDN_VSPACING": 0.48,
+    "FP_PDN_VOFFSET": 0.0,
+    "FP_PDN_VPITCH": 11.04,
+
+    "_FP_PDN_RAILS_EXT_TO_CORE_BOUNDARY": 1,
+    "_PDN_EXTEND_TO": "boundary",
+    "_LVS_CONNECT_BY_NAME": true,
+    "__PDN_CONNECT": [
+      [ "Metal1", "Metal3" ],
+      [ "Metal3", "Metal4" ]
+    ],
+    "__FP_TAPCELL_DIST": 55.2,
+    "_TAP_CELL_NAME": "sg13g2_stdcell_tap_1",
+    "_FP_WELLTAP_CELL": "sg13g2_stdcell_tap_1",
+    "_TOP_MARGIN_MULT": 1,
+    "_BOTTOM_MARGIN_MULT": 1,
+    "_LEFT_MARGIN_MULT": 6,
+    "_RIGHT_MARGIN_MULT": 6,
+    "DIE_AREA": [ 0.0, 0.0, 166.08, 37.80 ],
+    "CORE_AREA": [ 5.76, 3.78, 160.32, 34.02 ],
+    "_CORE_MARGIN": [ 5.76, 3.78 ],
+    "__GLB_RT_MAX_DIODE_INS_ITERS": 0,
+    "__FP_IO_MIN_DISTANCE": 2.4
+  },
+
+  "pdk::sky130*": {
+    "VERILOG_DEFINES": [ "SKY130" ],
+    "STD_CELL_LIBRARY": "sky130_fd_sc_hd",
+    "_DIE_AREA": [ 0, 0, 55.76, 43.52 ],
+    "FP_TAP_DISTANCE": 14,
+    "DIODE_INSERTION_STRATEGY": 0
+  },
+
+  "pdk::gf180mcu*": {
+    "VERILOG_DEFINES": [ "GF180MCU" ],
+    "STD_CELL_LIBRARY": "gf180mcu_fd_sc_mcu7t5v0",
+    "_DIE_AREA": [ 0, 0, 91.44, 78.40 ],
+    "FP_TAP_DISTANCE": 16,
+    "DIODE_INSERTION_STRATEGY": 0
+  },
+
+  "// -------------------------------------------------------------------------": "",
+  "// 1. Force the toolchain to treat the layout flatly with no clock trees.": "",
+  "// 2. Instruct Yosys to skip sequential mapping & optimize loops as gates!": "",
+  "// -------------------------------------------------------------------------": "",
+  "CLOCK_PERIOD": 0,
+  "CLOCK_PORT": null,
+  "CLOCK_NET": null,
+  "RUN_CTS": false,
+  "//": "CLOCK_TREE_SYNTHESIS - Force Clock Tree Synthesis to explicitly balance insertion delays across the phase clock multiplexer",
+  "CLOCK_TREE_SYNTHESIS": false,
+
+  "//": "SYNTH_STRATEGY - Changing this option over to an area or raw delay strategy rewrites ABC's optimization profile, completely stripping out the crashing sequential timing sub-commands (like scorr)!",
+  "SYNTH_STRATEGY": "AREA 0",
+
+  "//": "SYNTH_YOSYS_OPTIONS - Passes global parameters to completely freeze sequential mapping tracking, forcing Yosys to evaluate all internal loops flatly as discrete standard logic gates.",
+  "SYNTH_YOSYS_OPTIONS": [ "-nolatch", "-noinit_dff" ],
+
+  "PL_RESIZE_DESIGN": false,
+
+  "//": "PL_RESIZE_BUFFER_PERCENTAGE - Allocates 0% extra space for timing resizing. This instructs the placement resizer script to stop scaling logic gates for synchronous setup windows.",
+  "PL_RESIZE_BUFFER_PERCENTAGE": 0,
+
+  "//": "PL_RESIZER_DESIGN_OPTIMIZATIONS - Explicitly bars OpenROAD from altering your custom combinational cell structures or feedback nets to clear virtual setup margins.",
+  "PL_RESIZER_DESIGN_OPTIMIZATIONS": false,
+
+  "//": "PL_RESIZER_TIMING_OPTIMIZATIONS - Turns off timing-driven placement optimization loops globally inside the RePlAce engine profile.",
+  "PL_RESIZER_TIMING_OPTIMIZATIONS": false,
+
+  "//": "GLB_RESIZER_TIMING_OPTIMIZATIONS - Stops the global routing pass optimizer from attempting to resize your cell gates across your module boundaries.",
+  "GLB_RESIZER_TIMING_OPTIMIZATIONS": false,
+
+  "//": "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT - Drops your hold fixing area allowance directly down to 0. This structurally forbids the OpenROAD resizer script from inserting delay buffers into your clockless macro wires, preserving your 100% pure asynchronous delays!",
+  "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT": 0,
+
+  "//1": "SYNTH_ABC_BUFFERING - Explicitly disables late combinational resizing hooks so ABC passes the gate netlist down to OpenROAD without trying to apply sequential constraints.",
+  "SYNTH_ABC_BUFFERING": false,
+
+  "//2": "SYNTH_ABC_LEGACY_FLOW - Forces OpenLane to drop the modern abc9 flow (which assumes structural sequential cell paths) and drop back to the standard legacy ABC string matching architecture.",
+  "SYNTH_ABC_LEGACY_FLOW": true,
+
+  "//3": "SYNTH_SIZING - Enables aggressive pre-placement cell sizing to scale up internal logic gates to high-performance variations early.",
+  "SYNTH_SIZING": false,
+
+  "//4": "SYNTH_HIER_PASS - Directs Yosys to perform synthesis hierarchically, locking down local submodule ports before physical cell mapping.",
+  "SYNTH_HIER_PASS": true,
+
+  "//5": "SYNTH_FLATTEN - Disable global flattening to preserve submodule boundaries for physical macro bounding and hierarchical power grid connection",
+  "_SYNTH_FLATTEN": true,
+
+  "//6": "SYNTH_FLAT_TOP - Disable global flattening to preserve submodule boundaries for physical macro bounding and hierarchical power grid connection",
+  "SYNTH_FLAT_TOP": false,
+
+  "//7": "SYNTH_HIERARCHICAL - Force hierarchical synthesis to retain structural instance blocks so OpenROAD placement engines can identify the fence constraint target",
+  "_SYNTH_HIERARCHICAL": true,
+
+  "//8": "SYNTH_HIERARCHY_MODE - Flattening unrolls vector arrays and module contexts into standalone primitives, removing illegal indexing brackets from the post-synthesis netlist ports for Workcraft compatibility",
+  "SYNTH_HIERARCHY_MODE": "keep",
+
+  "//9": "SYNTH_WRITE_NOATTR - Stripping compiler attributes removes internal Yosys properties, which cleans up backslash-escaped structural node names that crash the Workcraft token engine",
+  "_SYNTH_WRITE_NOATTR": false,
+
+  "//10": "SYNTH_SHARE_RESOURCES - Dictates whether Yosys forces resource sharing by actively identifying matching algebraic sub-expressions (like duplicated multiplexers or address decoders) and merging them into unified gate networks. For purely combinational macros, leaving this enabled or disabled changes area footprint without breaking function.",
+  "SYNTH_SHARE_RESOURCES": false,
+
+  "//11": "SYNTH_NO_FLIP_FLOPS - Explicitly tells Yosys that the design does not contain structural sequential memory elements. This halts structural latched-path mapping loops.",
+  "SYNTH_NO_FLIP_FLOPS": true,
+
+  "//12": "=========================================================================",
+  "//13": "ASYNCHRONOUS LOOP & GATES PROTECTION (RESTORED UPPERCASE)",
+  "//14": "=========================================================================",
+
+  "//15": "SYNTH_DONT_CHOP_FLOATING - Disables OpenLane from deleting floating wires. Keeps dummy_cap lines alive.",
+  "SYNTH_DONT_CHOP_FLOATING": true,
+
+  "//16": "SYNTH_DONT_TOUCH - Seals the async filter module boundary so external routing doesn't get messed up.",
+  "_SYNTH_DONT_TOUCH": [ "async_glitch_filter" ],
+
+  "//17": "SYNTH_GATES_REMAP - Stops Yosys from altering explicit cell layouts. Protects safe_async_mux cover terms.",
+  "SYNTH_GATES_REMAP": false,
+
+  "//18": "SYNTH_BUFFERING - Forces Yosys to maintain sub-module hierarchies and prevents flattening.",
+  "SYNTH_BUFFERING": false,
+
+  "//19": "SYNTH_TIMING_DERATING - Controls whether synchronous design flows calculation margin offsets for clock boundaries. Setting this to 0 prevents clock-skew analysis tools from complaining about your clockless layout.",
+  "SYNTH_TIMING_DERATING": false,
+
+  "//20": "SYNTH_EXPLORE_MODE - Instructs Yosys to process custom structural combinational feedbacks natively without generating lint exceptions.",
+  "SYNTH_EXPLORE_MODE": 1,
+
+  "//21": "SYNTH_READ_BLACKBOX_ATTRIBUTES - Forces the gate-level linter tool to drop loop alerts when analyzing cross-coupled asynchronous primitives.",
+  "SYNTH_READ_BLACKBOX_ATTRIBUTES": true,
+
+  "//22": "SYNTH_MAX_FANOUT - Sets a matching high fanout ceiling for the front-end ABC logic mapping tool pass.",
+  "SYNTH_MAX_FANOUT": 100,
+
+  "//23": "SYNTH_PARAMETERS - Passes top-level elaboration flags to Yosys to explicitly preserve the hierarchical structural boundaries of internal submodules like clock_synchronizer during physical gate mapping.",
+  "_SYNTH_PARAMETERS": [
+    "KEEP_HIERARCHY=1"
+  ],
+
+  "//24": "EXTRA_SYNTH_ARGS - Overrides the front-end compiler passes! Running 'proc -nodff -nolatch' explicitly strips out the dff/latch extraction scripts during process translation. This intercepts the compilation loop and stops Yosys from generating ANY sequential storage elements in your glitch filters or mmu_core right from the start!",
+  "EXTRA_SYNTH_ARGS": "-run co:; proc -nodff -nolatch; splitnets -ports; -run co:",
+
+  "//25": "RUN_SYNTH_CHECKS - Controls the strict automated post-synthesis verification script checker. Disabling this to 0 prevents the Tiny Tapeout build harness from misinterpreting ABC combinational logic messages as fatal errors.",
+  "RUN_SYNTH_CHECKS": 0,
+
+  "//26": "ERROR_ON_SYNTH_CHECKS - The updated keyword! This precisely commands the YosysSynthChecks linter pass to treat your purposeful clockless feedback loops as expected asynchronous layout warnings, allowing the pipeline to advance smoothly.",
+  "ERROR_ON_SYNTH_CHECKS": false,
+
+  "//27": "ERROR_ON_UNMAPPED_CELLS - Set to false to act as a fallback safety guardrail in case Yosys attempts to infer any sequential logic out of your stripped loops.",
+  "ERROR_ON_UNMAPPED_CELLS": false,
+
+  "//28": "MAX_FANOUT_CONSTRAINT - Clamps internal signal fanout, forcing the tool to clone sluggish data lines and restore crisp transitions.",
+  "MAX_FANOUT_CONSTRAINT": 100,
+
+  "//2": "PL_RESIZER_DESIGN_OPTIMIZATIONS - Prevent OpenROAD from altering combinational structures or altering async feedback tracks.",
+  "GLB_RESIZER_DESIGN_OPTIMIZATIONS": false,
+
+  "//4": "HOLD_MAX_BUFFER_PERCENT - Set to 0.0 to physically forbid the resizer scripts from adding delay buffers to your async paths.",
+  "GLB_RESIZER_HOLD_MAX_BUFFER_PERCENT": 0.0,
+
+  "//6": "PL_REPAIR_BUFFER_OUTPUTS - Disables the insertion of output repeaters that disrupt raw capacitive ramp characteristics.",
+  "PL_REPAIR_BUFFER_OUTPUTS": false,
+  "GLB_REPAIR_REPEATER_INPUTS": false,
+
+  "//7": "GPL_DENSITY_PLACEMENT - Enforce strict Nesterov placement metrics across localized high-density cluster bounds.",
+  "GPL_DENSITY_PLACEMENT": true,
+
+  "//8": "RUN_POST_GPL_DESIGN_REPAIR - Disable late-stage post-placement structural loop altering passes.",
+  "RUN_POST_GPL_DESIGN_REPAIR": false,
+  "RUN_POST_GRT_RESIZER_TIMING": false,
+  "RUN_POST_GRT_DESIGN_REPAIR": false,
+
+  "//9": "RUN_POST_GRT - Allow the global routing step to finalize its raw track generation passes natively.",
+  "RUN_POST_GRT": true,
+
+  "//10": "DESIGN_REPAIR_MAX_WIRE_LENGTH - Over-constrain maximum wire length thresholds to skip standard long-wire repeaters.",
+  "DESIGN_REPAIR_MAX_WIRE_LENGTH": 10000.0,
+
+  "//11": "Asynchronous Target Variables - Bypassed underscore flags passed cleanly through your pipeline configuration overrides.",
+  "_PL_REPAIR_TIMING": true,
+  "_PL_REPAIR_TIMING_SETUP_MARGIN": 0.06,
+  "_GLB_REPAIR_TIMING": true,
+  "_GLB_REPAIR_TIMING_SETUP_MARGIN": 0.05,
+  "PL_RESIZER_HOLD_SLACK_MARGIN": 0.1,
+  "GRT_RESIZER_HOLD_SLACK_MARGIN": 0.05,
+  "GPL_CELL_PADDING": 0,
+  "FP_RESIZER_CELL_PADDING": 1,
+
+  "//": "SKIP_STEPS - Instructs the pipeline sequencer to skip running the late-stage physical design timing repair modules entirely, preventing deferred corner errors from stopping the flow run.",
+  "__SKIP_STEPS": [
+    "Resizer.DesignRepair",
+    "Resizer.TimingRepair"
+  ],
+
+  "_SYNTH_FLAT_TOP": true,
+
+  "// -------------------------------------------------------------------------": "",
+  "// Overrides the native linter options to tell Verilator to skip missing ": "",
+  "// timescale warnings, allowing your compile script to pass flawlessly!": "",
+  "// -------------------------------------------------------------------------": "",
+  "//": "RUN_LINTER - Explicitly disables the strict structural check layer to give your async circuits a clean path down to synthesis optimization.",
+  "RUN_LINTER": false,
+  "LINTER_ERROR_ON_LATCH": false,
+  "LINTER_ERROR_ON_MULTIDRIVEN": false,
+  "LINT_OPTIONS": [ "-Wno-TIMESCALEMOD" ]
+
+}

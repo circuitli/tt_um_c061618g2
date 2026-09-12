@@ -43,6 +43,9 @@
     "_VERILOG_INCLUDE_DIRS": [
       "pdk_dir::libs.ref/sg13g2_stdcell/verilog"
     ],
+    "PDN_MACRO_CONNECTIONS": [
+      "u_c061618g2 VPWR VGND vdd vss"
+    ],
     "macro_y_1": 3.78,
     "macro_x_1": 20.16
   },
@@ -70,9 +73,6 @@
   "_PDN_ENABLE_RAILS": true,
   "_PDN_ENABLE_MACROS_GRID": false,
   "_PDN_CONNECT_MACROS_TO_GRID": false,
-  "PDN_MACRO_CONNECTIONS": [
-    "u_c061618g2 VPWR VGND VPWR VGND"
-  ],
 
   "//": "Custom PDN config: SRAM power pins are on Metal4, need Metal4↔TopMetal1 connection",
   "PDN_CFG": "dir::pdn_cfg.tcl",
