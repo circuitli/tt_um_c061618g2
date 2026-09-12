@@ -70,6 +70,9 @@ else ifeq ($(SIM),icarus)
         # this gets copied in by the GDS action workflow
         VERILOG_SOURCES += $(PWD)/gate_level_netlist.v
 
+        # Append the path to your macro's internal gate-level netlist file
+        VERILOG_SOURCES += $(PWD)/../macros/nl/c061618g2.nl.v
+
         # 3. Strip the raw PDK path from the sources and append our clean local version instead
         #VERILOG_SOURCES := $(filter-out $(RAW_PDK_CELLS) %sg13g2_stdcell.v, $(VERILOG_SOURCES))
         #VERILOG_SOURCES += $(CLEAN_LOCAL_CELLS

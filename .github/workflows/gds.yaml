@@ -257,6 +257,14 @@ jobs:
           sed -i '/^[[:space:]]*assign[[:space:]]/d' ./sg13g2_stdcell_clean.v
           sed -i 's/#[0-9]\+//g' ./sg13g2_stdcell_clean.v
 
+      
+      - name: Download Precompiled Macro Artifacts
+        #if: false
+        uses: actions/download-artifact@v4
+        with:
+          name: precompiled-macros
+          path: macros/  # Pulls the files right back into the root workspace folder
+
       - name: Run Workcraft Verification
         id: workcraft
         working-directory: ${{ github.workspace }}/workspace_workcraft
@@ -267,6 +275,8 @@ jobs:
           # Target your absolute workspace path to eliminate directory guessing
           TARGET_DIR="${{ github.workspace }}/gds_drop"
           TEST_DIR="${{ github.workspace }}/test"
+
+          MAACRO_FILE="$GITHUB_WORKSPACE/macros/nl/c061618g2.nl.v"
 
           echo "📦 Merging IHP SG13G2 technology library with gate netlist..."
           # Paths to the files
@@ -287,7 +297,7 @@ jobs:
 
           # Concatenate the files so Workcraft has the gate definitions inline
           #cat "$LIB_FILE" "$NETLIST_FILE" > "$COMBINED_FILE"
-          cat "$NETLIST_FILE" > "$COMBINED_FILE"
+          cat "$NETLIST_FILE" "$MAACRO_FILE" > "$COMBINED_FILE"
 
           echo "🧼 Scrubbing illegal backslash identifier tokens for Workcraft compatibility..."
           sed -i 's/\\//g' "$COMBINED_FILE"
