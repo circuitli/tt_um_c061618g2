@@ -64,6 +64,7 @@
     "VERILOG_DEFINES": [ "IHP_SG13G2" ],
     "FP_CORE_UTIL": 65,
     "PL_TARGET_DENSITY_PCT": 75,
+    "FP_PDN_RAILS_START_WITH": "POWER",
     "__RT_MAX_LAYER": "Metal4",
     "PDN_RAIL_LAYER": "Metal1",
     "PDN_HORIZONTAL_LAYER": "Metal4",
