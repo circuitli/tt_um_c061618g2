@@ -32,19 +32,13 @@ define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 # =============================================================================
 # DYNAMIC ALTERNATING RAILS (Perfectly centered on the -0.08 pin offset)
 # =============================================================================
+# =============================================================================
+# REPAIRED: NATIVE FOLLOWPINS ENGINE (Automatically handles true pin fractions)
+# =============================================================================
 add_pdn_stripe -grid stdcell_grid \
                -layer $::env(PDN_RAIL_LAYER) \
-               -width $native_pdk_width \
-               -pitch $interleaved_pitch \
-               -offset $interleaved_offset_vdd \
-               -nets "$::env(VDD_NET)"
-
-add_pdn_stripe -grid stdcell_grid \
-               -layer $::env(PDN_RAIL_LAYER) \
-               -width $native_pdk_width \
-               -pitch $interleaved_pitch \
-               -offset $interleaved_offset_gnd \
-               -nets "$::env(GND_NET)"
+               -width $::env(PDN_RAIL_WIDTH) \
+               -followpins
 # =============================================================================
 
 # 1. Unified Vertical Stripes (Metal3) -> EXTEND_TO_BOUNDARY
