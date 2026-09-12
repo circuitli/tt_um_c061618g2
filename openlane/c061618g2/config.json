@@ -14,11 +14,9 @@
   "PDN_CORE_RING": false,
   "PDN_CONNECT_MACROS_TO_GRID": false,
   "PDN_ENABLE_RAILS": true,
-  "PDN_CONNECT_MACRO_RAILS": true,
   "PDN_MACRO_CONNECTIONS": [
     "vdd vss vdd vss"
   ],
-  "PDN_UPWARD_PINS": true,
 
   "RUN_SPEF_EXTRACTION": true,
 
@@ -33,7 +31,13 @@
     "PL_TARGET_DENSITY_PCT": 75,
     "DIE_AREA": [ 0.0, 0.0, 144.00, 37.80 ],
     "CORE_AREA": [ 5.76, 3.78, 138.24, 34.02 ],
-    "RT_MAX_LAYER": "Metal4"
+    "RT_MAX_LAYER": "Metal4",
+    "PDN_HORIZONTAL_LAYER": "Metal4",
+    "PDN_VERTICAL_LAYER": "Metal3",
+    "PDN_CONNECT": [
+      [ "Metal1", "Metal3" ],
+      [ "Metal3", "Metal4" ],
+    ]
   },
 
   "pdk::sky130*": {
