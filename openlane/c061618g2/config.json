@@ -6,13 +6,10 @@
 
   "PNR_SDC_FILE": "dir::../../src/mmu_constraints.sdc",
 
-  "MACRO": true,
-  "DESIGN_IS_CORE": false,
+  "PDN_MULTILAYER": false,
   "FP_SIZING": "absolute",
 
   "RUN_SPEF_EXTRACTION": true,
-  "RCX_CORNERS": [ "min", "nom", "max" ],
-  "SAVE_FINAL_VIEWS": true,
 
   "// -------------------------------------------------------------------------": "",
   "// 3. TARGET ENVIRONMENT ENVELOPE SEEDING (Cross-PDK Platform Controls)": "",
@@ -48,21 +45,14 @@
   "// 1. Force the toolchain to treat the layout flatly with no clock trees.": "",
   "// 2. Instruct Yosys to skip sequential mapping & optimize loops as gates!": "",
   "// -------------------------------------------------------------------------": "",
-  "RUN_REPAIR_DESIGN": false,
-  "PL_REBOUND_CONSTRAINTS": false,
-  "CLOCK_PERIOD": null,
+  "RUN_POST_GPL_DESIGN_REPAIR": false,
+  "CLOCK_PERIOD": 0,
   "CLOCK_PORT": null,
   "CLOCK_NET": null,
   "RUN_CTS": false,
-  "//": "CLOCK_TREE_SYNTHESIS - Force Clock Tree Synthesis to explicitly balance insertion delays across the phase clock multiplexer",
-  "CLOCK_TREE_SYNTHESIS": false,
-  "SYNTH_TIMING_DERATING": false,
 
   "//": "SYNTH_STRATEGY - Changing this option over to an area or raw delay strategy rewrites ABC's optimization profile, completely stripping out the crashing sequential timing sub-commands (like scorr)!",
-  "SYNTH_STRATEGY": "AREA 0",
-
-  "SYNTH_DONT_TOUCH_ATTRIBUTES": true,
-  "SYNTH_ABC_LEGACY_REFACTORING": false
+  "SYNTH_STRATEGY": "AREA 0"
 
 }
   
