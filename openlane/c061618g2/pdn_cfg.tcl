@@ -64,9 +64,7 @@ add_pdn_stripe -grid stdcell_grid \
 # 4. Connect the layers cleanly together via native layer connectivity strings
 add_pdn_connect -grid stdcell_grid -layers "$::env(PDN_RAIL_LAYER) $::env(PDN_VERTICAL_LAYER)"
 add_pdn_connect -grid stdcell_grid -layers "$::env(PDN_VERTICAL_LAYER) $::env(PDN_HORIZONTAL_LAYER)"
-add_pdn_connect -grid stdcell_grid -layers "$::env(PDN_HORIZONTAL_LAYER) TopMetal1"
 
 # Compliance macro integration grid
 define_pdn_grid -macro -default -name macro_grid -starts_with GROUND
 add_pdn_connect -grid macro_grid -layers "$::env(PDN_VERTICAL_LAYER) $::env(PDN_HORIZONTAL_LAYER)"
-add_pdn_connect -grid macro_grid -layers "$::env(PDN_HORIZONTAL_LAYER) TopMetal1"
