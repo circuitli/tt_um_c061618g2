@@ -31,6 +31,13 @@ set interleaved_offset_vdd [expr {$calculated_rail_pitch * 2.0}]
 
 define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 
+# =============================================================================
+# FORCE OPENROAD TO GENERATE THE PDK'S AUTOMATIC RAILS IN THIS NEW GRID CONTEXT
+# =============================================================================
+define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE \
+                -rails $::env(PDN_RAIL_LAYER)
+# =============================================================================
+
 # 1. Unified Vertical Stripes (Metal3) -> EXTEND_TO_BOUNDARY
 add_pdn_stripe -grid stdcell_grid \
                -layer $::env(PDN_VERTICAL_LAYER) \
@@ -40,26 +47,6 @@ add_pdn_stripe -grid stdcell_grid \
                -spacing $::env(FP_PDN_VSPACING) \
                -nets "$::env(GND_NET) $::env(VDD_NET)" \
                -extend_to_boundary
-
-# =============================================================================
-# RAILS
-# =============================================================================
-# Swap the offsets so VDD starts at 0.0 and GND starts at 3.78 on IHP
-add_pdn_stripe -grid stdcell_grid \
-               -layer $::env(PDN_RAIL_LAYER) \
-               -width $native_pdk_width \
-               -pitch [expr {$calculated_rail_pitch * 2.0}] \
-               -offset 0.0 \
-               -nets "$::env(VDD_NET)"
-
-add_pdn_stripe -grid stdcell_grid \
-               -layer $::env(PDN_RAIL_LAYER) \
-               -width $native_pdk_width \
-               -pitch [expr {$calculated_rail_pitch * 2.0}] \
-               -offset $calculated_rail_pitch \
-               -nets "$::env(GND_NET)"
-
-# =============================================================================
 
 # 3. Horizontal Mesh Power Landing Pads (Metal4) -> EXTEND_TO_BOUNDARY
 add_pdn_stripe -grid stdcell_grid \
