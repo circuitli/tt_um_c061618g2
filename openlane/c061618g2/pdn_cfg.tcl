@@ -37,6 +37,7 @@ define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 # =============================================================================
 add_pdn_stripe -grid stdcell_grid \
                -layer $::env(PDN_RAIL_LAYER) \
+               -width $native_pdk_width \
                -followpins
 # =============================================================================
 
