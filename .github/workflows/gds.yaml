@@ -66,12 +66,12 @@ jobs:
             librelane --manual-pdk --pdk-root "$LOCAL_PDK_ROOT" --pdk ihp-sg13g2 openlane/c061618g2/config.json
       
           # Stage the compiled views directly to your expected _build folder matrix
-          mkdir -p macros/gds macros/lef macros/lib macros/nl macros/spef
+          mkdir -p macros/gds macros/lef macros/lib macros/nl macros/pnl macros/spef
           cp openlane/c061618g2/runs/*/final/gds/*.gds macros/gds
           cp openlane/c061618g2/runs/*/final/lef/*.lef macros/lef
           #cp openlane/c061618g2/runs/*/final/lib/*.lib macros/lib
           cp openlane/c061618g2/runs/*/final/nl/*.v macros/nl
-          cp openlane/c061618g2/runs/*/final/pnl/*.v macros/nl
+          cp openlane/c061618g2/runs/*/final/pnl/*.v macros/pnl
           printf '%s\n' openlane/c061618g2/runs/*/final/spef/*/*.spef
           cp openlane/c061618g2/runs/*/final/spef/*/*.spef macros/spef
           
@@ -276,7 +276,9 @@ jobs:
           TARGET_DIR="${{ github.workspace }}/gds_drop"
           TEST_DIR="${{ github.workspace }}/test"
 
-          MAACRO_FILE="$GITHUB_WORKSPACE/macros/nl/c061618g2.nl.v"
+          shopt -s nullglob
+          MACRO_FILES=$(echo $GITHUB_WORKSPACE/macros/nl/*.v)
+          shopt -u nullglob
 
           echo "📦 Merging IHP SG13G2 technology library with gate netlist..."
           # Paths to the files
@@ -297,7 +299,8 @@ jobs:
 
           # Concatenate the files so Workcraft has the gate definitions inline
           #cat "$LIB_FILE" "$NETLIST_FILE" > "$COMBINED_FILE"
-          cat "$NETLIST_FILE" "$MAACRO_FILE" > "$COMBINED_FILE"
+          # Using a hyphen (-) tells cat to read the empty line directly from echo via the pipe
+          echo "" | cat "$NETLIST_FILE" - $MACRO_FILES > "$COMBINED_FILE"
 
           echo "🧼 Scrubbing illegal backslash identifier tokens for Workcraft compatibility..."
           sed -i 's/\\//g' "$COMBINED_FILE"

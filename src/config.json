@@ -47,7 +47,25 @@
       "u_c061618g2 vdd vss vdd vss"
     ],
     "macro_y_1": 3.78,
-    "macro_x_1": 20.16
+    "macro_x_1": 20.16,
+    "MACROS": {
+      "c061618g2": {
+        "gds": [ "dir::../macros/gds/c061618g2.gds" ],
+        "lef": [ "dir::../macros/lef/c061618g2.lef" ],
+        "nl": [ "dir::../macros/pnl/c061618g2.pnl.v" ],
+        "spef": {
+          "min*": [ "dir::../macros/spef/c061618g2.nom.spef" ],
+          "nom": [ "dir::../macros/spef/c061618g2.nom.spef" ],
+          "max": [ "dir::../macros/spef/c061618g2.nom.spef" ]
+        },
+        "instances": {
+          "u_c061618g2": {
+            "location": [ 11.04, 94.50 ],
+            "orientation": "N"
+          }
+        }
+      }
+    }
   },
 
   "pdk::sky130*": {
@@ -97,24 +115,7 @@
     }
   ],
   "_STA_MACRO_PRIORITIZE_NL": true,
-  "MACROS": {
-    "c061618g2": {
-      "gds": [ "dir::../macros/gds/c061618g2.gds" ],
-      "lef": [ "dir::../macros/lef/c061618g2.lef" ],
-      "nl": [ "dir::../macros/nl/c061618g2.pnl.v" ],
-      "spef": {
-        "min*": [ "dir::../macros/spef/c061618g2.nom.spef" ],
-        "nom": [ "dir::../macros/spef/c061618g2.nom.spef" ],
-        "max": [ "dir::../macros/spef/c061618g2.nom.spef" ]
-      },
-      "instances": {
-        "u_c061618g2": {
-          "location": [ 11.04, 94.50 ],
-          "orientation": "N"
-        }
-      }
-    }
-  },
+ 
   "// Timing is the only external aspect that must be explicitly loaded at root": "",
   "_EXTRA_LIBS": [ "dir::../macros/lib/c061618g2.lib" ],
 
