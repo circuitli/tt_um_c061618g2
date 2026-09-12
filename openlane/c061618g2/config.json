@@ -14,7 +14,7 @@
 
   "PDN_CFG": "dir::pdn_cfg.tcl",
 
-  "RUN_IR_DROP_REPORT": false,
+  "RUN_IRDROP_REPORT": false,
   "FP_PDN_CHECK_NODES": 0,
   "PDN_CHECK_NODES": false,
 
