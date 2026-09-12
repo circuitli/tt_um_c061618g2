@@ -8,15 +8,15 @@
 
   "FP_PIN_ORDER_CFG": "dir::pin_order.cfg",
 
-  "_PDN_CFG": "dir::pdn_cfg.tcl",
+  "PDN_CFG": "dir::pdn_cfg.tcl",
 
   "_RUN_IR_DROP_REPORT": false,
   "FP_PDN_CHECK_NODES": 0,
   "PDN_CHECK_NODES": false,
 
   "FILL_INSERTION": "tru",
-  "FP_PDN_MULTILAYER": 1,
-  "PDN_MULTILAYER": 1,
+  "FP_PDN_MULTILAYER": 0,
+  "PDN_MULTILAYER": 0,
   "PDN_CORE_RING": true,
   "PDN_ENABLE_RAILS": true,
   "PDN_ENABLE_MACROS_GRID": false,
