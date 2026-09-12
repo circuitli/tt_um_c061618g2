@@ -11,8 +11,8 @@
   "_PDN_CFG": "dir::pdn_cfg.tcl",
 
   "_RUN_IR_DROP_REPORT": false,
-  "_FP_PDN_CHECK_NODES": 0,
-  "_PDN_CHECK_NODES": false,
+  "FP_PDN_CHECK_NODES": 0,
+  "PDN_CHECK_NODES": false,
 
   "FILL_INSERTION": "tru",
   "FP_PDN_MULTILAYER": 1,
