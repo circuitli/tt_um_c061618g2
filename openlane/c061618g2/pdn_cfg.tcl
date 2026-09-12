@@ -40,7 +40,7 @@ add_pdn_stripe -grid stdcell_grid \
                -width $::env(PDN_RAIL_WIDTH) \
                -pitch $calculated_rail_pitch \
                -offset 0.0 \
-               -nets "$::env(GND_NET) $::env(VDD_NET)"
+               -nets "$::env(VDD_NET) $::env(GND_NET)"
 # =============================================================================
 
 # 1. Unified Vertical Stripes (Metal3) -> EXTEND_TO_BOUNDARY
