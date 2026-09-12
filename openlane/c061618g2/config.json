@@ -32,12 +32,12 @@
     "DIE_AREA": [ 0.0, 0.0, 144.00, 37.80 ],
     "CORE_AREA": [ 5.76, 3.78, 138.24, 34.02 ],
     "RT_MAX_LAYER": "Metal4",
-    "PDN_HORIZONTAL_LAYER": "Metal4",
+    "PDN_HORIZONTAL_LAYER": "Metal1",
     "PDN_VERTICAL_LAYER": "Metal3",
     "PDN_CONNECT": [
-      [ "Metal1", "Metal3" ],
-      [ "Metal3", "Metal4" ]
+      [ "Metal1", "Metal3" ]
     ]
+
   },
 
   "pdk::sky130*": {
