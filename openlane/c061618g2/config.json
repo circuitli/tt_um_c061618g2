@@ -76,6 +76,7 @@
     "FP_PDN_VOFFSET": 0.0,
     "FP_PDN_VPITCH": 11.04,
 
+    "FP_PDN_RAILS_EXT_TO_CORE_BOUNDARY": 1,
     "_PDN_EXTEND_TO": "boundary",
     "PDN_CONNECT": [
       [ "Metal1", "Metal3" ],
