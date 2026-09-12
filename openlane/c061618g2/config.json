@@ -76,7 +76,7 @@
 
     "FP_PDN_HWIDTH": 0.72,
     "FP_PDN_HSPACING": 0.72,
-    "__FP_PDN_HOFFSET": 0.0,
+    "FP_PDN_HOFFSET": 0.0,
     "FP_PDN_HPITCH": 7.56,
 
     "FP_PDN_VWIDTH": 0.48,
