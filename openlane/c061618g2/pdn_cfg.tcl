@@ -29,11 +29,15 @@ set interleaved_offset_vdd [expr {$calculated_rail_pitch * 2.0}]
 
 # (Full configuration script for standard cell and macro grids can be found in the referenced documentation)
 
+# 1. Revert this line back to your original, clean format
+define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
+
 # =============================================================================
-# FORCE OPENROAD TO GENERATE THE PDK'S AUTOMATIC RAILS IN THIS NEW GRID CONTEXT
+# REPAIRED: GENERATE NATIVE RAILS WITH ZERO OVERRIDES OR HARDCODED SEPARATIONS
 # =============================================================================
-define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE \
-                -rails $::env(PDN_RAIL_LAYER)
+add_pdn_stripe -grid stdcell_grid \
+               -layer $::env(PDN_RAIL_LAYER) \
+               -followpins
 # =============================================================================
 
 # 1. Unified Vertical Stripes (Metal3) -> EXTEND_TO_BOUNDARY
