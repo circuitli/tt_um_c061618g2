@@ -12,20 +12,20 @@
   },
   "FP_PIN_ORDER_CFG": "dir::pin_order.cfg",
 
-  "PDN_CFG": "dir::pdn_cfg.tcl",
+  "__PDN_CFG": "dir::pdn_cfg.tcl",
 
-  "RUN_IRDROP_REPORT": false,
-  "FP_PDN_CHECK_NODES": 0,
-  "PDN_CHECK_NODES": false,
+  "__RUN_IRDROP_REPORT": false,
+  "__FP_PDN_CHECK_NODES": 0,
+  "__PDN_CHECK_NODES": false,
 
-  "FILL_INSERTION": "tru",
-  "FP_PDN_MULTILAYER": 0,
-  "PDN_MULTILAYER": 0,
+  "__FILL_INSERTION": "tru",
+  "__FP_PDN_MULTILAYER": 0,
+  "__PDN_MULTILAYER": 0,
   "PDN_CORE_RING": false,
   "PDN_ENABLE_RAILS": true,
-  "PDN_ENABLE_MACROS_GRID": false,
+  "__PDN_ENABLE_MACROS_GRID": false,
   "PDN_ENABLE_PINS": true,
-  "PDN_VTRACK_ASSIGN": "direct",
+  "__PDN_VTRACK_ASSIGN": "direct",
   "_PDN_SKIPTRIM": true,
 
   "VDD_NETS": [ "VPWR" ],
@@ -61,33 +61,35 @@
     "VERILOG_DEFINES": [ "IHP_SG13G2" ],
     "FP_CORE_UTIL": 65,
     "PL_TARGET_DENSITY_PCT": 75,
-    "RT_MAX_LAYER": "Metal4",
+    "__RT_MAX_LAYER": "Metal4",
     "PDN_RAIL_LAYER": "Metal1",
     "PDN_HORIZONTAL_LAYER": "Metal4",
     "PDN_VERTICAL_LAYER": "Metal3",
 
-    "PDN_RAIL_WIDTH": 0.44,
+    "__PDN_RAIL_WIDTH": 0.44,
     "_PDN_RAIL_OFFSET": 3.78,
     "__PDN_RAIL_OFFSET": 0.0,
     "_PDN_RAIL_PITCH": 3.78,
 
     "FP_PDN_HWIDTH": 0.72,
-    "FP_PDN_HSPACING": 0.72,
-    "FP_PDN_HOFFSET": 0.0,
+    "__FP_PDN_HSPACING": 0.72,
+    "__FP_PDN_HOFFSET": 0.0,
     "FP_PDN_HPITCH": 7.56,
 
     "FP_PDN_VWIDTH": 0.48,
-    "FP_PDN_VSPACING": 0.48,
+    "__FP_PDN_VSPACING": 0.48,
     "FP_PDN_VOFFSET": 0.0,
     "FP_PDN_VPITCH": 11.04,
 
     "_FP_PDN_RAILS_EXT_TO_CORE_BOUNDARY": 1,
     "_PDN_EXTEND_TO": "boundary",
-    "PDN_CONNECT": [
+    "FP_PDN_AUTO_CONNECT": true,
+    "LVS_CONNECT_BY_NAME": true,
+    "__PDN_CONNECT": [
       [ "Metal1", "Metal3" ],
       [ "Metal3", "Metal4" ]
     ],
-    "FP_TAPCELL_DIST": 55.2,
+    "__FP_TAPCELL_DIST": 55.2,
     "_TAP_CELL_NAME": "sg13g2_stdcell_tap_1",
     "_FP_WELLTAP_CELL": "sg13g2_stdcell_tap_1",
     "_TOP_MARGIN_MULT": 1,
@@ -97,8 +99,8 @@
     "DIE_AREA": [ 0.0, 0.0, 166.08, 37.80 ],
     "CORE_AREA": [ 5.76, 3.78, 160.32, 34.02 ],
     "_CORE_MARGIN": [ 5.76, 3.78 ],
-    "GLB_RT_MAX_DIODE_INS_ITERS": 0,
-    "FP_IO_MIN_DISTANCE": 2.4
+    "__GLB_RT_MAX_DIODE_INS_ITERS": 0,
+    "__FP_IO_MIN_DISTANCE": 2.4
   },
 
   "pdk::sky130*": {
