@@ -41,6 +41,26 @@ add_pdn_stripe -grid stdcell_grid \
                -nets "$::env(GND_NET) $::env(VDD_NET)" \
                -extend_to_boundary
 
+# =============================================================================
+# NATIVE CORES RAILS (Followpins) INSIDE YOUR CUSTOM GRID CONTEXT
+# =============================================================================
+add_pdn_stripe -grid stdcell_grid \
+               -layer $::env(PDN_RAIL_LAYER) \
+               -width $native_pdk_width \
+               -pitch $interleaved_pitch \
+               -offset $interleaved_offset_gnd \
+               -nets $::env(GND_NET) \
+               -followpins
+
+add_pdn_stripe -grid stdcell_grid \
+               -layer $::env(PDN_RAIL_LAYER) \
+               -width $native_pdk_width \
+               -pitch $interleaved_pitch \
+               -offset $interleaved_offset_vdd \
+               -nets $::env(VDD_NET) \
+               -followpins
+# =============================================================================
+
 # 3. Horizontal Mesh Power Landing Pads (Metal4) -> EXTEND_TO_BOUNDARY
 add_pdn_stripe -grid stdcell_grid \
                -layer $::env(PDN_HORIZONTAL_LAYER) \
