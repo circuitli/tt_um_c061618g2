@@ -259,7 +259,6 @@ jobs:
 
       
       - name: Download Precompiled Macro Artifacts
-        #if: false
         uses: actions/download-artifact@v4
         with:
           name: precompiled-macros
@@ -280,6 +279,12 @@ jobs:
           MACRO_FILES=$(echo $GITHUB_WORKSPACE/macros/nl/*.v)
           shopt -u nullglob
 
+          if [ -z "$MACRO_FILES" ]; then
+            echo "❌ ERROR: No macro files found inside macros/"
+            exit 1
+          fi
+          echo "🎯 Found macros: $MACRO_FILES"
+
           echo "📦 Merging IHP SG13G2 technology library with gate netlist..."
           # Paths to the files
           LIB_FILE="./sg13g2_stdcell_clean.v"
@@ -295,6 +300,7 @@ jobs:
             exit 1
           fi
           echo "🎯 Found Target Netlist: $NETLIST_FILE"
+
           COMBINED_FILE="$GITHUB_WORKSPACE/test/combined_netlist.v"
 
           # Concatenate the files so Workcraft has the gate definitions inline
