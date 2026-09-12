@@ -191,9 +191,6 @@
   "//": "SYNTH_GATES_REMAP - Stops Yosys from altering explicit cell layouts. Protects safe_async_mux cover terms.",
   "SYNTH_GATES_REMAP": false,
 
-  "//": "SYNTH_BUFFERING - Forces Yosys to maintain sub-module hierarchies and prevents flattening.",
-  "SYNTH_BUFFERING": false,
-
   "//": "SYNTH_TIMING_DERATING - Controls whether synchronous design flows calculation margin offsets for clock boundaries. Setting this to 0 prevents clock-skew analysis tools from complaining about your clockless layout.",
   "SYNTH_TIMING_DERATING": false,
 
@@ -203,8 +200,8 @@
   "//": "SYNTH_READ_BLACKBOX_ATTRIBUTES - Forces the gate-level linter tool to drop loop alerts when analyzing cross-coupled asynchronous primitives.",
   "SYNTH_READ_BLACKBOX_ATTRIBUTES": true,
 
-  "//": "SYNTH_MAX_FANOUT - Sets a matching high fanout ceiling for the front-end ABC logic mapping tool pass.",
-  "SYNTH_MAX_FANOUT": 100,
+  "//": "MAX_FANOUT_CONSTRAINT - Sets a matching high fanout ceiling for the front-end ABC logic mapping tool pass.",
+  "MAX_FANOUT_CONSTRAINT": 100,
 
   "//": "SYNTH_PARAMETERS - Passes top-level elaboration flags to Yosys to explicitly preserve the hierarchical structural boundaries of internal submodules like clock_synchronizer during physical gate mapping.",
   "_SYNTH_PARAMETERS": [
@@ -223,10 +220,7 @@
   "//": "ERROR_ON_UNMAPPED_CELLS - Set to false to act as a fallback safety guardrail in case Yosys attempts to infer any sequential logic out of your stripped loops.",
   "ERROR_ON_UNMAPPED_CELLS": false,
 
-  "//": "MAX_FANOUT_CONSTRAINT - Clamps internal signal fanout, forcing the tool to clone sluggish data lines and restore crisp transitions.",
-  "MAX_FANOUT_CONSTRAINT": 100,
-
-  "SDC_FILE": "src/mmu_constraints.sdc",
+  "FALLBACK_SDC": "src/mmu_constraints.sdc",
   "_MACRO_PLACEMENT_CFG": "",
   "_MACRO_PLACEMENT_BOUNDS_FILE": "src/macro_bounds.json",
   "_EXTRA_SPECS_TCL": "dir::src/floorplan_hooks.tcl",
@@ -330,14 +324,14 @@
   "//": "PL_RESIZE_BUFFER_PERCENTAGE - Allocates 0% extra space for timing resizing. This instructs the placement resizer script to stop scaling logic gates for synchronous setup windows.",
   "PL_RESIZE_BUFFER_PERCENTAGE": 0.0,
 
-  "//": "PL_RESIZER_DESIGN_OPTIMIZATIONS - Explicitly bars OpenROAD from altering your custom combinational cell structures or feedback nets to clear virtual setup margins.",
-  "PL_RESIZER_DESIGN_OPTIMIZATIONS": false,
+  "//": "RUN_POST_GPL_DESIGN_REPAIR - Explicitly bars OpenROAD from altering your custom combinational cell structures or feedback nets to clear virtual setup margins.",
+  "RUN_POST_GPL_DESIGN_REPAIR": false,
 
-  "//": "PL_RESIZER_TIMING_OPTIMIZATIONS - Turns off timing-driven placement optimization loops globally inside the RePlAce engine profile.",
-  "PL_RESIZER_TIMING_OPTIMIZATIONS": false,
+  "//": "RUN_POST_CTS_RESIZER_TIMING - Turns off timing-driven placement optimization loops globally inside the RePlAce engine profile.",
+  "RUN_POST_CTS_RESIZER_TIMING": false,
 
-  "//": "GLB_RESIZER_TIMING_OPTIMIZATIONS - Stops the global routing pass optimizer from attempting to resize your cell gates across your module boundaries.",
-  "GLB_RESIZER_TIMING_OPTIMIZATIONS": false,
+  "//": "RUN_POST_GRT_RESIZER_TIMING - Stops the global routing pass optimizer from attempting to resize your cell gates across your module boundaries.",
+  "RUN_POST_GRT_RESIZER_TIMING": false,
 
   "//": "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT - Drops your hold fixing area allowance directly down to 0. This structurally forbids the OpenROAD resizer script from inserting delay buffers into your clockless macro wires, preserving your 100% pure asynchronous delays!",
   "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT": 0.0,
@@ -432,7 +426,7 @@
   "CLOCK_TREE_SYNTHESIS": false,
 
   "//": "Don't generate power rings",
-  "FP_PDN_MULTILAYER": 0,
+  "PDN_MULTILAYER": 0,
 
   "//": "MAGIC_DEF_LABELS may cause issues with LVS",
   "MAGIC_DEF_LABELS": 0
