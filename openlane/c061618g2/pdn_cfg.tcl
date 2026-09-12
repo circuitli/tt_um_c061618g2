@@ -21,12 +21,11 @@ set row_site_object  [$first_layout_row getSite]
 set calculated_rail_pitch [expr {double([$row_site_object getHeight]) / $db_units}]
 
 # 4. COMPLIANT ACCURACY EXTRACTION: Read the exact Y-center of the first layout track
-# This bypasses the empty LEF spacing tables by querying the active placement instance directly
 set physical_inst     [lindex [$db_block getInsts] 0]
 set physical_bbox     [$physical_inst getBBox]
 set physical_y_center [expr {(double([$physical_bbox yMin]) + double([$physical_bbox yMax])) / 2.0 / $db_units}]
 
-# Mathematically snap our custom tracking loop to align perfectly with the extracted cell pins
+# FIXED: Correctly map VDD directly to the baseline row center (Row 0, 2, 4, 6)
 set interleaved_pitch  [expr {$calculated_rail_pitch * 2.0}]
 set interleaved_offset_vdd $physical_y_center
 set interleaved_offset_gnd [expr {$physical_y_center + $calculated_rail_pitch}]
@@ -36,21 +35,21 @@ set interleaved_offset_gnd [expr {$physical_y_center + $calculated_rail_pitch}]
 define_pdn_grid -name stdcell_grid -starts_with GROUND -voltage_domains CORE
 
 # =============================================================================
-# AUTOMATED RAILS
+# AUTOMATED RAILS (NO FOLLOWPINS - MATCHING NET TO LOGICAL OFFSET)
 # =============================================================================
 add_pdn_stripe -grid stdcell_grid \
                -layer $::env(PDN_RAIL_LAYER) \
                -width $native_pdk_width \
                -pitch $interleaved_pitch \
                -offset $interleaved_offset_vdd \
-               -nets "$::env(GND_NET)"
+               -nets "$::env(VDD_NET)"
 
 add_pdn_stripe -grid stdcell_grid \
                -layer $::env(PDN_RAIL_LAYER) \
                -width $native_pdk_width \
                -pitch $interleaved_pitch \
                -offset $interleaved_offset_gnd \
-               -nets "$::env(VDD_NET)"
+               -nets "$::env(GND_NET)"
 # =============================================================================
 
 # 1. Unified Vertical Stripes (Metal3) -> EXTEND_TO_BOUNDARY
