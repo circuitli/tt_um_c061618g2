@@ -8,8 +8,8 @@
 
   "IO_PIN_ORDER_CFG": "dir::pin_order.cfg",
 
-  "FP_SIZING": "absolute",
 
+  "FP_SIZING": "absolute",
   "PDN_MULTILAYER": false,
   "PDN_CORE_RING": false,
   "PDN_CONNECT_MACROS_TO_GRID": false,
@@ -33,10 +33,7 @@
     "CORE_AREA": [ 5.76, 3.78, 138.24, 34.02 ],
     "RT_MAX_LAYER": "Metal2",
     "PDN_HORIZONTAL_LAYER": "Metal1",
-    "PDN_VERTICAL_LAYER": "Metal2",
-    "PDN_CONNECT": [
-      [ "Metal1", "Metal2" ]
-    ]
+    "PDN_VERTICAL_LAYER": "Metal2"
   },
 
   "pdk::sky130*": {
@@ -66,6 +63,8 @@
   "CLOCK_PORT": null,
   "CLOCK_NET": null,
   "RUN_CTS": false,
+  "CTS_CLK_ROUTING_LAYERS": [ "Metal1", "Metal2" ],
+  "DATA_CLK_ROUTING_LAYERS": [ "Metal1", "Metal2" ],
 
   "//": "SYNTH_STRATEGY - Changing this option over to an area or raw delay strategy rewrites ABC's optimization profile, completely stripping out the crashing sequential timing sub-commands (like scorr)!",
   "SYNTH_STRATEGY": "AREA 0"
