@@ -42,21 +42,23 @@ add_pdn_stripe -grid stdcell_grid \
                -extend_to_boundary
 
 # =============================================================================
-# NATIVE CORES RAILS (Followpins) INSIDE YOUR CUSTOM GRID CONTEXT
+# RAILS
 # =============================================================================
+# Swap the offsets so VDD starts at 0.0 and GND starts at 3.78 on IHP
 add_pdn_stripe -grid stdcell_grid \
                -layer $::env(PDN_RAIL_LAYER) \
                -width $native_pdk_width \
-               -pitch $interleaved_pitch \
-               -offset $interleaved_offset_gnd \
-               -nets $::env(GND_NET) 
+               -pitch [expr {$calculated_rail_pitch * 2.0}] \
+               -offset 0.0 \
+               -nets "$::env(VDD_NET)"
 
 add_pdn_stripe -grid stdcell_grid \
                -layer $::env(PDN_RAIL_LAYER) \
                -width $native_pdk_width \
-               -pitch $interleaved_pitch \
-               -offset $interleaved_offset_vdd \
-               -nets $::env(VDD_NET) 
+               -pitch [expr {$calculated_rail_pitch * 2.0}] \
+               -offset $calculated_rail_pitch \
+               -nets "$::env(GND_NET)"
+
 # =============================================================================
 
 # 3. Horizontal Mesh Power Landing Pads (Metal4) -> EXTEND_TO_BOUNDARY
