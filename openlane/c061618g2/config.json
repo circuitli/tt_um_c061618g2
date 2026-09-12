@@ -18,7 +18,7 @@
   "FP_PDN_MULTILAYER": 1,
   "PDN_MULTILAYER": 1,
   "PDN_CORE_RING": false,
-  "PDN_ENABLE_RAILS": false,
+  "PDN_ENABLE_RAILS": true,
   "PDN_ENABLE_MACROS_GRID": false,
   "PDN_ENABLE_PINS": true,
   "PDN_VTRACK_ASSIGN": "direct",
