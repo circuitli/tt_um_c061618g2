@@ -39,14 +39,14 @@ add_pdn_stripe -grid stdcell_grid \
                -layer $::env(PDN_RAIL_LAYER) \
                -width $native_pdk_width \
                -pitch $interleaved_pitch \
-               -offset $calculated_rail_pitch \
+               -offset [expr {$calculated_rail_pitch * 2.0}] \
                -nets "$::env(GND_NET)"
 
 add_pdn_stripe -grid stdcell_grid \
                -layer $::env(PDN_RAIL_LAYER) \
                -width $native_pdk_width \
                -pitch $interleaved_pitch \
-               -offset 0.0 \
+               -offset $calculated_rail_pitch \
                -nets "$::env(VDD_NET)"
 # =============================================================================
 
