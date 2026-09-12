@@ -10,7 +10,6 @@
 
 
   "FP_SIZING": "absolute",
-  "PL_MACRO_HALO": 0,
   "PDN_MULTILAYER": false,
   "PDN_CORE_RING": false,
   "PDN_CONNECT_MACROS_TO_GRID": false,
@@ -40,15 +39,17 @@
     "RT_CLOCK_MIN_LAYER": "Metal1",
     "RT_CLOCK_MAX_LAYER": "Metal3",
 
-    "FP_PDN_HWIDTH": 0.72,
-    "FP_PDN_HSPACING": 0.72,
+    "FP_PDN_HWIDTH": 1.64,
+    "FP_PDN_HSPACING": 1.64,
     "FP_PDN_HOFFSET": 0.36,
     "FP_PDN_HPITCH": 7.56,
 
     "FP_PDN_VWIDTH": 0.48,
     "FP_PDN_VSPACING": 0.48,
     "FP_PDN_VOFFSET": 0.24,
-    "FP_PDN_VPITCH": 11.04
+    "FP_PDN_VPITCH": 11.04,
+
+    "PL_MACRO_HALO": 0
   },
 
   "pdk::sky130*": {
