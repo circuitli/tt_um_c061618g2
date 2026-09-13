@@ -45,7 +45,7 @@
     "_VERILOG_INCLUDE_DIRS": [
       "pdk_dir::libs.ref/sg13g2_stdcell/verilog"
     ],
-    "PDN_MACRO_CONNECTIONS": [
+    "_PDN_MACRO_CONNECTIONS": [
       "u_c061618g2 VPWR VGND vdd vss"
     ],
     "PDN_HORIZONTAL_HALO": 0,
