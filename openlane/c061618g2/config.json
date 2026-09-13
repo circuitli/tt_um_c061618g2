@@ -10,7 +10,7 @@
 
 
   "FP_SIZING": "absolute",
-  "PDN_MULTILAYER": true,
+  "PDN_MULTILAYER": false,
   "PDN_CORE_RING": false,
   "PDN_CONNECT_MACROS_TO_GRID": false,
   "PDN_ENABLE_RAILS": true,
