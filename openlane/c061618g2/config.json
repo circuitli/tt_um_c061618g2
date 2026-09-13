@@ -34,7 +34,7 @@
     "FP_PDN_RAIL_LAYER": "Metal1",
     "FP_PDN_UPPER_LAYERS": [ "Metal2" ],
     "RT_CLOCK_MIN_LAYER": "Metal1",
-    "RT_CLOCK_MAX_LAYER": "Metal1",
+    "RT_CLOCK_MAX_LAYER": "Metal2",
 
     "FP_PDN_HWIDTH": 1.64,
     "FP_PDN_HSPACING": 1.64,
