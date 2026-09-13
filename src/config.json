@@ -48,6 +48,8 @@
     "PDN_MACRO_CONNECTIONS": [
       "u_c061618g2 VPWR VGND vdd vss"
     ],
+    "PDN_HORIZONTAL_HALO": 0,
+    "PDN_VERTICAL_HALO": 0,
     "macro_y_1": 3.78,
     "macro_x_1": 20.16,
     "MACROS": {
