@@ -36,8 +36,8 @@
     "RT_CLOCK_MIN_LAYER": "Metal1",
     "RT_CLOCK_MAX_LAYER": "Metal2",
 
-    "FP_PDN_HWIDTH": 0.72
-    "FP_PDN_HSPACING": 0.72
+    "FP_PDN_HWIDTH": 0.72,
+    "FP_PDN_HSPACING": 0.72,
     "FP_PDN_HOFFSET": 0.35,
     "FP_PDN_HPITCH": 7.56,
 
