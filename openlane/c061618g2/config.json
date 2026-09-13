@@ -41,9 +41,9 @@
     "FP_PDN_HOFFSET": 0.35,
     "FP_PDN_HPITCH": 7.56,
 
-    "FP_PDN_VWIDTH": 0.72,
-    "FP_PDN_VSPACING": 0.72,
-    "FP_PDN_VOFFSET": 0.36,
+    "FP_PDN_VWIDTH": 1.64,
+    "FP_PDN_VSPACING": 1.64,
+    "FP_PDN_VOFFSET": 0.82,
     "FP_PDN_VPITCH": 11.04,
 
     "PL_MACRO_HALO": 0
