@@ -94,7 +94,7 @@
   "_PDN_CORE_RING": false,
   "PDN_ENABLE_RAILS": true,
   "_PDN_ENABLE_MACROS_GRID": false,
-  "PDN_CONNECT_MACROS_TO_GRID": false,
+  "_PDN_CONNECT_MACROS_TO_GRID": false,
 
   "_QUIT_ON_PDN_VIOLATIONS": true,
   "_FP_PDN_CHECK_NODES": true,
