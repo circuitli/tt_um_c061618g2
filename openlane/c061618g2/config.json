@@ -32,7 +32,7 @@
     "_PDN_HORIZONTAL_LAYER": "Metal4",
     "_PDN_VERTICAL_LAYER": "Metal3",
     "FP_PDN_RAIL_LAYER": "Metal1",
-    "FP_PDN_UPPER_LAYERS": [ "Metal2", "Metal3", "Metal4" ],
+    "_FP_PDN_UPPER_LAYERS": [ "Metal2", "Metal3", "Metal4" ],
     "RT_CLOCK_MIN_LAYER": "Metal1",
     "RT_CLOCK_MAX_LAYER": "Metal2",
 
