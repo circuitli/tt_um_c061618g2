@@ -45,17 +45,6 @@
     "_VERILOG_INCLUDE_DIRS": [
       "pdk_dir::libs.ref/sg13g2_stdcell/verilog"
     ],
-    "FP_PDN_MACROS": [
-      {
-        "instance": "u_c061618g2",
-        "layers": [ "Metal2", "Metal3" ],
-        "connect": [ "Metal1" ],
-        "width": 1.64,
-        "spacing": 1.64,
-        "pitch": 15.12,
-        "offset": 0.82
-      }
-    ],
     "PDN_MACRO_CONNECTIONS": [
       "u_c061618g2 VPWR VGND vdd vss"
     ],
@@ -148,14 +137,8 @@
   "//": "SYNTH_ABC_BUFFERING - Explicitly disables late combinational resizing hooks so ABC passes the gate netlist down to OpenROAD without trying to apply sequential constraints.",
   "SYNTH_ABC_BUFFERING": false,
 
-  "//": "SYNTH_ABC_LEGACY_FLOW - Forces OpenLane to drop the modern abc9 flow (which assumes structural sequential cell paths) and drop back to the standard legacy ABC string matching architecture.",
-  "SYNTH_ABC_LEGACY_FLOW": true,
-
   "//": "SYNTH_SIZING - Enables aggressive pre-placement cell sizing to scale up internal logic gates to high-performance variations early.",
   "SYNTH_SIZING": false,
-
-  "//": "SYNTH_HIER_PASS - Directs Yosys to perform synthesis hierarchically, locking down local submodule ports before physical cell mapping.",
-  "SYNTH_HIER_PASS": true,
 
   "//": "SYNTH_FLATTEN - Disable global flattening to preserve submodule boundaries for physical macro bounding and hierarchical power grid connection",
   "_SYNTH_FLATTEN": true,
@@ -175,9 +158,6 @@
   "//": "SYNTH_SHARE_RESOURCES - Dictates whether Yosys forces resource sharing by actively identifying matching algebraic sub-expressions (like duplicated multiplexers or address decoders) and merging them into unified gate networks. For purely combinational macros, leaving this enabled or disabled changes area footprint without breaking function.",
   "SYNTH_SHARE_RESOURCES": false,
 
-  "//": "SYNTH_NO_FLIP_FLOPS - Explicitly tells Yosys that the design does not contain structural sequential memory elements. This halts structural latched-path mapping loops.",
-  "SYNTH_NO_FLIP_FLOPS": true,
-
   "//": "=========================================================================",
   "//": "ASYNCHRONOUS LOOP & GATES PROTECTION (RESTORED UPPERCASE)",
   "//": "=========================================================================",
@@ -188,18 +168,6 @@
   "//": "SYNTH_DONT_TOUCH - Seals the async filter module boundary so external routing doesn't get messed up.",
   "_SYNTH_DONT_TOUCH": [ "async_glitch_filter" ],
 
-  "//": "SYNTH_GATES_REMAP - Stops Yosys from altering explicit cell layouts. Protects safe_async_mux cover terms.",
-  "SYNTH_GATES_REMAP": false,
-
-  "//": "SYNTH_TIMING_DERATING - Controls whether synchronous design flows calculation margin offsets for clock boundaries. Setting this to 0 prevents clock-skew analysis tools from complaining about your clockless layout.",
-  "SYNTH_TIMING_DERATING": false,
-
-  "//": "SYNTH_EXPLORE_MODE - Instructs Yosys to process custom structural combinational feedbacks natively without generating lint exceptions.",
-  "SYNTH_EXPLORE_MODE": 1,
-
-  "//": "SYNTH_READ_BLACKBOX_ATTRIBUTES - Forces the gate-level linter tool to drop loop alerts when analyzing cross-coupled asynchronous primitives.",
-  "SYNTH_READ_BLACKBOX_ATTRIBUTES": true,
-
   "//": "MAX_FANOUT_CONSTRAINT - Sets a matching high fanout ceiling for the front-end ABC logic mapping tool pass.",
   "MAX_FANOUT_CONSTRAINT": 100,
 
@@ -207,12 +175,6 @@
   "_SYNTH_PARAMETERS": [
     "KEEP_HIERARCHY=1"
   ],
-
-  "//": "EXTRA_SYNTH_ARGS - Overrides the front-end compiler passes! Running 'proc -nodff -nolatch' explicitly strips out the dff/latch extraction scripts during process translation. This intercepts the compilation loop and stops Yosys from generating ANY sequential storage elements in your glitch filters or mmu_core right from the start!",
-  "EXTRA_SYNTH_ARGS": "-run co:; proc -nodff -nolatch; splitnets -ports; -run co:",
-
-  "//": "RUN_SYNTH_CHECKS - Controls the strict automated post-synthesis verification script checker. Disabling this to 0 prevents the Tiny Tapeout build harness from misinterpreting ABC combinational logic messages as fatal errors.",
-  "RUN_SYNTH_CHECKS": 0,
 
   "//": "ERROR_ON_SYNTH_CHECKS - The updated keyword! This precisely commands the YosysSynthChecks linter pass to treat your purposeful clockless feedback loops as expected asynchronous layout warnings, allowing the pipeline to advance smoothly.",
   "ERROR_ON_SYNTH_CHECKS": false,
@@ -310,7 +272,6 @@
   "FP_CORE_UTIL": 65,
 
   "//": "PL_TARGET_DENSITY_PCT - You can increase this if Global Placement fails with error GPL-0302.",
-  "//": "Users have reported that values up to 80 worked well for them.",
   "PL_TARGET_DENSITY_PCT": 75,
 
   "//1": "Master boolean activation switch that turns on the placement-stage timing repair tool block, instructing OpenROAD to actively resize logic gates and patch setup violations before routing begins.",
@@ -318,11 +279,6 @@
 
   "//2": "Forces the placement-stage timing repair tool to treat your target clock window as 60 picoseconds tighter, driving it to upgrade your output path buffers to clear the remaining 25ps deficit legally under the Tiny Tapeout hardware specifications.",
   "_PL_REPAIR_TIMING_SETUP_MARGIN": 0.06,
-
-  "FP_RESIZER_CELL_PADDING": 1,
-
-  "//": "PL_RESIZE_BUFFER_PERCENTAGE - Allocates 0% extra space for timing resizing. This instructs the placement resizer script to stop scaling logic gates for synchronous setup windows.",
-  "PL_RESIZE_BUFFER_PERCENTAGE": 0.0,
 
   "//": "RUN_POST_GPL_DESIGN_REPAIR - Explicitly bars OpenROAD from altering your custom combinational cell structures or feedback nets to clear virtual setup margins.",
   "RUN_POST_GPL_DESIGN_REPAIR": false,
@@ -333,27 +289,12 @@
   "//": "RUN_POST_GRT_RESIZER_TIMING - Stops the global routing pass optimizer from attempting to resize your cell gates across your module boundaries.",
   "RUN_POST_GRT_RESIZER_TIMING": false,
 
-  "//": "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT - Drops your hold fixing area allowance directly down to 0. This structurally forbids the OpenROAD resizer script from inserting delay buffers into your clockless macro wires, preserving your 100% pure asynchronous delays!",
-  "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT": 0.0,
-
-  "//": "SKIP_STEPS - Instructs the pipeline sequencer to skip running the late-stage physical design timing repair modules entirely, preventing deferred corner errors from stopping the flow run.",
-  "SKIP_STEPS": [
-    "Resizer.DesignRepair",
-    "Resizer.TimingRepair"
-  ],
+  "//": "PL_RESIZER_HOLD_MAX_BUFFER_PCT - Drops your hold fixing area allowance directly down to 0. This structurally forbids the OpenROAD resizer script from inserting delay buffers into your clockless macro wires, preserving your 100% pure asynchronous delays!",
+  "PL_RESIZER_HOLD_MAX_BUFFER_PCT": 0.0,
 
   "//": "=========================================================================",
   "//": "PHYSICAL ROUTER & REPAIR BYPASSES (CRITICAL FOR CAPACITIVE LOADS)",
   "//": "=========================================================================",
-
-  "//": "PL_REPAIR_BUFFER_OUTPUTS - Blocks OpenROAD from injecting repeaters to fix your slow 100ps capacitive filter ramps.",
-  "PL_REPAIR_BUFFER_OUTPUTS": false,
-
-  "//": "GPL_DENSITY_PLACEMENT - Instructs the Nesterov engine to strictly honor high-density subregion boundaries instead of treating them as loose cells",
-  "GPL_DENSITY_PLACEMENT": true,
-
-  "//": "GLB_REPAIR_REPEATER_INPUTS - Disables global routing buffer injection on input lines.",
-  "GLB_REPAIR_REPEATER_INPUTS": false,
 
   "//1": "Enables the late-stage global routing optimization loop, allowing OpenLane to drop heavy repeater buffers outside your frozen hierarchy boxes to patch the remaining 25ps deficit.",
   "_GLB_REPAIR_TIMING": true,
@@ -361,26 +302,17 @@
   "//2": "Over-constrains the global router by 50 picoseconds to force the engine to select high-current driving cells for your external uo_out pin connections.",
   "_GLB_REPAIR_TIMING_SETUP_MARGIN": 0.05,
 
-  "//": "RUN_POST_GPL_DESIGN_REPAIR - Bypass LibreLane crash by forcing automatic hold-buffer insertion after global placement",
-  "RUN_POST_GPL_DESIGN_REPAIR": false,
-
-  "//": "RUN_POST_GRT_RESIZER_TIMING - Force a final round of precise hold-buffer patching after physical wire routing lines are drawn",
-  "RUN_POST_GRT_RESIZER_TIMING": false,
-
   "//": "RUN_POST_GRT_DESIGN_REPAIR - Force physical cell legalisation and track repair after global routing to resolve severe hold violations",
   "RUN_POST_GRT_DESIGN_REPAIR": false,
 
   "//": "CELL_PAD - Increase cell padding to force the tool to leave empty space around every single logic gate",
   "_CELL_PAD": 0,
 
-  "//": "RUN_POST_GRT - Direct the global router to optimize timing routes with maximum iterations",
-  "RUN_POST_GRT": true,
-
   "//": "Hold slack margin - Increase them in case you are getting hold violations.",
   "PL_RESIZER_HOLD_SLACK_MARGIN": 0.1,
   "GRT_RESIZER_HOLD_SLACK_MARGIN": 0.05,
 
-  "GLB_RESIZER_HOLD_MAX_BUFFER_PERCENT": 0.0,
+  "GRT_RESIZER_HOLD_MAX_BUFFER_PCT": 0.0,
   "GLB_RESIZER_DESIGN_OPTIMIZATIONS": false,
 
   "//": "DESIGN_REPAIR_MAX_WIRE_LENGTH - THE FINAL FIX: Setting this explicitly to 0 tells LibreLane's physical design repair engine to completely skip maximum wire length buffering, ensuring clockless loops stay 100% pure wire tracks.",
@@ -422,8 +354,6 @@
 
   "//": "Clock",
   "RUN_CTS": 0,
-  "//": "CLOCK_TREE_SYNTHESIS - Force Clock Tree Synthesis to explicitly balance insertion delays across the phase clock multiplexer",
-  "CLOCK_TREE_SYNTHESIS": false,
 
   "//": "Don't generate power rings",
   "PDN_MULTILAYER": 0,
