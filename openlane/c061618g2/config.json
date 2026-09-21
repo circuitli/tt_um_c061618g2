@@ -1,7 +1,7 @@
 {
   "DESIGN_NAME": "c061618g2",
   "VERILOG_FILES": [
-    "dir::../../src/module/c061618g2.sv"
+    "dir::../../deps/c061618g2/src/module/c061618g2.sv"
   ],
 
   "PNR_SDC_FILE": "dir::../../src/mmu_constraints.sdc",
