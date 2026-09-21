@@ -31,8 +31,8 @@
   "// -------------------------------------------------------------------------": "",
   "pdk::ihp-sg13g2": {
     "VERILOG_DEFINES": [ "IHP_SG13G2" ],
-    "macro_y_1": 5.88,
-    "macro_x_1": 20.16,
+    "macro_x": 22.08,
+    "macro_y": 102.06,
     "MACROS": {
       "c061618g2": {
         "gds": [ "dir::../macros/gds/c061618g2.gds" ],
@@ -45,7 +45,7 @@
         },
         "instances": {
           "u_c061618g2": {
-            "location": [ 6.72, 102.06 ],
+            "location": [ "expr::($macro_x)", "expr::($macro_y)" ],
             "orientation": "N"
           }
         }
