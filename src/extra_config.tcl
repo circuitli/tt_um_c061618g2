@@ -1,6 +1,1 @@
-set ::env(TILE_PDN_VERTICAL_LAYER) "Metal4"
-
-set ::env(TILE_PDN_VWIDTH) 0.48
-set ::env(TILE_PDN_VSPACING) 0.96
-set ::env(TILE_PDN_VOFFSET) 11.04
-set ::env(TILE_PDN_VPITCH) 22.08
+../deps/c061618g2/src/extra_config.tcl
