@@ -13,10 +13,7 @@
 
   "_synth_vector_mapping": "square",
 
-  "PDN_MULTILAYER": false,
   "PDN_CORE_RING": false,
-  "_PDN_CONNECT_MACROS_TO_GRID": false,
-  "PDN_ENABLE_RAILS": true,
 
   "_PDN_CFG": "dir::pdn_cfg.tcl",
 
