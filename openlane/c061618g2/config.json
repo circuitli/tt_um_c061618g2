@@ -3,6 +3,9 @@
   "VERILOG_FILES": [
     "dir::../../deps/c061618g2/src/module/c061618g2.sv"
   ],
+  "VERILOG_INCLUDE_DIRS": [
+    "dir::../../deps/c061618g2"
+  ],
 
   "PNR_SDC_FILE": "dir::../../src/mmu_constraints.sdc",
 
