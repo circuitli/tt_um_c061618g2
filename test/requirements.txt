@@ -1,2 +1,1 @@
-pytest==8.4.2
-cocotb==2.0.1
+../deps/c061618g2/test/requirements.txt

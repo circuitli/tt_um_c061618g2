@@ -1,0 +1,103 @@
+name: verilator
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'test/**'
+      - 'info.yaml'
+      - '.github/workflows/verilator.yaml'
+
+  workflow_run:
+    workflows: ["gds"]
+    types:
+      - completed
+
+  workflow_dispatch:
+
+# =========================================================================
+# CONCURRENCY MANAGER (Cancels excessive outdated runs)
+# =========================================================================
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verilator:
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+        with:
+          # 1. Pull down the structure completely
+          submodules: recursive
+          # 2. Prevent stale build snapshots from sticking around
+          clean: true 
+
+      - name: Setup Verilator Compilation Cache
+        uses: actions/cache@v4
+        with:
+          path: test/sim_build
+          key: ${{ runner.os }}-verilator-gls-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-verilator-gls-
+
+      - name: Install Verilator 5+
+        uses: veryl-lang/setup-verilator@v1
+        with:
+          version: '5.036'
+          cache: 'pip' # Native pip cache tracking for python environments
+
+      - name: Set up Python Runtime
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Cocotb Framework Dependencies
+        run: pip install cocotb pytest
+
+      - name: Execute Verilator Simulation
+        run: |
+          cd test
+          make SIM=verilator 2>&1 | tee "$GITHUB_WORKSPACE/verilator_run.log"
+ 
+      - name: Inject Custom Verilator Data into TT Summary Page
+        if: always()
+        run: |
+          LOG_FILE="$GITHUB_WORKSPACE/verilator_run.log"
+         
+          if [ -f "$LOG_FILE" ]; then
+            # Clean out any ANSI color escape sequences from the terminal log
+            sed -i 's/\x1b\[[0-9;]*m//g' "$LOG_FILE"
+           
+            echo "## 🛠️ Tiny Tapeout Simulation Summary" >> $GITHUB_STEP_SUMMARY
+           
+            # 1. Extract Cocotb test matrix dynamically if it exists
+            if grep -q "TEST                       STATUS" "$LOG_FILE"; then
+              echo "### 📊 Cocotb Test Results" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo '```text' >> $GITHUB_STEP_SUMMARY
+              grep -A 20 "TEST                       STATUS" "$LOG_FILE" >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+            fi
+           
+            # 2. Only generate the warning code block if actual warnings/errors exist
+            if grep -qiE "(%Warning|%Error)" "$LOG_FILE"; then
+              echo "### 🔍 Verilator Warning & Lint Alerts" >> $GITHUB_STEP_SUMMARY
+              echo "<details><summary>Click to view lint details</summary>" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo '```text' >> $GITHUB_STEP_SUMMARY
+              grep -iE "(%Warning|%Error)" "$LOG_FILE" >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+              echo "</details>" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "✅ **No Verilator warnings or structural lints detected.**" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "### ⚠️ Verilator log file not found at $LOG_FILE!" >> $GITHUB_STEP_SUMMARY
+          fi
+  

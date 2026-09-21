@@ -48,14 +48,24 @@ jobs:
             echo "run_id=$LATEST_ID" >> $GITHUB_OUTPUT
           fi
 
-      # 📦 2. OFFICIAL GITHUB ARTIFACT DOWNLOADER
+        # 📦 2. SAFE GITHUB ARTIFACT DOWNLOADER (Bypasses v4 run-id 404 bugs)
       - name: Download Precompiled Macro Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: precompiled-macros
-          run-id: ${{ steps.resolve-id.outputs.run_id }}  # 👈 Safe native cross-workflow link
-          github-token: ${{ secrets.GITHUB_TOKEN }}       # 👈 Official syntax
-          path: macros/
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ steps.resolve-id.outputs.run_id }}
+        run: |
+          echo "Checking for macro artifacts in run: $RUN_ID..."
+          
+          # Attempt to download the artifact via GitHub CLI; suppress 404 failure code
+          if gh run download "$RUN_ID" --name precompiled-macros --dir macros/ 2>/dev/null; then
+            echo "Successfully loaded precompiled macros."
+          else
+            echo "No macros directory found."
+            exit -1
+            #echo "No precompiled macros found or run doesn't exist yet. Creating empty layout placeholder."
+            # Touch a dummy file so the build flow downstream doesn't stall on a completely empty folder
+            #touch macros/.placeholder
+          fi
 
       - name: Install iverilog
         shell: bash
@@ -72,6 +82,8 @@ jobs:
         run: pip install -r test/requirements.txt
   
       - name: Install and Run PDK Downloader Directly
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # 1. Install ciel (the open-source IHP PDK version manager)
           python3 -m pip install ciel
@@ -88,7 +100,7 @@ jobs:
           mkdir -p /home/runner/pdk
           
           # 5. Locate where ciel placed the versioned directory assets and symlink it
-          CIEL_DIR=$(find /home/runner/.ciel/ciel/ihp-sg13g2/versions/ -maxdepth 2 -name "ihp-sg13g2" | head -n 1)
+          CIEL_DIR=$(find /home/runner/ -type d -name "ihp-sg13g2" -path "*/versions/*" | head -n 1)
           ln -s "$CIEL_DIR" /home/runner/pdk/ihp-sg13g2
           
           # 6. Export environment variables to expose paths to subsequent tools

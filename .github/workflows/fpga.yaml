@@ -20,7 +20,10 @@ jobs:
       - name: checkout repo
         uses: actions/checkout@v6
         with:
+          # 1. Pull down the structure completely
           submodules: recursive
+          # 2. Prevent stale build snapshots from sticking around
+          clean: true 
 
       - name: FPGA bitstream for TT ASIC Sim (ICE40UP5K)
         uses: TinyTapeout/tt-gds-action/fpga/ice40up5k@ttihp26b

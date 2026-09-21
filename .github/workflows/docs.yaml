@@ -18,7 +18,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v6
         with:
+          # 1. Pull down the structure completely
           submodules: recursive
+          # 2. Prevent stale build snapshots from sticking around
+          clean: true 
 
       - name: Build docs
         uses: TinyTapeout/tt-gds-action/docs@ttihp26b

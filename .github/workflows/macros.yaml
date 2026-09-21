@@ -29,7 +29,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
+          # 1. Pull down the structure completely
           submodules: recursive
+          # 2. Tell Git to aggressively pull the cutting-edge remote branch files
+          submodules-remote: true
+          # 3. Pull the entire Git history so no shallow tracking blocks updates
+          fetch-depth: 0
+          # 4. Prevent stale build snapshots from sticking around
+          clean: true 
 
        # Step 2: Query the workspace filesystem to verify if the Makefile exists
       - name: Check for Makefile presence
@@ -40,31 +47,36 @@ jobs:
           else
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
-          mkdir -p macros/gds macros/lef macros/lib macros/nl macros/pnl macros/spef
 
-      - name: Install and Run PDK Downloader Directly
-        if: steps.check_makefile.outputs.exists == 'true'
-        shell: bash
-        # Forward the path definitions directly into this step execution block
+      - name: Fetch and Link IHP PDK dev Branch Directly
         env:
-          PDK_ROOT: ${{ env.PDK_ROOT }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -eo pipefail
 
-          export PDK_ROOT="${{ github.workspace }}/pdk"
-          export PDK_TARGET="ihp-sg13g2"
-
-          pip install ciel
-
-          # 2. Automatically retrieve the latest available version hash from IHP-Open-PDK
-          # This extracts the latest commit tracking string dynamically
-          LATEST_HASH=$(python3 -m ciel ls-remote --pdk-family ihp-sg13g2 | head -n 1 | awk '{print $1}')
-          echo "Activating IHP PDK Version Hash: $LATEST_HASH"
+          # 1. Define clean workspace target directory variables
+          export TARGET_PDK_DIR="${{ github.workspace }}/pdk"
+          export TEMP_CLONE_DIR="${{ github.workspace }}/pdk_tmp"
           
-          # 3. Instruct ciel to pull down and enable the target build using that hash
-          python3 -m ciel enable --pdk-root "$PDK_ROOT" --pdk-family "$PDK_TARGET" "$LATEST_HASH"
-                
-          echo "✅ PDK tracks successfully populated with configurations."
+          rm -rf "$TARGET_PDK_DIR" "$TEMP_CLONE_DIR"
+          mkdir -p "$TARGET_PDK_DIR"
+          
+          echo "📥 Performing native source clone..."
+          # 2. Clone the full repository structure to a temporary folder
+          git clone --branch dev --depth 1 --recurse-submodules https://github.com/IHP-GmbH/IHP-Open-PDK.git "$TEMP_CLONE_DIR"
+          
+          echo "📁 Moving internal process folder to eliminate double nesting..."
+          # 3. Move the internal process folder directly to where LibreLane expects it
+          # This extracts 'ihp-pdk_repo/ihp-sg13g2' straight to 'pdk/ihp-sg13g2'
+          mv "$TEMP_CLONE_DIR/ihp-sg13g2" "$TARGET_PDK_DIR/"
+          
+          # 4. Clean up the empty temporary download directory
+          rm -rf "$TEMP_CLONE_DIR"
+          
+          # 5. Export environment tracking configurations
+          echo "PDK_ROOT=$TARGET_PDK_DIR" >> $GITHUB_ENV
+          echo "PDK=ihp-sg13g2" >> $GITHUB_ENV
+
 
       # Hardens the macros sub-config natively
       - name: 🔨 Compile Internal Hard Macros Natively
@@ -80,6 +92,7 @@ jobs:
           # Execute make exactly once and record the numeric status code
           make
           make_exit_code=$?
+          make ensure
         
           # Re-enable standard safe exit constraints
           set -e
@@ -112,9 +125,11 @@ jobs:
           name: macro-signoff-logs
           path: |
             **/runs/*/*
+          if-no-files-found: ignore
 
       - name: 💾 Upload Macro Abstract Views for Top-Level Assembly
         uses: actions/upload-artifact@v4
         with:
           name: precompiled-macros
           path: macros/
+          if-no-files-found: ignore

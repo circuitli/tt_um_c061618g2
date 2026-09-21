@@ -6,6 +6,11 @@ on:
       - main
     paths:
       - 'src/*.*'
+      - 'test/Makefle'
+      - 'test/tb.*'
+      - 'test/test.py'
+      - 'formal/project.js'
+      - 'formal/project.xml'
       - '.github/workflows/gds.yaml'
 
   workflow_run:
@@ -30,7 +35,10 @@ jobs:
       - name: checkout repo
         uses: actions/checkout@v6
         with:
+          # 1. Pull down the structure completely
           submodules: recursive
+          # 2. Prevent stale build snapshots from sticking around
+          clean: true 
 
       # 🔍 1. EXTRACT RUN ID (Handles manual buttons natively)
       - name: Resolve Macro Run ID
@@ -45,15 +53,25 @@ jobs:
             LATEST_ID=$(gh run list --workflow="macros.yaml" --status=success --limit=1 --json databaseId -q '.[0].databaseId')
             echo "run_id=$LATEST_ID" >> $GITHUB_OUTPUT
           fi
-
-      # 📦 2. OFFICIAL GITHUB ARTIFACT DOWNLOADER
+                
+        # 📦 2. SAFE GITHUB ARTIFACT DOWNLOADER (Bypasses v4 run-id 404 bugs)
       - name: Download Precompiled Macro Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: precompiled-macros
-          run-id: ${{ steps.resolve-id.outputs.run_id }}  # 👈 Safe native cross-workflow link
-          github-token: ${{ secrets.GITHUB_TOKEN }}       # 👈 Official syntax
-          path: macros/
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ steps.resolve-id.outputs.run_id }}
+        run: |
+          echo "Checking for macro artifacts in run: $RUN_ID..."
+          
+          # Attempt to download the artifact via GitHub CLI; suppress 404 failure code
+          if gh run download "$RUN_ID" --name precompiled-macros --dir macros/ 2>/dev/null; then
+            echo "Successfully loaded precompiled macros."
+          else
+            echo "No macros directory found."
+            exit -1
+            #echo "No precompiled macros found or run doesn't exist yet. Creating empty layout placeholder."
+            # Touch a dummy file so the build flow downstream doesn't stall on a completely empty folder
+            #touch macros/.placeholder
+          fi
 
       - name: Build GDS
         uses: TinyTapeout/tt-gds-action@ttihp26b
@@ -74,7 +92,10 @@ jobs:
       - name: checkout repo
         uses: actions/checkout@v6
         with:
+          # 1. Pull down the structure completely
           submodules: recursive
+          # 2. Prevent stale build snapshots from sticking around
+          clean: true 
 
       # 🔍 1. EXTRACT RUN ID (Handles manual buttons natively)
       - name: Resolve Macro Run ID
@@ -90,14 +111,24 @@ jobs:
             echo "run_id=$LATEST_ID" >> $GITHUB_OUTPUT
           fi
 
-      # 📦 2. OFFICIAL GITHUB ARTIFACT DOWNLOADER
+       # 📦 2. SAFE GITHUB ARTIFACT DOWNLOADER (Bypasses v4 run-id 404 bugs)
       - name: Download Precompiled Macro Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: precompiled-macros
-          run-id: ${{ steps.resolve-id.outputs.run_id }}  # 👈 Safe native cross-workflow link
-          github-token: ${{ secrets.GITHUB_TOKEN }}       # 👈 Official syntax
-          path: macros/
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ steps.resolve-id.outputs.run_id }}
+        run: |
+          echo "Checking for macro artifacts in run: $RUN_ID..."
+          
+          # Attempt to download the artifact via GitHub CLI; suppress 404 failure code
+          if gh run download "$RUN_ID" --name precompiled-macros --dir macros/ 2>/dev/null; then
+            echo "Successfully loaded precompiled macros."
+          else
+            echo "No macros directory found."
+            exit -1
+            #echo "No precompiled macros found or run doesn't exist yet. Creating empty layout placeholder."
+            # Touch a dummy file so the build flow downstream doesn't stall on a completely empty folder
+            #touch macros/.placeholder
+          fi
 
       - name: GL test
         uses: TinyTapeout/tt-gds-action/gl_test@ttihp26b
@@ -111,342 +142,4 @@ jobs:
     steps:
       - uses: TinyTapeout/tt-gds-action/viewer@ttihp26b
 
-  workcraft:
-    runs-on: ubuntu-24.04
-    needs: gds
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v6
-        with:
-          submodules: recursive
-
-      - name: Install and Run PDK Downloader Directly
-        if: false
-        run: |
-          # 1. Install ciel (the open-source IHP PDK version manager)
-          python3 -m pip install ciel
-          
-          # 2. Automatically retrieve the latest available version hash from IHP-Open-PDK
-          # This extracts the latest commit tracking string dynamically
-          LATEST_HASH=$(python3 -m ciel ls-remote --pdk-family ihp-sg13g2 | head -n 1 | awk '{print $1}')
-          echo "Activating IHP PDK Version Hash: $LATEST_HASH"
-          
-          # 3. Instruct ciel to pull down and enable the target build using that hash
-          python3 -m ciel enable --pdk-family ihp-sg13g2 "$LATEST_HASH"
-          
-          # 4. Create the flat path layout required by your simulations
-          mkdir -p /home/runner/pdk
-          
-          # 5. Locate where ciel placed the versioned directory assets and symlink it
-          CIEL_DIR=$(find /home/runner/.ciel/ciel/ihp-sg13g2/versions/ -maxdepth 2 -name "ihp-sg13g2" | head -n 1)
-          ln -s "$CIEL_DIR" /home/runner/pdk/ihp-sg13g2
-          
-          # 6. Export environment variables to expose paths to subsequent tools
-          echo "PDK_ROOT=/home/runner/pdk" >> $GITHUB_ENV
-          echo "PDK=ihp-sg13g2" >> $GITHUB_ENV
-
-      - name: Install OSS CAD Suite
-        uses: YosysHQ/setup-oss-cad-suite@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      # Native download step: extracts the 'runs/' directory tree perfectly intact
-      - name: Download GDS Netlist Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          # Explicitly use the global workspace variable to anchor the directory path
-          path: ${{ github.workspace }}/gds_drop/
-          merge-multiple: true # Prevents v4 from creating an extra nested sub-folder
-
-      - name: Setup Java Runtime Environment
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-
-      - name: Cache Workcraft Build Artifacts
-        id: cache-workcraft
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            ${{ github.workspace }}/workspace_workcraft
-          # The cache key is bound to the latest commit hash of Workcraft master branch
-          key: workcraft-build-${{ github.sha }}
-          restore-keys: |
-            workcraft-build-
-
-      - name: Compile Workcraft From Source
-        working-directory: ${{ github.workspace }}
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          # Only clone if the directory doesn't exist yet (handles initial bootstrap)
-          if [ ! -d "workspace_workcraft" ]; then
-              echo "🔨 Cloning Workcraft..."
-              git clone --depth 1 https://github.com/workcraft/workcraft.git workspace_workcraft
-              cd workspace_workcraft
-              echo "📦 Initialising Workcraft submodules..."
-              git submodule update --init --remote
-          else
-              cd workspace_workcraft
-              echo "✨ Cache directory found. Proceeding with incremental compilation check..."
-          fi
-
-          export JAVA_HOME=$(dirname $(dirname $(readlink -f $(command -v java))))
-          echo "Using JAVA_HOME: ${JAVA_HOME}"
-          echo "🔨 Building Workcraft..."
-          ./gradlew assemble copyLibs
-
-      - name: Restore Workcraft Backend Tool Links
-        working-directory: ${{ github.workspace }}/workspace_workcraft
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "🔗 Mapping platform-specific backend tools (MPSat/Petrify)..."
-          # Remove old broken links if they exist in the cache and establish a clean link
-          rm -f tools
-          ln -s dist/template/linux/tools tools
-
-      # =========================================================================
-      # This runs safely inside the local runner directory context without breaking
-      # global paths, making the library 100% parseable by Yosys.
-      # =========================================================================
-      - name: Extract and Clean IHP SG13G2 Standard Cell Library
-        working-directory: ${{ github.workspace }}/workspace_workcraft
-        if: false
-        run: |
-          # 1. Copy the un-scrubbed host PDK asset to the current repository directory root
-          cp /home/runner/pdk/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v ./sg13g2_stdcell_clean.v
-     
-          # 2. Strip structural specify timing blocks that contain the ifnone errors
-          sed -i '/specify/,/endspecify/d' ./sg13g2_stdcell_clean.v
-     
-          # 3. Strip sequential user-defined primitive tables that break token parsing
-          sed -i '/primitive/,/endprimitive/d' ./sg13g2_stdcell_clean.v
-
-          # 4. Strip out 'reg' declarations which break the structural gate-level parser
-          sed -i '/^[[:space:]]*reg[[:space:]]/d' ./sg13g2_stdcell_clean.v
-
-          # 5. FIX: Wipe out all simulation initial blocks, delays, and assign statements 
-          sed -i '/^[[:space:]]*initial\>/,/^[[:space:]]*end\>/d' ./sg13g2_stdcell_clean.v
-          sed -i '/^[[:space:]]*initial[[:space:]]/d' ./sg13g2_stdcell_clean.v
-          sed -i '/^[[:space:]]*assign[[:space:]]/d' ./sg13g2_stdcell_clean.v
-          sed -i 's/#[0-9]\+//g' ./sg13g2_stdcell_clean.v
-
-      
-       # 🔍 1. EXTRACT RUN ID (Handles manual buttons natively)
-      - name: Resolve Macro Run ID
-        id: resolve-id
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_run" ]; then
-            echo "run_id=${{ github.event.workflow_run.id }}" >> $GITHUB_OUTPUT
-          else
-            # Finds the absolute latest successful macros workflow run ID natively via GitHub CLI
-            LATEST_ID=$(gh run list --workflow="macros.yaml" --status=success --limit=1 --json databaseId -q '.[0].databaseId')
-            echo "run_id=$LATEST_ID" >> $GITHUB_OUTPUT
-          fi
-
-      # 📦 2. OFFICIAL GITHUB ARTIFACT DOWNLOADER
-      - name: Download Precompiled Macro Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: precompiled-macros
-          run-id: ${{ steps.resolve-id.outputs.run_id }}  # 👈 Safe native cross-workflow link
-          github-token: ${{ secrets.GITHUB_TOKEN }}       # 👈 Official syntax
-          path: macros/
-
-      - name: Run Workcraft Verification
-        id: workcraft
-        working-directory: ${{ github.workspace }}/workspace_workcraft
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          # Target your absolute workspace path to eliminate directory guessing
-          TARGET_DIR="${{ github.workspace }}/gds_drop"
-          MACROS_DIR="${{ github.workspace }}/macros"
-          TEST_DIR="${{ github.workspace }}/test"
-
-          shopt -s nullglob
-          MACRO_FILES=($MACROS_DIR/nl/*.v)
-          shopt -u nullglob
-
-          if [ ${#MACRO_FILES[@]} -eq 0 ]; then
-            echo "❌ ERROR: No macro files found inside $MACROS_DIR/"
-            echo "Contents of $MACROS_DIR directory structure:"
-            find "$MACROS_DIR" -type f || ls -R "$MACROS_DIR"
-            exit 1
-          fi
-          echo "🎯 Found macros: $MACRO_FILES"
-
-          echo "📦 Merging IHP SG13G2 technology library with gate netlist..."
-          # Paths to the files
-          LIB_FILE="./sg13g2_stdcell_clean.v"
-          # 2. Use $GITHUB_WORKSPACE to target your repository's test directory exactly
-          # 2. Use find to grab the netlist from your already downloaded gds_drop folder
-          echo "🔎 Locating the netlist file inside downloaded artifacts..."
-          # Using -print -quit makes find stop natively on the first hit, preventing a broken pipe!
-          # 1. Dynamically find the real post-route gate-level Verilog file from the active run directory
-          NETLIST_FILE=$(find "${TARGET_DIR}" -type f -name "*.v" -print -quit)
-
-          if [ -z "$NETLIST_FILE" ]; then
-            echo "❌ ERROR: No gate netlist file found inside gds_drop/"
-            exit 1
-          fi
-          echo "🎯 Found Target Netlist: $NETLIST_FILE"
-
-          COMBINED_FILE="$GITHUB_WORKSPACE/test/combined_netlist.v"
-
-          # Concatenate the files so Workcraft has the gate definitions inline
-          #cat "$LIB_FILE" "$NETLIST_FILE" > "$COMBINED_FILE"
-          # Using a hyphen (-) tells cat to read the empty line directly from echo via the pipe
-          echo "" | cat "$NETLIST_FILE" - $MACRO_FILES > "$COMBINED_FILE"
-
-          echo "🧼 Scrubbing illegal backslash identifier tokens for Workcraft compatibility..."
-          sed -i 's/\\//g' "$COMBINED_FILE"
-
-          # 5. Replace forward slashes (/) with safe underscores (_) for <PETRIFY_NAME> token compatibility
-          echo "🧼 Substituting hierarchical forward slashes with safe underscores..."
-          sed -i 's/\//_/g' "$COMBINED_FILE"
-
-          # 6. Target ONLY array bit-select indexes attached to signal words (e.g., bus[0] -> bus_0_)
-          # This completely preserves structural declarations like [7:0] untouched!
-          echo "🧬 Safely renaming scalar bit-selects..."
-          sed -i -E 's/([a-zA-Z0-9_]+)\[([0-9]+)\]/\1_\2_/g' "$COMBINED_FILE"
-
-          echo "🔎 Hunting for the actual launcher file..."
-    
-          LAUNCHER_PATH=""
-    
-          # Read find results directly into a loop to prevent pipeline crashes
-          while IFS= read -r file; do
-            # Skip the dist/template directory explicitly
-            if [[ "$file" != *"dist/template"* ]]; then
-              LAUNCHER_PATH="$file"
-              break
-            fi
-          done < <(find . -maxdepth 4 -type f -name "workcraft" -perm /a+x 2>/dev/null)
-    
-          if [ -z "$LAUNCHER_PATH" ]; then
-            echo "⚠️ No generated standalone script found. Falling back to the core template wrapper."
-            LAUNCHER_PATH="./dist/template/linux/workcraft"
-          fi
-    
-          echo "🚀 Using launcher path: $LAUNCHER_PATH"
-          chmod +x "$LAUNCHER_PATH"
-    
-          # =========================================================================
-          # 🚀 THE DIRECT HEADLESS JVM LAUNCH
-          # We enter the standalone compiled distribution folder. We construct a 
-          # standard Java Classpath targeting the core workcraft.jar and EVERY single 
-          # plugin .jar inside the plugins/ subdirectory, then call org.workcraft.Console.
-          # =========================================================================
-          #cd dist/template/linux
-          
-          echo "🏗️ Mapping full JVM Classpath across all project modules..."
-          # Creates a unified classpath including the core launcher and all plugin jars
-          CLASSPATH=$(find . -type f -name "*.jar" | tr '\n' ':')
-
-          ./gradlew :WorkcraftRunner:run --args="-nogui -config:$GITHUB_WORKSPACE/formal/project.xml -exec:$GITHUB_WORKSPACE/formal/project.js"
-    
-          echo "✅ Workcraft verification completed."
-
-      - name: Set Summary Header
-        if: always()
-        run: |
-          echo "## 🛠️ Workcraft Asynchronous Formal Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-      - name: Set Pass Summary
-        if: always() && steps.workcraft.outcome == 'success'
-        run: |
-          echo "✅ **PASS: All asynchronous structures are mathematically hazard-free and stable!**" >> $GITHUB_STEP_SUMMARY
-
-      - name: Set Fail Summary
-        if: always() && steps.workcraft.outcome != 'success'
-        run: |
-          echo "❌ **FAIL: Asynchronous loop violation or structural hazard detected!**" >> $GITHUB_STEP_SUMMARY
-
-  verilator:
-    runs-on: ubuntu-latest
-    needs: [gds]
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v6
-        with:
-          submodules: recursive
-
-      - name: Setup Verilator Compilation Cache
-        uses: actions/cache@v4
-        with:
-          path: test/sim_build
-          key: ${{ runner.os }}-verilator-gls-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-verilator-gls-
-
-      # Native download step: extracts the 'runs/' directory tree perfectly intact
-      - name: Download GDS Netlist Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: gds_drop/
-
-      - name: Install Verilator 5+
-        uses: veryl-lang/setup-verilator@v1
-        with:
-          version: '5.036'
-          cache: 'pip' # Native pip cache tracking for python environments
-
-      - name: Set up Python Runtime
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install Cocotb Framework Dependencies
-        run: pip install cocotb pytest
-
-      - name: Execute Verilator Simulation
-        run: |
-          cd test
-          make SIM=verilator 2>&1 | tee "$GITHUB_WORKSPACE/verilator_run.log"
- 
-      - name: Inject Custom Verilator Data into TT Summary Page
-        if: always()
-        run: |
-          LOG_FILE="$GITHUB_WORKSPACE/verilator_run.log"
-         
-          if [ -f "$LOG_FILE" ]; then
-            # Clean out any ANSI color escape sequences from the terminal log
-            sed -i 's/\x1b\[[0-9;]*m//g' "$LOG_FILE"
-           
-            echo "## 🛠️ Tiny Tapeout Simulation Summary" >> $GITHUB_STEP_SUMMARY
-           
-            # 1. Extract Cocotb test matrix dynamically if it exists
-            if grep -q "TEST                       STATUS" "$LOG_FILE"; then
-              echo "### 📊 Cocotb Test Results" >> $GITHUB_STEP_SUMMARY
-              echo "" >> $GITHUB_STEP_SUMMARY
-              echo '```text' >> $GITHUB_STEP_SUMMARY
-              grep -A 20 "TEST                       STATUS" "$LOG_FILE" >> $GITHUB_STEP_SUMMARY
-              echo '```' >> $GITHUB_STEP_SUMMARY
-            fi
-           
-            # 2. Only generate the warning code block if actual warnings/errors exist
-            if grep -qiE "(%Warning|%Error)" "$LOG_FILE"; then
-              echo "### 🔍 Verilator Warning & Lint Alerts" >> $GITHUB_STEP_SUMMARY
-              echo "<details><summary>Click to view lint details</summary>" >> $GITHUB_STEP_SUMMARY
-              echo "" >> $GITHUB_STEP_SUMMARY
-              echo '```text' >> $GITHUB_STEP_SUMMARY
-              grep -iE "(%Warning|%Error)" "$LOG_FILE" >> $GITHUB_STEP_SUMMARY
-              echo '```' >> $GITHUB_STEP_SUMMARY
-              echo "</details>" >> $GITHUB_STEP_SUMMARY
-            else
-              echo "" >> $GITHUB_STEP_SUMMARY
-              echo "✅ **No Verilator warnings or structural lints detected.**" >> $GITHUB_STEP_SUMMARY
-            fi
-          else
-            echo "### ⚠️ Verilator log file not found at $LOG_FILE!" >> $GITHUB_STEP_SUMMARY
-          fi
+  

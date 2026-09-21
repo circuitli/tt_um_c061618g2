@@ -71,7 +71,7 @@ workspace_root = os.environ.get("SBY_WORKFLOW_DIR") or os.getcwd()
 
 # The output() method natively injects the commands back into the SBY engine queue
 output(f"read -sv {define_flag} formal/module/c061618g2_formal.sv")
-output(f"read -sv {define_flag} project_formal.sv")
+output(f"read -sv {define_flag} formal/project_formal.sv")
 --pycode-end--
 # =============================================================================
 
@@ -214,42 +214,41 @@ check
 [files]
 # Target Destination Path              # Local Source Repository Path
 #sg13g2_stdcell_clean.v                 
-src/techmap/and2_1.v                      ../src/techmap/and2_1.v
-src/techmap/inv_1.v                       ../src/techmap/inv_1.v
-src/techmap/buf_4.v                       ../src/techmap/buf_4.v
-src/techmap/dlygate4sd3.v                 ../src/techmap/dlygate4sd3.v
-src/techmap/aoi21_1.v                     ../src/techmap/aoi21_1.v
-src/techmap/aoi211_1.v                    ../src/techmap/aoi211_1.v
-src/techmap/oai211_1.v                    ../src/techmap/oai211_1.v
-src/cell/async_latch_cell.v            ../src/cell/async_latch_cell.v
-src/cell/safe_async_mux.sv             ../src/cell/safe_async_mux.sv
-src/defs/mmu_defs.sv                   ../src/defs/mmu_defs.sv
-src/core/mmu_core.sv                   ../src/core/mmu_core.sv
-src/module/async_glitch_filter.sv      ../src/module/async_glitch_filter.sv
-src/module/async_glitch_filter_bank.sv ../src/module/async_glitch_filter_bank.sv
-src/module/mueller_inertial_delay_filter.v       ../src/module/mueller_inertial_delay_filter.v
-src/module/mueller_inertial_delay_filter_bank.sv ../src/module/mueller_inertial_delay_filter_bank.sv
-#src/module/c061618g2_input_shield.sv            ../src/module/c061618g2_input_shield.sv
-src/module/c061618g2.sv                          ../src/module/c061618g2.sv
-src/project.v                                   ../src/project.v
-lib/cells_formal.sv                               lib/cells_formal.sv
-project_formal.sv                                 project_formal.sv
-formal/lib/cells_formal.sv                        lib/cells_formal.sv
-formal/techmap/and2_1_formal.sv                   techmap/and2_1_formal.sv 
-formal/techmap/inv_1_formal.sv                    techmap/inv_1_formal.sv 
-formal/techmap/buf_4_formal.sv                    techmap/buf_4_formal.sv
-formal/techmap/dlygate4sd3_formal.sv              techmap/dlygate4sd3_formal.sv
-formal/techmap/aoi21_1_formal.sv                  techmap/aoi21_1_formal.sv
-formal/techmap/aoi211_1_formal.sv                 techmap/aoi211_1_formal.sv
-formal/techmap/oai211_1_formal.sv                 techmap/oai211_1_formal.sv
-formal/cell/safe_async_mux_formal.sv              cell/safe_async_mux_formal.sv
-formal/cell/async_latch_cell_formal.sv            cell/async_latch_cell_formal.sv
-formal/defs/mmu_defs_formal.sv                    defs/mmu_defs_formal.sv
-formal/core/mmu_core_formal.sv                    core/mmu_core_formal.sv
-formal/module/async_glitch_filter_formal.sv       module/async_glitch_filter_formal.sv
-formal/module/async_glitch_filter_bank_formal.sv  module/async_glitch_filter_bank_formal.sv
-formal/module/mueller_inertial_delay_filter_formal.sv       module/mueller_inertial_delay_filter_formal.sv
-formal/module/mueller_inertial_delay_filter_bank_formal.sv  module/mueller_inertial_delay_filter_bank_formal.sv
-formal/#module/c061618g2_input_shield_formal.sv             module/c061618g2_input_shield_formal.sv
-formal/module/c061618g2_formal.sv                           module/c061618g2_formal.sv
+src/techmap/and2_1.v                      ../deps/c061618g2/src/techmap/and2_1.v
+src/techmap/inv_1.v                       ../deps/c061618g2/src/techmap/inv_1.v
+src/techmap/buf_4.v                       ../deps/c061618g2/src/techmap/buf_4.v
+src/techmap/dlygate4sd3.v                 ../deps/c061618g2/src/techmap/dlygate4sd3.v
+src/techmap/aoi21_1.v                     ../deps/c061618g2/src/techmap/aoi21_1.v
+src/techmap/aoi211_1.v                    ../deps/c061618g2/src/techmap/aoi211_1.v
+src/techmap/oai211_1.v                    ../deps/c061618g2/src/techmap/oai211_1.v
+src/cell/async_latch_cell.v               ../deps/c061618g2/src/cell/async_latch_cell.v
+src/cell/safe_async_mux.sv                ../deps/c061618g2/src/cell/safe_async_mux.sv
+src/defs/c061618g2_defs.sv                        ../deps/c061618g2/src/defs/c061618g2_defs.sv
+src/core/c061618g2_core.sv                        ../deps/c061618g2/src/core/c061618g2_core.sv
+src/module/async_glitch_filter.sv                 ../deps/c061618g2/src/module/async_glitch_filter.sv
+src/module/async_glitch_filter_bank.sv            ../deps/c061618g2/src/module/async_glitch_filter_bank.sv
+src/module/mueller_inertial_delay_filter.v        ../deps/c061618g2/src/module/mueller_inertial_delay_filter.v
+src/module/mueller_inertial_delay_filter_bank.sv  ../deps/c061618g2/src/module/mueller_inertial_delay_filter_bank.sv
+src/module/c061618g2.sv                          ../deps/c061618g2/src/module/c061618g2.sv
+src/project.v                                     ../src/project.v
+lib/cells_formal.sv                               ../deps/c061618g2/formal/lib/cells_formal.sv
+formal/lib/cells_formal.sv                        ../deps/c061618g2/formal/lib/cells_formal.sv
+formal/techmap/and2_1_formal.sv                   ../deps/c061618g2/formal/techmap/and2_1_formal.sv 
+formal/techmap/inv_1_formal.sv                    ../deps/c061618g2/formal/techmap/inv_1_formal.sv 
+formal/techmap/buf_4_formal.sv                    ../deps/c061618g2/formal/techmap/buf_4_formal.sv
+formal/techmap/dlygate4sd3_formal.sv              ../deps/c061618g2/formal/techmap/dlygate4sd3_formal.sv
+formal/techmap/aoi21_1_formal.sv                  ../deps/c061618g2/formal/techmap/aoi21_1_formal.sv
+formal/techmap/aoi211_1_formal.sv                 ../deps/c061618g2/formal/techmap/aoi211_1_formal.sv
+formal/techmap/oai211_1_formal.sv                 ../deps/c061618g2/formal/techmap/oai211_1_formal.sv
+formal/cell/safe_async_mux_formal.sv              ../deps/c061618g2/formal/cell/safe_async_mux_formal.sv
+formal/cell/async_latch_cell_formal.sv            ../deps/c061618g2/formal/cell/async_latch_cell_formal.sv
+formal/defs/c061618g2_defs_formal.sv                    ../deps/c061618g2/formal/defs/c061618g2_defs_formal.sv
+formal/core/c061618g2_core_formal.sv                    ../deps/c061618g2/formal/core/c061618g2_core_formal.sv
+formal/module/async_glitch_filter_formal.sv             ../deps/c061618g2/formal/module/async_glitch_filter_formal.sv
+formal/module/async_glitch_filter_bank_formal.sv        ../deps/c061618g2/formal/module/async_glitch_filter_bank_formal.sv
+formal/module/mueller_inertial_delay_filter_formal.sv       ../deps/c061618g2/formal/module/mueller_inertial_delay_filter_formal.sv
+formal/module/mueller_inertial_delay_filter_bank_formal.sv  ../deps/c061618g2/formal/module/mueller_inertial_delay_filter_bank_formal.sv
+formal/module/c061618g2_formal.sv                           ../deps/c061618g2/formal/module/c061618g2_formal.sv
 formal/project_formal.sv                                    project_formal.sv
+
+
