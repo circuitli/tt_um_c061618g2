@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - 'src/*.*'
-      - 'test/Makefle'
+      - 'test/Makefile'
       - 'test/tb.*'
       - 'test/test.py'
       - 'formal/project.js'
